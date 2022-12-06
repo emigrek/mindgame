@@ -1,23 +1,29 @@
-import { Client, Collection, Events, GatewayIntentBits, Guild } from "discord.js";
+import { Client, Collection } from "discord.js";
+import i18n from "i18n";
 import { Event, Module, Interaction } from "../interfaces";
 import events from "../events";
 import modules from "../modules/";
 import interactions from "../interactions";
 import config from "../utils/config";
-
-import { Database } from "../types/database";
+import { join } from "path";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
     public modules: Collection<string, Module> = new Collection();
     public interactions: Collection<string, Interaction> = new Collection();
-
-    public database: Database = null;
+    public i18n = i18n;
 
     public async init() {
+        this.i18n.configure({
+            locales: [ "en", "pl-PL" ],
+            directory: join(__dirname, "..", "translations"),
+            defaultLocale: "en"
+        });
+
         await this.loadModules();
         await this.loadInteractions();
         await this.loadEvents();
+        
         this.login(config.token)
             .catch((err) => {
                 console.error("[Login] Error", err)

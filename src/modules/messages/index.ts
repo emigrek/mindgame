@@ -1,11 +1,22 @@
-import { ActionRowBuilder, ChannelType, Client, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
+import ExtendedClient from "../../client/ExtendedClient";
+import { withGuildLocale } from "../locale";
 
-const sendMissingDefaultChannelMessage = (client: Client, guild: Guild) => {
+const sendMissingDefaultChannelMessage = async (client: ExtendedClient, guild: Guild) => {
+    withGuildLocale(client, guild);
+
+    const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
+
+    if(!textChannels.size) {
+        await owner?.send({ content: client.i18n.__("config.noValidChannels") });
+        return;
+    }
+
     const options = textChannels.map((channel) => {
         return {
             label: channel.name,
-            description: `${channel instanceof ThreadChannel ? 0 : channel.members.size} watching this channel.`,
+            description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.size) }),
             value: channel.id
         }
     });
@@ -14,16 +25,14 @@ const sendMissingDefaultChannelMessage = (client: Client, guild: Guild) => {
         .addComponents(
             new StringSelectMenuBuilder()
                 .setCustomId("defaultChannelSelect")
-                .setPlaceholder("Select text channel.")
+                .setPlaceholder(client.i18n.__("config.selectDefaultChannel"))
                 .addOptions(options)
         );
     
-    const communicationChannel = textChannels.first() as TextChannel || client.users.cache.get(guild.ownerId);
-    
-    if(!communicationChannel) return;
+    const proposedTextChannel = textChannels.first() as TextChannel;
+    const communication = proposedTextChannel ?? owner;
 
-    communicationChannel.send({
-        content: "Please select a default channel for this server.",
+    await communication.send({
         components: [row]
     });
 }

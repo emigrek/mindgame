@@ -22,6 +22,19 @@ const deleteGuild = async (guild: Guild) => {
     return true;
 }
 
+
+const getGuild = async (guild: Guild) => {
+    const exist = await GuildModel.findOne({ guildId: guild.id });
+    if(!exist) return new Error("Guild not found");
+
+    return exist;
+}
+
+const getGuilds = async () => {
+    const guilds = await GuildModel.find();
+    return guilds;
+}
+
 const setDefaultChannelId = async (guild: Guild, channelId: string) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return new Error("Guild not found");
@@ -31,11 +44,4 @@ const setDefaultChannelId = async (guild: Guild, channelId: string) => {
     return guildToUpdate;
 }
 
-const getDefaultChannelId = async (guild: Guild) => {
-    const exist = await GuildModel.findOne({ guildId: guild.id });
-    if(!exist) return new Error("Guild not found");
-
-    return exist.channelId;
-}
-
-export { createGuild, deleteGuild, setDefaultChannelId, getDefaultChannelId };
+export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds };

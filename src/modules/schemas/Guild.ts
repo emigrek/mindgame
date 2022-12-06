@@ -6,7 +6,8 @@ const reqString = { type: String, required: true };
 
 const guildSchema = new Schema<Guild>({
     guildId: reqString,
-    channelId: channelId
+    channelId: channelId,
+    locale: { type: String, default: "en" }
 });
 
 export default guildSchema;

@@ -1,0 +1,7 @@
+{
+    "config.channelWatchers": "{count} osób widzi ten kanał.",
+    "config.selectDefaultChannel": "Wybierz domyślny kanał tekstowy.",
+    "config.noValidChannels": "Ten serwer nie ma kanałów głosowych. Stwórz kanał głosowy i uruchom `/config`!",
+    "config.defaultChannelSuccess": "Pomyślnie zmieniono domyślny kanał na <#{selected}>!",
+    "config.defaultChannelError": "Coś poszło nie tak z wybieraniem domyślnego kanału."
+}
