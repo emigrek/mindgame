@@ -1,10 +1,16 @@
 import { Module } from "../interfaces/Module";
 import config from "../utils/config";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
 
 export const database: Module = {
     name: "database",
     run: async (client) => {
-        connect(config.mongoUri).then(() => console.log("[Database] Connected"));
+        try {
+            await mongoose.connect(config.mongoUri);
+            console.log("[Database] Connected to MongoDB");
+        } catch (err) {
+            console.error("[Database] Error", err);
+            process.exit(1);
+        }
     }
 }   
