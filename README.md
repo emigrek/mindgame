@@ -3,3 +3,7 @@
 # Mindgame
 
 discord.js & typescript bot with **leveling** and **activity tracking** utilities.
+
+## TODO
+* Config message
+    * Language buttons
