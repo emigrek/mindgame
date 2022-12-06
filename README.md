@@ -7,3 +7,6 @@ discord.js & typescript bot with **leveling** and **activity tracking** utilitie
 ## TODO
 * Config message
     * Language buttons
+* User profiles in Mongo
+* Custom events (guess skill or skin)
+* Thread based responses
