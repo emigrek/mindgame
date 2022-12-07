@@ -1,5 +1,5 @@
 import { Command } from "../interfaces/Command";
-import { sendConfigMessage } from "../modules/messages";
+import { getConfigMessagePayload } from "../modules/messages";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 export const config: Command = {
@@ -12,6 +12,8 @@ export const config: Command = {
             return;
         }
         
-        sendConfigMessage(client, interaction.guild!);
+        await interaction.deferReply();
+        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
+        interaction.followUp(configMessage!);
     }
 }

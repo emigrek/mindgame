@@ -1,6 +1,6 @@
 import { Interaction } from "../../interfaces/Interaction"
 import { ButtonInteraction } from "discord.js";
-import { sendConfigMessage } from "../../modules/messages";
+import { getConfigMessagePayload } from "../../modules/messages";
 import { setLocale } from "../../modules/locale";
 
 const en: Interaction = {
@@ -18,7 +18,9 @@ const en: Interaction = {
         client.i18n.setLocale(locale);
         await setLocale(interaction.guild, locale);
         
-        await sendConfigMessage(client, interaction.guild!);
+        await interaction.deferReply();
+        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
+        interaction.followUp(configMessage!);
     }
 }
 
