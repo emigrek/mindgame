@@ -1,21 +1,26 @@
 import { Client, Collection } from "discord.js";
 import i18n from "i18n";
 import { Event, Module, Interaction } from "../interfaces";
+
 import events from "../events";
 import modules from "../modules/";
 import interactions from "../interactions";
+import commands from "../commands";
+
 import config from "../utils/config";
 import { join } from "path";
+import { Command } from "../interfaces/Command";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
     public modules: Collection<string, Module> = new Collection();
     public interactions: Collection<string, Interaction> = new Collection();
+    public commands: Collection<string, Command> = new Collection();
     public i18n = i18n;
 
     public async init() {
         this.i18n.configure({
-            locales: [ "en", "pl-PL" ],
+            locales: [ "en", "pl" ],
             directory: join(__dirname, "..", "translations"),
             defaultLocale: "en"
         });
@@ -23,6 +28,7 @@ class ExtendedClient extends Client {
         await this.loadModules();
         await this.loadInteractions();
         await this.loadEvents();
+        await this.loadSlashCommands();
         
         this.login(config.token)
             .catch((err) => {
@@ -47,6 +53,14 @@ class ExtendedClient extends Client {
         }
 
         console.log("[Modules] Loaded", this.modules.size);
+    }
+
+    public async loadSlashCommands() {
+        for (const command of commands) {
+            this.commands.set(command.data.name, command);
+        }
+
+        console.log("[SlashCommands] Loaded", this.commands.size);
     }
     
     public async loadInteractions() {

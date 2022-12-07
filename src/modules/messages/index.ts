@@ -1,8 +1,9 @@
-import { ActionRowBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, BaseGuildEmoji, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Emoji, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
+import { countryCode } from "emoji-flags";
 
-const sendMissingDefaultChannelMessage = async (client: ExtendedClient, guild: Guild) => {
+const sendConfigMessage = async (client: ExtendedClient, guild: Guild) => {
     withGuildLocale(client, guild);
 
     const owner = await client.users.fetch(guild.ownerId);
@@ -26,16 +27,45 @@ const sendMissingDefaultChannelMessage = async (client: ExtendedClient, guild: G
             new StringSelectMenuBuilder()
                 .setCustomId("defaultChannelSelect")
                 .setPlaceholder(client.i18n.__("config.selectDefaultChannel"))
+                .setMinValues(1)
+                .setMaxValues(1)
                 .addOptions(options)
+        );
+
+    const locales = client.i18n.getLocales();
+    const currentLocale = client.i18n.getLocale(); 
+    const localesButtons: ButtonBuilder[] = [];
+    const languageNames = new Intl.DisplayNames([currentLocale], {
+        type: 'language'
+    });
+
+    locales.forEach((locale) => {
+        const flagCode = locale.toLowerCase().slice(0,2);
+        const label = `${languageNames.of(flagCode)}`;
+        const button = new ButtonBuilder()
+            .setCustomId(flagCode)
+            .setLabel(label)
+            .setStyle(currentLocale === locale ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+        localesButtons.push(button);
+    });
+
+    const row2 = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(
+            [...localesButtons, new ButtonBuilder()
+                .setCustomId("remove")
+                .setLabel("❌")
+                .setStyle(ButtonStyle.Danger)
+            ]
         );
     
     const proposedTextChannel = textChannels.first() as TextChannel;
     const communication = proposedTextChannel ?? owner;
 
     await communication.send({
-        components: [row]
+        components: [row, row2]
     });
 }
 
 
-export { sendMissingDefaultChannelMessage };
+export { sendConfigMessage };

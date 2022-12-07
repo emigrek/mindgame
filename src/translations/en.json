@@ -3,5 +3,6 @@
     "config.selectDefaultChannel": "Select default text channel.",
     "config.noValidChannels": "This server has no valid text channels. Please create one and run `/config`!",
     "config.defaultChannelSuccess": "Successfully changed guild default channel to <#{selected}>!",
-    "config.defaultChannelError": "Something went wrong when changing guild default channel."
+    "config.defaultChannelError": "Something went wrong when changing guild default channel.",
+    "utils.noPermissions": "You don't have permission to use this."
 }
