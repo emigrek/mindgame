@@ -1,6 +1,7 @@
 import ExtendedClient from "../client/ExtendedClient";
 import { Event } from "../interfaces/Event";
 import { REST, Routes } from 'discord.js';
+import { updatePresence } from "../modules/presence/";
 
 const putCommands = async (client: ExtendedClient) => {
     const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
@@ -14,5 +15,7 @@ export const ready: Event = {
     run: async (client) => {
         console.log(`[ready] Logged in as`, client.user?.tag);
         console.log(`[ready] Serving`, client.guilds.cache.size, `guilds`);
+
+        await updatePresence(client);
     }
 }

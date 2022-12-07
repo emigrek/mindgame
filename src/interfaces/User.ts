@@ -1,32 +1,30 @@
+interface Score {
+  exp: number;
+  games: {
+    won: {
+      skill: number;
+      skins: number;
+    }
+  }
+}
+
+interface ExtendedScore {
+  level: number;
+  exp: number;
+  games: {
+    won: {
+      skill: number;
+      skins: number;
+    }
+  }
+}
+
 export interface User {
-    userId: string;
-    username: string;
-    discriminator: string;
-    avatarUrl: string;
-    exp: number;
-    level: number;
-    day: {
-      exp: number;
-      games: {
-        won: {
-          skill: number;
-          skins: number;
-        }
-      }
-    },
-    week: {
-      exp: number;
-      games: {
-        won: {
-          skill: number;
-          skins: number;
-        }
-      }
-    }
-    games: {
-      won: {
-        skill: number;
-        skins: number;
-      }
-    }
+  userId: string;
+  username: string;
+  discriminator: string;
+  avatarUrl: string;
+  score: ExtendedScore;
+  day: Score,
+  week: Score
 }

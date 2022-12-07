@@ -1,6 +1,7 @@
 import { Interaction } from "../../interfaces/Interaction"
 import { ButtonInteraction } from "discord.js";
 import { sendConfigMessage } from "../../modules/messages";
+import { setLocale } from "../../modules/locale";
 
 const pl: Interaction = {
     customId: `pl`,
@@ -12,9 +13,10 @@ const pl: Interaction = {
             return;
         }
         interaction.message.delete();
-
-        client.i18n.setLocale(pl.customId.toLowerCase());
-        sendConfigMessage(client, interaction.guild!);
+        const locale = pl.customId.toLowerCase();
+        client.i18n.setLocale(locale);
+        await setLocale(interaction.guild, locale);
+        await sendConfigMessage(client, interaction.guild!);
     }
 }
 

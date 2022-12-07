@@ -1,12 +1,12 @@
 import { Interaction } from "../../interfaces/Interaction"
 import { ButtonInteraction } from "discord.js";
 import { sendConfigMessage } from "../../modules/messages";
+import { setLocale } from "../../modules/locale";
 
 const en: Interaction = {
     customId: `en`,
     run: async (client, interaction) => {
         if(!(interaction instanceof ButtonInteraction)) return;
-        
         if(interaction.guild?.ownerId != interaction.user.id) {
             interaction.reply({ content: client.i18n.__("utils.noPermissions"), ephemeral: true });
             return;
@@ -14,8 +14,11 @@ const en: Interaction = {
 
         interaction.message.delete();
         
-        client.i18n.setLocale(en.customId.toLowerCase());
-        sendConfigMessage(client, interaction.guild!);
+        const locale = en.customId.toLowerCase();
+        client.i18n.setLocale(locale);
+        await setLocale(interaction.guild, locale);
+        
+        await sendConfigMessage(client, interaction.guild!);
     }
 }
 
