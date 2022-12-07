@@ -5,5 +5,11 @@
     "config.defaultChannelSuccess": "Pomyślnie zmieniono domyślny kanał na <#{selected}>!",
     "config.defaultChannelError": "Coś poszło nie tak z wybieraniem domyślnego kanału.",
     "config.headerSubtitle": "Zmień ustawienia gildii.",
+    "config.selectChannelPlaceholder": "Domyślny kanał tekstowy: #{channel}",
+    "config.selectChannelPlaceholderNoDefault": "Domyślny kanał tekstowy: brak",
+    "config.selectLocalePlaceholder": "Język: {locale}",
+    "config.languageChanged": "Język został zmieniony.",
+    "config.notificationsButtonLabel": "Powiadomienia 🔔",
+    "config.close": "Zamknij ❌",
     "utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień."
 }

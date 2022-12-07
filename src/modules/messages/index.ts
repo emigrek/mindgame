@@ -1,23 +1,27 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { headerTemplate } from "./templates";
+import { getGuild } from "../guild";
+import { Guild as GuildInterface } from "../../interfaces";
 
 const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     withGuildLocale(client, guild);
 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
+    const sourceGuild = await getGuild(guild) as GuildInterface;
+    const currentDefault = textChannels.find((channel) => channel.id == sourceGuild!.channelId);
 
     if(!textChannels.size) {
         await owner?.send({ content: client.i18n.__("config.noValidChannels") });
         return;
     }
 
-    const options = textChannels.map((channel) => {
+    const defaultChanneloptions = textChannels.map((channel) => {
         return {
-            label: channel.name,
+            label: `#${channel.name}`,
             description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.size) }),
             value: channel.id
         }
@@ -25,46 +29,63 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 
     const exitButton = new ButtonBuilder()
         .setCustomId("remove")
-        .setLabel("❌")
+        .setLabel(client.i18n.__("config.close"))
         .setStyle(ButtonStyle.Danger);
+
+    const notificationsButton = new ButtonBuilder()
+        .setCustomId("notifications")
+        .setLabel(client.i18n.__("config.notificationsButtonLabel"))
+        .setStyle(sourceGuild!.notifications ? ButtonStyle.Success : ButtonStyle.Secondary);
     
     const channelSelect = new StringSelectMenuBuilder()
         .setCustomId("defaultChannelSelect")
-        .setPlaceholder(client.i18n.__("config.selectDefaultChannel"))
+        .setPlaceholder(currentDefault ? client.i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault!.name }) : client.i18n.__("config.selectChannelPlaceholderNoDefault"))
         .setMinValues(1)
         .setMaxValues(1)
-        .addOptions(options);
+        .addOptions(defaultChanneloptions);
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .addComponents(
+        .setComponents(
             channelSelect
         );
 
     const locales = client.i18n.getLocales();
     const currentLocale = client.i18n.getLocale(); 
-    const localesButtons: ButtonBuilder[] = [];
     const languageNames = new Intl.DisplayNames([currentLocale], {
         type: 'language'
     });
 
+    const flagCode = currentLocale.toLowerCase().slice(0,2);
+    const label = `${languageNames.of(flagCode)}`;
+    const languageOptions: any = [];
+
     locales.forEach((locale) => {
         const flagCode = locale.toLowerCase().slice(0,2);
         const label = `${languageNames.of(flagCode)}`;
-        const button = new ButtonBuilder()
-            .setCustomId(flagCode)
-            .setLabel(label)
-            .setStyle(currentLocale === locale ? ButtonStyle.Success : ButtonStyle.Secondary);
-
-        localesButtons.push(button);
+        languageOptions.push({
+            label: label,
+            description: locale,
+            value: locale
+        });
     });
 
-    const row2 = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents([...localesButtons, exitButton]);
+    const languageSelect = new StringSelectMenuBuilder()
+        .setCustomId("localeSelect")
+        .setPlaceholder(client.i18n.__mf("config.selectLocalePlaceholder", { locale: label }))
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(languageOptions);
+
+    const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .setComponents(languageSelect);
+
+    const row3 = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(notificationsButton, exitButton);
     
     const header = await getConfigAttachment(client);
 
     return {
-        components: [row, row2],
+        components: [row, row2, row3],
         files: [header]
     };
 }

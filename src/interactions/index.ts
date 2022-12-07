@@ -1,14 +1,14 @@
 import { Interaction } from "../interfaces";
 import { defaultChannelSelect } from "./select/defaultChannelSelect";
-import en from "./buttons/en";
-import pl from "./buttons/pl";
 import remove from "./buttons/remove";
+import notifications from "./buttons/notifications";
+import { localeSelect } from "./select/localeSelect";
 
 const interactions: Interaction[] = [
     defaultChannelSelect,
-    en,
-    pl,
-    remove
+    remove,
+    localeSelect,
+    notifications
 ];
 
 export default interactions;

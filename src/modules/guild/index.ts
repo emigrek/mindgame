@@ -44,4 +44,13 @@ const setDefaultChannelId = async (guild: Guild, channelId: string) => {
     return guildToUpdate;
 }
 
-export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds };
+const setNotifications = async (guild: Guild) => {
+    const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
+    if(!guildToUpdate) return new Error("Guild not found");
+
+    guildToUpdate.notifications = !guildToUpdate.notifications;
+    await guildToUpdate.save();
+    return guildToUpdate;
+}
+
+export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications };

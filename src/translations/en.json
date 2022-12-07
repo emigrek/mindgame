@@ -5,5 +5,11 @@
     "config.defaultChannelSuccess": "Successfully changed guild default channel to <#{selected}>!",
     "config.defaultChannelError": "Something went wrong when changing guild default channel.",
     "config.headerSubtitle": "Adjust your guild's settings",
+    "config.selectChannelPlaceholder": "Default text channel: #{channel}",
+    "config.selectChannelPlaceholderNoDefault": "Default text channel: none",
+    "config.selectLocalePlaceholder": "Language: {locale}",
+    "config.languageChanged": "Language has been changed.",
+    "config.notificationsButtonLabel": "Notifications 🔔",
+    "config.close": "Close ❌",
     "utils.noPermissions": "You don't have permission to use this."
 }
