@@ -1,12 +1,9 @@
-import { ActionRowBuilder, BaseGuildEmoji, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Emoji, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
-import { countryCode } from "emoji-flags";
 
 const sendConfigMessage = async (client: ExtendedClient, guild: Guild) => {
     withGuildLocale(client, guild);
-
-    console.log(client.i18n.getLocale());
 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
