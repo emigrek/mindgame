@@ -114,7 +114,9 @@ const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
         headerTemplate(`
             <div class="w-full h-full flex flex-col align-start justify-start items-start bg-black/50 backdrop-blur-lg">
                 ${configHeader(client)}
-                ${guildTemplate(guild)}
+                <div class="w-full h-full flex items-center bg-[#26282b] rounded-t-[20%]">
+                    ${guildTemplate(guild)}
+                </div>
             </div>
         `)
     );

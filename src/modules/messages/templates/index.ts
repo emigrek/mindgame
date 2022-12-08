@@ -3,7 +3,7 @@ import ExtendedClient from "../../../client/ExtendedClient";
 
 const guildTemplate = (guild: Guild) => {
     return `
-        <div class="w-full flex space-x-4 items-center justify-center align-middle text-white/70 text-xl">
+        <div class="w-full flex space-x-4 items-center justify-center align-middle text-white text-xl">
             <div>${guild.name}</div>
             <img src="${guild.iconURL()}" class="w-16 h-16 rounded-full shadow-lg border-4 border-[#3691a3]" />
             <div class="flex space-x-1 items-center justify-center">
