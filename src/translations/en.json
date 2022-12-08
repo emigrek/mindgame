@@ -1,10 +1,10 @@
 {
-	"config.channelWatchers": "{count} people watching this channel.",
+	"config.channelWatchers": "{count} 👀 see this channel.",
     "config.selectDefaultChannel": "Select default text channel.",
     "config.noValidChannels": "This server has no valid text channels. Please create one and run `/config`!",
     "config.defaultChannelSuccess": "Successfully changed guild default channel to <#{selected}>!",
     "config.defaultChannelError": "Something went wrong when changing guild default channel.",
-    "config.headerSubtitle": "Adjust your guild's settings",
+    "config.headerSubtitle": "Adjust your server settings",
     "config.selectChannelPlaceholder": "Default text channel: #{channel}",
     "config.selectChannelPlaceholderNoDefault": "Default text channel: none",
     "config.selectLocalePlaceholder": "Language: {locale}",

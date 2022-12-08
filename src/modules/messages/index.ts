@@ -1,10 +1,29 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
-import { headerTemplate } from "./templates";
+import { configHeader, guildTemplate, headerTemplate } from "./templates";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface } from "../../interfaces";
+
+const useHtmlFile = async (client: ExtendedClient, html: string) => {
+    const image = await nodeHtmlToImage({
+        html: html,
+        quality: 100,
+        type: "png",
+        transparent: true,
+        puppeteerArgs: {
+            args: ['--no-sandbox'],
+        },
+        encoding: "base64"
+    });
+
+    const buffer = Buffer.from(image as string, "base64");
+    const attachment = new AttachmentBuilder(buffer)
+        .setName("image.png");
+
+    return attachment;
+}
 
 const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     withGuildLocale(client, guild);
@@ -82,7 +101,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(notificationsButton, exitButton);
     
-    const header = await getConfigAttachment(client);
+    const header = await getConfigAttachment(client, guild);
 
     return {
         components: [row, row2, row3],
@@ -90,37 +109,17 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     };
 }
 
-const getConfigAttachment = async (client: ExtendedClient) => {
-    const template = headerTemplate(`
-        <div class="flex flex-col space-y-2 justify-center items-center">
-            <div class="flex items-center justify-center text-5xl font-bold text-white space-x-3">
-                <div>Config</div>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12">
-                    <path d="M18.75 12.75h1.5a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5zM12 6a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 6zM12 18a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 18zM3.75 6.75h1.5a.75.75 0 100-1.5h-1.5a.75.75 0 000 1.5zM5.25 18.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5zM3 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 013 12zM9 3.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM12.75 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0zM9 15.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-                </svg>
+const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
+    const file = useHtmlFile(client, 
+        headerTemplate(`
+            <div class="w-full h-full flex flex-col align-start justify-start items-start bg-black/50 backdrop-blur-lg">
+                ${configHeader(client)}
+                ${guildTemplate(guild)}
             </div>
-            <div class="flex items-center justify-center text-white/80">
-                ${client.i18n.__("config.headerSubtitle")}
-            </div>
-        </div>
-    `);
+        `)
+    );
 
-    const image = await nodeHtmlToImage({
-        html: template,
-        quality: 100,
-        type: "png",
-        transparent: true,
-        puppeteerArgs: {
-            args: ['--no-sandbox'],
-        },
-        encoding: "base64"
-    });
-
-    const buffer = Buffer.from(image as string, "base64");
-    const attachment = new AttachmentBuilder(buffer)
-        .setName("image.png");
-
-    return attachment;
+    return file;
 }
 
 

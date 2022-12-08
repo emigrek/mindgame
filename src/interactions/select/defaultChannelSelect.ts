@@ -2,6 +2,7 @@ import { StringSelectMenuInteraction } from "discord.js";
 import { Interaction } from "../../interfaces";
 import { setDefaultChannelId } from "../../modules/guild";
 import { withGuildLocale } from "../../modules/locale";
+import { getConfigMessagePayload } from "../../modules/messages";
 
 export const defaultChannelSelect: Interaction = {
     customId: "defaultChannelSelect",
@@ -19,7 +20,7 @@ export const defaultChannelSelect: Interaction = {
         
         const success = await setDefaultChannelId(guild, selected);
 
-        if(success) await interaction.reply({ content: client.i18n.__mf("config.defaultChannelSuccess", { selected: selected }), ephemeral: true });
-        else await interaction.reply({ content: client.i18n.__("config.defaultChannelError"), ephemeral: true });
+        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
+        await interaction.update(configMessage!);
     }
 }
