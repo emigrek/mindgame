@@ -18,8 +18,8 @@ export const defaultChannelSelect: Interaction = {
         const selected = interaction.values[0];
         withGuildLocale(client, guild);
         
-        const success = await setDefaultChannelId(guild, selected);
-
+        await setDefaultChannelId(guild, selected);
+        
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
         await interaction.update(configMessage!);
     }

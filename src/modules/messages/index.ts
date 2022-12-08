@@ -2,7 +2,7 @@ import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, Bu
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
-import { configHeader, guildTemplate, headerTemplate } from "./templates";
+import { configHeader, configLogo, headerTemplate } from "./templates";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface } from "../../interfaces";
 
@@ -112,10 +112,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
     const file = useHtmlFile(client, 
         headerTemplate(`
-            <div class="w-full h-full flex flex-col align-start justify-start items-start bg-black/50 backdrop-blur-lg">
-                ${configHeader(client)}
-                <div class="w-full h-full flex items-center bg-[#26282b] rounded-t-[20%]">
-                    ${guildTemplate(guild)}
+            <div class="w-full h-full flex flex-col align-start justify-start items-start bg-transparent">
+                ${configHeader(client, guild)}
+                <div class="w-full h-full flex items-center bg-[#202225] rounded-t-2xl">
+                    ${configLogo(client)}
                 </div>
             </div>
         `)

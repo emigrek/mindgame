@@ -3,7 +3,7 @@ import i18n from "i18n";
 import { Event, Module, Interaction } from "../interfaces";
 
 import events from "../events";
-import modules from "../modules/";
+import modules from "../modules";
 import interactions from "../interactions";
 import commands from "../commands";
 

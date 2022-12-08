@@ -3,13 +3,16 @@ import { Event } from "../interfaces/Event";
 import { REST, Routes } from 'discord.js';
 import { updatePresence } from "../modules/presence/";
 
+import config from "../utils/config";
+
 const putCommands = async (client: ExtendedClient) => {
-    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
+    const rest = new REST({ version: '10' }).setToken(config.token);
     await rest.put(
-        Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!),
+        Routes.applicationCommands(config.clientId),
         { body: client.commands.map(command => command.data.toJSON()) },
     );
 }
+
 export const ready: Event = {
     name: "ready",
     run: async (client) => {

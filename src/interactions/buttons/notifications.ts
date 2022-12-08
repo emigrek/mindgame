@@ -7,6 +7,11 @@ const notifications: Interaction = {
     customId: `notifications`,
     run: async (client, interaction) => {
         if(!(interaction instanceof ButtonInteraction)) return;
+
+        if(interaction.guild?.ownerId != interaction.user.id) {
+            interaction.reply({ content: client.i18n.__("utils.noPermissions"), ephemeral: true });
+            return;
+        }
         
         await setNotifications(interaction.guild!);
 

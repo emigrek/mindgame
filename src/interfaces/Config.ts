@@ -1,4 +1,5 @@
 export interface Config {
     token: string,
-    mongoUri: string
+    mongoUri: string,
+    clientId: string
 }
