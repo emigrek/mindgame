@@ -1,5 +1,7 @@
 import { Guild } from "discord.js";
 import mongoose from "mongoose";
+import ExtendedClient from "../../client/ExtendedClient";
+import { Guild as DatabaseGuild } from "../../interfaces/Guild"
 import GuildSchema from "../schemas/Guild";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);
@@ -21,7 +23,6 @@ const deleteGuild = async (guild: Guild) => {
     await GuildModel.deleteOne({ guildId: guild.id });
     return true;
 }
-
 
 const getGuild = async (guild: Guild) => {
     const exist = await GuildModel.findOne({ guildId: guild.id });
@@ -53,4 +54,17 @@ const setNotifications = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications };
+const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild, databaseGuild: DatabaseGuild) => void) => {
+    const guilds = await getGuilds();
+
+    if(!guilds.length) return new Error("No guilds found in database");
+    
+    guilds.forEach(async databaseGuild => {
+        const discordGuild = await client.guilds.cache.get(databaseGuild.guildId);
+        if(!discordGuild) return;
+
+        await callback(discordGuild, databaseGuild);
+    })
+}
+
+export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild };

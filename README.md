@@ -4,11 +4,11 @@
 discord.js & typescript bot with **leveling** and **activity tracking** utilities.
 
 ## TODO
-* Functions
-    * Send to all guilds
-
-* User (schemas/User.ts) in Mongo
-    * follow user (followers will recieve a message when followed join channel)
+* Handle user actions
+    * User joins server
+    * User leaves server
+    * Show profile
+    * Leaderboard
 
 * Server activity tracking
     * Watching channels (schemas/VoiceActivity.ts)

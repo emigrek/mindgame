@@ -1,5 +1,6 @@
-interface Score {
+interface Statistics {
   exp: number;
+  time: number;
   games: {
     won: {
       skill: number;
@@ -8,15 +9,8 @@ interface Score {
   }
 }
 
-interface ExtendedScore {
+interface ExtendedStatistics extends Statistics {
   level: number;
-  exp: number;
-  games: {
-    won: {
-      skill: number;
-      skins: number;
-    }
-  }
 }
 
 export interface User {
@@ -24,7 +18,9 @@ export interface User {
   username: string;
   discriminator: string;
   avatarUrl: string;
-  score: ExtendedScore;
-  day: Score,
-  week: Score
+  followers: string[];
+  stats: ExtendedStatistics;
+  day: Statistics,
+  week: Statistics,
+  month: Statistics
 }

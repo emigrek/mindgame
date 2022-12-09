@@ -1,6 +1,6 @@
 import ExtendedClient from "../client/ExtendedClient";
 import { Event } from "../interfaces/Event";
-import { REST, Routes } from 'discord.js';
+import { REST, Routes, TextChannel } from 'discord.js';
 import { updatePresence } from "../modules/presence/";
 
 import config from "../utils/config";

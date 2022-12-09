@@ -3,7 +3,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { configHeader, configLogo, headerTemplate } from "./templates";
-import { getGuild } from "../guild";
+import { getGuild, getGuilds } from "../guild";
 import { Guild as GuildInterface } from "../../interfaces";
 
 const useHtmlFile = async (client: ExtendedClient, html: string) => {
@@ -123,6 +123,5 @@ const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
 
     return file;
 }
-
 
 export { getConfigMessagePayload, getConfigAttachment };
