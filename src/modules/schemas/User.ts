@@ -1,43 +1,34 @@
 import { Schema } from 'mongoose';
 import { User } from '../../interfaces';
 
-// Document interface
-
-
 const reqString = { type: String, required: true };
-const reqNumber = { type: Number, required: true, default: 0 };
-// Schema
-const schema = new Schema<User>({
+
+const Statistics = {
+  exp: { type: Number, default: 0 },
+  time: { type: Number, default: 0 },
+  games: {
+    won: {
+      skill: { type: Number, default: 0 },
+      skins: { type: Number, default: 0 }
+    }
+  }
+}
+
+const ExtendedStatistics = {
+  level: { type: Number, default: 0 },
+  ...Statistics
+};
+
+const userSchema = new Schema<User>({
   userId: reqString,
   username: reqString,
   discriminator: reqString,
   avatarUrl: reqString,
-  exp: reqNumber,
-  level: reqNumber,
-  day: {
-    exp: reqNumber,
-    games: {
-      won: {
-        skill: reqNumber,
-        skins:reqNumber,
-      }
-    }
-  },
-  week: {
-    exp: reqNumber,
-    games: {
-      won: {
-        skill: reqNumber,
-        skins: reqNumber,
-      }
-    }
-  },
-  games: {
-    won: {
-      skill: reqNumber,
-      skins: reqNumber,
-    }
-  }
+  followers: { type: [String], default: [] },
+  stats: ExtendedStatistics,
+  day: Statistics,
+  week: Statistics,
+  month: Statistics
 });
 
-export default schema;
+export default userSchema;

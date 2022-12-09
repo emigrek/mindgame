@@ -8,7 +8,7 @@ const GuildModel = mongoose.model("Guild", GuildSchema);
 
 const createGuild = async (guild: Guild) => {
     const exists = await GuildModel.findOne({ guildId: guild.id });
-    if(exists) return new Error("Guild already exists");
+    if(exists) return exists;
 
     const newGuild = new GuildModel({ guildId: guild.id, channelId: null });
     await newGuild.save();

@@ -1,6 +1,7 @@
 import { BaseChannel, ChannelType, TextChannel } from "discord.js";
 import { Event } from "../interfaces/Event";
 import { createGuild } from "../modules/guild/";
+import { createUsers } from "../modules/user/";
 import { getConfigMessagePayload } from "../modules/messages/";
 import { updatePresence } from "../modules/presence/";
 
@@ -8,6 +9,7 @@ export const guildCreate: Event = {
     name: "guildCreate",
     run: async (client, guild) => {
         await createGuild(guild);
+        await createUsers(guild);
         await updatePresence(client);
 
         const owner = await client.users.fetch(guild.ownerId);
