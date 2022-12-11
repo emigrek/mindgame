@@ -3,7 +3,29 @@
 # Mindgame
 discord.js & typescript bot with **leveling** and **activity tracking** utilities.
 
-## TODO
+## 📦 Main technologies
+| Package  | Utility |
+| ------------- | ------------- |
+| typescript  | type safety  |
+| discord.js  | discord bot baseline |
+| mongoose  | storing data  |
+| i18n  | internationalization-framework  |
+| dotenv  | environment variables  |
+| nodemon  | development  |
+
+
+## 🚀 Running
+```
+git clone https://github.com/emigrek/mindgame
+cd mindgame
+npm install
+```
+Set up your .env file
+```
+npm run dev
+```
+
+## 🚧 TODO
 * Handle user actions
     * User joins server
     * User leaves server
