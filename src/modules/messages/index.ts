@@ -41,7 +41,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const defaultChanneloptions = textChannels.map((channel) => {
         return {
             label: `#${channel.name}`,
-            description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.size) }),
+            description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.filter(member => !member.user.bot).size) }),
             value: channel.id
         }
     });

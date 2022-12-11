@@ -29,6 +29,8 @@ const userSchema = new Schema<User>({
   day: Statistics,
   week: Statistics,
   month: Statistics
+}, {
+  timestamps: true
 });
 
 export default userSchema;

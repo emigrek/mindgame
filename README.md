@@ -12,7 +12,7 @@ discord.js & typescript bot with **leveling** and **activity tracking** utilitie
 
 * Server activity tracking
     * Watching channels (schemas/VoiceActivity.ts)
-    * Watching presence (schemas/StatusActivity.ts)
+    * Watching presence (schemas/PresenceActivity.ts)
     * Watching chat (distinct image from text message) (schemas/User.ts)
     * Watching streams (streaming will pay off)
 
