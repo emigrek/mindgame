@@ -1,4 +1,4 @@
-import { Event } from "../interfaces/Event";
+import { Event } from "../interfaces";
 import { deleteGuild } from "../modules/guild";
 import { updatePresence } from "../modules/presence/";
 

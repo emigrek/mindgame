@@ -1,4 +1,4 @@
-import { Command } from "../interfaces/Command";
+import { Command } from "../interfaces";
 import { config } from "./config";
 
 const commands: Command[] = [

@@ -1,7 +1,7 @@
 import { Guild } from "discord.js";
 import mongoose from "mongoose";
 import ExtendedClient from "../../client/ExtendedClient";
-import { Guild as DatabaseGuild } from "../../interfaces/Guild"
+import { Guild as DatabaseGuild } from "../../interfaces"
 import GuildSchema from "../schemas/Guild";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);

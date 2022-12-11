@@ -1,6 +1,6 @@
 import { Client, Collection } from "discord.js";
 import i18n from "i18n";
-import { Event, Module, Interaction } from "../interfaces";
+import { Event, Module, Interaction, Command } from "../interfaces";
 
 import events from "../events";
 import modules from "../modules";
@@ -9,7 +9,6 @@ import commands from "../commands";
 
 import config from "../utils/config";
 import { join } from "path";
-import { Command } from "../interfaces/Command";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();

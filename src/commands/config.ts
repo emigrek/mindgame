@@ -1,4 +1,4 @@
-import { Command } from "../interfaces/Command";
+import { Command } from "../interfaces";
 import { getConfigMessagePayload } from "../modules/messages";
 import { SlashCommandBuilder } from "@discordjs/builders";
 

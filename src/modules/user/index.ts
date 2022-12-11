@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { User, Guild } from "discord.js";
-import { User as DatabaseUser } from "../../interfaces/User";
+import { User as DatabaseUser } from "../../interfaces";
 import userSchema from "../schemas/User";
 
 const UserModel = mongoose.model("User", userSchema);

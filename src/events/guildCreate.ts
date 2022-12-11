@@ -1,5 +1,5 @@
 import { BaseChannel, ChannelType, TextChannel } from "discord.js";
-import { Event } from "../interfaces/Event";
+import { Event } from "../interfaces";
 import { createGuild } from "../modules/guild/";
 import { createUsers } from "../modules/user/";
 import { getConfigMessagePayload } from "../modules/messages/";

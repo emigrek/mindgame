@@ -2,7 +2,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { Guild as DiscordGuild } from "discord.js";
 import { getGuild } from "../guild";
 import mongoose from "mongoose";
-import { Guild as GuildInterface } from "../../interfaces/Guild";
+import { Guild as GuildInterface } from "../../interfaces";
 
 import GuildSchema from "../schemas/Guild";
 

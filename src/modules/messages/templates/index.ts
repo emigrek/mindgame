@@ -1,4 +1,4 @@
-import { Client, Guild } from "discord.js";
+import { Guild } from "discord.js";
 import ExtendedClient from "../../../client/ExtendedClient";
 
 const guildIcon = (guild: Guild) => {

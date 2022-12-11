@@ -6,3 +6,4 @@ export { Guild } from "./Guild";
 export { Interaction } from "./Interaction";
 export { PresenceActivity } from "./PresenceActivity";
 export { VoiceActivity } from "./VoiceActivity";
+export { Command } from "./Command";

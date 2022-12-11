@@ -1,4 +1,4 @@
-import { Config } from "../interfaces/Config"
+import { Config } from "../interfaces"
 
 const config: Config = {
     token: process.env.DISCORD_TOKEN ?? 'nil',
