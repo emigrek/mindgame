@@ -1,4 +1,4 @@
-import { BaseInteraction, ButtonInteraction } from "discord.js";
+import { BaseInteraction, ButtonInteraction, PermissionsBitField } from "discord.js";
 import Client from "../client/ExtendedClient";
 
 interface Run {
@@ -7,5 +7,6 @@ interface Run {
 
 export interface Interaction {
     customId: string;
+    permissions?: bigint[];
     run: Run;
 }

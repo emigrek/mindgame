@@ -1,17 +1,13 @@
-import { StringSelectMenuInteraction } from "discord.js";
+import { PermissionFlagsBits, StringSelectMenuInteraction } from "discord.js";
 import { Interaction } from "../../interfaces";
 import { setLocale } from "../../modules/locale";
 import { getConfigMessagePayload } from "../../modules/messages";
 
 export const localeSelect: Interaction = {
     customId: "localeSelect",
+    permissions: [PermissionFlagsBits.Administrator],
     run: async (client, interaction) => {
         if(!(interaction instanceof StringSelectMenuInteraction)) return;
-
-        if(interaction.guild?.ownerId != interaction.user.id) {
-            interaction.reply({ content: client.i18n.__("utils.noPermissions"), ephemeral: true });
-            return;
-        }
 
         const selected = interaction.values[0];
         client.i18n.setLocale(selected);
