@@ -18,31 +18,48 @@ discord.js & typescript bot with **leveling** and **activity tracking** utilitie
 
 
 ## 🚀 Running
+Get running MongoDB instance for storing data
 ```
 git clone https://github.com/emigrek/mindgame
 cd mindgame
 npm install
 ```
-Set up your .env file
+Set up your .env file with bot token, application id and MongoDB connection string.
+
+Run development server
 ```
 npm run dev
+```
+or
+run production build
+```
+npm run build
 ```
 
 ## 🚧 TODO
 * Handle user actions
-    * Show profile
+    * User profile
     * Leaderboard
 
-* Server activity tracking
-    * Watching channels (schemas/VoiceActivity.ts)
-    * Watching presence (schemas/PresenceActivity.ts)
-    * Watching chat (distinct image from text message) (schemas/User.ts)
-    * Watching streams (streaming will pay off)
+* User activity tracking
+    * Track user presence
+        * Events
+            * guildMemberOnline
+            * guildMemberOffline
+    * Track user voice activity and streaming state
+        * Events
+            * voiceChannelJoin
+            * voiceChannelLeave
+            * voiceChannelSwitch
+            * voiceChannelDeaf
+            * voiceChannelUndeaf
+            * voiceStreamingStart
+            * voiceStreamingStop
 
 * Custom events
-    * Answering event in event message thread.
     * Events
         * Skill (League of Legends)
         * Skin (puzzle) (League of Legends)
+    * Answering event in event message thread.
 
 
