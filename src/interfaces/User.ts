@@ -1,6 +1,9 @@
 export interface Statistics {
   exp: number;
-  time: number;
+  time: {
+    voice: number;
+    presence: number;
+  };
   games: {
     won: {
       skill: number;
@@ -18,7 +21,10 @@ export interface ExtendedStatisticsPayload {
   level?: number;
   commands?: number;
   exp?: number;
-  time?: number;
+  time?: {
+    voice?: number;
+    presence?: number;
+  };
   games?: {
     won?: {
       skill?: number;

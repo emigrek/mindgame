@@ -5,7 +5,10 @@ const reqString = { type: String, required: true };
 
 const Statistics = {
   exp: { type: Number, default: 0 },
-  time: { type: Number, default: 0 },
+  time: {
+    voice: { type: Number, default: 0 },
+    presence: { type: Number, default: 0 }
+  },
   games: {
     won: {
       skill: { type: Number, default: 0 },
