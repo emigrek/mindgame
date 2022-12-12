@@ -1,3 +1,6 @@
+import { PresenceActivity } from "./PresenceActivity";
+import { VoiceActivity } from "./VoiceActivity";
+
 export interface Statistics {
   exp: number;
   time: {
@@ -38,6 +41,10 @@ export interface User {
   tag: string;
   avatarUrl: string;
   followers: string[];
+  activity: {
+    voice: VoiceActivity | null;
+    presence: PresenceActivity | null;
+  },
   stats: ExtendedStatistics;
   day: Statistics,
   week: Statistics,
