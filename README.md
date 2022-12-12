@@ -38,9 +38,33 @@ npm run build
 ```
 
 ## 🚧 TODO
-* Handle user actions
-    * User profile
-    * Leaderboard
+
+* Experience system
+    * Level formula
+    * Events
+        * guildUserLeveledUp(user, guild)
+        * guildUserRecievedDailyReward(user, guild)
+
+* User profiles
+    * Week activity graph
+    * Level up notification
+    * Daily reward notification
+    * Statistics
+
+* Server statistics notifications
+    * Daily activity graph
+    * Monthly activity graph
+
+* Games
+    * Commands
+        * /skin invite @user
+        * /skill invite @user
+    * List
+        * League of Legends skin puzzle
+        * League of Legends skill
+    * Caching
+        * Caching skin/skill images to reduce API calls
+
 
 * User activity tracking
     * Track user presence
@@ -56,11 +80,3 @@ npm run build
             * voiceChannelUndeaf
             * voiceStreamingStart
             * voiceStreamingStop
-
-* Custom events
-    * Events
-        * Skill (League of Legends)
-        * Skin (puzzle) (League of Legends)
-    * Answering event in event message thread.
-
-
