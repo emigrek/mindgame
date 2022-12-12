@@ -4,15 +4,15 @@
 # 🌌 Mindgame
 Advanced discord application with **leveling** and **activity tracking** utilities.
 
-## 📦 Packages
-| Package  | Utility |
+## 📦 Used packages
+| 📦 Package  | 📋 Reasons |
 | ------------- | ------------- |
-| typescript  | type safety  |
+| Typescript  | type safety  |
 | discord.js  | discord bot baseline |
-| mongoose  | storing data  |
+| Mongoose  | storing data  |
 | i18n  | internationalization-framework  |
-| dotenv  | environment variables  |
-| nodemon  | development  |
+| Dotenv  | environment variables  |
+| Nodemon  | development  |
 | node-html-to-image  | messages with html & css  |
 | Tailwind CSS  | css framework  |
 | discord-logs | extended discord events |
