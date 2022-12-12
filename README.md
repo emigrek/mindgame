@@ -40,15 +40,15 @@ npm run build
 ## 🚧 TODO
 
 * Experience system
-    * Level formula
+    * Level formula ([desmos](https://www.desmos.com/calculator/fue9fmpfev))
+    * Level up notification
+    * Daily reward notification
     * Events
         * guildUserLeveledUp(user, guild)
         * guildUserRecievedDailyReward(user, guild)
 
 * User profiles
     * Week activity graph
-    * Level up notification
-    * Daily reward notification
     * Statistics
 
 * Server statistics notifications
