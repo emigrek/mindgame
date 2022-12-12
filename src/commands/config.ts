@@ -6,7 +6,7 @@ import { PermissionFlagsBits } from "discord.js";
 export const config: Command = {
     data: new SlashCommandBuilder()
         .setName(`config`)
-        .setDescription(`Sends config message.`)
+        .setDescription(`Sends guild config message.`)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     execute: async (client, interaction) => {
         await interaction.deferReply();

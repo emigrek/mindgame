@@ -1,11 +1,13 @@
 import { Client, Collection } from "discord.js";
 import i18n from "i18n";
-import { Event, Module, Interaction, Command } from "../interfaces";
+import { Event, Module, Interaction, Command, Button, Select } from "../interfaces";
 
 import events from "../events";
 import modules from "../modules";
 import interactions from "../interactions";
 import commands from "../commands";
+import buttons from "../buttons";
+import selects from "../selects";
 
 import config from "../utils/config";
 import { join } from "path";
@@ -15,6 +17,9 @@ class ExtendedClient extends Client {
     public modules: Collection<string, Module> = new Collection();
     public interactions: Collection<string, Interaction> = new Collection();
     public commands: Collection<string, Command> = new Collection();
+    public buttons: Collection<string, Button> = new Collection();
+    public selects: Collection<string, Select> = new Collection();
+
     public i18n = i18n;
 
     public async init() {
@@ -25,6 +30,8 @@ class ExtendedClient extends Client {
         });
 
         await this.loadModules();
+        await this.loadButtons();
+        await this.loadSelects();
         await this.loadInteractions();
         await this.loadEvents();
         await this.loadSlashCommands();
@@ -60,6 +67,22 @@ class ExtendedClient extends Client {
         }
 
         console.log("[SlashCommands] Loaded", this.commands.size);
+    }
+
+    public async loadButtons() {
+        for (const button of buttons) {
+            this.buttons.set(button.customId, button);
+        }
+
+        console.log("[Buttons] Loaded", this.buttons.size);
+    }
+
+    public async loadSelects() {
+        for (const select of selects) {
+            this.selects.set(select.customId, select);
+        }
+
+        console.log("[Selects] Loaded", this.selects.size);
     }
     
     public async loadInteractions() {

@@ -53,4 +53,4 @@ const createUsers = async (guild: Guild) => {
     return created;
 }
 
-export { createUser, deleteUser, getUser, getUsers, createUsers };
+export { createUser, deleteUser, getUser, getUsers, createUsers, UserModel };

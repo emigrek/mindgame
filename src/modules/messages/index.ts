@@ -1,12 +1,14 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { configHeader, configLogo, headerTemplate } from "./templates";
-import { getGuild, getGuilds } from "../guild";
-import { Guild as GuildInterface } from "../../interfaces";
+import { getGuild } from "../guild";
+import { Guild as GuildInterface, SelectMenuOption } from "../../interfaces";
+import { getExitButton, getNotificationsButton } from "./buttons";
+import { getChannelSelect, getLanguageSelect } from "./selects";
 
-const useHtmlFile = async (client: ExtendedClient, html: string) => {
+const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
         html: html,
         quality: 100,
@@ -38,7 +40,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         return;
     }
 
-    const defaultChanneloptions = textChannels.map((channel) => {
+    const defaultChannelOptions = textChannels.map((channel) => {
         return {
             label: `#${channel.name}`,
             description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.filter(member => !member.user.bot).size) }),
@@ -46,27 +48,9 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         }
     });
 
-    const exitButton = new ButtonBuilder()
-        .setCustomId("remove")
-        .setLabel(client.i18n.__("config.close"))
-        .setStyle(ButtonStyle.Danger);
-
-    const notificationsButton = new ButtonBuilder()
-        .setCustomId("notifications")
-        .setLabel(client.i18n.__("config.notificationsButtonLabel"))
-        .setStyle(sourceGuild!.notifications ? ButtonStyle.Success : ButtonStyle.Secondary);
-    
-    const channelSelect = new StringSelectMenuBuilder()
-        .setCustomId("defaultChannelSelect")
-        .setPlaceholder(currentDefault ? client.i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault!.name }) : client.i18n.__("config.selectChannelPlaceholderNoDefault"))
-        .setMinValues(1)
-        .setMaxValues(1)
-        .addOptions(defaultChanneloptions);
-
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .setComponents(
-            channelSelect
-        );
+    const exitButton = await getExitButton(client);
+    const notificationsButton = await getNotificationsButton(client, sourceGuild);
+    const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const locales = client.i18n.getLocales();
     const currentLocale = client.i18n.getLocale(); 
@@ -76,7 +60,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 
     const flagCode = currentLocale.toLowerCase().slice(0,2);
     const label = `${languageNames.of(flagCode)}`;
-    const languageOptions: any = [];
+    const languageOptions: SelectMenuOption[] = [];
 
     locales.forEach((locale) => {
         const flagCode = locale.toLowerCase().slice(0,2);
@@ -88,19 +72,15 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         });
     });
 
-    const languageSelect = new StringSelectMenuBuilder()
-        .setCustomId("localeSelect")
-        .setPlaceholder(client.i18n.__mf("config.selectLocalePlaceholder", { locale: label }))
-        .setMinValues(1)
-        .setMaxValues(1)
-        .addOptions(languageOptions);
-
+    const languageSelect = await getLanguageSelect(client, currentLocale, languageOptions);
+    
+        
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .setComponents(channelSelect);
     const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(languageSelect);
-
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(notificationsButton, exitButton);
-    
     const header = await getConfigAttachment(client, guild);
 
     return {
@@ -110,7 +90,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 }
 
 const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
-    const file = useHtmlFile(client, 
+    const file = useHtmlFile( 
         headerTemplate(`
             <div class="w-full h-full flex flex-col align-start justify-start items-start bg-transparent">
                 ${configHeader(client, guild)}
