@@ -1,22 +1,35 @@
-interface Statistics {
+export interface Statistics {
   exp: number;
   time: number;
   games: {
     won: {
       skill: number;
-      skins: number;
+      skins: number; 
     }
   }
 }
 
-interface ExtendedStatistics extends Statistics {
+export interface ExtendedStatistics extends Statistics {
   level: number;
+  commands: number;
+}
+
+export interface ExtendedStatisticsPayload {
+  level?: number;
+  commands?: number;
+  exp?: number;
+  time?: number;
+  games?: {
+    won?: {
+      skill?: number;
+      skins?: number;
+    }
+  }
 }
 
 export interface User {
   userId: string;
-  username: string;
-  discriminator: string;
+  tag: string;
   avatarUrl: string;
   followers: string[];
   stats: ExtendedStatistics;

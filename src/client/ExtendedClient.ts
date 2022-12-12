@@ -36,11 +36,10 @@ class ExtendedClient extends Client {
         await this.loadEvents();
         await this.loadSlashCommands();
         
-        this.login(config.token)
-            .catch((err) => {
-                console.error("[Login] Error", err)
-                process.exit(1);
-            });
+        this.login(config.token).catch((err) => {
+            console.error("[Login] Error", err)
+            process.exit(1);
+        });
     }
 
     public async loadEvents() {

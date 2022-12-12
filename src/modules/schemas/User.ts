@@ -16,13 +16,13 @@ const Statistics = {
 
 const ExtendedStatistics = {
   level: { type: Number, default: 0 },
+  commands: { type: Number, default: 0 },
   ...Statistics
 };
 
 const userSchema = new Schema<User>({
   userId: reqString,
-  username: reqString,
-  discriminator: reqString,
+  tag: reqString,
   avatarUrl: reqString,
   followers: { type: [String], default: [] },
   stats: ExtendedStatistics,

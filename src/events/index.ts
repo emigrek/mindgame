@@ -7,6 +7,7 @@ import { userAvatarUpdate } from "./userAvatarUpdate";
 import { userUsernameUpdate } from "./userUsernameUpdate";
 import { userDiscriminatorUpdate } from "./userDiscriminatorUpdate";
 import { guildMemberEntered } from "./guildMemberEntered";
+import { userLeveledUp } from "./userLeveledUp";
 
 const events: Event[] = [
     ready,
@@ -16,6 +17,7 @@ const events: Event[] = [
     userAvatarUpdate,
     userUsernameUpdate,
     userDiscriminatorUpdate,
+    userLeveledUp,
     guildMemberEntered
 ];
 

@@ -10,3 +10,5 @@ export { Command } from "./Command";
 export { Button } from "./Button";
 export { Select } from "./Select";
 export { SelectMenuOption } from "./SelectMenuOption";
+export { ExtendedStatistics } from "./User";
+export { Statistics } from "./User";

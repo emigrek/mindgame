@@ -19,6 +19,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "chatgpt": "^2.2.0",
     "discord-logs": "^2.2.1",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",

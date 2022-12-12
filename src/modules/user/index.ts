@@ -1,9 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { User, Guild } from "discord.js";
 import { User as DatabaseUser } from "../../interfaces";
 import userSchema from "../schemas/User";
+import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
+import ExtendedClient from "../../client/ExtendedClient";
 
 const UserModel = mongoose.model("User", userSchema);
+
+const expConstant: number = 3.829;
+
+const expToLevel = (exp: number) => {
+    return Math.floor(expConstant * Math.sqrt(exp));
+};
+
+const levelToExp = (level: number) => {
+    return Math.pow(expConstant / 3.829, 2);
+};
 
 const createUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });
@@ -11,8 +23,7 @@ const createUser = async (user: User) => {
 
     const newUser = new UserModel({
         userId: user.id,
-        username: user.username,
-        discriminator: user.discriminator,
+        tag: user.tag,
         avatarUrl: user.avatarURL()
     });
 
@@ -53,4 +64,61 @@ const createUsers = async (guild: Guild) => {
     return created;
 }
 
-export { createUser, deleteUser, getUser, getUsers, createUsers, UserModel };
+const updateUser = async (user: User) => {
+    let exists = await UserModel.findOne({ userId: user.id });
+    if(!exists) {
+        exists = await createUser(user);
+    }
+
+    await UserModel.updateOne({ userId: user.id }, {
+        tag: user.tag,
+        avatarUrl: user.avatarURL()
+    });
+
+    return exists;
+}
+
+const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload) => {
+    const userSource = await updateUser(user) as DatabaseUser & Document;
+    const newExtendedStatistics: ExtendedStatistics = {
+        level: userSource.stats.level + (extendedStatisticsPayload.level ?? 0),
+        exp: userSource.stats.exp + (extendedStatisticsPayload.exp ?? 0),
+        time: userSource.stats.time + (extendedStatisticsPayload.time ?? 0),
+        commands: userSource.stats.commands + (extendedStatisticsPayload.commands ?? 0),
+        games: {
+            won: {
+                skill: userSource.stats.games.won.skill + (extendedStatisticsPayload.games?.won?.skill ?? 0),
+                skins: userSource.stats.games.won.skins + (extendedStatisticsPayload.games?.won?.skins ?? 0)
+            }
+        }
+    };
+    const newStatistics: Statistics = {
+        exp: userSource.stats.exp + (extendedStatisticsPayload.exp ?? 0),
+        time: userSource.stats.time + (extendedStatisticsPayload.time ?? 0),
+        games: {
+            won: {
+                skill: userSource.stats.games.won.skill + (extendedStatisticsPayload.games?.won?.skill ?? 0),
+                skins: userSource.stats.games.won.skins + (extendedStatisticsPayload.games?.won?.skins ?? 0)
+            }
+        }
+    }
+
+    userSource.stats = newExtendedStatistics;
+    userSource.day = newStatistics;
+    userSource.week = newStatistics;
+    userSource.month = newStatistics;
+
+    let userLeveledUpDuringUpdate: boolean = false; // Flag
+
+    if(userSource.stats.exp >= levelToExp(userSource.stats.level + 1)) // When exceed exp needed to level up
+        userLeveledUpDuringUpdate = true; // Mark flag to emit event
+
+    userSource.stats.level = expToLevel(userSource.stats.exp); // Update level
+    await userSource.save();
+    
+    if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", userSource, user); // Emiting event
+
+    return userSource;
+};
+
+export { createUser, deleteUser, getUser, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, UserModel };

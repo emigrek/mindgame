@@ -59,7 +59,6 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     });
 
     const flagCode = currentLocale.toLowerCase().slice(0,2);
-    const label = `${languageNames.of(flagCode)}`;
     const languageOptions: SelectMenuOption[] = [];
 
     locales.forEach((locale) => {
