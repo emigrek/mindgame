@@ -1,9 +1,9 @@
 [![Mindgame](https://github.com/emigrek/mindgame/blob/main/media/repo-header.png)](https://discord.com/api/oauth2/authorize?client_id=1049355872389832714&permissions=8&scope=applications.commands%20bot)
 
-# Mindgame
-discord.js & typescript bot with **leveling** and **activity tracking** utilities.
+# 🌌 Mindgame
+Advenced discord application with **leveling** and **activity tracking** utilities.
 
-## 📦 Main technologies
+## 📦 Packages
 | Package  | Utility |
 | ------------- | ------------- |
 | typescript  | type safety  |
@@ -14,8 +14,8 @@ discord.js & typescript bot with **leveling** and **activity tracking** utilitie
 | nodemon  | development  |
 | node-html-to-image  | messages with html & css  |
 | Tailwind CSS  | css framework  |
-
-
+| discord-logs | extended discord events |
+| moment | time formatting |
 
 ## 🚀 Running
 Get running MongoDB instance for storing data
