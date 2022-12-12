@@ -7,7 +7,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 
 const UserModel = mongoose.model("User", userSchema);
 
-const expConstant: number = 3.829;
+const expConstant: number = 0.3829;
 const expInflationRate: number = 1;
 
 const expToLevel = (exp: number) => {
