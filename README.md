@@ -1,7 +1,8 @@
 [![Mindgame](https://github.com/emigrek/mindgame/blob/main/media/repo-header.png)](https://discord.com/api/oauth2/authorize?client_id=1049355872389832714&permissions=8&scope=applications.commands%20bot)
+<center><i>click banner to invite bot to your server!</i></center>
 
 # 🌌 Mindgame
-Advenced discord application with **leveling** and **activity tracking** utilities.
+Advanced discord application with **leveling** and **activity tracking** utilities.
 
 ## 📦 Packages
 | Package  | Utility |
