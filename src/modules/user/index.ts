@@ -8,13 +8,18 @@ import ExtendedClient from "../../client/ExtendedClient";
 const UserModel = mongoose.model("User", userSchema);
 
 const expConstant: number = 3.829;
+const expInflationRate: number = 1;
 
 const expToLevel = (exp: number) => {
-    return Math.floor(expConstant * Math.sqrt(exp));
+    return Math.floor(
+        Math.pow(expInflationRate/exp, 1/expConstant)
+    );
 };
 
 const levelToExp = (level: number) => {
-    return Math.pow(expConstant / 3.829, 2);
+    return Math.floor(
+        Math.pow(level, expConstant) * expInflationRate
+    );
 };
 
 const createUser = async (user: User) => {

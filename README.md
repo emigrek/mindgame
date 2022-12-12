@@ -39,7 +39,7 @@ npm run build
 ## 🚧 TODO
 
 * Experience system
-    * ~~Level formula ([desmos](https://www.desmos.com/calculator/fue9fmpfev))~~
+    * ~~Level formula ([spreadsheet](https://docs.google.com/spreadsheets/d/1X20H9ZW5LRT_xLXmg1M8WZG3lsxSERbqzfkl7-oYz_8/edit#gid=0))~~
     * ~~Level up notification~~
     * Daily reward notification
     * Events
