@@ -1,13 +1,18 @@
 import { Guild } from "discord.js";
 import ExtendedClient from "../../../client/ExtendedClient";
+import { User } from "../../../interfaces";
 
 const guildIcon = (guild: Guild) => {
-    return `<img src="${guild.iconURL()}" class="w-16 h-16 rounded-lg shadow-lg border-4 border-[#202225]" />`;
+    return `<img src="${guild.iconURL()}" class="w-16 h-16 rounded-full border-4 border-[#202225]" />`;
+}
+
+const userAvatar = (user: User) => {
+    return `<img src="${user.avatarUrl}" class="w-24 h-24 rounded-full border-4 border-[#202225]" />`;
 }
 
 const layoutMedium = (html: string, accent?: boolean) => {
     return `
-        <html class="w-[600px] h-[200px] bg-transparent">
+        <html class="w-[600px] h-[300px] bg-transparent">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,11 +46,23 @@ const headerTemplate = (html: string) => {
     return layoutMedium(html, false);
 }
 
+const userHeader = (client: ExtendedClient, user: User) => {
+    return `
+        <div class="w-[500px] mx-auto flex items-center py-6 justify-between text-white space-x-3">
+            <div class="flex space-x-3">
+                <div class="text-xl">${user.tag}</div>
+            </div>
+            ${userAvatar(user)}
+        </div>
+    `;
+}
+
+
 const configHeader = (client: ExtendedClient, guild: Guild) => {
     return `
-        <div class="w-[500px] mx-auto flex items-center py-5 justify-between text-white space-x-3">
+        <div class="w-[500px] mx-auto flex items-center py-6 justify-between text-white space-x-3">
             <div class="flex space-x-3">
-                <div class="text-2xl font-bold">${guild.name}</div>
+                <div class="text-2xl font-medium">${guild.name}</div>
                 <div class="flex space-x-1 items-center justify-center text-white/50">
                     <div>${guild.members.cache.size}</div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -74,4 +91,18 @@ const configLogo = (client: ExtendedClient) => {
     `;
 }
 
-export { headerTemplate, layoutLarge, layoutMedium, configHeader, configLogo };
+const userLogo = (client: ExtendedClient) => {
+    return `
+        <div class="w-full flex items-center px-5 py-4 justify-between text-white space-x-3">
+            <div class="flex flex-col text-left">
+                <div class="text-lg font-bold">Profile</div>
+                <div class="text-sm text-white/50">${client.i18n.__("profile.logoSubtitle")}</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+    `;
+}
+
+export { headerTemplate, layoutLarge, layoutMedium, configHeader, configLogo, userHeader, userLogo };

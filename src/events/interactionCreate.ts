@@ -23,5 +23,8 @@ export const interactionCreate: Event = {
         if(interaction.isButton()) {
             client.buttons.get(interaction.customId)?.run(client, interaction);
         }
+        if(interaction.isContextMenuCommand() || interaction.isUserContextMenuCommand() || interaction.isMessageContextMenuCommand()) {
+            client.contexts.get(interaction.commandName)?.run(client, interaction);
+        }
     }
 }

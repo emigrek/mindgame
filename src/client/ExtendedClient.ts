@@ -1,6 +1,6 @@
 import { Client, Collection } from "discord.js";
 import i18n from "i18n";
-import { Event, Module, Interaction, Command, Button, Select } from "../interfaces";
+import { Event, Module, Interaction, Command, Button, Select, ContextMenu } from "../interfaces";
 
 import events from "../events";
 import modules from "../modules";
@@ -8,6 +8,7 @@ import interactions from "../interactions";
 import commands from "../commands";
 import buttons from "../buttons";
 import selects from "../selects";
+import contexts from "../contexts";
 
 import config from "../utils/config";
 import { join } from "path";
@@ -19,6 +20,7 @@ class ExtendedClient extends Client {
     public commands: Collection<string, Command> = new Collection();
     public buttons: Collection<string, Button> = new Collection();
     public selects: Collection<string, Select> = new Collection();
+    public contexts: Collection<string, ContextMenu> = new Collection();
 
     public i18n = i18n;
 
@@ -30,6 +32,7 @@ class ExtendedClient extends Client {
         });
 
         await this.loadModules();
+        await this.loadContexts();
         await this.loadButtons();
         await this.loadSelects();
         await this.loadInteractions();
@@ -90,6 +93,14 @@ class ExtendedClient extends Client {
         }
 
         console.log("[Interactions] Loaded", this.interactions.size);
+    }
+
+    public async loadContexts() {
+        for (const context of contexts) {
+            this.contexts.set(context.data.name, context);
+        }
+
+        console.log("[Contexts] Loaded", this.contexts.size);
     }
 }
 

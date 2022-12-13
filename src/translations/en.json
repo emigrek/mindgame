@@ -11,5 +11,6 @@
     "config.languageChanged": "Language has been changed.",
     "config.notificationsButtonLabel": "Notifications 🔔",
     "config.close": "Close ❌",
+    "profile.logoSubtitle": "User showcase",
     "utils.noPermissions": "You don't have permission to use this."
 }
