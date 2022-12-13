@@ -5,7 +5,6 @@ import { getConfigMessagePayload } from "../modules/messages";
 
 const notifications: Button = {
     customId: `notifications`,
-    permissions: [PermissionFlagsBits.Administrator],
     run: async (client, interaction) => {
         await setNotifications(interaction.guild!);
         

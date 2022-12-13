@@ -11,6 +11,10 @@
     "config.languageChanged": "Język został zmieniony.",
     "config.notificationsButtonLabel": "Powiadomienia 🔔",
     "config.close": "Zamknij ❌",
+    "config.footer": "Zmień konfiguracje serwera kiedy chcesz używając /config",
+    "config.textChannelField": "Kanały tekstowe",
+    "config.voiceChannelField": "Kanały głosowe",
+    "config.membersField": "Członkowie",
     "profile.logoSubtitle": "Profil użytkownika",
     "utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień."
 }

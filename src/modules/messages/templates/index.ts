@@ -10,6 +10,18 @@ const userAvatar = (user: User) => {
     return `<img src="${user.avatarUrl}" class="w-24 h-24 rounded-full border-4 border-[#202225]" />`;
 }
 
+const embedSpacer = () => {
+    return `
+        <html class="w-[550px] h-[20px] bg-[#2f3136] bg-transparent">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <script src="https://cdn.tailwindcss.com"></script>
+            </head>
+        </html>
+    `;
+}
+
 const layoutMedium = (html: string, accent?: boolean) => {
     return `
         <html class="w-[600px] h-[200px] bg-transparent">
@@ -105,4 +117,4 @@ const userLogo = (client: ExtendedClient) => {
     `;
 }
 
-export { headerTemplate, layoutLarge, layoutMedium, configHeader, configLogo, userHeader, userLogo };
+export { headerTemplate, layoutLarge, layoutMedium, configHeader, configLogo, userHeader, userLogo, embedSpacer };

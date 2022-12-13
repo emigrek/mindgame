@@ -6,13 +6,14 @@ import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
 import { getExitButton, getNotificationsButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
-import { getConfigEmbed } from "../embeds";
+import { getConfigEmbed, useEmbedSpacer } from "../embeds";
+import { embedSpacer } from "../messages/templates";
 
 const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
         html: html,
-        quality: 100,
-        type: "png",
+        quality: 80,
+        type: "jpeg",
         transparent: true,
         puppeteerArgs: {
             args: ['--no-sandbox'],
@@ -47,8 +48,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
             value: channel.id
         }
     });
-
-    const exitButton = await getExitButton(client);
+    
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
@@ -79,13 +79,16 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(languageSelect);
     const row3 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton, exitButton);
+        .setComponents(notificationsButton);
 
     const embed = await getConfigEmbed(client, guild);
+    const spacer = await useEmbedSpacer();
 
     return {
         components: [row, row2, row3],
-        embeds: [embed]
+        embeds: [embed],
+        files: [spacer],
+        ephemeral: true
     };
 }
 

@@ -5,7 +5,6 @@ import { getConfigMessagePayload } from "../modules/messages";
 
 export const localeSelect: Select = {
     customId: "localeSelect",
-    permissions: [PermissionFlagsBits.Administrator],
     run: async (client, interaction) => {
         const selected = interaction.values[0];
         const guild = interaction.guild;

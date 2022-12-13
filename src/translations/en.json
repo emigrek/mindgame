@@ -11,6 +11,10 @@
     "config.languageChanged": "Language has been changed.",
     "config.notificationsButtonLabel": "Notifications 🔔",
     "config.close": "Close ❌",
+    "config.footer": "Change guild config any time by running /config",
+    "config.textChannelField": "Text channels",
+    "config.voiceChannelField": "Voice channels",
+    "config.membersField": "Members",
     "profile.logoSubtitle": "User showcase",
     "utils.noPermissions": "You don't have permission to use this."
 }
