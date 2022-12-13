@@ -10,14 +10,11 @@ export const config: Command = {
         .setDescription(`Sends guild config message.`)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     execute: async (client, interaction) => {
-        await interaction.deferReply();
-
-        const user = await updateUserStatistics(client, interaction.user, {
+        await updateUserStatistics(client, interaction.user, {
             commands: 1
         });
-        console.log(user);
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        interaction.followUp(configMessage!);
+        interaction.reply(configMessage!);
     }
 }

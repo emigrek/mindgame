@@ -12,7 +12,7 @@ const userAvatar = (user: User) => {
 
 const layoutMedium = (html: string, accent?: boolean) => {
     return `
-        <html class="w-[600px] h-[300px] bg-transparent">
+        <html class="w-[600px] h-[200px] bg-transparent">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,7 @@ const layoutMedium = (html: string, accent?: boolean) => {
 
 const layoutLarge = (html: string, accent?: boolean) => {
     return `
-        <html class="w-[600px] h-[800px] bg-transparent">
+        <html class="w-[600px] h-[300px] bg-transparent">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">

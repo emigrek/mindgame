@@ -6,6 +6,7 @@ import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
 import { getExitButton, getNotificationsButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
+import { getConfigEmbed } from "../embeds";
 
 const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
@@ -80,8 +81,11 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(notificationsButton, exitButton);
 
+    const embed = await getConfigEmbed(client, guild);
+
     return {
-        components: [row, row2, row3]
+        components: [row, row2, row3],
+        embeds: [embed]
     };
 }
 
