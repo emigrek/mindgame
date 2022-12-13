@@ -12,9 +12,10 @@ export const config: Command = {
     execute: async (client, interaction) => {
         await interaction.deferReply();
 
-        await updateUserStatistics(client, interaction.user, {
+        const user = await updateUserStatistics(client, interaction.user, {
             commands: 1
         });
+        console.log(user);
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
         interaction.followUp(configMessage!);

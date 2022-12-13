@@ -10,15 +10,19 @@ const UserModel = mongoose.model("User", userSchema);
 const expConstant: number = 0.3829;
 const expInflationRate: number = 1;
 
+const root = (x: number, n: number) => {
+    return Math.pow(Math.E, Math.log(x) / n);
+}
+
 const expToLevel = (exp: number) => {
     return Math.floor(
-        Math.pow(expInflationRate/exp, 1/expConstant)
+        root(exp/expInflationRate, 3) * expConstant
     );
 };
 
 const levelToExp = (level: number) => {
     return Math.floor(
-        Math.pow(level, expConstant) * expInflationRate
+        Math.pow(level/expConstant, 3) * expInflationRate
     );
 };
 
@@ -86,17 +90,17 @@ const updateUser = async (user: User) => {
 const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload) => {
     const userSource = await updateUser(user) as DatabaseUser & Document;
     const newExtendedStatistics: ExtendedStatistics = {
-        level: userSource.stats.level + (extendedStatisticsPayload.level ?? 0),
-        exp: userSource.stats.exp + (extendedStatisticsPayload.exp ?? 0),
+        level: userSource.stats.level + (extendedStatisticsPayload.level || 0),
+        exp: userSource.stats.exp + (extendedStatisticsPayload.exp || 0),
         time: {
-            voice: userSource.stats.time.voice + (extendedStatisticsPayload.time?.voice ?? 0),
-            presence: userSource.stats.time.presence + (extendedStatisticsPayload.time?.presence ?? 0)
+            voice: userSource.stats.time.voice + (extendedStatisticsPayload.time?.voice || 0),
+            presence: userSource.stats.time.presence + (extendedStatisticsPayload.time?.presence || 0)
         },
-        commands: userSource.stats.commands + (extendedStatisticsPayload.commands ?? 0),
+        commands: userSource.stats.commands + (extendedStatisticsPayload.commands || 0),
         games: {
             won: {
-                skill: userSource.stats.games.won.skill + (extendedStatisticsPayload.games?.won?.skill ?? 0),
-                skins: userSource.stats.games.won.skins + (extendedStatisticsPayload.games?.won?.skins ?? 0)
+                skill: userSource.stats.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
+                skins: userSource.stats.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
             }
         }
     };
@@ -115,6 +119,8 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         userLeveledUpDuringUpdate = true; // Mark flag to emit event
 
     userSource.stats.level = expToLevel(userSource.stats.exp); // Update level
+    userSource.stats.exp = 0; // Reset exp
+
     await userSource.save();
     
     if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", userSource, user); // Emiting event

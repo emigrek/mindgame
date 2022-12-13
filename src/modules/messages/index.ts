@@ -2,7 +2,6 @@ import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, Bu
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
-import { configHeader, configLogo, headerTemplate, layoutLarge, userHeader, userLogo } from "./templates";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
 import { getExitButton, getNotificationsButton } from "./buttons";
@@ -80,47 +79,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         .setComponents(languageSelect);
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(notificationsButton, exitButton);
-    const header = await getConfigAttachment(client, guild);
 
     return {
-        components: [row, row2, row3],
-        files: [header]
+        components: [row, row2, row3]
     };
 }
 
-const getConfigAttachment = async (client: ExtendedClient, guild: Guild) => {
-    const file = useHtmlFile( 
-        headerTemplate(`
-            <div class="w-full h-full flex flex-col align-start justify-start items-start bg-transparent">
-                ${configHeader(client, guild)}
-                <div class="w-full h-full flex items-center bg-[#202225] rounded-xl">
-                    ${configLogo(client)}
-                </div>
-            </div>
-        `)
-    );
-
-    return file;
-}
-
-const getProfileAttachment = async (client: ExtendedClient, user: User) => {
-    const file = useHtmlFile( 
-        layoutLarge(`
-            <div class="w-full h-full flex flex-col align-start justify-start items-start bg-transparent">
-                ${userHeader(client, user)}
-                <div class="w-full h-full flex items-center bg-[#202225] rounded-xl">
-                    ${userLogo(client)}
-                </div>
-            </div>
-        `)
-    );
-
-    return file;
-}
-
-const getProfileMessagePayload = async (client: ExtendedClient, user: User) => {
-    const userMessagePayload = await getProfileAttachment(client, user);
-    return { files: [userMessagePayload], ephemeral: true };
-};
-
-export { getConfigMessagePayload, getConfigAttachment, getProfileAttachment, getProfileMessagePayload };
+export { getConfigMessagePayload, useHtmlFile };
