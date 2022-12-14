@@ -164,4 +164,42 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
     return userSource;
 };
 
-export { createUser, deleteUser, getUser, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, UserModel };
+const everyUser = async (client: ExtendedClient, callback: (user: DatabaseUser & Document) => void) => {
+    const users = await getUsers();
+    for await (const user of users) {
+        await callback(user);
+    }
+}
+
+const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
+    const blankTemporaryStatistic = {
+        exp: 0,
+        time: {
+            voice: 0,
+            presence: 0
+        },
+        games: {
+            won: {
+                skill: 0,
+                skins: 0
+            }
+        }
+    };
+
+    everyUser(client, async (sourceUser) => {
+        switch(type) {
+            case "day":
+                sourceUser.day = blankTemporaryStatistic;
+                break;
+            case "week":
+                sourceUser.week = blankTemporaryStatistic;
+                break;
+            case "month":
+                sourceUser.month = blankTemporaryStatistic;
+                break;
+        }
+        await sourceUser.save();
+    });
+};
+
+export { createUser, deleteUser, getUser, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel };

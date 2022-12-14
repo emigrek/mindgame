@@ -1,5 +1,5 @@
 import ExtendedClient from "../client/ExtendedClient";
-import { Command, ContextMenu, Event } from "../interfaces";
+import { Event } from "../interfaces";
 import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes, TextChannel } from 'discord.js';
 import { updatePresence } from "../modules/presence/";
 

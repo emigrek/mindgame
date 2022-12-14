@@ -51,8 +51,8 @@ npm run build
 
 * User profiles
     * Week activity graph
-    * Statistics
-        * Clear day, week, month statistics using cron jobs
+    * Statistics ✅
+        * Clear day, week, month statistics using cron jobs ✅
 
 * Server statistics notifications
     * Daily activity graph
