@@ -104,14 +104,50 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
             }
         }
     };
-    const newStatistics: Statistics = {
-        ...newExtendedStatistics,
-    };
+    const day: Statistics = {
+        exp: userSource.day.exp + (extendedStatisticsPayload.exp || 0),
+        time: {
+            voice: userSource.day.time.voice + (extendedStatisticsPayload.time?.voice || 0),
+            presence: userSource.day.time.presence + (extendedStatisticsPayload.time?.presence || 0)
+        },
+        games: {
+            won: {
+                skill: userSource.day.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
+                skins: userSource.day.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+            }
+        }
+    }
+    const week: Statistics = {
+        exp: userSource.week.exp + (extendedStatisticsPayload.exp || 0),
+        time: {
+            voice: userSource.week.time.voice + (extendedStatisticsPayload.time?.voice || 0),
+            presence: userSource.week.time.presence + (extendedStatisticsPayload.time?.presence || 0)
+        },
+        games: {
+            won: {
+                skill: userSource.week.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
+                skins: userSource.week.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+            }
+        }
+    }
+    const month: Statistics = {
+        exp: userSource.month.exp + (extendedStatisticsPayload.exp || 0),
+        time: {
+            voice: userSource.month.time.voice + (extendedStatisticsPayload.time?.voice || 0),
+            presence: userSource.month.time.presence + (extendedStatisticsPayload.time?.presence || 0)
+        },
+        games: {
+            won: {
+                skill: userSource.month.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
+                skins: userSource.month.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+            }
+        }
+    }
 
     userSource.stats = newExtendedStatistics;
-    userSource.day = newStatistics;
-    userSource.week = newStatistics;
-    userSource.month = newStatistics;
+    userSource.day = day;
+    userSource.week = week;
+    userSource.month = month;
 
     let userLeveledUpDuringUpdate: boolean = false; // Flag
 
