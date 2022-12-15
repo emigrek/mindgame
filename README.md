@@ -1,4 +1,4 @@
-![Mindgame](https://github.com/emigrek/mindgame/blob/main/media/repo-banner.png)
+![Mindgame](https://raw.githubusercontent.com/emigrek/mindgame/main/media/repo-banner.png)
 
 # 🌌 Mindgame
 Advanced discord application with **leveling** and **activity tracking** utilities.
