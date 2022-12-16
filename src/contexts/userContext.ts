@@ -16,7 +16,7 @@ const userContext: ContextMenu = {
         await interaction.deferReply({ ephemeral: true });
 
         const color = await useImageHex(sourceUser.avatarUrl);
-        const bgColor = chroma(color).darken(0.4).hex();
+        const bgColor = chroma(color).darken(0.5).hex();
 
         const userProfileHtml = await userProfile(client, sourceUser, color, bgColor);
         const file = await useHtmlFile(layoutLarge(userProfileHtml, color, bgColor));

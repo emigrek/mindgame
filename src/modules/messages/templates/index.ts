@@ -1,12 +1,6 @@
-import { Guild } from "discord.js";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { User } from "../../../interfaces";
-import chroma from "chroma-js";
 import { getUserRank } from "../../user";
-
-const guildIcon = (guild: Guild) => {
-    return `<img src="${guild.iconURL()}" class="w-16 h-16 rounded-full border-4 border-[#202225]" />`;
-}
 
 const embedSpacer = () => {
     return `
@@ -134,51 +128,4 @@ const userProfile = async (client: ExtendedClient, user: User, color: string, bg
 }
 
 
-const configHeader = (client: ExtendedClient, guild: Guild) => {
-    return `
-        <div class="w-[500px] mx-auto flex items-center py-6 justify-between text-white space-x-3">
-            <div class="flex space-x-3">
-                <div class="text-2xl font-medium">${guild.name}</div>
-                <div class="flex space-x-1 items-center justify-center text-white/50">
-                    <div>${guild.members.cache.size}</div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                        <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
-                        <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-                    </svg>
-                </div>
-            </div>
-            ${guildIcon(guild)}
-        </div>
-    `;
-}
-
-
-const configLogo = (client: ExtendedClient) => {
-    return `
-        <div class="w-full flex items-center px-5 py-4 justify-between text-white space-x-3">
-            <div class="flex flex-col text-left">
-                <div class="text-lg font-bold">Config</div>
-                <div class="text-sm text-white/50">${client.i18n.__("config.headerSubtitle")}</div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-                <path d="M18.75 12.75h1.5a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5zM12 6a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 6zM12 18a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 18zM3.75 6.75h1.5a.75.75 0 100-1.5h-1.5a.75.75 0 000 1.5zM5.25 18.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5zM3 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 013 12zM9 3.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM12.75 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0zM9 15.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-            </svg>
-        </div>
-    `;
-}
-
-const userLogo = (client: ExtendedClient) => {
-    return `
-        <div class="w-full flex items-center px-5 py-4 justify-between text-white space-x-3">
-            <div class="flex flex-col text-left">
-                <div class="text-lg font-bold">Profile</div>
-                <div class="text-sm text-white/50">${client.i18n.__("profile.logoSubtitle")}</div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-        </div>
-    `;
-}
-
-export { layoutLarge, layoutMedium, configHeader, configLogo, userProfile, userLogo, embedSpacer };
+export { layoutLarge, layoutMedium, userProfile, embedSpacer };
