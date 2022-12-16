@@ -4,17 +4,24 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
-import { getExitButton, getNotificationsButton } from "./buttons";
+import { getNotificationsButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 import { getConfigEmbed, useEmbedSpacer } from "../embeds";
-import { embedSpacer } from "../messages/templates";
+
+import Vibrant = require('node-vibrant');
+import chroma = require('chroma-js');
+
+const useImageHex = async (image: string) => {
+    const colors = await Vibrant.from(image).getPalette();
+    const color = chroma(colors.Vibrant!.hex!).hex();
+    return color;
+}
 
 const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
         html: html,
-        quality: 80,
-        type: "jpeg",
-        transparent: true,
+        quality: 100,
+        type: "png",
         puppeteerArgs: {
             args: ['--no-sandbox'],
         },
@@ -92,4 +99,4 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     };
 }
 
-export { getConfigMessagePayload, useHtmlFile };
+export { getConfigMessagePayload, useHtmlFile, useImageHex };

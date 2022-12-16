@@ -33,7 +33,7 @@ const createUser = async (user: User) => {
     const newUser = new UserModel({
         userId: user.id,
         tag: user.tag,
-        avatarUrl: user.avatarURL()
+        avatarUrl: user.displayAvatarURL({ extension: "png" })
     });
 
     await newUser.save();
@@ -54,6 +54,17 @@ const getUser = async (user: User) => {
 
     return exists;
 }
+
+const getUserRank = async (user: DatabaseUser) => {
+    const exists = await UserModel.findOne({ userId: user.userId });
+    if(!exists) return new Error("User not found");
+
+    const users = await UserModel.find();
+    const sorted = users.sort((a, b) => b.stats.exp - a.stats.exp);
+    const rank = sorted.findIndex(u => u.userId === user.userId) + 1;
+
+    return rank;
+};
 
 const getUsers = async () => {
     const users = await UserModel.find();
@@ -81,7 +92,7 @@ const updateUser = async (user: User) => {
 
     await UserModel.updateOne({ userId: user.id }, {
         tag: user.tag,
-        avatarUrl: user.avatarURL()
+        avatarUrl: user.displayAvatarURL({ extension: "png" })
     });
 
     return exists;
@@ -202,4 +213,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { createUser, deleteUser, getUser, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel };
+export { createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel };

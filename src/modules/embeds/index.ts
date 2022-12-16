@@ -1,14 +1,8 @@
 import ExtendedClient from "../../client/ExtendedClient";
 import { ChannelType, Guild } from "discord.js";
-import Vibrant = require('node-vibrant');
-import chroma = require('chroma-js');
 import * as Canvas from "canvas";
+import { useImageHex } from "../messages";
 
-const useImageHex = async (image: string) => {
-    const colors = await Vibrant.from(image).getPalette();
-    const color = chroma(colors.Vibrant!.hex!).hex();
-    return parseInt(color.slice(1), 16);
-}
 
 const useEmbedSpacer = async () => {
     const canvas = Canvas.createCanvas(400, 5);
@@ -27,7 +21,7 @@ const getConfigEmbed = async (client: ExtendedClient, guild: Guild) => {
 
     const embed = {      
         title: guild.name,
-        color: color,
+        color: parseInt(color.slice(1), 16),
         thumbnail: {
             url: guildIcon
         },
@@ -62,4 +56,4 @@ const getConfigEmbed = async (client: ExtendedClient, guild: Guild) => {
     return embed;
 }
 
-export { getConfigEmbed, useImageHex, useEmbedSpacer };
+export { getConfigEmbed, useEmbedSpacer };

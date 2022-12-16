@@ -6,7 +6,6 @@ import { Select } from "../interfaces/Select";
 
 export const defaultChannelSelect: Select = {
     customId: "defaultChannelSelect",
-    permissions: [PermissionFlagsBits.Administrator],
     run: async (client, interaction) => {
         const guild = interaction.guild;
         const selected = interaction.values[0];
