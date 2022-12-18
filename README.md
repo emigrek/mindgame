@@ -45,30 +45,10 @@ npm run build
     * Level up notification sent in current voice text channel
     * Daily reward notification sent in current voice text channel
     * Events
-        * userLeveledUp(user, guild) ✅
-        * userRecievedDailyReward(user, guild)
+        * userLeveledUp(user) ✅
+        * userRecievedDailyReward(user)
 
-
-* User profiles
-    * Week activity graph
-    * Statistics ✅
-        * Clear day, week, month statistics using cron jobs ✅
-
-* Server statistics notifications
-    * Daily activity graph
-    * Monthly activity graph
-
-* Games
-    * Commands
-        * /skin invite @user
-        * /skill invite @user
-    * List
-        * League of Legends skin puzzle
-        * League of Legends skill
-    * Caching
-        * Caching skin/skill images to reduce API calls
-
-
+        
 * User activity tracking
     * Track user presence
         * Events
@@ -83,3 +63,22 @@ npm run build
             * voiceChannelUndeaf
             * voiceStreamingStart
             * voiceStreamingStop
+    * Reward activity with EXP when activity ends
+
+* Server
+    * Daily activity graph
+    * Weekly activity graph
+    * Monthly activity graph
+
+* Games
+    * Invitable and automatic using cron
+    * Commands
+        * /skin invite @user
+        * /skill invite @user
+    * List
+        * League of Legends skin puzzle
+        * League of Legends skill
+    * Ranking
+        * Collect answer speed and create ranking
+    * Caching
+        * Caching skin/skill images to reduce API calls
