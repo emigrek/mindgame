@@ -6,8 +6,7 @@ const reqString = { type: String, required: true };
 const Statistics = {
   exp: { type: Number, default: 0 },
   time: {
-    voice: { type: Number, default: 0 },
-    presence: { type: Number, default: 0 }
+    voice: { type: Number, default: 0 }
   },
   games: {
     won: {
@@ -29,8 +28,7 @@ const userSchema = new Schema<User>({
   avatarUrl: reqString,
   followers: { type: [String], default: [] },
   activity: {
-    voice: { type: Object, default: null },
-    presence: { type: Object, default: null }
+    voice: { type: Object, default: null }
   },
   stats: ExtendedStatistics,
   day: Statistics,
