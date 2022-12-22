@@ -162,7 +162,6 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         userLeveledUpDuringUpdate = true; // Mark flag to emit event
 
     userSource.stats.level = expToLevel(userSource.stats.exp); // Update level
-    userSource.stats.exp = 0; // Reset exp
 
     await userSource.save();
     

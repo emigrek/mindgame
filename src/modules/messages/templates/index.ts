@@ -106,7 +106,7 @@ const userProfile = async (client: ExtendedClient, user: User, color: string, bg
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="text-2xl">${Math.floor(user.stats.time.voice/60).toFixed(2)}H</div>
+                                <div class="text-2xl">${Math.floor(user.stats.time.voice/3600).toFixed(2)}H</div>
                             </div>
                         </div>
                     </div>

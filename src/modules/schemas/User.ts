@@ -27,9 +27,6 @@ const userSchema = new Schema<User>({
   tag: reqString,
   avatarUrl: reqString,
   followers: { type: [String], default: [] },
-  activity: {
-    voice: { type: Object, default: null }
-  },
   stats: ExtendedStatistics,
   day: Statistics,
   week: Statistics,

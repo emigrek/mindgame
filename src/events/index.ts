@@ -11,6 +11,13 @@ import { userLeveledUp } from "./userLeveledUp";
 import { daily } from "./daily";
 import { weekly } from "./weekly";
 import { monthly } from "./monthly";
+import { voiceChannelJoin } from "./voiceChannelJoin";
+import { voiceChannelDeaf } from "./voiceChannelDeaf";
+import { voiceChannelUndeaf } from "./voiceChannelUndeaf";
+import { voiceChannelLeave } from "./voiceChannelLeave";
+import { voiceChannelSwitch } from "./voiceChannelSwitch";
+import { voiceStreamingStart } from "./voiceStreamingStart";
+import { voiceStreamingStop } from "./voiceStreamingStop";
 
 
 const events: Event[] = [
@@ -25,7 +32,14 @@ const events: Event[] = [
     guildMemberEntered,
     daily,
     weekly,
-    monthly
+    monthly,
+    voiceChannelJoin,
+    voiceChannelDeaf,
+    voiceChannelUndeaf,
+    voiceChannelLeave,
+    voiceChannelSwitch,
+    voiceStreamingStart,
+    voiceStreamingStop
 ];
 
 export default events;

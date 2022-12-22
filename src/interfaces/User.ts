@@ -1,4 +1,3 @@
-import { PresenceActivity } from "./PresenceActivity";
 import { VoiceActivity } from "./VoiceActivity";
 
 export interface Statistics {
@@ -39,9 +38,6 @@ export interface User {
   tag: string;
   avatarUrl: string;
   followers: string[];
-  activity: {
-    voice: VoiceActivity | null;
-  },
   stats: ExtendedStatistics;
   day: Statistics,
   week: Statistics,

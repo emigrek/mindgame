@@ -50,11 +50,7 @@ npm run build
 
         
 * User activity tracking
-    * Track user presence
-        * Events
-            * guildMemberOnline
-            * guildMemberOffline
-    * Track user voice activity and streaming state
+    * Track user voice activity and streaming state ✅
         * Events
             * voiceChannelJoin
             * voiceChannelLeave
@@ -63,7 +59,7 @@ npm run build
             * voiceChannelUndeaf
             * voiceStreamingStart
             * voiceStreamingStop
-    * Reward activity with EXP when activity ends
+    * Reward activity with EXP when activity ends ✅
 
 * Server
     * Daily activity graph
