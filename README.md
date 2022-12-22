@@ -44,10 +44,10 @@ npm run build
     * Level formula ([spreadsheet](https://docs.google.com/spreadsheets/d/1X20H9ZW5LRT_xLXmg1M8WZG3lsxSERbqzfkl7-oYz_8/edit#gid=0)) ✅
     * Level up notification sent in current voice text channel
     * Daily reward notification sent in current voice text channel
+    * Experience based permissions
     * Events
         * userLeveledUp(user) ✅
         * userRecievedDailyReward(user)
-
         
 * User activity tracking
     * Track user voice activity and streaming state ✅
