@@ -11,8 +11,7 @@ import { userLeveledUp } from "./userLeveledUp";
 import { daily } from "./daily";
 import { weekly } from "./weekly";
 import { monthly } from "./monthly";
-import { guildMemberOnline } from "./guildMemberOnline";
-import { guildMemberOffline } from "./guildMemberOffline";
+import { presenceUpdate } from "./presenceUpdate";
 
 
 const events: Event[] = [
@@ -28,8 +27,7 @@ const events: Event[] = [
     daily,
     weekly,
     monthly,
-    guildMemberOnline,
-    guildMemberOffline
+    presenceUpdate
 ];
 
 export default events;
