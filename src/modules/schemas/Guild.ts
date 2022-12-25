@@ -8,6 +8,8 @@ const guildSchema = new Schema<Guild>({
     guildId: reqString,
     channelId: channelId,
     notifications: { type: Boolean, default: true },
+    levelRoles: { type: Boolean, default: true },
+    levelRolesHoist: { type: Boolean, default: true },
     locale: { type: String, default: "en" }
 });
 

@@ -54,6 +54,24 @@ const setNotifications = async (guild: Guild) => {
     return guildToUpdate;
 }
 
+const setLevelRoles = async (guild: Guild) => {
+    const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
+    if(!guildToUpdate) return new Error("Guild not found");
+
+    guildToUpdate.levelRoles = !guildToUpdate.levelRoles;
+    await guildToUpdate.save();
+    return guildToUpdate;
+}
+
+const setLevelRolesHoist = async (guild: Guild) => {
+    const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
+    if(!guildToUpdate) return new Error("Guild not found");
+
+    guildToUpdate.levelRolesHoist = !guildToUpdate.levelRolesHoist;
+    await guildToUpdate.save();
+    return guildToUpdate;
+}
+
 const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild, databaseGuild: DatabaseGuild) => void) => {
     const guilds = await getGuilds();
 
@@ -67,4 +85,4 @@ const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild
     })
 }
 
-export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild };
+export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild, setLevelRoles, setLevelRolesHoist };

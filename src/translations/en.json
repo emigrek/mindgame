@@ -10,11 +10,16 @@
     "config.selectLocalePlaceholder": "Language: {locale}",
     "config.languageChanged": "Language has been changed.",
     "config.notificationsButtonLabel": "Notifications 🔔",
+    "config.levelRolesButtonLabel": "Level roles ✨",
     "config.close": "Close ❌",
     "config.footer": "Change guild config any time by running /config",
     "config.textChannelField": "Text channels",
     "config.voiceChannelField": "Voice channels",
     "config.membersField": "Members",
-    "profile.logoSubtitle": "User showcase",
+    "profile.rank": "Rank",
+    "profile.level": "Level",
+    "profile.wins": "Wins",
+    "profile.voice": "Voice time",
+    "profile.overall": "Overall",
     "utils.noPermissions": "You don't have permission to use this."
 }

@@ -21,4 +21,13 @@ const getNotificationsButton = async (client: ExtendedClient, sourceGuild: Guild
     return notificationsButton;
 }
 
-export { getExitButton, getNotificationsButton };
+const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: Guild) => {
+    const levelRolesButton = new ButtonBuilder()
+        .setCustomId("levelRoles")
+        .setLabel(client.i18n.__("config.levelRolesButtonLabel"))
+        .setStyle(sourceGuild!.levelRoles ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+    return levelRolesButton;
+}
+
+export { getExitButton, getNotificationsButton, getLevelRolesButton };

@@ -1,20 +1,31 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
-import { getNotificationsButton } from "./buttons";
+import { getLevelRolesButton, getNotificationsButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
-import { getConfigEmbed, useEmbedSpacer } from "../embeds";
 
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
+import { guildConfig, layoutLarge } from "./templates";
+
+interface ImageHexColors {
+    Vibrant: string;
+    DarkVibrant: string;
+}
 
 const useImageHex = async (image: string) => {
     const colors = await Vibrant.from(image).getPalette();
-    const color = chroma(colors.Vibrant!.hex!).hex();
-    return color;
+    return {
+        Vibrant: chroma(colors.Vibrant!.hex!).hex(), 
+        DarkVibrant: chroma(colors.DarkVibrant!.hex!).hex()
+    };
+}
+
+const getColorInt = (color: string) => {
+    return parseInt(color.slice(1), 16);
 }
 
 const useHtmlFile = async (html: string) => {
@@ -57,6 +68,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     });
     
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
+    const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const locales = client.i18n.getLocales();
@@ -86,17 +98,17 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(languageSelect);
     const row3 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton);
+        .setComponents(notificationsButton, levelRolesButton);
 
-    const embed = await getConfigEmbed(client, guild);
-    const spacer = await useEmbedSpacer();
+    const colors = await useImageHex(guild.iconURL({ extension: "png" })!);
+    const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
+    const file = await useHtmlFile(layoutLarge(guildConfigHtml, colors));
 
     return {
         components: [row, row2, row3],
-        embeds: [embed],
-        files: [spacer],
+        files: [file],
         ephemeral: true
     };
 }
 
-export { getConfigMessagePayload, useHtmlFile, useImageHex };
+export { getConfigMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt };

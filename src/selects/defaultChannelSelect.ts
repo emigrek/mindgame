@@ -7,6 +7,7 @@ import { Select } from "../interfaces/Select";
 export const defaultChannelSelect: Select = {
     customId: "defaultChannelSelect",
     run: async (client, interaction) => {
+        await interaction.deferReply({ ephemeral: true });
         const guild = interaction.guild;
         const selected = interaction.values[0];
         
@@ -14,6 +15,6 @@ export const defaultChannelSelect: Select = {
 
         withGuildLocale(client, guild!);
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.update(configMessage!);
+        await interaction.followUp({ ...configMessage, ephemeral: true });
     }
 }

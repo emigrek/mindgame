@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@types/node-cron": "^3.0.6",
+    "@vibrant/types": "^3.2.1-alpha.1",
+    "axios": "^1.2.1",
     "canvas": "^2.10.2",
     "chroma-js": "^2.4.2",
     "discord-logs": "^2.2.1",

@@ -1,5 +1,3 @@
-import { VoiceActivity } from "./VoiceActivity";
-
 export interface Statistics {
   exp: number;
   time: {
@@ -9,7 +7,7 @@ export interface Statistics {
   games: {
     won: {
       skill: number;
-      skins: number; 
+      skin: number; 
     }
   }
 }
@@ -30,7 +28,7 @@ export interface ExtendedStatisticsPayload {
   games?: {
     won?: {
       skill?: number;
-      skins?: number;
+      skin?: number;
     }
   }
 }

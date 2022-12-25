@@ -1,16 +1,16 @@
 import { Button } from "../interfaces/Button";
-import { setNotifications } from "../modules/guild";
+import { setLevelRoles } from "../modules/guild";
 import { getConfigMessagePayload } from "../modules/messages";
 
-const notifications: Button = {
-    customId: `notifications`,
+const levelRoles: Button = {
+    customId: `levelRoles`,
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-        await setNotifications(interaction.guild!);
+        await setLevelRoles(interaction.guild!);
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.followUp({ ...configMessage, ephemeral: true })
+        await interaction.followUp({ ...configMessage, ephemeral: true });
     }
 }
 
-export default notifications;
+export default levelRoles;

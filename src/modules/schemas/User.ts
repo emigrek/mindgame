@@ -12,7 +12,7 @@ const Statistics = {
   games: {
     won: {
       skill: { type: Number, default: 0 },
-      skins: { type: Number, default: 0 }
+      skin: { type: Number, default: 0 }
     }
   }
 }

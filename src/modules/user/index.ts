@@ -111,7 +111,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         games: {
             won: {
                 skill: userSource.stats.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
-                skins: userSource.stats.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+                skin: userSource.stats.games.won.skin + (extendedStatisticsPayload.games?.won?.skin || 0)
             }
         }
     };
@@ -124,7 +124,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         games: {
             won: {
                 skill: userSource.day.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
-                skins: userSource.day.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+                skin: userSource.day.games.won.skin + (extendedStatisticsPayload.games?.won?.skin || 0)
             }
         }
     }
@@ -137,7 +137,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         games: {
             won: {
                 skill: userSource.week.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
-                skins: userSource.week.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+                skin: userSource.week.games.won.skin + (extendedStatisticsPayload.games?.won?.skin || 0)
             }
         }
     }
@@ -150,7 +150,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
         games: {
             won: {
                 skill: userSource.month.games.won.skill + (extendedStatisticsPayload.games?.won?.skill || 0),
-                skins: userSource.month.games.won.skins + (extendedStatisticsPayload.games?.won?.skins || 0)
+                skin: userSource.month.games.won.skin + (extendedStatisticsPayload.games?.won?.skin || 0)
             }
         }
     }
@@ -191,7 +191,7 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
         games: {
             won: {
                 skill: 0,
-                skins: 0
+                skin: 0
             }
         }
     };
