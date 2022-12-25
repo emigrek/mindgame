@@ -4,7 +4,7 @@ import { endVoiceActivity, startVoiceActivity } from "../modules/activity";
 export const voiceChannelSwitch: Event = {
     name: "voiceChannelSwitch",
     run: async (client, member, oldChannel, newChannel) => {
-        await endVoiceActivity(client, member, oldChannel);
+        await endVoiceActivity(client, member);
         await startVoiceActivity(client, member, newChannel);
     }
 }

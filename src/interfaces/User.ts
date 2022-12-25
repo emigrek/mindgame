@@ -4,6 +4,7 @@ export interface Statistics {
   exp: number;
   time: {
     voice: number;
+    presence: number;
   };
   games: {
     won: {
@@ -24,6 +25,7 @@ export interface ExtendedStatisticsPayload {
   exp?: number;
   time?: {
     voice?: number;
+    presence?: number;
   };
   games?: {
     won?: {

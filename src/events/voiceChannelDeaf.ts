@@ -6,6 +6,6 @@ export const voiceChannelDeaf: Event = {
     run: async (client, member, deafType) => {
         if(!member.voice.channel) return;
         
-        await endVoiceActivity(client, member, member.voice.channel);
+        await endVoiceActivity(client, member);
     }
 }

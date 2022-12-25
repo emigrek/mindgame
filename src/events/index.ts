@@ -18,6 +18,7 @@ import { voiceChannelLeave } from "./voiceChannelLeave";
 import { voiceChannelSwitch } from "./voiceChannelSwitch";
 import { voiceStreamingStart } from "./voiceStreamingStart";
 import { voiceStreamingStop } from "./voiceStreamingStop";
+import { presenceUpdate } from "./presenceUpdate";
 
 
 const events: Event[] = [
@@ -39,7 +40,8 @@ const events: Event[] = [
     voiceChannelLeave,
     voiceChannelSwitch,
     voiceStreamingStart,
-    voiceStreamingStop
+    voiceStreamingStop,
+    presenceUpdate
 ];
 
 export default events;
