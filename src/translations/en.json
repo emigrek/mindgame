@@ -16,6 +16,7 @@
     "config.textChannelField": "Text channels",
     "config.voiceChannelField": "Voice channels",
     "config.membersField": "Members",
+    "profile.notFound": "This user doesn't have a profile yet.",
     "profile.rank": "Rank",
     "profile.level": "Level",
     "profile.wins": "Wins",

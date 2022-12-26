@@ -5,11 +5,13 @@ import { getConfigMessagePayload } from "../modules/messages";
 const notifications: Button = {
     customId: `notifications`,
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferUpdate();
         await setNotifications(interaction.guild!);
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.followUp({ ...configMessage, ephemeral: true })
+        await interaction.editReply({
+            components: configMessage!.components
+        });
     }
 }
 

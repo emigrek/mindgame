@@ -42,7 +42,7 @@ const createUser = async (user: User) => {
 
 const deleteUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) return new Error("User not found");
+    if(!exists) return null;
 
     await UserModel.deleteOne({ userId: user.id });
     return true;
@@ -50,14 +50,14 @@ const deleteUser = async (user: User) => {
 
 const getUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) return new Error("User not found");
+    if(!exists) return null;
 
     return exists;
 }
 
 const getUserRank = async (user: DatabaseUser) => {
     const exists = await UserModel.findOne({ userId: user.userId });
-    if(!exists) return new Error("User not found");
+    if(!exists) return null;
 
     const users = await UserModel.find();
     const sorted = users.sort((a, b) => b.stats.exp - a.stats.exp);

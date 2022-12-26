@@ -16,6 +16,7 @@
     "config.textChannelField": "Kanały tekstowe",
     "config.voiceChannelField": "Kanały głosowe",
     "config.membersField": "Członkowie",
+    "profile.notFound": "Użytkownik nie ma profilu.",
     "profile.rank": "Ranking",
     "profile.level": "Poziom",
     "profile.wins": "Wygrane",

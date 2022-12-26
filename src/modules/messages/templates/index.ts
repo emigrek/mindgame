@@ -33,7 +33,7 @@ const layoutMedium = (html: string, colors?: ImageHexColors) => {
 
 const layoutLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[600px] h-[350px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[700px] h-[350px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,7 +70,7 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">${guild.members.cache.filter((member: GuildMember) => !member.user.bot).size}</div>
+                        <div class="text-4xl">${guild.members.cache.filter((member: GuildMember) => !member.user.bot).size}</div>
                     </div>
                     <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
@@ -82,7 +82,7 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildVoice).size}</div>
+                        <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildVoice).size}</div>
                     </div>
                     <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
@@ -93,7 +93,7 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildText).size}</div>
+                        <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildText).size}</div>
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">#${userRank}</div>
+                        <div class="text-4xl">#${userRank}</div>
                     </div>
                     <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
@@ -138,7 +138,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">${user.stats.level}</div>
+                        <div class="text-4xl">${user.stats.level}</div>
                     </div>
                     <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
@@ -149,9 +149,9 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl">${user.stats.games.won.skill + user.stats.games.won.skin}</div>
+                        <div class="text-4xl">${user.stats.games.won.skill + user.stats.games.won.skin}</div>
                     </div>
-                    ${ selfCall && `
+                    ${ selfCall ? `
                             <div class="flex items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                                 <div class="flex space-x-2">
                                     <div>
@@ -164,7 +164,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="text-3xl">${Math.floor(user.stats.time.voice/3600).toFixed(2)}H</div>
+                                        <div class="text-4xl">${Math.floor(user.stats.time.voice/3600).toFixed(2)}H</div>
                                     </div>
                                     <div>
                                         <div class="flex space-x-2 items-center">
@@ -175,12 +175,12 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="text-3xl">${Math.floor(user.stats.time.presence/3600).toFixed(2)}H</div>
+                                        <div class="text-4xl">${Math.floor(user.stats.time.presence/3600).toFixed(2)}H</div>
                                     </div>
                                 </div>
                             </div>
                         `
-                    }
+                    : '' }
                 </div>
             </div>
         </div>

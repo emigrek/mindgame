@@ -5,7 +5,7 @@ import { getConfigMessagePayload } from "../modules/messages";
 export const localeSelect: Select = {
     customId: "localeSelect",
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferUpdate();
         const selected = interaction.values[0];
         const guild = interaction.guild;
 
@@ -14,6 +14,9 @@ export const localeSelect: Select = {
 
         withGuildLocale(client, guild!);
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.followUp({ ...configMessage, ephemeral: true });
+        await interaction.editReply({
+            files: configMessage!.files,
+            components: configMessage!.components
+        });
     }
 }
