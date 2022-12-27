@@ -18,7 +18,7 @@ const createGuild = async (guild: Guild) => {
 const deleteGuild = async (guild: Guild) => {
     const guildToDelete = await GuildModel.findOne({ guildId: guild.id });
 
-    if(!guildToDelete) return new Error("Guild not found");
+    if(!guildToDelete) return null;
 
     await GuildModel.deleteOne({ guildId: guild.id });
     return true;
@@ -26,7 +26,7 @@ const deleteGuild = async (guild: Guild) => {
 
 const getGuild = async (guild: Guild) => {
     const exist = await GuildModel.findOne({ guildId: guild.id });
-    if(!exist) return new Error("Guild not found");
+    if(!exist) return null;
 
     return exist;
 }
@@ -38,7 +38,7 @@ const getGuilds = async () => {
 
 const setDefaultChannelId = async (guild: Guild, channelId: string) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
-    if(!guildToUpdate) return new Error("Guild not found");
+    if(!guildToUpdate) return null;
 
     guildToUpdate.channelId = channelId;
     await guildToUpdate.save();
@@ -47,7 +47,7 @@ const setDefaultChannelId = async (guild: Guild, channelId: string) => {
 
 const setNotifications = async (guild: Guild) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
-    if(!guildToUpdate) return new Error("Guild not found");
+    if(!guildToUpdate) return null;
 
     guildToUpdate.notifications = !guildToUpdate.notifications;
     await guildToUpdate.save();
@@ -56,7 +56,7 @@ const setNotifications = async (guild: Guild) => {
 
 const setLevelRoles = async (guild: Guild) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
-    if(!guildToUpdate) return new Error("Guild not found");
+    if(!guildToUpdate) return null;
 
     guildToUpdate.levelRoles = !guildToUpdate.levelRoles;
     await guildToUpdate.save();
@@ -65,7 +65,7 @@ const setLevelRoles = async (guild: Guild) => {
 
 const setLevelRolesHoist = async (guild: Guild) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
-    if(!guildToUpdate) return new Error("Guild not found");
+    if(!guildToUpdate) return null;
 
     guildToUpdate.levelRolesHoist = !guildToUpdate.levelRolesHoist;
     await guildToUpdate.save();

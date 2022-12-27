@@ -53,7 +53,12 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
     return `
         <div class="flex flex-col items-center">
             <div class="mx-auto w-[400px] h-[200px] flex items-center justify-center align-middle space-x-10">
-                <img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />
+                ${
+                    guildIcon ? 
+                        `<img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />` 
+                    : 
+                        ''
+                }
                 <div class="flex flex-col">
                     <div class="text-2xl text-white font-medium">${guild.name}</div>
                 </div>

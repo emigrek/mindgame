@@ -1,17 +1,16 @@
-import { Guild as DatabaseGuild } from "../interfaces";
 import { Button } from "../interfaces/Button";
-import { setLevelRoles } from "../modules/guild";
+import { setLevelRolesHoist } from "../modules/guild";
 import { getConfigMessagePayload } from "../modules/messages";
-import { syncGuildLevelRoles } from "../modules/roles";
+import { syncGuildLevelRolesHoisting } from "../modules/roles";
 
-const levelRoles: Button = {
-    customId: `levelRoles`,
+const levelRolesHoist: Button = {
+    customId: `levelRolesHoist`,
     run: async (client, interaction) => {
         if(!interaction.guild) return;
-
         await interaction.deferUpdate();
-        await setLevelRoles(interaction.guild) as DatabaseGuild;
-        await syncGuildLevelRoles(client, interaction.guild);
+
+        await setLevelRolesHoist(interaction.guild);
+        await syncGuildLevelRolesHoisting(client, interaction.guild);
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild);
         await interaction.editReply({
@@ -20,4 +19,4 @@ const levelRoles: Button = {
     }
 }
 
-export default levelRoles;
+export default levelRolesHoist;

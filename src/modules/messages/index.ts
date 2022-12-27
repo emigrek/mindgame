@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
-import { getLevelRolesButton, getNotificationsButton } from "./buttons";
+import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
@@ -69,6 +69,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
+    const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const locales = client.i18n.getLocales();
@@ -76,8 +77,6 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const languageNames = new Intl.DisplayNames([currentLocale], {
         type: 'language'
     });
-
-    const flagCode = currentLocale.toLowerCase().slice(0,2);
     const languageOptions: SelectMenuOption[] = [];
 
     locales.forEach((locale) => {
@@ -98,17 +97,30 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(languageSelect);
     const row3 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton, levelRolesButton);
+        .setComponents(levelRolesButton, levelRolesHoistButton);
+    const row4 = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(notificationsButton);
 
-    const colors = await useImageHex(guild.iconURL({ extension: "png" })!);
+    const guildIcon = guild.iconURL({ extension: "png" });
+    var colors: ImageHexColors = guildIcon ? await useImageHex(guildIcon) : { Vibrant: "#373b48", DarkVibrant: "#373b48" };
     const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutLarge(guildConfigHtml, colors));
 
     return {
-        components: [row, row2, row3],
+        components: [row, row2, row3, row4],
         files: [file],
         ephemeral: true
     };
 }
 
-export { getConfigMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt };
+const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
+    const sourceGuild = await getGuild(guild) as GuildInterface;
+    if(!sourceGuild.channelId) return null;
+    
+    const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
+    if(!defaultChannel) return null;
+
+    await defaultChannel.send(message);
+};
+
+export { getConfigMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

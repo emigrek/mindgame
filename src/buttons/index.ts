@@ -1,13 +1,13 @@
 import { Button } from "../interfaces";
 
 import notifications from "./notifications";
-import remove from "./remove";
 import levelRoles from "./levelRoles";
+import levelRolesHoist from "./levelRolesHoist";
 
 const buttons: Button[] = [
     notifications,
-    remove,
-    levelRoles
+    levelRoles,
+    levelRolesHoist
 ];
 
 export default buttons;

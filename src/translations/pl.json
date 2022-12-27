@@ -11,6 +11,7 @@
     "config.languageChanged": "Język został zmieniony.",
     "config.notificationsButtonLabel": "Powiadomienia 🔔",
     "config.levelRolesButtonLabel": "Role wg. poziomu ✨",
+    "config.levelRolesHoistButtonLabel": "Przypięte role wg. poziomu 📌",
     "config.close": "Zamknij ❌",
     "config.footer": "Zmień konfiguracje serwera kiedy chcesz używając /config",
     "config.textChannelField": "Kanały tekstowe",
@@ -22,5 +23,6 @@
     "profile.wins": "Wygrane",
     "profile.voice": "Czas",
     "profile.overall": "Ogółem",
+    "roles.missingPermissions": "Wygląda na to że nie mam uprawnień do zarządzania rolami. Zalecane jest aby moja rola była najwyżej.",
     "utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień."
 }

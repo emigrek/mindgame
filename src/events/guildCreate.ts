@@ -2,8 +2,8 @@ import { BaseChannel, ChannelType, TextChannel } from "discord.js";
 import { Event } from "../interfaces";
 import { createGuild } from "../modules/guild/";
 import { createUsers } from "../modules/user/";
-import { getConfigMessagePayload } from "../modules/messages/";
 import { updatePresence } from "../modules/presence/";
+import { setDefaultChannelId } from "../modules/guild";
 
 export const guildCreate: Event = {
     name: "guildCreate",
@@ -21,9 +21,6 @@ export const guildCreate: Event = {
         }
 
         const proposedTextChannel = textChannels.first() as TextChannel;
-        const communication = proposedTextChannel ?? owner;
-        const configMessage = await getConfigMessagePayload(client, guild);
-
-        await communication.send(configMessage!);
+        await setDefaultChannelId(guild, proposedTextChannel.id);
     }
 }

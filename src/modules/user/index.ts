@@ -169,7 +169,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
 
     await userSource.save();
     
-    if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", userSource, user); // Emiting event
+    if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", user); // Emiting event
 
     return userSource;
 };
