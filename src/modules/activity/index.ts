@@ -56,7 +56,9 @@ const endPresenceActivity = async (client: ExtendedClient, member: GuildMember) 
     await exists.save();
 
     const duration = moment(exists.to).diff(moment(exists.from), "seconds");
-    const expGained = duration * 0.00638166666;
+    const expGained = Math.round(
+        duration * 0.0063817
+    );
 
     await updateUserStatistics(client, member.user, {
         exp: expGained,
@@ -76,7 +78,10 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     await exists.save();
 
     const duration = moment(exists.to).diff(moment(exists.from), "seconds");
-    const expGained = duration * 0.16;
+    const expGained = Math.round(
+        duration * 0.16
+    );
+
 
     await updateUserStatistics(client, member.user, {
         exp: expGained,
