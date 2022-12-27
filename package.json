@@ -8,8 +8,8 @@
     "start": "node .",
     "dev": "nodemon --config nodemon.json src/index.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["discord bot", "leveling", "utility", "economy", "activity tracking"],
+  "author": "emigrek",
   "license": "MIT",
   "devDependencies": {
     "@types/chroma-js": "^2.1.4",

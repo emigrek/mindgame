@@ -42,17 +42,25 @@ npm run build
 ## 🚧 TODO
 * Experience system
     * Level formula ([spreadsheet](https://docs.google.com/spreadsheets/d/1X20H9ZW5LRT_xLXmg1M8WZG3lsxSERbqzfkl7-oYz_8/edit#gid=0)) ✅
-    * Level up notification sent in current voice text channel
-    * Daily reward notification sent in current voice text channel
     * Experience based roles ✅
     * Experience based permissions
     * Experience based channels
+
+* Notifications
+    * Level up
+    * Daily activity
+    * Sweeper
+        * When
+            * When there is no active voice channel
+            * On demand by user using message context
+        * Bot remove uneccessary messages from voice text channel
 
 * User profile
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM
 
 * Server
+    * Statistics
     * Daily activity graph
     * Weekly activity graph
     * Monthly activity graph
