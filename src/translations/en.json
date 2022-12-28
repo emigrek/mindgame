@@ -11,7 +11,7 @@
 	"config.languageChanged": "Language has been changed.",
 	"config.notificationsButtonLabel": "Notifications 🔔",
 	"config.levelRolesButtonLabel": "Level roles ✨",
-    "config.levelRolesHoistButtonLabel": "Level roles hoist 📌",
+	"config.levelRolesHoistButtonLabel": "Level roles hoist 📌",
 	"config.close": "Close ❌",
 	"config.footer": "Change guild config any time by running /config",
 	"config.textChannelField": "Text channels",
@@ -23,6 +23,9 @@
 	"profile.wins": "Wins",
 	"profile.voice": "Voice time",
 	"profile.overall": "Overall",
+	"profile.timePublicButtonLabel": "Public time statistics 👁‍🗨",
+	"profile.visibilityNotification": "👁 Only u can see this.",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
-	"utils.noPermissions": "You don't have permission to use this."
+	"utils.noPermissions": "You don't have permission to use this.",
+	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel"
 }

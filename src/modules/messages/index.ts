@@ -1,15 +1,16 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
-import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton } from "./buttons";
+import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
-import { guildConfig, layoutLarge } from "./templates";
+import { guildConfig, layoutLarge, userProfile } from "./templates";
+import { getUser } from "../user";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -113,6 +114,34 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     };
 }
 
+const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction) => {
+    const { targetUser } = interaction as UserContextMenuCommandInteraction;
+
+    let sourceUser: User;
+    if(!targetUser) {
+        sourceUser = await getUser(interaction.user) as User;
+    } else {
+        sourceUser = await getUser(targetUser) as User;
+    }
+    
+
+    if(!sourceUser) {
+        await interaction.followUp({ content: client.i18n.__("profile.notFound"), ephemeral: true });
+        return;
+    }
+
+    const selfCall = targetUser ? targetUser.id === interaction.user.id : true;
+    const colors = await useImageHex(sourceUser.avatarUrl);
+    const userProfileHtml = await userProfile(client, sourceUser, colors, selfCall);
+
+    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
+    const profileTimePublic = await getProfileTimePublicButton(client, sourceUser);
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(profileTimePublic);
+        
+    return { files: [file], ephemeral: true, components: selfCall ? [row] : [] };
+}
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
     if(!sourceGuild.channelId) return null;
@@ -123,4 +152,4 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
     await defaultChannel.send(message);
 };
 
-export { getConfigMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getConfigMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

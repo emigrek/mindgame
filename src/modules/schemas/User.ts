@@ -6,6 +6,7 @@ const reqString = { type: String, required: true };
 const Statistics = {
   exp: { type: Number, default: 0 },
   time: {
+    public: { type: Boolean, default: false },
     voice: { type: Number, default: 0 },
     presence: { type: Number, default: 0 }
   },

@@ -57,6 +57,7 @@ npm run build
 
 * User profile
     * Show/hide time spent
+    * Most frequent guild based on time spent
     * Circular progress bar around avatar
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM

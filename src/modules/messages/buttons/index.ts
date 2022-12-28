@@ -1,7 +1,7 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
 import { ButtonStyle } from "discord.js";
-import { Guild } from "../../../interfaces";
+import { Guild, User } from "../../../interfaces";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -39,4 +39,13 @@ const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: Gui
     return levelRolesHoistButton;
 }
 
-export { getExitButton, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton };
+const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: User) => {
+    const publicProfileButton = new ButtonBuilder()
+        .setCustomId("profileTimePublic")
+        .setLabel(client.i18n.__("profile.timePublicButtonLabel"))
+        .setStyle(sourceUser!.stats.time.public ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+    return publicProfileButton;
+}
+
+export { getExitButton, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

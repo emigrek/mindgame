@@ -1,6 +1,7 @@
 export interface Statistics {
   exp: number;
   time: {
+    public: boolean;
     voice: number;
     presence: number;
   };
@@ -22,6 +23,7 @@ export interface ExtendedStatisticsPayload {
   commands?: number;
   exp?: number;
   time?: {
+    public?: boolean;
     voice?: number;
     presence?: number;
   };
