@@ -1,4 +1,4 @@
-import { GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { ActivityType, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
 import voiceActivitySchema from "../schemas/VoiceActivity";
@@ -12,7 +12,10 @@ const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel) => {
-    if(member.user.bot) return;
+    if(
+        member.user.bot ||
+        channel.equals(member.guild.afkChannel!)
+    ) return;
 
     const exists = await getVoiceActivity(member);
     if(exists) return;

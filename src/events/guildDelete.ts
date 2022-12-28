@@ -6,6 +6,5 @@ export const guildDelete: Event = {
     name: "guildDelete",
     run: async (client, guild) => {
         await deleteGuild(guild);
-        await updatePresence(client);
     }
 }

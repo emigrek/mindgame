@@ -56,6 +56,8 @@ npm run build
         * Bot remove uneccessary messages from voice text channel
 
 * User profile
+    * Show/hide time spent
+    * Circular progress bar around avatar
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM
 

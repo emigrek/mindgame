@@ -1,4 +1,4 @@
-import { Module } from "../interfaces";
+import { Module, User } from "../interfaces";
 import config from "../utils/config";
 import mongoose from "mongoose";
 

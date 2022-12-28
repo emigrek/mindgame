@@ -1,11 +1,16 @@
 import { Module } from "../interfaces";
 import * as cron from "node-cron";
 
+const hourlyCron = "0 * * * *";
 const dailyCron = "0 0 * * *";
 const weeklyCron = "0 0 * * 0";
 const monthlyCron = "0 0 1 * *";
 
 const schedules = [
+    {
+        name: "hourly",
+        cron: hourlyCron
+    },
     {
         name: "daily",
         cron: dailyCron
@@ -17,7 +22,7 @@ const schedules = [
     {
         name: "monthly",
         cron: monthlyCron
-    }
+    },
 ];
 
 export const timers: Module = {

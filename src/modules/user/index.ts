@@ -49,8 +49,14 @@ const deleteUser = async (user: User) => {
 }
 
 const getUser = async (user: User) => {
-    const exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) return null;
+    if(user.bot)
+        return null;
+
+    let exists = await UserModel.findOne({ userId: user.id });
+
+    if(!exists) {
+        exists = await createUser(user);
+    }
 
     return exists;
 }
