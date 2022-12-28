@@ -21,11 +21,6 @@ Advanced discord application with **leveling** and **activity tracking** utiliti
 | node-cron | scheduling |
 
 ## 🚀 Running
-Install required packages
-```bash
-sudo apt-get install libnss3
-```
-
 Get running MongoDB instance for storing data
 ```
 git clone https://github.com/emigrek/mindgame
