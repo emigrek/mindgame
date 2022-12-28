@@ -1,4 +1,4 @@
-import { ActivityType, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { ActivityType, Collection, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
 import voiceActivitySchema from "../schemas/VoiceActivity";
@@ -7,6 +7,7 @@ import presenceActivitySchema from "../schemas/PresenceActivity";
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
+import { Guild, User, UserGuildActivityDetails } from "../../interfaces";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -96,6 +97,40 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     return exists;
 }
 
+const getUserGuildsActivityDetails = async (sourceUser: User) => {
+    const allDetails: Collection<string, UserGuildActivityDetails> = new Collection();
+
+    const voiceActivites = await voiceActivityModel.find({
+        userId: sourceUser.userId
+    });
+
+    for(const voiceActivity of voiceActivites) {
+        let duration = moment(voiceActivity.to).diff(moment(voiceActivity.from), "seconds");
+        if(!voiceActivity.to) duration = moment().diff(moment(voiceActivity.from), "seconds");
+
+        if(allDetails.has(voiceActivity.guildId)) {
+            allDetails.get(voiceActivity.guildId)!.time.voice += duration;
+        } else {
+            allDetails.set(voiceActivity.guildId, {
+                guildId: voiceActivity.guildId,
+                userId: voiceActivity.userId,
+                time: {
+                    voice: duration
+                }
+            });
+        }
+    }
+
+    return allDetails;
+}
+
+const getFavoriteGuildDetails = async (sourceUser: User) => {
+    const details = await getUserGuildsActivityDetails(sourceUser);
+    if(!details.size) return null;
+    const sorted = details.sort((a, b) => b.time.voice - a.time.voice);
+    return sorted.first();
+};
+
 const getVoiceActivity = async (member: GuildMember) => {
     const exists = await voiceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
     return exists;
@@ -106,4 +141,4 @@ const getPresenceActivity = async (member: GuildMember) => {
     return exists;
 }
 
-export { startVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { startVoiceActivity, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };

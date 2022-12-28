@@ -1,7 +1,8 @@
 import { BaseChannel, ChannelType, GuildMember } from "discord.js";
-import { ImageHexColors } from "..";
+import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User } from "../../../interfaces";
+import { getFavoriteGuildDetails } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -33,13 +34,13 @@ const layoutMedium = (html: string, colors?: ImageHexColors) => {
 
 const layoutLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[700px] h-[350px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[700px] h-[450px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <script src="https://cdn.tailwindcss.com"></script>
             </head>
-            <body>
+            <body class="w-full h-full flex items-center justify-center align-middle">
                 ${html}
             </body>
         </html>
@@ -51,8 +52,8 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
     const guildIcon = guild.iconURL({ extension: "png" });    
 
     return `
-        <div class="flex flex-col items-center">
-            <div class="mx-auto w-[400px] h-[200px] flex items-center justify-center align-middle space-x-10">
+        <div class="flex flex-col items-center space-y-3">
+            <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
                 ${
                     guildIcon ? 
                         `<img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />` 
@@ -63,42 +64,43 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
                     <div class="text-2xl text-white font-medium">${guild.name}</div>
                 </div>
             </div>
-            <div class="w-full h-[100px] flex text-white p-5">
-            <div class="flex flex-row items-center justify-center align-middle text-white gap-3 mx-auto">
-                <div class="flex text-lg flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
-                    <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${client.i18n.__("config.membersField")}</div>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
-                                    <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
-                                    <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-                                </svg>
+            <div class="w-full h-[100px] flex items-center text-white p-5">
+                <div class="flex flex-row items-center justify-center align-middle text-white gap-3 mx-auto">
+                    <div class="flex text-lg flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                        <div class="flex flex-grow space-x-2 items-center">
+                                <div class="text-white/80">${client.i18n.__("config.membersField")}</div>
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
+                                        <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
+                                        <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+                                    </svg>
+                                </div>
                             </div>
+                            <div class="text-4xl">${guild.members.cache.filter((member: GuildMember) => !member.user.bot).size}</div>
                         </div>
-                        <div class="text-4xl">${guild.members.cache.filter((member: GuildMember) => !member.user.bot).size}</div>
-                    </div>
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
-                        <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${client.i18n.__("config.voiceChannelField")}</div>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
-                                    <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
-                                    <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
-                                </svg>
+                        <div class="flex flex-grow flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                            <div class="flex space-x-2 items-center">
+                                <div class="text-white/80">${client.i18n.__("config.voiceChannelField")}</div>
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
+                                        <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
+                                        <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
+                                    </svg>
+                                </div>
                             </div>
+                            <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildVoice).size}</div>
                         </div>
-                        <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildVoice).size}</div>
-                    </div>
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
-                        <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${client.i18n.__("config.textChannelField")}</div>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
-                                    <path fill-rule="evenodd" d="M11.097 1.515a.75.75 0 01.589.882L10.666 7.5h4.47l1.079-5.397a.75.75 0 111.47.294L16.665 7.5h3.585a.75.75 0 010 1.5h-3.885l-1.2 6h3.585a.75.75 0 010 1.5h-3.885l-1.08 5.397a.75.75 0 11-1.47-.294l1.02-5.103h-4.47l-1.08 5.397a.75.75 0 01-1.47-.294l1.02-5.103H3.75a.75.75 0 110-1.5h3.885l1.2-6H5.25a.75.75 0 010-1.5h3.885l1.08-5.397a.75.75 0 01.882-.588zM10.365 9l-1.2 6h4.47l1.2-6h-4.47z" clip-rule="evenodd" />
-                                </svg>
+                        <div class="flex flex-grow flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                            <div class="flex space-x-2 items-center">
+                                <div class="text-white/80">${client.i18n.__("config.textChannelField")}</div>
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
+                                        <path fill-rule="evenodd" d="M11.097 1.515a.75.75 0 01.589.882L10.666 7.5h4.47l1.079-5.397a.75.75 0 111.47.294L16.665 7.5h3.585a.75.75 0 010 1.5h-3.885l-1.2 6h3.585a.75.75 0 010 1.5h-3.885l-1.08 5.397a.75.75 0 11-1.47-.294l1.02-5.103h-4.47l-1.08 5.397a.75.75 0 01-1.47-.294l1.02-5.103H3.75a.75.75 0 110-1.5h3.885l1.2-6H5.25a.75.75 0 010-1.5h3.885l1.08-5.397a.75.75 0 01.882-.588zM10.365 9l-1.2 6h4.47l1.2-6h-4.47z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildText).size}</div>
                         </div>
-                        <div class="text-4xl">${guild.channels.cache.filter((channel: BaseChannel) => channel.type == ChannelType.GuildText).size}</div>
                     </div>
                 </div>
             </div>
@@ -109,9 +111,14 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
     const userRank = await getUserRank(user); 
 
+    const favoriteGuildDetails = await getFavoriteGuildDetails(user);
+    const favoriteGuild = favoriteGuildDetails ? client.guilds.cache.get(favoriteGuildDetails.guildId) : null;
+    const favoriteGuildIcon = favoriteGuildDetails ? favoriteGuild!.iconURL({ extension: "png" })! : null;
+    const favoriteGuildIconColors = favoriteGuildDetails ? await useImageHex(favoriteGuildIcon!) : null;
+
     return `
-        <div class="flex flex-col items-center">
-            <div class="mx-auto w-[400px] h-[200px] flex items-center justify-center align-middle space-x-10">
+        <div class="flex flex-col items-center space-y-3">
+            <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
                 <img src="${user.avatarUrl}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />
                 <div class="flex flex-col">
                     <div class="text-2xl text-white font-medium">${user.tag.slice(0, -5)}</div>
@@ -121,9 +128,9 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                     </div>
                 </div>
             </div>
-            <div class="w-full h-[100px] flex text-white p-5">
-                <div class="flex text-lg flex-row items-center justify-center align-middle text-white gap-3 mx-auto">
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+            <div class="w-full h-[100px] flex items-center text-white">
+                <div class="flex w-full text-lg flex-row items-center justify-center align-middle text-white space-x-3">
+                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80">${client.i18n.__("profile.rank")}</div>
                             <div>
@@ -134,7 +141,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         </div>
                         <div class="text-4xl">#${userRank}</div>
                     </div>
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80">${client.i18n.__("profile.level")}</div>
                             <div>
@@ -145,7 +152,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         </div>
                         <div class="text-4xl">${user.stats.level}</div>
                     </div>
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80">${client.i18n.__("profile.wins")}</div>
                             <div>
@@ -157,7 +164,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         <div class="text-4xl">${user.stats.games.won.skill + user.stats.games.won.skin}</div>
                     </div>
                     ${ selfCall || user.stats.time.public ? `
-                            <div class="relative flex items-center px-4 py-3 rounded-xl shadow-md ${selfCall && user.stats.time.public ? 'bg-[#202225]' : 'bg-[#0f2240]'}">
+                            <div class="relative flex flex-col space-y-1 items-center px-4 py-3 rounded-xl shadow-md ${selfCall && user.stats.time.public ? 'bg-[#202225]' : 'bg-[#0f2240]'}">
                                 <div class="flex space-x-2">
                                     <div>
                                         <div class="flex space-x-2 items-center">
@@ -181,16 +188,34 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                         <div class="text-4xl">${Math.floor(user.stats.time.presence/3600).toFixed(2)}H</div>
                                     </div>
                                 </div>
-                                ${ selfCall && user.stats.time.public ? `` : `
-                                    <div class="absolute bottom-[-25%] right-0 left-0 text-center text-sm text-white/50">
-                                        ${client.i18n.__("profile.visibilityNotification")}
-                                    </div>
-                                ` }
                             </div>
                         `
                     : '' }
                 </div>
             </div>
+            ${
+                favoriteGuildDetails && favoriteGuild ? `
+                <div class="w-full h-[100px] rounded-xl flex items-center justify-between align-middle text-white px-5 bg-[${favoriteGuildIconColors!.Vibrant}]/40 shadow-md">
+                    <div class="w-full flex items-center justify-between align-middle space-x-2">
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex space-x-2 items-center">
+                                <div class="text-lg text-white/80">${client.i18n.__("profile.favoriteGuild")}</div>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 fill-white">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                </svg>
+                            </div>
+                            <div class="flex space-x-2 items-center align-middle">
+                                ${ `<img src="${favoriteGuildIcon}" class="w-10 h-10 rounded-full shadow-lg" />` }
+                                <div class="text-lg">${favoriteGuild.name}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <div class="text-5xl text-white">${Math.floor(favoriteGuildDetails.time.voice/3600).toFixed(2)}H</div>
+                        </div>
+                    </div>
+                </div>
+                ` : ``
+            }
         </div>
     `;
 }

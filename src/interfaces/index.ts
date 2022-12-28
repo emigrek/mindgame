@@ -13,3 +13,4 @@ export { SelectMenuOption } from "./SelectMenuOption";
 export { ExtendedStatistics } from "./User";
 export { Statistics } from "./User";
 export { ContextMenu } from "./ContextMenu";
+export { UserGuildActivityDetails } from './UserGuildActivityDetails';

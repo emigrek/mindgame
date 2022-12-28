@@ -18,6 +18,7 @@ interface ImageHexColors {
 }
 
 const useImageHex = async (image: string) => {
+    if(!image) return { Vibrant: "#373b48", DarkVibrant: "#373b48" };
     const colors = await Vibrant.from(image).getPalette();
     return {
         Vibrant: chroma(colors.Vibrant!.hex!).hex(), 
@@ -103,7 +104,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         .setComponents(notificationsButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
-    var colors: ImageHexColors = guildIcon ? await useImageHex(guildIcon) : { Vibrant: "#373b48", DarkVibrant: "#373b48" };
+    var colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutLarge(guildConfigHtml, colors));
 
@@ -126,8 +127,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     
 
     if(!sourceUser) {
-        await interaction.followUp({ content: client.i18n.__("profile.notFound"), ephemeral: true });
-        return;
+        return { content: client.i18n.__("profile.notFound"), ephemeral: true };
     }
 
     const selfCall = targetUser ? targetUser.id === interaction.user.id : true;

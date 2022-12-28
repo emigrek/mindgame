@@ -63,7 +63,7 @@ npm run build
         * When user follows another user, they will receive notifications about their new status in DM
 
 * Server
-    * Statistics
+    * Statistics 
     * Daily activity graph
     * Weekly activity graph
     * Monthly activity graph
