@@ -210,8 +210,9 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
-        const activityDay = moment(activity.from).day();
-        const activityHour = moment(activity.from).hour();
+
+        const activityDay = moment(activity.to).day();
+        const activityHour = moment(activity.to).hour();
 
         const day = data.get(activityDay.toString());
         if(!day) return;
@@ -249,8 +250,9 @@ const getGuildVoicePeak = async (guild: Guild) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
-        const activityDay = moment(activity.from).day();
-        const activityHour = moment(activity.from).hour();
+        
+        const activityDay = moment(activity.to).day();
+        const activityHour = moment(activity.to).hour();
 
         const activeUsers = getActiveUsersInHour(query, activityHour);
         if(activeUsers > activeUsersPeak) {
@@ -283,8 +285,8 @@ const getGuildPresencePeak = async (guild: Guild) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
-        const activityDay = moment(activity.from).day();
-        const activityHour = moment(activity.from).hour();
+        const activityDay = moment(activity.to).day();
+        const activityHour = moment(activity.to).hour();
 
         const activeUsers = getActiveUsersInHour(query, activityHour);
         if(activeUsers > activeUsersPeak) {
@@ -317,8 +319,8 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
-        const activityDay = moment(activity.from).day();
-        const activityHour = moment(activity.from).hour();  
+        const activityDay = moment(activity.to).day();
+        const activityHour = moment(activity.to).hour();  
 
         const day = data.get(activityDay.toString());
         if(!day) return;
