@@ -60,12 +60,6 @@ npm run build
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM
 
-* Server
-    * Statistics 
-    * Daily activity graph
-    * Weekly activity graph
-    * Monthly activity graph
-
 * Games
     * Invitable and automatic using cron
     * Commands
