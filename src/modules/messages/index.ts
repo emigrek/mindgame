@@ -115,30 +115,27 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     };
 }
 
-const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction) => {
+const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUser?: DatabaseUser) => {
     withGuildLocale(client, interaction.guild!);
-    const { targetUser } = interaction as UserContextMenuCommandInteraction;
 
-    let sourceUser: DatabaseUser;
-    if(!targetUser) {
-        sourceUser = await getUser(interaction.user) as DatabaseUser;
-    } else {
-        sourceUser = await getUser(targetUser) as DatabaseUser;
-    }
-    
-
+    const sourceUser = await getUser(interaction.user) as DatabaseUser;
     if(!sourceUser) {
         return { content: client.i18n.__("profile.notFound"), ephemeral: true };
     }
 
-    const selfCall = targetUser ? targetUser.id === interaction.user.id : true;
-    const colors = await useImageHex(sourceUser.avatarUrl);
-    const userProfileHtml = await userProfile(client, sourceUser, colors, selfCall);
+    if(interaction instanceof UserContextMenuCommandInteraction) {
+        targetUser = await getUser(interaction.targetUser) as DatabaseUser;
+    }
+
+    let sourceTargetUser = targetUser ? targetUser : sourceUser;
+
+    const selfCall = sourceUser.userId == sourceTargetUser.userId;
+    const colors = await useImageHex(sourceTargetUser.avatarUrl);
+    const userProfileHtml = await userProfile(client, sourceTargetUser, colors, selfCall);
 
     const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
-    const profileTimePublic = await getProfileTimePublicButton(client, sourceUser);
-    const row = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(profileTimePublic);
+    const profileTimePublic = await getProfileTimePublicButton(client, sourceTargetUser);
+    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(profileTimePublic!);
         
     return { files: [file], ephemeral: true, components: selfCall ? [row] : [] };
 }

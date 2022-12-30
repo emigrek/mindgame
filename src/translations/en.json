@@ -24,6 +24,8 @@
 	"profile.voice": "Voice time",
 	"profile.overall": "Overall",
 	"profile.favoriteGuild": "Favorite guild",
+	"profile.followButtonActiveLabel": "Following {tag} ❤",
+	"profile.followButtonDisabledLabel": "Follow {tag} 🖤",
 	"profile.timePublicButtonLabel": "Public time statistics 👁‍🗨",
 	"profile.visibilityNotification": "👁 Only you can see this.",
 	"statistics.voiceHeader": "Voice activity in week",
