@@ -9,7 +9,7 @@ import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
-import { guildConfig, guildStatistics, layoutLarge, layoutXLarge, userProfile } from "./templates";
+import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 import { getUser } from "../user";
 
 interface ImageHexColors {
@@ -106,7 +106,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const guildIcon = guild.iconURL({ extension: "png" });
     var colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
-    const file = await useHtmlFile(layoutLarge(guildConfigHtml, colors));
+    const file = await useHtmlFile(layoutMedium(guildConfigHtml, colors));
 
     return {
         components: [row, row2, row3, row4],
