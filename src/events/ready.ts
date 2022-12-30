@@ -19,6 +19,7 @@ const restPutRes = async (client: ExtendedClient) => {
     );
 }
 
+
 export const ready: Event = {
     name: "ready",
     run: async (client) => {

@@ -258,7 +258,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="text-4xl">${Math.floor(user.stats.time.voice/3600).toFixed(2)}H</div>
+                                        <div class="text-4xl">${Math.floor(user.stats.time.voice/3600)}H</div>
                                     </div>
                                     <div>
                                         <div class="flex space-x-2 items-center">
@@ -267,7 +267,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                                 <path fill-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <div class="text-4xl">${Math.floor(user.stats.time.presence/3600).toFixed(2)}H</div>
+                                        <div class="text-4xl">${Math.floor(user.stats.time.presence/3600)}H</div>
                                     </div>
                                 </div>
                             </div>
@@ -292,7 +292,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                             </div>
                         </div>
                         <div class="flex items-center justify-center">
-                            <div class="text-5xl text-white">${Math.floor(favoriteGuildDetails.time.voice/3600).toFixed(2)}H</div>
+                            <div class="text-5xl text-white">${Math.floor(favoriteGuildDetails.time.voice/3600)}H</div>
                         </div>
                     </div>
                 </div>
