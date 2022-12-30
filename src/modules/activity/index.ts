@@ -213,6 +213,7 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
 
         const day = data.get(activityDay.toString());
         if(!day) return;
+
         day.activePeak = getActiveUsersInDay(query, day.day);
 
         const hour = day.hours.find(h => h.hour === activityHour);
@@ -222,6 +223,52 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
     });
 
     return data;
+}
+
+const getGuildVoicePeak = async (guild: Guild) => {
+    const query = await voiceActivityModel.find({
+        guildId: guild.guildId
+    });
+
+    let activeUsersPeak = 0;
+
+    query.forEach((activity: VoiceActivity) => {
+        if(!activity.to) {
+            activity.to = moment().toDate();
+        }
+        const activityDay = moment(activity.from).day();
+        const activityHour = moment(activity.from).hour();
+
+        const activeUsers = getActiveUsersInHour(query, activityHour);
+        if(activeUsers > activeUsersPeak) {
+            activeUsersPeak = activeUsers;
+        }
+    });
+
+    return activeUsersPeak;
+}
+
+const getGuildPresencePeak = async (guild: Guild) => {
+    const query = await presenceActivityModel.find({
+        guildId: guild.guildId
+    });
+
+    let activeUsersPeak = 0;
+
+    query.forEach((activity: PresenceActivity) => {
+        if(!activity.to) {
+            activity.to = moment().toDate();
+        }
+        const activityDay = moment(activity.from).day();
+        const activityHour = moment(activity.from).hour();
+
+        const activeUsers = getActiveUsersInHour(query, activityHour);
+        if(activeUsers > activeUsersPeak) {
+            activeUsersPeak = activeUsers;
+        }
+    });
+
+    return activeUsersPeak;
 }
 
 const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
@@ -236,17 +283,17 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
     });
 
     const data: Collection<string, ActivityDay> = mockDays();
+    const guildOverallPeak = getActiveUsersInDay(query, moment().day());
 
     query.forEach((activity: VoiceActivity) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
         const activityDay = moment(activity.from).day();
-        const activityHour = moment(activity.from).hour();
+        const activityHour = moment(activity.from).hour();  
 
         const day = data.get(activityDay.toString());
         if(!day) return;
-        day.activePeak = getActiveUsersInDay(query, day.day);
 
         const hour = day.hours.find(h => h.hour === activityHour);
         if(hour) {
@@ -335,4 +382,4 @@ const getPresenceActivity = async (member: GuildMember) => {
     return exists;
 }
 
-export { startVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+export { startVoiceActivity, getGuildVoicePeak, getGuildPresencePeak, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };

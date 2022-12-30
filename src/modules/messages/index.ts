@@ -116,6 +116,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 }
 
 const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction) => {
+    withGuildLocale(client, interaction.guild!);
     const { targetUser } = interaction as UserContextMenuCommandInteraction;
 
     let sourceUser: User;
@@ -143,6 +144,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
+    withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild) as GuildInterface;
     const guildIcon = guild.iconURL({ extension: "png" });
     var colors: ImageHexColors = await useImageHex(guildIcon!);

@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User } from "../../../interfaces";
-import { getFavoriteGuildDetails, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek } from "../../activity";
+import { getFavoriteGuildDetails, getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -49,7 +49,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[700px] h-[800px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[700px] h-[850px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,11 +62,11 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     `;
 }
 
-const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
+const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHexColors) => {
     const hoursTh = () => {
         let hours = '';
         for(let i = 0; i < 24; i++) {
-            hours += `<th>${i < 10 ? `0${i}` : i}</th>`;
+            hours += `<th>${i}</th>`;
         }
         return hours;
     }
@@ -76,22 +76,21 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
         const dayPeaks = guildStatistics.get(day.toString());
         for(let i = 0; i < 24; i++) {
             const hour = dayPeaks.hours.find((hour: any) => hour.hour === i);
-            // want hourAlpha to be number between 0 and 100
-            const hourAlpha = dayPeaks.activePeak ? Math.round((hour.activePeak / dayPeaks.activePeak) * 100) : 0;
-            if(hourAlpha)
+            const hourAlpha = Math.round((hour.activePeak / peak || 1) * 100);
+            if(hour.activePeak)
                 hours += `<td>
-                    <div class="text-center rounded bg-[${colors.Vibrant}]/${hourAlpha} w-5 h-5 text-black/40 text-sm">${hour.activePeak}</div>
+                    <div class="text-center rounded shadow-[${colors.Vibrant}]/${hourAlpha} shadow bg-[${colors.Vibrant}]/${hourAlpha} w-6 h-6 text-black/60 font-medium text-sm flex items-center justify-center">${hour.activePeak}</div>
                 </td>`;
             else
                 hours += `<td>
-                    <div class="text-center rounded bg-white/5 w-5 h-5"></div>
+                    <div class="text-center rounded w-6 h-6 bg-white/5 opacity-20"></div>
                 </td>`;
         }
         return hours;
     }
 
-    return `<table class="text-white/80">
-    <thead class="font-medium">
+    return `<table class="text-white/50">
+    <thead class="font-medium border-collapse m-0 p-0">
       <tr>
         <th></th>
         ${hoursTh()}
@@ -308,10 +307,12 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     const guildIcon = guild.iconURL({ extension: "png" });    
     const guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
     const guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
+    const guildVoicePeak = await getGuildVoicePeak(sourceGuild);
+    const guildPresencePeak = await getGuildPresencePeak(sourceGuild);
 
     return `
-        <div class="flex flex-col items-center space-y-3">
-            <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
+        <div class="flex flex-col items-center">
+            <div class="mx-auto w-[300px] flex items-center justify-center align-middle space-x-10 mb-7">
                 ${
                     guildIcon ? 
                         `<img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />` 
@@ -322,8 +323,8 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     <div class="text-2xl text-white font-medium">${guild.name}</div>
                 </div>
             </div>
-            <div class="w-full text-white/80 p-1 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-lg">${client.i18n.__("statistics.voiceHeader")}</div>
+            <div class="w-full bg-[#202225] rounded-t-lg text-white/80 p-3 px-4 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-xl">${client.i18n.__("statistics.voiceHeader")}</div>
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-white">
                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
@@ -331,19 +332,19 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     </svg>              
                 </div>
             </div>
-            <div class="w-full h-[200px] shadow-lg text-white p-3 rounded-lg bg-[#202225] flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, colors) }
+            <div class="w-full rounded-b-lg h-[250px] shadow-lg text-white p-2 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, guildVoicePeak, colors) }
             </div>
-            <div class="w-full text-white/80 p-1 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-lg">${client.i18n.__("statistics.presenceHeader")}</div>
+            <div class="mt-2 w-full rounded-t-lg bg-[#202225] text-white/80 p-3 px-4 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-xl">${client.i18n.__("statistics.presenceHeader")}</div>
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
                     </svg>    
                 </div>
             </div>
-            <div class="w-full h-[200px] shadow-lg text-white p-3 rounded-lg bg-[#202225] flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, {
+            <div class="w-full h-[250px] rounded-b-lg shadow-lg text-white p-2 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, guildPresencePeak, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3d679f",
                 }) }
