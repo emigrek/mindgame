@@ -99,31 +99,31 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
     </thead>
     <tbody>
       <tr>
-        <td>Mo</td>
+        <td>Su</td>
         ${dayTd(0)}
       </tr>
       <tr>
-        <td>Tu</td>
+        <td>Mo</td>
         ${dayTd(1)}
       </tr>
       <tr>
-        <td>We</td>
+        <td>Tu</td>
         ${dayTd(2)}
       </tr>
       <tr>
-        <td>Th</td>
+        <td>We</td>
         ${dayTd(3)}
       </tr>
       <tr>
-        <td>Fr</td>
+        <td>Th</td>
         ${dayTd(4)}
       </tr>
       <tr>
-        <td>Sa</td>
+        <td>Fr</td>
         ${dayTd(5)}
       </tr>
       <tr>
-        <td>Su</td>
+        <td>Sa</td>
         ${dayTd(6)}
       </tr>
     </tbody>
