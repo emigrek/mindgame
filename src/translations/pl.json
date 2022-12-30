@@ -26,7 +26,8 @@
     "profile.favoriteGuild": "Ulubiony serwer",
     "profile.timePublicButtonLabel": "Publiczna widoczność spędzonego czasu 👁‍🗨",
     "profile.visibilityNotification": "👁 Tylko Ty możesz to zobaczyć.",
-    "statistics.header": "Aktywność głosowa w tygodniu",
+    "statistics.voiceHeader": "Aktywność głosowa w tygodniu",
+	"statistics.presenceHeader": "Aktywność ogólna w tygodniu",
     "roles.missingPermissions": "Wygląda na to że nie mam uprawnień do zarządzania rolami. Zalecane jest aby moja rola była najwyżej.",
     "utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień."
 }

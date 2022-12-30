@@ -147,7 +147,7 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
     const guildIcon = guild.iconURL({ extension: "png" });
     var colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
-    const file = await useHtmlFile(layoutLarge(guildStatisticsHtml, colors));
+    const file = await useHtmlFile(layoutXLarge(guildStatisticsHtml, colors));
 
     return {
         files: [file]

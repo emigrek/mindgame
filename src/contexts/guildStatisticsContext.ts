@@ -1,8 +1,6 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import { ContextMenu } from "../interfaces";
 import { getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex } from "../modules/messages";
-import { getUser } from "../modules/user";
-import { getGuildActivityInHoursAcrossWeek } from "../modules/activity";
 import { getGuild } from "../modules/guild";
 
 const guildStatisticsContext: ContextMenu = {

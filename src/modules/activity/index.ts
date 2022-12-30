@@ -7,7 +7,7 @@ import presenceActivitySchema from "../schemas/PresenceActivity";
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
-import { Guild, User, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
+import { Guild, PresenceActivity, User, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -161,7 +161,7 @@ const mockDays = () => {
     return data;
 };
 
-const getActiveUsersInHour = (voiceActivities: VoiceActivity[], hour: number): number => {
+const getActiveUsersInHour = (voiceActivities: VoiceActivity[] | PresenceActivity[], hour: number): number => {
     const activeUsers = new Set<string>();
     for (const activity of voiceActivities) {
         // Check if the activity started within the desired hour
@@ -177,7 +177,7 @@ const getActiveUsersInHour = (voiceActivities: VoiceActivity[], hour: number): n
     return activeUsers.size;
 }
 
-const getActiveUsersInDay = (voiceActivities: VoiceActivity[], day: number): number => {
+const getActiveUsersInDay = (voiceActivities: VoiceActivity[] | PresenceActivity[], day: number): number => {
     const activeUsers = new Set<string>();
     for (const activity of voiceActivities) {
         if (activity.from.getDay() === day) {
@@ -191,7 +191,40 @@ const getActiveUsersInDay = (voiceActivities: VoiceActivity[], day: number): num
     return activeUsers.size;
 }
 
-const getGuildActivityInHoursAcrossWeek = async (guild: Guild) => {
+const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+    const query = await presenceActivityModel.find({
+        guildId: guild.guildId,
+        from: {
+            $gte: startWeek,
+            $lte: endWeek
+        }
+    });
+
+    const data: Collection<string, ActivityDay> = mockDays();
+
+    query.forEach((activity: PresenceActivity) => {
+        if(!activity.to) {
+            activity.to = moment().toDate();
+        }
+        const activityDay = moment(activity.from).day();
+        const activityHour = moment(activity.from).hour();
+
+        const day = data.get(activityDay.toString());
+        if(!day) return;
+        day.activePeak = getActiveUsersInDay(query, day.day);
+
+        const hour = day.hours.find(h => h.hour === activityHour);
+        if(hour) {
+            hour.activePeak = getActiveUsersInHour(query, activityHour);
+        }
+    });
+
+    return data;
+}
+
+const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
     const query = await voiceActivityModel.find({
@@ -302,4 +335,4 @@ const getPresenceActivity = async (member: GuildMember) => {
     return exists;
 }
 
-export { startVoiceActivity, getGuildActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+export { startVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };

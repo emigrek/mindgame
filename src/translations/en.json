@@ -26,7 +26,8 @@
 	"profile.favoriteGuild": "Favorite guild",
 	"profile.timePublicButtonLabel": "Public time statistics 👁‍🗨",
 	"profile.visibilityNotification": "👁 Only you can see this.",
-	"statistics.header": "Voice activity in week",
+	"statistics.voiceHeader": "Voice activity in week",
+	"statistics.presenceHeader": "Presence activity in week",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
 	"utils.noPermissions": "You don't have permission to use this.",
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel"

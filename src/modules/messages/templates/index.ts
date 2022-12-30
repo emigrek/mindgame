@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User } from "../../../interfaces";
-import { getFavoriteGuildDetails, getGuildActivityInHoursAcrossWeek } from "../../activity";
+import { getFavoriteGuildDetails, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -49,7 +49,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[700px] h-[600px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[700px] h-[800px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -306,7 +306,8 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
     const guild = await client.guilds.fetch(sourceGuild.guildId);
     const guildIcon = guild.iconURL({ extension: "png" });    
-    const guildActivityInHoursAcrossWeek = await getGuildActivityInHoursAcrossWeek(sourceGuild);
+    const guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
+    const guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
 
     return `
         <div class="flex flex-col items-center space-y-3">
@@ -321,17 +322,31 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     <div class="text-2xl text-white font-medium">${guild.name}</div>
                 </div>
             </div>
-            <div class="w-full text-white/80 p-1 space-x-2 flex items-center justify-start align-middle">
+            <div class="w-full text-white/80 p-1 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-lg">${client.i18n.__("statistics.voiceHeader")}</div>
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-white">
                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
                         <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
                     </svg>              
                 </div>
-                <div class="text-lg">${client.i18n.__("statistics.header")}</div>
             </div>
             <div class="w-full h-[200px] shadow-lg text-white p-3 rounded-lg bg-[#202225] flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildActivityInHoursAcrossWeek, colors) }
+                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, colors) }
+            </div>
+            <div class="w-full text-white/80 p-1 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-lg">${client.i18n.__("statistics.presenceHeader")}</div>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
+                    </svg>    
+                </div>
+            </div>
+            <div class="w-full h-[200px] shadow-lg text-white p-3 rounded-lg bg-[#202225] flex items-center justify-center align-middle backdrop-blur-3xl">
+                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, {
+                    DarkVibrant: "#3d679f",
+                    Vibrant: "#3d679f",
+                }) }
             </div>
         </div>
     `;
