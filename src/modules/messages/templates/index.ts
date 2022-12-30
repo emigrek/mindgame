@@ -305,8 +305,10 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
     const guild = await client.guilds.fetch(sourceGuild.guildId);
     const guildIcon = guild.iconURL({ extension: "png" });    
+
     const guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
     const guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
+
     const guildVoicePeak = await getGuildVoicePeak(sourceGuild);
     const guildPresencePeak = await getGuildPresencePeak(sourceGuild);
 

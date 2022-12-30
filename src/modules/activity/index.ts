@@ -197,10 +197,14 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
         from: {
             $gte: startWeek,
             $lte: endWeek
-        }
+        },
+        $or: [
+            { to: { $eq: null } },
+            { to: { $lte: endWeek } }
+        ]
     });
 
-    const data: Collection<string, ActivityDay> = mockDays();
+    let data: Collection<string, ActivityDay> = mockDays();
 
     query.forEach((activity: PresenceActivity) => {
         if(!activity.to) {
@@ -224,8 +228,19 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
 }
 
 const getGuildVoicePeak = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+
     const query = await voiceActivityModel.find({
-        guildId: guild.guildId
+        guildId: guild.guildId,
+        from: {
+            $gte: startWeek,
+            $lte: endWeek
+        },
+        $or: [
+            { to: { $eq: null } },
+            { to: { $lte: endWeek } }
+        ]
     });
 
     let activeUsersPeak = 0;
@@ -247,8 +262,19 @@ const getGuildVoicePeak = async (guild: Guild) => {
 }
 
 const getGuildPresencePeak = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+
     const query = await presenceActivityModel.find({
-        guildId: guild.guildId
+        guildId: guild.guildId,
+        from: {
+            $gte: startWeek,
+            $lte: endWeek
+        },
+        $or: [
+            { to: { $eq: null } },
+            { to: { $lte: endWeek } }
+        ]
     });
 
     let activeUsersPeak = 0;
@@ -272,16 +298,20 @@ const getGuildPresencePeak = async (guild: Guild) => {
 const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
+
     const query = await voiceActivityModel.find({
         guildId: guild.guildId,
         from: {
             $gte: startWeek,
             $lte: endWeek
-        }
+        },
+        $or: [
+            { to: { $eq: null } },
+            { to: { $lte: endWeek } }
+        ]
     });
 
-    const data: Collection<string, ActivityDay> = mockDays();
-    const guildOverallPeak = getActiveUsersInDay(query, moment().day());
+    let data: Collection<string, ActivityDay> = mockDays();
 
     query.forEach((activity: VoiceActivity) => {
         if(!activity.to) {
@@ -380,4 +410,4 @@ const getPresenceActivity = async (member: GuildMember) => {
     return exists;
 }
 
-export { startVoiceActivity, getGuildVoicePeak, getGuildPresencePeak, getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+export { startVoiceActivity, getGuildVoicePeak, getGuildPresencePeak, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
