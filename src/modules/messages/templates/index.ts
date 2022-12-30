@@ -77,7 +77,7 @@ const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHex
         for(let i = 0; i < 24; i++) {
             const hour = dayPeaks.hours.find((hour: any) => hour.hour === i);
             const hourAlpha = peak ? Math.round((hour.activePeak / peak) * 100) : 0;
-            
+
             if(hour.activePeak)
                 hours += `<td>
                     <div 
@@ -317,8 +317,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
 
     const guildVoicePeak = await getGuildVoicePeak(sourceGuild);
     const guildPresencePeak = await getGuildPresencePeak(sourceGuild);
-    console.log(guildVoicePeak, guildPresencePeak)
-
+    
     return `
         <div class="flex flex-col items-center">
             <div class="mx-auto w-[300px] flex items-center justify-center align-middle space-x-10 mb-7">
