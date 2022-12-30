@@ -6,9 +6,6 @@ export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
         const { guild, member } = newPresence;
-        const memberGuilds = client.guilds.cache.filter(g => g.members.cache.has(member.id)); 
-
-        if(!guild.equals(memberGuilds.first()!)) return;
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
