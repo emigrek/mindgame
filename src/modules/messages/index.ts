@@ -1,9 +1,9 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { Guild as GuildInterface, SelectMenuOption, User } from "../../interfaces";
+import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
 import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
@@ -119,11 +119,11 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     withGuildLocale(client, interaction.guild!);
     const { targetUser } = interaction as UserContextMenuCommandInteraction;
 
-    let sourceUser: User;
+    let sourceUser: DatabaseUser;
     if(!targetUser) {
-        sourceUser = await getUser(interaction.user) as User;
+        sourceUser = await getUser(interaction.user) as DatabaseUser;
     } else {
-        sourceUser = await getUser(targetUser) as User;
+        sourceUser = await getUser(targetUser) as DatabaseUser;
     }
     
 
@@ -156,6 +156,38 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
     };
 };
 
+const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
+    withGuildLocale(client, guild);
+
+    const sourceUser = await getUser(user) as DatabaseUser;
+    var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+
+    const embed = {
+        color: getColorInt(colors.Vibrant!),
+        title: client.i18n.__("notifications.levelUpTitle"),
+        description: client.i18n.__mf("notifications.levelUpDescription", { user: user.id, level: sourceUser.stats.level }),
+        fields: [
+            {
+                name: client.i18n.__("notifications.levelField"),
+                value: `\`\`\`${sourceUser.stats.level}\`\`\``,
+                inline: true
+            },
+            {
+                name: client.i18n.__("notifications.winsField"),
+                value: `\`\`\`${sourceUser.stats.games.won.skill + sourceUser.stats.games.won.skin}\`\`\``,
+                inline: true
+            }
+        ],
+        thumbnail: {
+            url: 'https://i.imgur.com/cSTkdFG.png',
+        }
+    };
+
+    return {
+        embeds: [embed]
+    };
+};
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
     if(!sourceGuild.channelId) return null;
@@ -166,4 +198,4 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
     await defaultChannel.send(message);
 };
 
-export { getConfigMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getConfigMessagePayload, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

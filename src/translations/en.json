@@ -28,6 +28,10 @@
 	"profile.visibilityNotification": "👁 Only you can see this.",
 	"statistics.voiceHeader": "Voice activity in week",
 	"statistics.presenceHeader": "Overall activity in week",
+	"notifications.levelUpTitle": "Level up!",
+	"notifications.levelUpDescription": "<@{user}> has reached {level} level!",
+	"notifications.levelField": "Level",
+	"notifications.winField": "Wins",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
 	"utils.noPermissions": "You don't have permission to use this.",
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel"
