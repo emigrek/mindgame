@@ -9,7 +9,7 @@ import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
-import { guildConfig, layoutLarge, userProfile } from "./templates";
+import { guildConfig, guildStatistics, layoutLarge, layoutXLarge, userProfile } from "./templates";
 import { getUser } from "../user";
 
 interface ImageHexColors {
@@ -142,6 +142,18 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     return { files: [file], ephemeral: true, components: selfCall ? [row] : [] };
 }
 
+const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
+    const sourceGuild = await getGuild(guild) as GuildInterface;
+    const guildIcon = guild.iconURL({ extension: "png" });
+    var colors: ImageHexColors = await useImageHex(guildIcon!);
+    const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
+    const file = await useHtmlFile(layoutLarge(guildStatisticsHtml, colors));
+
+    return {
+        files: [file]
+    };
+};
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
     if(!sourceGuild.channelId) return null;
@@ -152,4 +164,4 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
     await defaultChannel.send(message);
 };
 
-export { getConfigMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getConfigMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

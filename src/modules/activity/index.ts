@@ -1,4 +1,4 @@
-import { ActivityType, Collection, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { Activity, ActivityType, Collection, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
 import voiceActivitySchema from "../schemas/VoiceActivity";
@@ -7,7 +7,7 @@ import presenceActivitySchema from "../schemas/PresenceActivity";
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
-import { Guild, User, UserGuildActivityDetails } from "../../interfaces";
+import { Guild, User, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -131,6 +131,167 @@ const getFavoriteGuildDetails = async (sourceUser: User) => {
     return sorted.first();
 };
 
+interface ActivityHour {
+    hour: number;
+    activePeak: number;
+};
+
+interface ActivityDay {
+    day: number;
+    activePeak: number;
+    hours: ActivityHour[];
+}
+
+const mockDays = () => {
+    const data: Collection<string, ActivityDay> = new Collection();
+    for(let i = 0; i < 7; i++) {
+        const hours: ActivityHour[] = [];
+        for(let j = 0; j < 24; j++) {
+            hours.push({
+                hour: j,
+                activePeak: 0
+            });
+        }
+        data.set(i.toString(), {
+            day: i,
+            activePeak: 0,
+            hours
+        });
+    }
+    return data;
+};
+
+const getActiveUsersInHour = (voiceActivities: VoiceActivity[], hour: number): number => {
+    const activeUsers = new Set<string>();
+    for (const activity of voiceActivities) {
+        // Check if the activity started within the desired hour
+        if (activity.from.getHours() === hour) {
+            activeUsers.add(activity.userId);
+            continue;
+        }
+        // Check if the activity ended within the desired hour
+        if (activity.to && activity.to.getHours() === hour) {
+            activeUsers.add(activity.userId);
+        }
+    }
+    return activeUsers.size;
+}
+
+const getActiveUsersInDay = (voiceActivities: VoiceActivity[], day: number): number => {
+    const activeUsers = new Set<string>();
+    for (const activity of voiceActivities) {
+        if (activity.from.getDay() === day) {
+            activeUsers.add(activity.userId);
+            continue;
+        }
+        if (activity.to && activity.to.getDay() === day) {
+            activeUsers.add(activity.userId);
+        }
+    }
+    return activeUsers.size;
+}
+
+const getGuildActivityInHoursAcrossWeek = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+    const query = await voiceActivityModel.find({
+        guildId: guild.guildId,
+        from: {
+            $gte: startWeek,
+            $lte: endWeek
+        }
+    });
+
+    const data: Collection<string, ActivityDay> = mockDays();
+
+    query.forEach((activity: VoiceActivity) => {
+        if(!activity.to) {
+            activity.to = moment().toDate();
+        }
+        const activityDay = moment(activity.from).day();
+        const activityHour = moment(activity.from).hour();
+
+        const day = data.get(activityDay.toString());
+        if(!day) return;
+        day.activePeak = getActiveUsersInDay(query, day.day);
+
+        const hour = day.hours.find(h => h.hour === activityHour);
+        if(hour) {
+            hour.activePeak = getActiveUsersInHour(query, activityHour);
+        }
+    });
+
+    return data;
+}
+
+const getGuildMostVoiceActiveUserAcrossWeek = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+    const query = await voiceActivityModel.aggregate([
+        {
+          $match: {
+            guildId: guild.guildId,
+            from: { $gte: startWeek },
+            to: { $lte: endWeek }
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            time: {
+              $sum: {
+                $divide: [{ $subtract: ["$to", "$from"] }, 1000]
+              }
+            }
+          }
+        },
+        {
+          $sort: {
+            time: -1
+          }
+        },
+        {
+          $limit: 1
+        }
+    ])
+
+    return query[0];
+};
+
+const getGuildMostPresenceActiveUserAcrossWeek = async (guild: Guild) => {
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").toDate();
+    const query = await presenceActivityModel.aggregate([
+        {
+          $match: {
+            guildId: guild.guildId,
+            from: { $gte: startWeek },
+            to: { $lte: endWeek }
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            time: {
+              $sum: {
+                $divide: [{ $subtract: ["$to", "$from"] }, 1000]
+              }
+            }
+          }
+        },
+        {
+          $sort: {
+            time: -1
+          }
+        },
+        {
+          $limit: 1
+        }
+    ])
+
+    return query[0];
+};
+
 const getVoiceActivity = async (member: GuildMember) => {
     const exists = await voiceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
     return exists;
@@ -141,4 +302,4 @@ const getPresenceActivity = async (member: GuildMember) => {
     return exists;
 }
 
-export { startVoiceActivity, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+export { startVoiceActivity, getGuildActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };

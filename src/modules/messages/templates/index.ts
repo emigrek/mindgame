@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User } from "../../../interfaces";
-import { getFavoriteGuildDetails } from "../../activity";
+import { getFavoriteGuildDetails, getGuildActivityInHoursAcrossWeek } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -45,6 +45,89 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
             </body>
         </html>
     `;
+}
+
+const layoutXLarge = (html: string, colors?: ImageHexColors) => {
+    return `
+        <html class="w-[700px] h-[600px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <script src="https://cdn.tailwindcss.com"></script>
+            </head>
+            <body class="w-full h-full flex items-center justify-center align-middle">
+                ${html}
+            </body>
+        </html>
+    `;
+}
+
+const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
+    const hoursTh = () => {
+        let hours = '';
+        for(let i = 0; i < 24; i++) {
+            hours += `<th>${i < 10 ? `0${i}` : i}</th>`;
+        }
+        return hours;
+    }
+
+    const dayTd = (day: number) => {
+        let hours = '';
+        const dayPeaks = guildStatistics.get(day.toString());
+        for(let i = 0; i < 24; i++) {
+            const hour = dayPeaks.hours.find((hour: any) => hour.hour === i);
+            // want hourAlpha to be number between 0 and 100
+            const hourAlpha = dayPeaks.activePeak ? Math.round((hour.activePeak / dayPeaks.activePeak) * 100) : 0;
+            if(hourAlpha)
+                hours += `<td>
+                    <div class="text-center rounded bg-[${colors.Vibrant}]/${hourAlpha} w-5 h-5 text-black/40 text-sm">${hour.activePeak}</div>
+                </td>`;
+            else
+                hours += `<td>
+                    <div class="text-center rounded bg-white/5 w-5 h-5"></div>
+                </td>`;
+        }
+        return hours;
+    }
+
+    return `<table class="text-white/80">
+    <thead class="font-medium">
+      <tr>
+        <th></th>
+        ${hoursTh()}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Mo</td>
+        ${dayTd(0)}
+      </tr>
+      <tr>
+        <td>Tu</td>
+        ${dayTd(1)}
+      </tr>
+      <tr>
+        <td>We</td>
+        ${dayTd(2)}
+      </tr>
+      <tr>
+        <td>Th</td>
+        ${dayTd(3)}
+      </tr>
+      <tr>
+        <td>Fr</td>
+        ${dayTd(4)}
+      </tr>
+      <tr>
+        <td>Sa</td>
+        ${dayTd(5)}
+      </tr>
+      <tr>
+        <td>Su</td>
+        ${dayTd(6)}
+      </tr>
+    </tbody>
+    </table>`;
 }
 
 const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
@@ -220,5 +303,39 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
     `;
 }
 
+const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
+    const guild = await client.guilds.fetch(sourceGuild.guildId);
+    const guildIcon = guild.iconURL({ extension: "png" });    
+    const guildActivityInHoursAcrossWeek = await getGuildActivityInHoursAcrossWeek(sourceGuild);
 
-export { layoutLarge, layoutMedium, userProfile, guildConfig, embedSpacer };
+    return `
+        <div class="flex flex-col items-center space-y-3">
+            <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
+                ${
+                    guildIcon ? 
+                        `<img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />` 
+                    : 
+                        ''
+                }
+                <div class="flex flex-col">
+                    <div class="text-2xl text-white font-medium">${guild.name}</div>
+                </div>
+            </div>
+            <div class="w-full text-white/80 p-2 space-x-2 flex items-center justify-start align-middle">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-white">
+                        <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
+                        <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
+                    </svg>              
+                </div>
+                <div class="text-xl">${client.i18n.__("statistics.header")}</div>
+            </div>
+            <div class="w-full h-[200px] shadow-lg text-white p-3 rounded-lg bg-[#202225] flex items-center justify-center align-middle backdrop-blur-3xl">
+                ${ getStatisticsTable(guildActivityInHoursAcrossWeek, colors) }
+            </div>
+        </div>
+    `;
+}
+
+
+export { layoutLarge, layoutMedium, userProfile, guildConfig, embedSpacer, guildStatistics, layoutXLarge };

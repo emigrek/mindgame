@@ -1,8 +1,10 @@
 import { ContextMenu } from "../interfaces";
 import userContext from "./userContext";
+import guildStatisitcsContext from "./guildStatisticsContext";
 
 const contexts: ContextMenu[] = [
-    userContext
+    userContext,
+    guildStatisitcsContext
 ];
 
 export default contexts;
