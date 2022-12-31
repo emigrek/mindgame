@@ -12,6 +12,24 @@ import { Guild, PresenceActivity, User, UserGuildActivityDetails, VoiceActivity 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
+const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) => {
+    const userLastVoiceActivity = await voiceActivityModel.findOne({
+        userId: member.id,
+        guildId: member.guild.id
+    }).sort({ to: -1 });
+
+    if(!userLastVoiceActivity) return;
+
+    const lastVoiceActivityDate = moment(userLastVoiceActivity.to);
+    const now = moment();
+    const next = lastVoiceActivityDate.add(1, "days");
+
+    const diff = now.diff(lastVoiceActivityDate, "days");
+    if(diff >= 1) {
+        await client.emit("userRecievedDailyReward", member.user, member.guild, next.unix());
+    }
+};
+
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel) => {
     if(
         member.user.bot ||
@@ -20,6 +38,8 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
 
     const exists = await getVoiceActivity(member);
     if(exists) return;
+
+    await checkForDailyReward(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
         userId: member.id,

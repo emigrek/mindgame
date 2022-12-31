@@ -185,6 +185,32 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     };
 };
 
+const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
+    withGuildLocale(client, guild);
+
+    const sourceUser = await getUser(user) as DatabaseUser;
+    var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+
+    const embed = {
+        color: getColorInt(colors.Vibrant!),
+        title: client.i18n.__("notifications.dailyRewardTitle"),
+        description: client.i18n.__mf("notifications.dailyRewardDescription", { user: user.id, time: next }),
+        fields: [
+            { 
+                name: client.i18n.__("notifications.dailyRewardField"),
+                value: `\`\`\`${process.env.DAILY_REWARD} EXP\`\`\``,
+            }
+        ],
+        thumbnail: {
+            url: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/60/microsoft/74/shortcake_1f370.png',
+        }
+    };
+
+    return {
+        embeds: [embed]
+    };
+};
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
     if(!sourceGuild.channelId) return null;
@@ -207,7 +233,9 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 
         if(channel.id == defaultChannel.id) {
             const messages = await channel.messages.fetch({ limit: 100 });
-            const validToDelete = (message: Message) => message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p));
+            const validToDelete = (message: Message) => 
+                message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p) && !message.attachments.size 
+            );
             const messagesToDelete = messages.filter(validToDelete);
             
             const deleted = await channel.bulkDelete(messagesToDelete);
@@ -239,4 +267,4 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     await lastMessage.edit({ components: [row] });
 };
 
-export { getConfigMessagePayload, attachQuickButtons, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getDailyRewardMessagePayload, getConfigMessagePayload, attachQuickButtons, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

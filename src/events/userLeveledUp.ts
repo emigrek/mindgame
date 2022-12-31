@@ -9,7 +9,6 @@ export const userLeveledUp: Event = {
     name: "userLeveledUp",
     run: async (client, user) => {
         await assignLevelRolesInAllGuilds(client, user);
-
         await everyGuild(client, async (guild: Guild, sourceGuild: DatabaseGuild) => {
             const { notifications, channelId } = sourceGuild;
             if(!notifications || !channelId) return;

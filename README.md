@@ -46,13 +46,6 @@ npm run build
     * Experience based permissions
     * Experience based channels
 
-* Notifications
-    * Sweeper
-        * When
-            * When there is no active voice channel
-            * On demand by user using message context
-        * Bot remove uneccessary messages from voice text channel
-
 * User profile
     * Show/hide time spent ✅
     * Most frequent guild based on time spent ✅
