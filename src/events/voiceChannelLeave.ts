@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import { Event } from "../interfaces";
 import { endVoiceActivity } from "../modules/activity";
 import { getGuild } from "../modules/guild";
@@ -14,7 +15,13 @@ export const voiceChannelLeave: Event = {
         const defaultChannel = channel.guild.channels.cache.get(sourceGuild.channelId);
         if(!defaultChannel) return;
 
-        await sweepTextChannel(client, channel.guild, defaultChannel);
-        await sweepTextChannel(client, channel.guild, channel);
+        if(channel.members.size == 0) {
+            await sweepTextChannel(client, channel.guild, channel);
+        }
+        
+        const guildActiveUsers = member.guild.members.cache.filter((member: GuildMember) => member.voice.channel).size;
+        if(guildActiveUsers == 0) {
+            await sweepTextChannel(client, channel.guild, defaultChannel);
+        }
     }
 }
