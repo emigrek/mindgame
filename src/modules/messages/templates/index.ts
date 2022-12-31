@@ -249,7 +249,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                 </div>
             </div>
             ${ selfCall || user.stats.time.public ? `
-                            <div class="w-full relative flex flex-col space-y-1 px-4 py-3 items-center rounded-xl shadow-md bg-[#202225] ${selfCall && user.stats.time.public ? 'opacity-100' : 'opacity-80'}">
+                            <div class="w-full relative flex flex-col space-y-1 px-4 py-3 items-center rounded-xl shadow-md bg-[#202225] ${selfCall && user.stats.time.public ? 'opacity-100' : 'opacity-70'}">
                                 <div class="flex flex-row flex-grow space-x-6 items-center justify-center">
                                     <div class="flex flex-col items-center p-2 justify-center">
                                         <div class="flex space-x-2 items-center">
@@ -277,7 +277,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         `
             : '' }
             ${ selfCall && !user.stats.time.public ? `
-                <div class="w-full p-1 text-center flex items-center justify-center text-white opacity-80">
+                <div class="w-full p-1 text-center flex items-center justify-center text-white opacity-70">
                     <div>${ client.i18n.__("profile.visibilityNotification") }</div>
                 </div>
             ` : '' }

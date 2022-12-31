@@ -27,7 +27,7 @@
 	"profile.timePublicButtonLabel": "Publiczna widoczność spędzonego czasu 👀",
 	"profile.followButtonActiveLabel": "Obserwowanie {tag} ❤",
 	"profile.followButtonDisabledLabel": "Obserwuj {tag} 🖤",
-	"profile.visibilityNotification": "👀 Tylko Ty możesz to zobaczyć.",
+	"profile.visibilityNotification": "Tylko Ty możesz to zobaczyć.",
 	"statistics.voiceHeader": "Aktywność głosowa w tygodniu",
 	"statistics.presenceHeader": "Ogólna aktywność w tygodniu",
 	"notifications.levelUpTitle": "Awans!",
