@@ -5,6 +5,7 @@ const hourlyCron = "0 * * * *";
 const dailyCron = "0 0 * * *";
 const weeklyCron = "0 0 * * 0";
 const monthlyCron = "0 0 1 * *";
+const yearlyCron = "0 0 1 1 *";
 
 const schedules = [
     {
@@ -23,6 +24,10 @@ const schedules = [
         name: "monthly",
         cron: monthlyCron
     },
+    {
+        name: "yearly",
+        cron: yearlyCron
+    }
 ];
 
 export const timers: Module = {

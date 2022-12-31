@@ -191,6 +191,10 @@ const everyUser = async (client: ExtendedClient, callback: (user: DatabaseUser &
     }
 }
 
+const clearExperience = async () => {
+    await UserModel.updateMany({}, { $set: { "stats.exp": 0, "stats.level": 0 } });
+}
+
 const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
     const blankTemporaryStatistic = {
         exp: 0,
@@ -223,4 +227,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel };
+export { createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
