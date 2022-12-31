@@ -27,6 +27,5 @@ export const ready: Event = {
         console.log(`[ready] Serving`, client.guilds.cache.size, `guilds`);
 
         await updatePresence(client);
-        //await restPutRes(client);
     }
 }

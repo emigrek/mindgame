@@ -1,10 +1,10 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton } from "./buttons";
+import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
@@ -195,4 +195,48 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
     await defaultChannel.send(message);
 };
 
-export { getConfigMessagePayload, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: TextChannel) => {
+    return new Promise(async (resolve, reject) => {
+        const sourceGuild = await getGuild(guild) as GuildInterface;
+        if(!sourceGuild.channelId) return null;
+        
+        const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
+        if(!defaultChannel) return null;
+
+        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '.', '/', '?', '<', '>', '|', '\\', '~', '`'];
+
+        if(channel.id == defaultChannel.id) {
+            const messages = await channel.messages.fetch({ limit: 100 });
+            const validToDelete = (message: Message) => message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p));
+            const messagesToDelete = messages.filter(validToDelete);
+            
+            const deleted = await channel.bulkDelete(messagesToDelete);
+            resolve(deleted.size);
+        } else {
+            resolve(0);
+        }
+    });
+};
+
+const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
+    withGuildLocale(client, channel.guild!);
+
+    const lastMessages = await channel.messages.fetch({ limit: 50 });
+    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id);
+    const lastMessage = clientLastMessages.first();
+    if(!lastMessage) return;
+
+    const buttons: Collection<string, ButtonBuilder> = await getQuickButtons(client, channel.guild);
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!);
+
+    for await (const message of lastMessages.values()) {
+        if(message.components.length > 0) {
+            await message.edit({ components: [] });
+        }
+    }
+
+    await lastMessage.edit({ components: [row] });
+};
+
+export { getConfigMessagePayload, attachQuickButtons, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

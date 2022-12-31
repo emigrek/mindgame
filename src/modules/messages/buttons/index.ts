@@ -1,7 +1,7 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
-import { ButtonStyle } from "discord.js";
-import { Guild, User } from "../../../interfaces";
+import { ButtonStyle, Collection, Guild } from "discord.js";
+import { Guild as DatabaseGuild, User } from "../../../interfaces";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -12,7 +12,7 @@ const getExitButton = async (client: ExtendedClient) => {
     return exitButton;
 }
 
-const getNotificationsButton = async (client: ExtendedClient, sourceGuild: Guild) => {
+const getNotificationsButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
     const notificationsButton = new ButtonBuilder()
         .setCustomId("notifications")
         .setLabel(client.i18n.__("config.notificationsButtonLabel"))
@@ -21,7 +21,7 @@ const getNotificationsButton = async (client: ExtendedClient, sourceGuild: Guild
     return notificationsButton;
 }
 
-const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: Guild) => {
+const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
     const levelRolesButton = new ButtonBuilder()
         .setCustomId("levelRoles")
         .setLabel(client.i18n.__("config.levelRolesButtonLabel"))
@@ -30,7 +30,7 @@ const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: Guild) =
     return levelRolesButton;
 }
 
-const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: Guild) => {
+const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
     const levelRolesHoistButton = new ButtonBuilder()
         .setCustomId("levelRolesHoist")
         .setLabel(client.i18n.__("config.levelRolesHoistButtonLabel"))
@@ -48,4 +48,29 @@ const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: Us
     return publicProfileButton;
 }
 
-export { getExitButton, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
+    const profileButon = new ButtonBuilder()
+        .setCustomId("profile")
+        .setLabel(client.i18n.__("quickButton.profileLabel"))
+        .setStyle(ButtonStyle.Primary);
+    
+    const statisticsButton = new ButtonBuilder()
+        .setCustomId("guildStatistics")
+        .setLabel(client.i18n.__("quickButton.guildStatisticsLabel"))
+        .setStyle(ButtonStyle.Secondary);
+
+    const sweepButton = new ButtonBuilder()
+        .setCustomId("sweep")
+        .setLabel(client.i18n.__("quickButton.sweepLabel"))
+        .setStyle(ButtonStyle.Secondary);
+
+    const quickButtonsCollection: Collection<string, ButtonBuilder> = new Collection();
+    
+    quickButtonsCollection.set("sweep", sweepButton);
+    quickButtonsCollection.set("profile", profileButon);
+    quickButtonsCollection.set("statistics", statisticsButton);
+
+    return quickButtonsCollection;
+}   
+
+export { getExitButton, getQuickButtons, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

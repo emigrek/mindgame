@@ -4,12 +4,18 @@ import notifications from "./notifications";
 import levelRoles from "./levelRoles";
 import levelRolesHoist from "./levelRolesHoist";
 import profileTimePublic from "./profileTimePublic";
+import sweep from "./sweep";
+import guildStatistics from "./guildStatistics";
+import profile from "./profile";
 
 const buttons: Button[] = [
     notifications,
     levelRoles,
     levelRolesHoist,
-    profileTimePublic
+    profileTimePublic,
+    sweep,
+    guildStatistics,
+    profile
 ];
 
 export default buttons;

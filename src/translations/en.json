@@ -26,7 +26,7 @@
 	"profile.favoriteGuild": "Favorite guild",
 	"profile.followButtonActiveLabel": "Following {tag} ❤",
 	"profile.followButtonDisabledLabel": "Follow {tag} 🖤",
-	"profile.timePublicButtonLabel": "Public time statistics 👁‍🗨",
+	"profile.timePublicButtonLabel": "Public time statistics 👁",
 	"profile.visibilityNotification": "👁 Only you can see this.",
 	"statistics.voiceHeader": "Voice activity in week",
 	"statistics.presenceHeader": "Overall activity in week",
@@ -36,5 +36,8 @@
 	"notifications.winField": "Wins",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
 	"utils.noPermissions": "You don't have permission to use this.",
-	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel"
+	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
+	"quickButton.profileLabel": "Profile ✨",
+	"quickButton.guildStatisticsLabel": "Statistics 📅",
+	"quickButton.sweepLabel": "Spam? 🧹"
 }

@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User } from "../../../interfaces";
-import { getFavoriteGuildDetails, getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak } from "../../activity";
+import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -49,7 +49,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[700px] h-[850px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[900px] h-[900px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -81,7 +81,7 @@ const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHex
             if(hour.activePeak)
                 hours += `<td>
                     <div 
-                        class="text-center rounded shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-medium text-sm flex items-center justify-center"
+                        class="text-center shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
                         style="opacity: ${hourAlpha}%"
                     >
                         ${hour.activePeak}
@@ -102,7 +102,7 @@ const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHex
         ${hoursTh()}
       </tr>
     </thead>
-    <tbody>
+    <tbody class="font-medium border-collapse m-0 p-0">
       <tr>
         <td>Su</td>
         ${dayTd(0)}
@@ -153,7 +153,7 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
                 </div>
             </div>
             <div class="w-full h-[100px] flex items-center text-white p-5">
-                <div class="flex flex-row items-center justify-center align-middle text-white gap-3 mx-auto">
+                <div class="flex flex-row items-center justify-center align-middle text-white gap-4 mx-auto">
                     <div class="flex text-lg flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex flex-grow space-x-2 items-center">
                                 <div class="text-white/80">${client.i18n.__("config.membersField")}</div>
@@ -197,12 +197,7 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 }
 
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
-    const userRank = await getUserRank(user); 
-
-    const favoriteGuildDetails = await getFavoriteGuildDetails(user);
-    const favoriteGuild = favoriteGuildDetails ? client.guilds.cache.get(favoriteGuildDetails.guildId) : null;
-    const favoriteGuildIcon = favoriteGuildDetails ? favoriteGuild!.iconURL({ extension: "png" })! : null;
-    const favoriteGuildIconColors = favoriteGuildDetails ? await useImageHex(favoriteGuildIcon!) : null;
+    const userRank = await getUserRank(user);
 
     return `
         <div class="flex flex-col items-center space-y-3">
@@ -251,10 +246,12 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         </div>
                         <div class="text-4xl">${user.stats.games.won.skill + user.stats.games.won.skin}</div>
                     </div>
-                    ${ selfCall || user.stats.time.public ? `
-                            <div class="relative flex flex-col space-y-1 items-center px-4 py-3 rounded-xl shadow-md ${selfCall && user.stats.time.public ? 'bg-[#202225]' : 'bg-[#0f2240]'}">
-                                <div class="flex space-x-2">
-                                    <div>
+                </div>
+            </div>
+            ${ selfCall || user.stats.time.public ? `
+                            <div class="w-full relative flex flex-col space-y-1 px-4 py-3 items-center rounded-xl shadow-md bg-[#202225] ${selfCall && user.stats.time.public ? 'opacity-100' : 'opacity-80'}">
+                                <div class="flex flex-row flex-grow space-x-6 items-center justify-center">
+                                    <div class="flex flex-col items-center p-2 justify-center">
                                         <div class="flex space-x-2 items-center">
                                             <div class="text-white/80">${client.i18n.__("profile.voice")}</div>
                                             <div>
@@ -264,46 +261,26 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="text-4xl">${Math.floor(user.stats.time.voice/3600)}H</div>
+                                        <div class="text-4xl text-white">${Math.floor(user.stats.time.voice/3600)}H</div>
                                     </div>
-                                    <div>
+                                    <div class="flex flex-col items-center p-2 justify-center">
                                         <div class="flex space-x-2 items-center">
                                             <div class="text-lg text-white/80">${client.i18n.__("profile.overall")}</div>
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
                                                 <path fill-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <div class="text-4xl">${Math.floor(user.stats.time.presence/3600)}H</div>
+                                        <div class="text-4xl text-white">${Math.floor(user.stats.time.presence/3600)}H</div>
                                     </div>
                                 </div>
                             </div>
                         `
-                    : '' }
+            : '' }
+            ${ selfCall && !user.stats.time.public ? `
+                <div class="w-full p-1 text-center flex items-center justify-center text-white opacity-80">
+                    <div>${ client.i18n.__("profile.visibilityNotification") }</div>
                 </div>
-            </div>
-            ${
-                favoriteGuildDetails && favoriteGuild ? `
-                <div class="w-full h-[100px] rounded-xl flex items-center justify-between align-middle text-white px-5 bg-[${favoriteGuildIconColors!.Vibrant}]/40 shadow-md">
-                    <div class="w-full flex items-center justify-between align-middle space-x-2">
-                        <div class="flex flex-col space-y-2">
-                            <div class="flex space-x-2 items-center">
-                                <div class="text-lg text-white/80">${client.i18n.__("profile.favoriteGuild")}</div>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 fill-white">
-                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-                                </svg>
-                            </div>
-                            <div class="flex space-x-2 items-center align-middle">
-                                ${ `<img src="${favoriteGuildIcon}" class="w-10 h-10 rounded-full shadow-lg" />` }
-                                <div class="text-lg">${favoriteGuild.name}</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-center">
-                            <div class="text-5xl text-white">${Math.floor(favoriteGuildDetails.time.voice/3600)}H</div>
-                        </div>
-                    </div>
-                </div>
-                ` : ``
-            }
+            ` : '' }
         </div>
     `;
 }
@@ -331,27 +308,27 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     <div class="text-2xl text-white font-medium">${guild.name}</div>
                 </div>
             </div>
-            <div class="w-full bg-[#202225] rounded-t-lg text-white/80 p-3 px-4 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-xl">${client.i18n.__("statistics.voiceHeader")}</div>
+            <div class="w-full bg-[#202225] rounded-t-xl text-white/80 py-5 px-5 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-2xl">${client.i18n.__("statistics.voiceHeader")}</div>
                 <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 fill-white">
                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
                         <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
                     </svg>              
                 </div>
             </div>
-            <div class="w-full rounded-b-lg h-[250px] shadow-lg text-white p-2 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full rounded-b-xl h-[250px] shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, guildVoicePeak, colors) }
             </div>
-            <div class="mt-2 w-full rounded-t-lg bg-[#202225] text-white/80 p-3 px-4 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-xl">${client.i18n.__("statistics.presenceHeader")}</div>
+            <div class="mt-2 w-full rounded-t-xl bg-[#202225] text-white/80 py-5 px-5 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
+                <div class="text-2xl">${client.i18n.__("statistics.presenceHeader")}</div>
                 <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
                     </svg>    
                 </div>
             </div>
-            <div class="w-full h-[250px] rounded-b-lg shadow-lg text-white p-2 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full h-[250px] rounded-b-xl shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, guildPresencePeak, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3d679f",

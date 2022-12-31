@@ -3,7 +3,7 @@ import { ContextMenu } from "../interfaces";
 import { getUserMessagePayload, useHtmlFile, useImageHex } from "../modules/messages";
 import { getUser } from "../modules/user";
 
-const userContext: ContextMenu = {
+const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
         .setName(`Show user profile`)
         .setType(ApplicationCommandType.User),
@@ -15,4 +15,4 @@ const userContext: ContextMenu = {
     }
 };
 
-export default userContext;
+export default profileContext;
