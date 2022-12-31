@@ -26,8 +26,8 @@
 	"profile.favoriteGuild": "Favorite guild",
 	"profile.followButtonActiveLabel": "Following {tag} ❤",
 	"profile.followButtonDisabledLabel": "Follow {tag} 🖤",
-	"profile.timePublicButtonLabel": "Public time statistics 👁",
-	"profile.visibilityNotification": "👁 Only you can see this.",
+	"profile.timePublicButtonLabel": "Public time statistics 👀",
+	"profile.visibilityNotification": "👀 Only you can see this.",
 	"statistics.voiceHeader": "Voice activity in week",
 	"statistics.presenceHeader": "Overall activity in week",
 	"notifications.levelUpTitle": "Level up!",
@@ -39,5 +39,6 @@
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
 	"quickButton.profileLabel": "Profile ✨",
 	"quickButton.guildStatisticsLabel": "Statistics 📅",
-	"quickButton.sweepLabel": "Spam? 🧹"
+	"quickButton.sweepLabel": "Spam? 🧹",
+	"sweeper.sweeped": "Sweeped {count} messages."
 }
