@@ -225,10 +225,6 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
     return new Promise(async (resolve, reject) => {
         const sourceGuild = await getGuild(guild) as GuildInterface;
         if(!sourceGuild.channelId) return null;
-        
-        const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
-        if(!defaultChannel) return null;
-
         const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '.', '/', '?', '<', '>', '|', '\\', '~', '`'];
 
         const messages = await channel.messages.fetch({ limit: 50 });
@@ -247,6 +243,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
             count++;
         }
 
+        await attachQuickButtons(client, channel);
         resolve(count);
     });
 };
