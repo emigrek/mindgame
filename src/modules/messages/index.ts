@@ -242,11 +242,14 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         const messagesToDelete = messages.filter(validToDelete);
         
         let count = 0;
+
         for await (const message of messagesToDelete.values()) {
-            if(validToDelete(message)) {
+            try {
                 await message.delete();
-                count++;
+            } catch (error) {
+                console.error(error);
             }
+            count++;
         }
 
         resolve(count);
@@ -266,7 +269,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
         .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!);
 
     for await (const message of lastMessages.values()) {
-        if(message.components.length > 0) {
+        if(message.components.length > 0 && message.id != lastMessage.id && message.deletable) {
             await message.edit({ components: [] });
         }
     }
