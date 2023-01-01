@@ -231,16 +231,11 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 
         const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '.', '/', '?', '<', '>', '|', '\\', '~', '`'];
 
-        if(channel.id != defaultChannel.id) {
-            resolve(0);
-        }
-
         const messages = await channel.messages.fetch({ limit: 50 });
         const validToDelete = (message: Message) => 
-            message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p) && !message.attachments.size 
-        );
+            message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p));
+
         const messagesToDelete = messages.filter(validToDelete);
-        
         let count = 0;
 
         for await (const message of messagesToDelete.values()) {
