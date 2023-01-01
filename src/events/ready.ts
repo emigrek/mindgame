@@ -4,7 +4,6 @@ import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes, TextChannel } fro
 import { updatePresence } from "../modules/presence/";
 
 import config from "../utils/config";
-import { attachQuickButtons } from "../modules/messages";
 
 const restPutRes = async (client: ExtendedClient) => {
     const rest = new REST({ version: '10' }).setToken(config.token);
@@ -28,5 +27,6 @@ export const ready: Event = {
         console.log(`[ready] Serving`, client.guilds.cache.size, `guilds`);
 
         await updatePresence(client);
+        await restPutRes(client);
     }
 }

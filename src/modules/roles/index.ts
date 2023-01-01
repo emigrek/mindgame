@@ -139,4 +139,4 @@ const assignLevelRolesInAllGuilds = async (client: ExtendedClient, user: User) =
     }
 };
 
-export { assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles };
+export { assignUserLevelRole, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles };
