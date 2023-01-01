@@ -265,11 +265,23 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
     for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {
-            await message.edit({ components: [] });
+            try {
+                await message.edit({ components: [] });
+            } catch (error) {
+                const authorGuild = await client.guilds.fetch(message.guild!.id);
+                await sendToDefaultChannel(client, authorGuild, client.i18n.__("roles.missingPermissions"));
+                return null;
+            }
         }
     }
-
-    await lastMessage.edit({ components: [row] });
+    try {
+        await lastMessage.edit({ components: [row] });
+    } catch (error) {
+        const authorGuild = await client.guilds.fetch(lastMessage.guild!.id);
+        await sendToDefaultChannel(client, authorGuild, client.i18n.__("roles.missingPermissions"));
+        return null;
+    }
+    
 };
 
 export { getDailyRewardMessagePayload, getConfigMessagePayload, attachQuickButtons, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

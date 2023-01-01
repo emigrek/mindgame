@@ -4,6 +4,7 @@ import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes, TextChannel } fro
 import { updatePresence } from "../modules/presence/";
 
 import config from "../utils/config";
+import { attachQuickButtons } from "../modules/messages";
 
 const restPutRes = async (client: ExtendedClient) => {
     const rest = new REST({ version: '10' }).setToken(config.token);
