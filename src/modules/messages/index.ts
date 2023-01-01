@@ -229,7 +229,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 
         const messages = await channel.messages.fetch({ limit: 50 });
         const validToDelete = (message: Message) => 
-            message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p));
+            message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p)).length > 0;
 
         const messagesToDelete = messages.filter(validToDelete);
         let count = 0;
