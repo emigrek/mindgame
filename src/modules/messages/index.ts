@@ -255,7 +255,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     withGuildLocale(client, channel.guild!);
 
     const lastMessages = await channel.messages.fetch({ limit: 50 });
-    const clientLastMessages = lastMessages.filter(m => m.author.equals(client.user!));
+    const clientLastMessages = lastMessages.filter(m => m.author.equals(client.user!)) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;
 
@@ -263,7 +263,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     const row = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!);
 
-    for await (const message of lastMessages.values()) {
+    for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {
             await message.edit({ components: [] });
         }
