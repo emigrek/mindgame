@@ -226,7 +226,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
     return new Promise(async (resolve, reject) => {
         const sourceGuild = await getGuild(guild) as GuildInterface;
         if(!sourceGuild.channelId) return null;
-        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '.', '/', '?', '<', '>', '|', '\\', '~', '`'];
+        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')'];
 
         const messages = await channel.messages.fetch({ limit: 50 });
         const messagesToDelete = messages.filter((message: Message) => {
