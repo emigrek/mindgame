@@ -252,7 +252,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                             ${ expProcentage ? `
                                 <div class="relative w-full h-3 bottom-0 flex rounded-lg bg-black/80">
                                     <div style="width: ${expProcentage}%" class="h-3 flex items-center justify-center bg-[${colors.DarkVibrant}] shadow-[${colors.Vibrant}] shadow-lg rounded-lg">
-                                        <div class="text-[0.6rem] text-white rounded text-center font-bold">
+                                        <div class="text-[0.6rem] text-white/70 rounded text-center font-bold">
                                             ${expProcentage}%
                                         </div>
                                     </div> 
