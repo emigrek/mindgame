@@ -423,7 +423,7 @@ const getGuildMostPresenceActiveUserAcrossWeek = async (guild: DatabaseGuild) =>
 };
 
 const getVoiceActivity = async (member: GuildMember) => {
-    const exists = await voiceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
+    const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
 };
 
