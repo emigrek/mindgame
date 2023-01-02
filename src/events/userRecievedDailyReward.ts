@@ -9,7 +9,7 @@ export const userRecievedDailyReward: Event = {
     name: "userRecievedDailyReward",
     run: async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
         const sourceGuild = await getGuild(guild);
-        if(!sourceGuild || !sourceGuild.channelId) return;
+        if(!sourceGuild || !sourceGuild.channelId || !sourceGuild.notifications) return;
 
         const defaultChannel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
         if(!defaultChannel) return;
