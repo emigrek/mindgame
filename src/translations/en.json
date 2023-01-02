@@ -33,7 +33,7 @@
 	"notifications.levelUpTitle": "Level up!",
 	"notifications.levelUpDescription": "<@{user}> has reached {level} level!",
 	"notifications.levelField": "Level",
-	"notifications.winField": "Wins",
+	"notifications.winsField": "Wins",
 	"notifications.dailyRewardTitle": "Daily reward",
 	"notifications.dailyRewardDescription": "<@{user}> has claimed **daily reward**!\nNext daily reward in <t:{time}:R>.",
 	"notifications.dailyRewardField": "Reward",

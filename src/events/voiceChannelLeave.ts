@@ -14,12 +14,6 @@ export const voiceChannelLeave: Event = {
 
         if(!sourceGuild.autoSweeping) return;
 
-        const defaultChannel = channel.guild.channels.cache.get(sourceGuild.channelId);
-        if(!defaultChannel) return;
-
-        const guildActiveUsers = member.guild.members.cache.filter((member: GuildMember) => member.voice?.channel).size;
-        if(guildActiveUsers == 0) {
-            await sweepTextChannel(client, channel.guild, defaultChannel);
-        }
+        await sweepTextChannel(client, channel.guild, channel);
     }
 }

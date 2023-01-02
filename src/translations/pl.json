@@ -33,7 +33,7 @@
 	"notifications.levelUpTitle": "Awans!",
 	"notifications.levelUpDescription": "<@{user}> osiągnął(a) {level} poziom!",
 	"notifications.levelField": "Poziom",
-	"notifications.winField": "Wygrane",
+	"notifications.winsField": "Wygrane",
     "notifications.dailyRewardTitle": "Codzienna nagroda",
 	"notifications.dailyRewardDescription": "<@{user}> odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
     "notifications.dailyRewardField": "Nagroda",
