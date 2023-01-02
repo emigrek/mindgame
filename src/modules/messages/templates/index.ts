@@ -3,6 +3,7 @@ import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
 import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
+import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 
 const embedSpacer = () => {
@@ -197,9 +198,10 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 }
 
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
-    const userRank = await getUserRank(user);
+    const userRank = await getUserRank(user) as number;
     const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
-    
+    const userTreshold = await getLevelRoleTreshold(user.stats.level);
+
     /*
     const addCurrentStatistics = async () => {
         const currentVoiceActivity = await getUserVoiceActivity(user);
@@ -223,7 +225,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                     </div>
                 </div>
             </div>
-            <div class="w-full h-[100px] flex items-center text-white">
+            <div class="w-full h-[125px] flex items-center text-white">
                 <div class="flex w-full text-lg flex-row items-center justify-center align-middle text-white space-x-3">
                     <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
@@ -234,7 +236,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-4xl">#${userRank}</div>
+                        <div class="text-4xl">${userRank == 1 ? `👑`:``}#${userRank}</div>
                     </div>
                     <div class="relative flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
                         <div class="flex space-x-2 items-center">
@@ -245,13 +247,13 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="w-full flex flex-col space-y-1 items-center justify-center">
-                            <div class="text-4xl">
+                        <div class="w-full flex flex-col space-y-2 items-center justify-center">
+                            <div class="text-5xl font-bold text-[${userTreshold.color}]">
                                 ${user.stats.level}
                             </div>  
                             ${ expProcentage ? `
                                 <div class="relative w-full h-3 bottom-0 flex rounded-lg bg-black/80">
-                                    <div style="width: ${expProcentage}%" class="h-3 flex items-center justify-center bg-[${colors.DarkVibrant}] shadow-[${colors.DarkVibrant}] shadow-md rounded-lg">
+                                    <div style="width: ${expProcentage}%" class="h-3 flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg">
                                         <div class="text-[0.6rem] text-white/70 rounded text-center font-bold">
                                             ${expProcentage}%
                                         </div>
