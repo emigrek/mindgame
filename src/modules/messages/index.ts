@@ -242,6 +242,8 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         });
         let count = 0;
         const promises = messagesToDelete.map(async (message: Message) => {
+            if(!message.deletable) return;
+            
             await message.delete();
             count++;
         });
