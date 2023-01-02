@@ -9,19 +9,20 @@ export const presenceUpdate: Event = {
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
+        const fetchedMember = await member.fetch();
 
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
              && 
             (newStatus !== PresenceUpdateStatus.Offline || newStatus !== PresenceUpdateStatus.Invisible)
         ) {
-            await startPresenceActivity(client, member, newPresence);
+            await startPresenceActivity(client, fetchedMember, newPresence);
         } else if(
             (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible || oldStatus)
              && 
             (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible)
         ) {
-            await endPresenceActivity(client, member);
+            await endPresenceActivity(client, fetchedMember);
         }
     }
 }
