@@ -21,6 +21,15 @@ const getNotificationsButton = async (client: ExtendedClient, sourceGuild: Datab
     return notificationsButton;
 }
 
+const getAutoSweepingButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+    const autoSweepingButton = new ButtonBuilder()
+        .setCustomId("autoSweeping")
+        .setLabel(client.i18n.__("config.autoSweepingButtonLabel"))
+        .setStyle(sourceGuild!.autoSweeping ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+    return autoSweepingButton;
+}
+
 const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
     const levelRolesButton = new ButtonBuilder()
         .setCustomId("levelRoles")
@@ -73,4 +82,4 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
     return quickButtonsCollection;
 }   
 
-export { getExitButton, getQuickButtons, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getAutoSweepingButton, getQuickButtons, getNotificationsButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

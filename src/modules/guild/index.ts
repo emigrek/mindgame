@@ -72,6 +72,18 @@ const setLevelRolesHoist = async (guild: Guild) => {
     return guildToUpdate;
 }
 
+const setAutoSweeing = async (guild: Guild) => {
+    const guildToUpdate = await GuildModel.findOne({
+        guildId: guild.id
+    });
+
+    if(!guildToUpdate) return null;
+
+    guildToUpdate.autoSweeping = !guildToUpdate.autoSweeping;
+    await guildToUpdate.save();
+    return guildToUpdate;
+}
+
 const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild, databaseGuild: DatabaseGuild) => void) => {
     const guilds = await getGuilds();
 
@@ -85,4 +97,4 @@ const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild
     })
 }
 
-export { createGuild, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild, setLevelRoles, setLevelRolesHoist };
+export { createGuild, setAutoSweeing, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild, setLevelRoles, setLevelRolesHoist };

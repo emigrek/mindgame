@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
@@ -72,6 +72,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
     const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
+    const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const locales = client.i18n.getLocales();
@@ -101,7 +102,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(levelRolesButton, levelRolesHoistButton);
     const row4 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton);
+        .setComponents(notificationsButton, autoSweepingButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
     var colors: ImageHexColors = await useImageHex(guildIcon!);
@@ -228,10 +229,10 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '.', '/', '?', '<', '>', '|', '\\', '~', '`'];
 
         const messages = await channel.messages.fetch({ limit: 50 });
-        const validToDelete = (message: Message) => 
-            message.author.bot && popularPrefixes.filter(p => message.content.startsWith(p)).length > 0;
-
-        const messagesToDelete = messages.filter(validToDelete);
+        const messagesToDelete = messages.filter((message: Message) => {
+            return popularPrefixes.some(prefix => message.content.startsWith(prefix)) && 
+                (message.attachments && message.attachments.size == 0);
+        });
         let count = 0;
 
         for await (const message of messagesToDelete.values()) {

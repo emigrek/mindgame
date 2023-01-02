@@ -43,5 +43,6 @@
 	"quickButton.profileLabel": "Profile ✨",
 	"quickButton.guildStatisticsLabel": "Statistics 📅",
 	"quickButton.sweepLabel": "Spam? 🧹",
+	"config.autoSweepingButtonLabel": "Auto sweeping 🧹",
 	"sweeper.sweeped": "Sweeped {count} messages."
 }

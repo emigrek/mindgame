@@ -7,6 +7,7 @@ import profileTimePublic from "./profileTimePublic";
 import sweep from "./sweep";
 import guildStatistics from "./guildStatistics";
 import profile from "./profile";
+import autoSweeping from "./autoSweeping";
 
 const buttons: Button[] = [
     notifications,
@@ -15,7 +16,8 @@ const buttons: Button[] = [
     profileTimePublic,
     sweep,
     guildStatistics,
-    profile
+    profile,
+    autoSweeping
 ];
 
 export default buttons;

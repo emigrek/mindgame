@@ -12,6 +12,8 @@ export const voiceChannelLeave: Event = {
         const sourceGuild = await getGuild(channel.guild);
         if(!sourceGuild) return;
 
+        if(!sourceGuild.autoSweeping) return;
+
         const defaultChannel = channel.guild.channels.cache.get(sourceGuild.channelId);
         if(!defaultChannel) return;
 
