@@ -3,7 +3,7 @@ import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
 import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
-import { getUserRank } from "../../user";
+import { getUserRank, levelToExp } from "../../user";
 
 const embedSpacer = () => {
     return `
@@ -198,7 +198,9 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
     const userRank = await getUserRank(user);
-
+    const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
+    
+    /*
     const addCurrentStatistics = async () => {
         const currentVoiceActivity = await getUserVoiceActivity(user);
         const currentPresenceActivity = await getUserPresenceActivity(user);
@@ -207,6 +209,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
             // todo
         };
     }
+    */
 
     return `
         <div class="flex flex-col items-center space-y-3">
@@ -233,7 +236,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         </div>
                         <div class="text-4xl">#${userRank}</div>
                     </div>
-                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="relative flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80">${client.i18n.__("profile.level")}</div>
                             <div>
@@ -242,7 +245,20 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-4xl">${user.stats.level}</div>
+                        <div class="w-full flex flex-col space-y-1 items-center justify-center">
+                            <div class="text-4xl">
+                                ${user.stats.level}
+                            </div>  
+                            ${ expProcentage ? `
+                                <div class="relative w-full h-3 bottom-0 flex rounded-lg bg-black/80">
+                                    <div style="width: ${expProcentage}%" class="h-3 flex items-center justify-center bg-[${colors.Vibrant}] rounded-lg">
+                                        <div class="text-sm text-white text-center font-bold">
+                                            ${expProcentage}%
+                                        </div>
+                                    </div> 
+                                </div>` : ''
+                            }
+                        </div>
                     </div>
                     <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
