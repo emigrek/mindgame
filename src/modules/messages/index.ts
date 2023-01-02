@@ -236,7 +236,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         const messagesToDelete = messages.filter((message: Message) => {
             return popularPrefixes.some(prefix => message.content.startsWith(prefix)) && 
                 (message.attachments && message.attachments.size == 0) &&
-                (message.embeds && message.embeds.length);
+                (message.embeds.length);
         });
         let count = 0;
         const promises = messagesToDelete.map(async (message: Message) => {
