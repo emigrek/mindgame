@@ -11,15 +11,17 @@ export const userLeveledUp: Event = {
         const sourceGuilds = await getGuilds();
 
         for await (const sourceGuild of sourceGuilds) {
-            const guild = await client.guilds.fetch(sourceGuild.guildId);
+            const guild = client.guilds.cache.get(sourceGuild.guildId)!;
             const { notifications, channelId, levelRoles } = sourceGuild;
-            if(!notifications || !channelId) continue;
+            if(!notifications || !channelId || !guild)
+                continue;
 
             const channel = guild.channels.cache.get(channelId) as TextChannel;
-            if(!channel) continue;
-            if(levelRoles) {
+            if(!channel)
+                continue;
+
+            if(levelRoles)
                 await assignUserLevelRole(client, user, guild);
-            }
 
             const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
             await channel.send(levelUpMesssagePayload);
