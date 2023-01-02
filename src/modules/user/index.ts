@@ -110,10 +110,9 @@ const setPublicTimeStats = async (user: User) => {
         exists = await createUser(user);
     }
 
-    await UserModel.updateOne({ userId: user.id }, {
-        "stats.time.public": !exists.stats.time.public
-    });
+    exists.stats.time.public = !exists.stats.time.public;
 
+    await exists.save();
     return exists;
 }
 

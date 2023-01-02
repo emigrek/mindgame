@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, TextChannel } from "discord.js";
 import { Event } from "../interfaces";
 import { endVoiceActivity } from "../modules/activity";
 import { getGuild } from "../modules/guild";
@@ -11,9 +11,14 @@ export const voiceChannelLeave: Event = {
 
         const sourceGuild = await getGuild(channel.guild);
         if(!sourceGuild) return;
-
         if(!sourceGuild.autoSweeping) return;
 
+        const guild = await channel.guild.fetch();
+        const guildDefaultChannel = guild.channels.cache.get(sourceGuild.channelId);
+
         await sweepTextChannel(client, channel.guild, channel);
+        if(guildDefaultChannel) {
+            await sweepTextChannel(client, channel.guild, guildDefaultChannel as TextChannel);
+        }
     }
 }
