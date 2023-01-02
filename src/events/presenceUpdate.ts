@@ -6,12 +6,13 @@ export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
         const { guild, member } = newPresence;
+        if(!member) return;
+
+        const fetchedMember = await member.fetch();
+        if(!fetchedMember) return;
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
-        const fetchedMember = await member.fetch();
-
-        if(!fetchedMember) return;
 
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
