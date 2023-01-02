@@ -1,6 +1,5 @@
 import { Guild, TextChannel, User } from "discord.js";
 import ExtendedClient from "../client/ExtendedClient";
-import { Guild as DatabaseGuild } from "../interfaces";
 import { Event } from "../interfaces";
 import { getGuild } from "../modules/guild";
 import { getDailyRewardMessagePayload } from "../modules/messages";
