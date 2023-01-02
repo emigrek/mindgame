@@ -234,16 +234,12 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
                 (message.attachments && message.attachments.size == 0);
         });
         let count = 0;
-
-        for await (const message of messagesToDelete.values()) {
-            try {
-                await message.delete();
-            } catch (error) {
-                console.error(error);
-            }
+        const promises = messagesToDelete.map(async (message: Message) => {
+            await message.delete();
             count++;
-        }
+        });
 
+        await Promise.all(promises);
         await attachQuickButtons(client, channel);
         resolve(count);
     });
