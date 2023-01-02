@@ -104,6 +104,19 @@ const updateUser = async (user: User) => {
     return exists;
 }
 
+const setPublicTimeStats = async (user: User) => {
+    let exists = await UserModel.findOne({ userId: user.id });
+    if(!exists) {
+        exists = await createUser(user);
+    }
+
+    await UserModel.updateOne({ userId: user.id }, {
+        "stats.time.public": !exists.stats.time.public
+    });
+
+    return exists;
+}
+
 const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload) => {
     const userSource = await updateUser(user) as DatabaseUser & Document;
     const newExtendedStatistics: ExtendedStatistics = {
@@ -227,4 +240,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
