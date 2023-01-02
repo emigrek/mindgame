@@ -31,7 +31,7 @@
 	"statistics.voiceHeader": "Aktywność głosowa w tygodniu",
 	"statistics.presenceHeader": "Ogólna aktywność w tygodniu",
 	"notifications.levelUpTitle": "Awans!",
-	"notifications.levelUpDescription": "**{tag}** osiągnął(a) **{level}** poziom!",
+	"notifications.levelUpDescription": "**{tag}** osiągnął(eła) następny poziom!",
 	"notifications.levelField": "Poziom",
 	"notifications.winsField": "Wygrane",
     "notifications.dailyRewardTitle": "Codzienna nagroda",

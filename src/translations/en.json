@@ -31,7 +31,7 @@
 	"statistics.voiceHeader": "Voice activity in week",
 	"statistics.presenceHeader": "Overall activity in week",
 	"notifications.levelUpTitle": "Level up!",
-	"notifications.levelUpDescription": "**{tag}** has reached **{level}** level!",
+	"notifications.levelUpDescription": "**{tag}** has reached new level!",
 	"notifications.levelField": "Level",
 	"notifications.winsField": "Wins",
 	"notifications.dailyRewardTitle": "Daily reward",
