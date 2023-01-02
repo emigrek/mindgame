@@ -203,7 +203,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             { 
                 name: client.i18n.__("notifications.dailyRewardWeekVoiceTimeField"),
-                value: `\`\`\`${sourceUser.week.time.voice}H\`\`\``,
+                value: `\`\`\`${((sourceUser.week.time.voice)/3600).toFixed(2)}H\`\`\``,
             },
         ],
         thumbnail: {
