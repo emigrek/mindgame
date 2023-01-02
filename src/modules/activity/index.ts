@@ -7,7 +7,7 @@ import presenceActivitySchema from "../schemas/PresenceActivity";
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
-import { Guild, PresenceActivity, User, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
+import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -117,7 +117,7 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     return exists;
 }
 
-const getUserGuildsActivityDetails = async (sourceUser: User) => {
+const getUserGuildsActivityDetails = async (sourceUser: DatabaseUser) => {
     const allDetails: Collection<string, UserGuildActivityDetails> = new Collection();
 
     const voiceActivites = await voiceActivityModel.find({
@@ -144,7 +144,7 @@ const getUserGuildsActivityDetails = async (sourceUser: User) => {
     return allDetails;
 }
 
-const getFavoriteGuildDetails = async (sourceUser: User) => {
+const getFavoriteGuildDetails = async (sourceUser: DatabaseUser) => {
     const details = await getUserGuildsActivityDetails(sourceUser);
     if(!details.size) return null;
     const sorted = details.sort((a, b) => b.time.voice - a.time.voice);
@@ -209,7 +209,7 @@ const getActiveUsersInDay = (voiceActivities: VoiceActivity[] | PresenceActivity
     return activeUsers.size;
 }
 
-const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
+const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
     const query = await presenceActivityModel.find({
@@ -248,7 +248,7 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: Guild) => {
     return data;
 }
 
-const getGuildVoicePeak = async (guild: Guild) => {
+const getGuildVoicePeak = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
 
@@ -283,7 +283,7 @@ const getGuildVoicePeak = async (guild: Guild) => {
     return activeUsersPeak;
 }
 
-const getGuildPresencePeak = async (guild: Guild) => {
+const getGuildPresencePeak = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
 
@@ -317,7 +317,7 @@ const getGuildPresencePeak = async (guild: Guild) => {
     return activeUsersPeak;
 }
 
-const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
+const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
 
@@ -354,7 +354,7 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: Guild) => {
     return data;
 }
 
-const getGuildMostVoiceActiveUserAcrossWeek = async (guild: Guild) => {
+const getGuildMostVoiceActiveUserAcrossWeek = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
     const query = await voiceActivityModel.aggregate([
@@ -388,7 +388,7 @@ const getGuildMostVoiceActiveUserAcrossWeek = async (guild: Guild) => {
     return query[0];
 };
 
-const getGuildMostPresenceActiveUserAcrossWeek = async (guild: Guild) => {
+const getGuildMostPresenceActiveUserAcrossWeek = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
     const query = await presenceActivityModel.aggregate([
@@ -427,9 +427,19 @@ const getVoiceActivity = async (member: GuildMember) => {
     return exists;
 };
 
+const getUserVoiceActivity = async (user: DatabaseUser) => {
+    const exists = await voiceActivityModel.findOne({ userId: user.userId, to: null });
+    return exists;
+}
+
 const getPresenceActivity = async (member: GuildMember) => {
     const exists = await presenceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
     return exists;
 }
 
-export { startVoiceActivity, getGuildVoicePeak, getGuildPresencePeak, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+const getUserPresenceActivity = async (user: DatabaseUser) => {
+    const exists = await presenceActivityModel.findOne({ userId: user.userId, to: null });
+    return exists;
+}
+
+export { startVoiceActivity, getUserPresenceActivity, getUserVoiceActivity, getGuildVoicePeak, getGuildPresencePeak, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };

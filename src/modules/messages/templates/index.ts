@@ -1,8 +1,8 @@
 import { BaseChannel, ChannelType, GuildMember } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
-import { Guild, User } from "../../../interfaces";
-import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak } from "../../activity";
+import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
+import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
 import { getUserRank } from "../../user";
 
 const embedSpacer = () => {
@@ -198,6 +198,15 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
     const userRank = await getUserRank(user);
+
+    const addCurrentStatistics = async () => {
+        const currentVoiceActivity = await getUserVoiceActivity(user);
+        const currentPresenceActivity = await getUserPresenceActivity(user);
+
+        const statisticsPayload: ExtendedStatisticsPayload = {
+            // todo
+        };
+    }
 
     return `
         <div class="flex flex-col items-center space-y-3">
