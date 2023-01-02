@@ -3,7 +3,7 @@ import { Guild as DatabaseGuild } from "../interfaces";
 import { Event } from "../interfaces";
 import { everyGuild } from "../modules/guild";
 import { getLevelUpMessagePayload } from "../modules/messages";
-import { assignLevelRolesInAllGuilds, assignUserLevelRole } from "../modules/roles";
+import { assignUserLevelRole } from "../modules/roles";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
