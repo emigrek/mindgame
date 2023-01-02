@@ -199,8 +199,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         fields: [
             { 
                 name: client.i18n.__("notifications.dailyRewardField"),
-                value: `\`\`\`${process.env.DAILY_REWARD} EXP\`\`\``,
-            }
+                value: `\`\`\`${process.env.DAILY_REWARD}EXP\`\`\``,
+            },
+            { 
+                name: client.i18n.__("notifications.dailyRewardWeekVoiceTimeField"),
+                value: `\`\`\`${sourceUser.week.time.voice}H\`\`\``,
+            },
         ],
         thumbnail: {
             url: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/60/microsoft/74/shortcake_1f370.png',

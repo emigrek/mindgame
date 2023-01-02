@@ -11,6 +11,8 @@ export const presenceUpdate: Event = {
         const newStatus = newPresence?.status;
         const fetchedMember = await member.fetch();
 
+        if(!fetchedMember) return;
+
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
              && 

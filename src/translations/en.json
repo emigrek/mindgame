@@ -37,6 +37,7 @@
 	"notifications.dailyRewardTitle": "Daily reward",
 	"notifications.dailyRewardDescription": "**{tag}** has claimed **daily reward**!\nNext daily reward in <t:{time}:R>.",
 	"notifications.dailyRewardField": "Reward",
+	"notifications.dailyRewardWeekVoiceTimeField": "Weekly voice time",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
 	"utils.noPermissions": "You don't have permission to use this.",
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
