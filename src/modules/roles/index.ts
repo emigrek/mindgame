@@ -96,7 +96,7 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
     const currentTresholdRole = await getMemberTresholdRole(member);
     const treshold = getLevelRoleTreshold(sourceUser.stats.level);
     let tresholdRole = await getGuildTresholdRole(guild, treshold);
-    let lowestTresholdRole = await getLowestLevelRole(guild);
+    const lowestTresholdRole = await getLowestLevelRole(guild);
 
     if(currentTresholdRole) {
         if(tresholdRole && currentTresholdRole.equals(tresholdRole)) return null;
@@ -111,11 +111,15 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
 
     if(!tresholdRole) {
         try {            
+            let position = treshold.position;
+            if(lowestTresholdRole && treshold.position > lowestTresholdRole.position) {
+                position = lowestTresholdRole.position-1;
+            }
             tresholdRole = await guild.roles.create({
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
                 hoist: sourceGuild.levelRolesHoist,
-                position: lowestTresholdRole?.position + treshold.position
+                position: position
             });
         } catch (error) {
             await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
