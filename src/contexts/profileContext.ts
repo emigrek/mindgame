@@ -10,8 +10,6 @@ const profileContext: ContextMenu = {
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-
-        await assignUserLevelRole(client, interaction.user, interaction.guild!);
         
         const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction);
         await interaction.followUp({ ...profileMessagePayload, ephemeral: true });
