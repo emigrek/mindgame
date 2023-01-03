@@ -20,7 +20,7 @@ const getLevelRoleTreshold = (level: number) => {
 
     let result = tresholds[0];
     tresholds.forEach((treshold: LevelTreshold) => {
-        if(level <= treshold.level) {
+        if(level >= treshold.level) {
             result = treshold;
         }
     });
