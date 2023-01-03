@@ -75,23 +75,26 @@ const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHex
     const dayTd = (day: number) => {
         let hours = '';
         const dayPeaks = guildStatistics.get(day.toString());
+        console.log(dayPeaks);
         for(let i = 0; i < 24; i++) {
             const hour = dayPeaks.hours.find((hour: any) => hour.hour === i);
             const hourAlpha = peak ? Math.round((hour.activePeak / peak) * 100) : 0;
 
-            if(hour.activePeak)
-                hours += `<td>
-                    <div 
-                        class="text-center shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
-                        style="opacity: ${hourAlpha}%"
-                    >
-                        ${hour.activePeak}
-                        </div>
-                </td>`;
-            else
+            if(!hour.activePeak || !dayPeaks) {
                 hours += `<td>
                     <div class="text-center rounded w-6 h-6 bg-white/5 opacity-20"></div>
                 </td>`;
+                continue;
+            }
+
+            hours += `<td>
+                <div 
+                    class="text-center shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
+                    style="opacity: ${hourAlpha}%"
+                >
+                    ${hour.activePeak}
+                    </div>
+            </td>`;
         }
         return hours;
     }

@@ -335,7 +335,7 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
 
     let data: Collection<string, ActivityDay> = mockDays();
 
-    query.forEach((activity: VoiceActivity) => {
+    query.forEach(async (activity: VoiceActivity) => {
         if(!activity.to) {
             activity.to = moment().toDate();
         }
@@ -344,6 +344,8 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
 
         const day = data.get(activityDay.toString());
         if(!day) return;
+
+        day.activePeak = await getActiveUsersInDay(query, day.day);
 
         const hour = day.hours.find(h => h.hour === activityHour);
         if(hour) {
