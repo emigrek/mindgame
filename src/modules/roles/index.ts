@@ -27,6 +27,20 @@ const getLevelRoleTreshold = (level: number) => {
     return {...result, position};
 }
 
+const checkGuildLevelRolesValid = async (guild: Guild) => {
+    const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
+    if(!levelRoles.size) return false;
+
+    const tresholds = require("./tresholds.json");
+    let valid = true;
+    tresholds.forEach((treshold: LevelTreshold) => {
+        const levelRole = levelRoles.find(role => role.name.includes("Level") && role.name.includes(treshold.level.toString()));
+        if(!levelRole) valid = false;
+    });
+
+    return valid;
+}
+
 const getGuildTresholdRole = (guild: Guild, treshold: LevelTreshold) => {
     const levelRole = guild.roles.cache.find(role => role.name.includes("Level") && role.name.includes(treshold.level.toString()));
     if(!levelRole) return null;
@@ -111,6 +125,9 @@ const syncGuildLevelRolesHoisting = async (client: ExtendedClient, guild: Guild)
 const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Guild) => {
     const sourceUser = await getUser(user) as DatabaseUser;
     if(!sourceUser) return null;
+
+    const validLevelRoles = await checkGuildLevelRolesValid(guild);
+    if(!validLevelRoles) return null;
 
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
     const member = await guild.members.fetch(user); 
