@@ -143,7 +143,7 @@ const sortLevelRoles = async (client: ExtendedClient, guild: Guild) => {
         let position = treshold.position;
         
         if(lowest.position > role.position) {
-            position = lowest.position+1;
+            position = lowest.position;
         }
         try {
             await role.setPosition(position);
