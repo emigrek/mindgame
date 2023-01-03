@@ -71,25 +71,18 @@ const getMemberTresholdRole = (member: GuildMember) => {
 const addLevelRoles = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
     const tresholds = require("./tresholds.json");
-    const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold) => {
+    const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold, index: number) => {
         let tresholdRole = await guild.roles.create({
             name: `Level ${treshold.level}`,
             color: treshold.color,
             hoist: sourceGuild.levelRolesHoist,
-            position: 0,
+            position: tresholds.length-index,
         });
         return tresholdRole;
     });
 
     const levelRoles = await Promise.all(levelRolesPromises);
-    const sortedPromises = tresholds.map(async (treshold: LevelTreshold) => {
-        const tresholdRole = levelRoles.find(role => role.name.includes("Level") && role.name.includes(treshold.level.toString()));
-        if(!tresholdRole) return null;
-        const sortedRole = await tresholdRole.setPosition(treshold.position!);
-        return sortedRole;
-    });
-    const sortedRoles = await Promise.all(sortedPromises);
-    return sortedRoles;
+    return levelRoles;
 }
 
 const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
