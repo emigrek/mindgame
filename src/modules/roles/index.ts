@@ -17,13 +17,14 @@ const getLevelRoleTresholds = () => {
 
 const getLevelRoleTreshold = (level: number) => {
     const tresholds = require("./tresholds.json");
-
     let result = tresholds[0];
-    tresholds.forEach((treshold: LevelTreshold) => {
+    
+    for (const treshold of tresholds) {
         if(level >= treshold.level) {
             result = treshold;
-        }
-    });
+            break;
+        } else continue;
+    }
 
     return result;
 }
