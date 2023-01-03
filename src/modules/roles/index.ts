@@ -1,13 +1,15 @@
-import { ColorResolvable, Guild, GuildMember, Role, User } from "discord.js";
+import { BitField, BitFieldResolvable, ColorResolvable, Guild, GuildMember, PermissionFlagsBits, Permissions, PermissionsBitField, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { Guild as DatabaseGuild, User as DatabaseUser } from "../../interfaces";
 import { getGuild, getGuilds } from "../guild";
 import { sendToDefaultChannel } from "../messages";
 import { getUser } from "../user";
+import Discord from "discord.js";
 
 interface LevelTreshold {
     level: number;
     color: ColorResolvable;
+    permissions: string[];
     position?: number;
 }
 
@@ -92,7 +94,7 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
     }
 
     if(!tresholdRole) {
-        try {
+        try {            
             tresholdRole = await guild.roles.create({
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
@@ -104,13 +106,31 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
             return null;
         }
     }
-
+    await sortLevelRoles(client, guild);
     try {
         await member.roles.add(tresholdRole);
     } catch (error) {
         await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
         return null;
     }
+}
+
+const sortLevelRoles = async (client: ExtendedClient, guild: Guild) => {
+    const tresholds = require("./tresholds.json");
+    const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
+    if(!levelRoles.size) return null;
+
+    levelRoles.forEach(async (role: Role) => {
+        const level = role.name.split(" ")[1];
+        const treshold = tresholds.find((treshold: LevelTreshold) => treshold.level == parseInt(level));
+        if(!treshold) return null;
+
+        try {
+            await role.setPosition(treshold.position);
+        } catch (error) {
+            await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
+        }
+    });
 }
 
 const assignLevelRolesInGuild = async (client: ExtendedClient, guild: Guild) => {

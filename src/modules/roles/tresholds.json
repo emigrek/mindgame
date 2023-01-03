@@ -1,7 +1,8 @@
 [
     {
         "level": 0,
-        "color": "#817678"
+        "color": "#817678",
+        "permissions": ["MOVE_MEMBERS"]
     },
     {
         "level": 10,
@@ -21,7 +22,8 @@
     },
     {
         "level": 90,
-        "color": "#748df9"
+        "color": "#748df9",
+        "permissions": ["MOVE_MEMBERS"]
     },
     {
         "level": 120,
