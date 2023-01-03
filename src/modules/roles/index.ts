@@ -27,11 +27,22 @@ const getLevelRoleTreshold = (level: number) => {
     return {...result, position};
 }
 
+const getLevelRoleTresholds = () => {
+    const tresholds = require("./tresholds.json").reverse() as LevelTreshold[];
+
+    tresholds.forEach((treshold: LevelTreshold) => {
+        let position = tresholds.indexOf(treshold)+1;
+        treshold.position = position;
+    });
+
+    return tresholds;
+}
+
 const checkGuildLevelRolesValid = async (guild: Guild) => {
     const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
     if(!levelRoles.size) return false;
 
-    const tresholds = require("./tresholds.json");
+    const tresholds = getLevelRoleTresholds();
     let valid = true;
     tresholds.forEach((treshold: LevelTreshold) => {
         const levelRole = levelRoles.find(role => role.name.includes("Level") && role.name.includes(treshold.level.toString()));
@@ -47,21 +58,6 @@ const getGuildTresholdRole = (guild: Guild, treshold: LevelTreshold) => {
     return levelRole;
 }
 
-const getLowestLevelRole = (guild: Guild) => {
-    const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
-    if(!levelRoles.size) return null;
-
-    let lowestRole = levelRoles.first()!;
-    levelRoles.forEach(role => {
-        if(role.position < lowestRole.position) {
-            lowestRole = role;
-        }
-    });
-
-    return lowestRole;
-}
-
-
 const getMemberTresholdRole = (member: GuildMember) => {
     const levelRole = member.roles.cache.find(role => role.name.includes("Level"));
     if(!levelRole) return null;
@@ -70,13 +66,14 @@ const getMemberTresholdRole = (member: GuildMember) => {
 
 const addLevelRoles = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
-    const tresholds = require("./tresholds.json").reverse();
-    const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold, index: number) => {
+    const tresholds = getLevelRoleTresholds();
+
+    const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold) => {
         let tresholdRole = await guild.roles.create({
             name: `Level ${treshold.level}`,
             color: treshold.color,
             hoist: sourceGuild.levelRolesHoist,
-            position: index,
+            position: treshold.position,
         });
         return tresholdRole;
     });
