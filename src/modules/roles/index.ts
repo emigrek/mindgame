@@ -33,6 +33,21 @@ const getGuildTresholdRole = (guild: Guild, treshold: LevelTreshold) => {
     return levelRole;
 }
 
+const getLowestLevelRole = (guild: Guild) => {
+    const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
+    if(!levelRoles.size) return null;
+
+    let lowestRole = levelRoles.first()!;
+    levelRoles.forEach(role => {
+        if(role.position < lowestRole.position) {
+            lowestRole = role;
+        }
+    });
+
+    return lowestRole;
+}
+
+
 const getMemberTresholdRole = (member: GuildMember) => {
     const levelRole = member.roles.cache.find(role => role.name.includes("Level"));
     if(!levelRole) return null;
@@ -81,7 +96,7 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
     const currentTresholdRole = await getMemberTresholdRole(member);
     const treshold = getLevelRoleTreshold(sourceUser.stats.level);
     let tresholdRole = await getGuildTresholdRole(guild, treshold);
-    const zeroRole = guild.roles.cache.find(role => role.name.includes("Level 0"));
+    let lowestTresholdRole = await getLowestLevelRole(guild);
 
     if(currentTresholdRole) {
         if(tresholdRole && currentTresholdRole.equals(tresholdRole)) return null;
@@ -100,7 +115,7 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
                 hoist: sourceGuild.levelRolesHoist,
-                position: zeroRole?.position + treshold.position
+                position: lowestTresholdRole?.position + treshold.position
             });
         } catch (error) {
             await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
