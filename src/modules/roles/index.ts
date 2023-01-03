@@ -70,13 +70,13 @@ const getMemberTresholdRole = (member: GuildMember) => {
 
 const addLevelRoles = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
-    const tresholds = require("./tresholds.json");
+    const tresholds = require("./tresholds.json").reverse();
     const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold, index: number) => {
         let tresholdRole = await guild.roles.create({
             name: `Level ${treshold.level}`,
             color: treshold.color,
             hoist: sourceGuild.levelRolesHoist,
-            position: tresholds.length-index,
+            position: index,
         });
         return tresholdRole;
     });
