@@ -14,7 +14,7 @@ interface LevelTreshold {
 }
 
 const getLevelRoleTreshold = (level: number) => {
-    const tresholds = require("./tresholds.json").reverse() as LevelTreshold[];
+    const tresholds = require("./tresholds.json") as LevelTreshold[];
 
     let result = tresholds[0];
     tresholds.forEach((treshold: LevelTreshold) => {
@@ -28,7 +28,7 @@ const getLevelRoleTreshold = (level: number) => {
 }
 
 const getLevelRoleTresholds = () => {
-    const tresholds = require("./tresholds.json").reverse() as LevelTreshold[];
+    const tresholds = require("./tresholds.json") as LevelTreshold[];
 
     tresholds.forEach((treshold: LevelTreshold) => {
         let position = tresholds.indexOf(treshold)+1;
