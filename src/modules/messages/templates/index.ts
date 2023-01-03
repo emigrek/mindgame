@@ -63,7 +63,7 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     `;
 }
 
-const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHexColors) => {
+const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
     const hoursTh = () => {
         let hours = '';
         for(let i = 0; i < 24; i++) {
@@ -74,13 +74,13 @@ const getStatisticsTable = (guildStatistics: any, peak: number, colors: ImageHex
 
     const dayTd = (day: number) => {
         let hours = '';
-        const dayPeaks = guildStatistics.get(day.toString());
-        console.log(dayPeaks);
-        for(let i = 0; i < 24; i++) {
-            const hour = dayPeaks.hours.find((hour: any) => hour.hour === i);
-            const hourAlpha = peak ? Math.round((hour.activePeak / peak) * 100) : 0;
+        let dayStat = guildStatistics.get(day.toString());
 
-            if(!hour.activePeak || !dayPeaks) {
+        for(let i = 0; i < 24; i++) {
+            let hour = dayStat.hours.find((hour: any) => hour.hour === i);
+            let hourAlpha = dayStat.activePeak ? Math.round((hour.activePeak / dayStat.activePeak) * 100) : 0;
+
+            if(!hour.activePeak || !dayStat.activePeak) {
                 hours += `<td>
                     <div class="text-center rounded w-6 h-6 bg-white/5 opacity-20"></div>
                 </td>`;
@@ -326,11 +326,8 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     const guild = await client.guilds.fetch(sourceGuild.guildId);
     const guildIcon = guild.iconURL({ extension: "png" });    
 
-    const guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
-    const guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
-
-    const guildVoicePeak = await getGuildVoicePeak(sourceGuild);
-    const guildPresencePeak = await getGuildPresencePeak(sourceGuild);
+    let guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
+    let guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
     
     return `
         <div class="flex flex-col items-center">
@@ -355,7 +352,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                 </div>
             </div>
             <div class="w-full rounded-b-xl h-[250px] shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, guildVoicePeak, colors) }
+                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, colors) }
             </div>
             <div class="mt-2 w-full rounded-t-xl bg-[#202225] text-white/80 py-5 px-5 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
                 <div class="text-2xl">${client.i18n.__("statistics.presenceHeader")}</div>
@@ -366,7 +363,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                 </div>
             </div>
             <div class="w-full h-[250px] rounded-b-xl shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, guildPresencePeak, {
+                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3d679f",
                 }) }
