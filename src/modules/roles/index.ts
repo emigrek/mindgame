@@ -23,7 +23,7 @@ const getLevelRoleTreshold = (level: number) => {
         }
     });
 
-    let position = tresholds.indexOf(result)+1;
+    let position = tresholds.length - tresholds.indexOf(result);
     return {...result, position};
 }
 
