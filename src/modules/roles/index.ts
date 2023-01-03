@@ -89,8 +89,6 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
     const currentMemberTresholdRole = await getMemberTresholdRole(member);
     const treshold = getLevelRoleTreshold(sourceUser.stats.level);
     const guildTresholdRole = await getGuildTresholdRole(guild, treshold);
-    console.log(treshold);
-    console.log(guildTresholdRole)
 
     if(currentMemberTresholdRole) {
         if(currentMemberTresholdRole.equals(guildTresholdRole!)) return null;
