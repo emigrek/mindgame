@@ -54,11 +54,32 @@ const getMemberTresholdRole = (member: GuildMember) => {
     return levelRole;
 }
 
+const addLevelRoles = async (client: ExtendedClient, guild: Guild) => {
+    const sourceGuild = await getGuild(guild) as DatabaseGuild;
+    const tresholds = require("./tresholds.json");
+    const levelRolesPromises = tresholds.map(async (treshold: LevelTreshold) => {
+        let tresholdRole = await guild.roles.create({
+            name: `Level ${treshold.level}`,
+            color: treshold.color,
+            hoist: sourceGuild.levelRolesHoist,
+            position: treshold.position,
+        });
+        return tresholdRole;
+    });
+
+    const levelRoles = await Promise.all(levelRolesPromises);
+    return levelRoles;
+}
+
 const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
     const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
 
     if(sourceGuild.levelRoles) {
+        if(!levelRoles.size) {
+            await addLevelRoles(client, guild);
+        }
+
         await assignLevelRolesInGuild(client, guild);
     } else {
         if(!levelRoles.size) return null;
@@ -108,49 +129,12 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
         }
     }
 
-    if(!tresholdRole) {
-        try {
-            tresholdRole = await guild.roles.create({
-                name: `Level ${treshold.level}`,
-                color: treshold.color,
-                hoist: sourceGuild.levelRolesHoist,
-                position: treshold.position,
-            });
-        } catch (error) {
-            await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
-            return null;
-        }
-    }
-    await sortLevelRoles(client, guild);
     try {
-        await member.roles.add(tresholdRole);
+        await member.roles.add(tresholdRole!);
     } catch (error) {
         await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
         return null;
     }
-}
-
-const sortLevelRoles = async (client: ExtendedClient, guild: Guild) => {
-    const tresholds = require("./tresholds.json");
-    const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
-    const lowest = levelRoles.first()!;
-
-    if(!levelRoles.size) return null;
-
-    levelRoles.forEach(async (role: Role) => {
-        const level = role.name.split(" ")[1];
-        const treshold = tresholds.find((treshold: LevelTreshold) => treshold.level == parseInt(level));
-        let position = treshold.position;
-        
-        if(lowest.position > role.position) {
-            position = lowest.position;
-        }
-        try {
-            await role.setPosition(position);
-        } catch (error) {
-            await sendToDefaultChannel(client, guild, client.i18n.__("roles.missingPermissions"));
-        }
-    });
 }
 
 const assignLevelRolesInGuild = async (client: ExtendedClient, guild: Guild) => {
