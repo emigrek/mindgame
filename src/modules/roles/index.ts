@@ -73,7 +73,7 @@ const addLevelRoles = async (client: ExtendedClient, guild: Guild) => {
             name: `Level ${treshold.level}`,
             color: treshold.color,
             hoist: sourceGuild.levelRolesHoist,
-            position: treshold.position,
+            position: 0,
         });
         return tresholdRole;
     });
