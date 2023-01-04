@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
@@ -144,7 +144,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild) as GuildInterface;
-    const guildIcon = guild.iconURL({ extension: "png" });
+    const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     var colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutXLarge(guildStatisticsHtml, colors));
