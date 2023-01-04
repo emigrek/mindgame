@@ -205,17 +205,6 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
     const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
     const userTreshold = await getLevelRoleTreshold(user.stats.level);
 
-    /*
-    const addCurrentStatistics = async () => {
-        const currentVoiceActivity = await getUserVoiceActivity(user);
-        const currentPresenceActivity = await getUserPresenceActivity(user);
-
-        const statisticsPayload: ExtendedStatisticsPayload = {
-            // todo
-        };
-    }
-    */
-
     return `
         <div class="flex flex-col items-center space-y-3">
             <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">

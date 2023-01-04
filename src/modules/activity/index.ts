@@ -184,6 +184,8 @@ const mockDays = () => {
 const getActiveUsersInHour = (voiceActivities: VoiceActivity[] | PresenceActivity[], day: number, hour: number): number => {
     const activeUsers = new Set<string>();
     for (const activity of voiceActivities) {
+        if(!activity.to) activity.to = moment().toDate();
+
         if (activity.from.getHours() === hour && activity.from.getDay() === day) {
             activeUsers.add(activity.userId);
             continue;
