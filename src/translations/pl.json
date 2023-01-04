@@ -37,7 +37,7 @@
     "notifications.dailyRewardTitle": "Codzienna nagroda",
 	"notifications.dailyRewardDescription": "**{tag}** odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
     "notifications.dailyRewardField": "Nagroda",
-	"notifications.dailyRewardWeekVoiceTimeField": "W tym tygodniu",
+	"notifications.weekVoiceTimeField": "W tym tygodniu",
 	"roles.missingPermissions": "Wygląda na to że nie mam uprawnień do zarządzania rolami. Zalecane jest aby moja rola była najwyżej.",
 	"utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 	"quickButton.profileLabel": "Profil ✨",

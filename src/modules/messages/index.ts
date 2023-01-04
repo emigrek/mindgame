@@ -174,6 +174,11 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
                 name: client.i18n.__("notifications.winsField"),
                 value: `\`\`\`${sourceUser.stats.games.won.skill + sourceUser.stats.games.won.skin}\`\`\``,
                 inline: true
+            },
+            { 
+                name: client.i18n.__("notifications.weekVoiceTimeField"),
+                value: `\`\`\`${((sourceUser.week.time.voice)/3600).toFixed(2)}H\`\`\``,
+                inline: true
             }
         ],
         thumbnail: {
@@ -203,7 +208,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
                 inline: true
             },
             { 
-                name: client.i18n.__("notifications.dailyRewardWeekVoiceTimeField"),
+                name: client.i18n.__("notifications.weekVoiceTimeField"),
                 value: `\`\`\`${((sourceUser.week.time.voice)/3600).toFixed(2)}H\`\`\``,
                 inline: true
             },
