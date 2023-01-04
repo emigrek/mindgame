@@ -200,10 +200,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             { 
                 name: client.i18n.__("notifications.dailyRewardField"),
                 value: `\`\`\`${process.env.DAILY_REWARD}EXP\`\`\``,
+                inline: true
             },
             { 
                 name: client.i18n.__("notifications.dailyRewardWeekVoiceTimeField"),
                 value: `\`\`\`${((sourceUser.week.time.voice)/3600).toFixed(2)}H\`\`\``,
+                inline: true
             },
         ],
         thumbnail: {
