@@ -1,4 +1,4 @@
-import { BaseChannel, ChannelType, GuildMember } from "discord.js";
+import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
@@ -141,7 +141,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
 const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
     const guild = await client.guilds.fetch(sourceGuild.guildId);
-    const guildIcon = guild.iconURL({ extension: "png" });    
+    const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);    
 
     return `
         <div class="flex flex-col items-center space-y-3">
