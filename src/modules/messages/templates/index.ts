@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
-import { getGuildPresenceActivityInHoursAcrossWeek, getGuildPresencePeak, getGuildVoiceActivityInHoursAcrossWeek, getGuildVoicePeak, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
+import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 
