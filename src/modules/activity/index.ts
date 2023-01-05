@@ -185,11 +185,10 @@ const getActiveUsersInHour = (voiceActivities: VoiceActivity[] | PresenceActivit
     for (const activity of voiceActivities) {
         if(!activity.to) activity.to = moment().toDate();
 
-        if (activity.from.getHours() === hour && activity.from.getDay() === day) {
-            activeUsers.add(activity.userId);
-            continue;
-        }
-        if ((activity.to && activity.to.getHours() === hour) && activity.to.getDay() === day) {
+        if (
+            (activity.from.getHours() === hour && activity.from.getDay() === day) ||
+            (activity.to.getHours() === hour && activity.to.getDay() === day)
+        ) {
             activeUsers.add(activity.userId);
         }
     }
@@ -201,7 +200,10 @@ const getActiveUsersInDay = (voiceActivities: VoiceActivity[] | PresenceActivity
     for (const activity of voiceActivities) {
         if(!activity.to) activity.to = moment().toDate();
 
-        if (activity.from.getDay() === day || activity.to.getDay() === day) {
+        if (
+            activity.from.getDay() === day || 
+            activity.to.getDay() === day
+        ) {
             activeUsers.add(activity.userId);
         }
     }
