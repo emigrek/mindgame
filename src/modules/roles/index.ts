@@ -1,25 +1,17 @@
-import { ColorResolvable, Guild, GuildMember, Role, User } from "discord.js";
+import { ColorResolvable, Guild, GuildMember, PermissionResolvable, PermissionsBitField, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { Guild as DatabaseGuild, User as DatabaseUser } from "../../interfaces";
 import { getGuild, getGuilds } from "../guild";
 import { sendToDefaultChannel } from "../messages";
 import { getUser } from "../user";
+import { LevelTreshold } from "./tresholds";
+import { levelTresholds } from "./tresholds";
 
-interface LevelTreshold {
-    level: number;
-    color: ColorResolvable;
-}
-
-const getLevelRoleTresholds = () => {
-    const tresholds = require("./tresholds.json");
-    return tresholds;
-}
 
 const getLevelRoleTreshold = (level: number) => {
-    const tresholds = require("./tresholds.json");
-    let result = tresholds[0];
+    let result = levelTresholds[0];
     
-    for (const treshold of tresholds) {
+    for (const treshold of levelTresholds) {
         if(level >= treshold.level) {
             result = treshold;
             break;
@@ -43,21 +35,20 @@ const getMemberTresholdRole = (member: GuildMember) => {
 
 const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
-    const levelRolesTresholds = getLevelRoleTresholds();
     let levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
 
     if(!levelRoles.size) {
-        const creationPromise = levelRolesTresholds.map(async (treshold: LevelTreshold) => {
-            return await guild.roles.create({
+        const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
+            let role = await guild.roles.create({
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
                 hoist: sourceGuild.levelRolesHoist,
                 position: 0
             });
+            return role;
         });
 
         await Promise.all(creationPromise);
-
         await assignLevelRolesInGuild(client, guild);
     } else {
         const deletionPromise = levelRoles.map(async (role: Role) => {

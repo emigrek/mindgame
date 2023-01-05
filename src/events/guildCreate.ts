@@ -8,13 +8,11 @@ import { setDefaultChannelId } from "../modules/guild";
 export const guildCreate: Event = {
     name: "guildCreate",
     run: async (client, guild) => {
-        await createGuild(guild);
-
-        // decided no to create users on guild join due to heavy load in case of a bot being added to a large server
-        // await createUsers(guild);
-
+        const sourceGuild = await createGuild(guild);
         await updatePresence(client);
-        await assignLevelRolesInGuild(client, guild);
+
+        if(sourceGuild.levelRoles)
+            await assignLevelRolesInGuild(client, guild);
 
         const owner = await client.users.fetch(guild.ownerId);
         const textChannels = guild.channels.cache.filter((channel: BaseChannel) => channel.type === ChannelType.GuildText);

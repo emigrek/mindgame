@@ -238,8 +238,13 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         const sourceGuild = await getGuild(guild) as GuildInterface;
         if(!sourceGuild.channelId) return null;
         const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')'];
+        let messages = new Collection<string, Message>();
 
-        const messages = await channel.messages.fetch({ limit: 50 });
+        try {
+            messages = await channel.messages.fetch({ limit: 50 });
+        } catch (error) {
+            reject(error);
+        }
         const messagesToDelete = messages.filter((message: Message) => {
             const filter =
                 popularPrefixes.some(prefix => message.content.startsWith(prefix)) || 
@@ -264,7 +269,14 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
     withGuildLocale(client, channel.guild!);
 
-    const lastMessages = await channel.messages.fetch({ limit: 50 });
+    let lastMessages = new Collection<string, Message>();
+
+    try {
+        lastMessages = await channel.messages.fetch({ limit: 50 });
+    } catch (error) {
+        console.error(error);
+        return;
+    }
     const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;

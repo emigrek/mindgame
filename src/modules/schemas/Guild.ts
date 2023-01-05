@@ -9,8 +9,8 @@ const guildSchema = new Schema<Guild>({
     channelId: channelId,
     notifications: { type: Boolean, default: true },
     autoSweeping: { type: Boolean, default: true },
-    levelRoles: { type: Boolean, default: true },
-    levelRolesHoist: { type: Boolean, default: true },
+    levelRoles: { type: Boolean, default: false },
+    levelRolesHoist: { type: Boolean, default: false },
     locale: { type: String, default: "en" }
 });
 
