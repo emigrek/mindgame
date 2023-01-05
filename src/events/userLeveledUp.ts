@@ -24,7 +24,12 @@ export const userLeveledUp: Event = {
                 await assignUserLevelRole(client, user, guild);
 
             const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
-            await channel.send(levelUpMesssagePayload);
+
+            try {
+                await channel.send(levelUpMesssagePayload);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 }
