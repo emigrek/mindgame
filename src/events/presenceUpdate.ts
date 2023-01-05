@@ -8,9 +8,6 @@ export const presenceUpdate: Event = {
         const { guild, member } = newPresence;
         if(!member) return;
 
-        const fetchedMember = await member.fetch();
-        if(!fetchedMember) return;
-
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 
@@ -19,13 +16,13 @@ export const presenceUpdate: Event = {
              && 
             (newStatus !== PresenceUpdateStatus.Offline || newStatus !== PresenceUpdateStatus.Invisible)
         ) {
-            await startPresenceActivity(client, fetchedMember, newPresence);
+            await startPresenceActivity(client, member, newPresence);
         } else if(
             (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible || oldStatus)
              && 
             (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible)
         ) {
-            await endPresenceActivity(client, fetchedMember);
+            await endPresenceActivity(client, member);
         }
     }
 }
