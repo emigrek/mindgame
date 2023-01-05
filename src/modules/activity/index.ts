@@ -105,7 +105,6 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
         duration * 0.16
     );
 
-
     await updateUserStatistics(client, member.user, {
         exp: expGained,
         time: {
@@ -116,73 +115,39 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     return exists;
 }
 
-const getUserGuildsActivityDetails = async (sourceUser: DatabaseUser) => {
-    const allDetails: Collection<string, UserGuildActivityDetails> = new Collection();
-
-    const voiceActivites = await voiceActivityModel.find({
-        userId: sourceUser.userId
-    });
-
-    for(const voiceActivity of voiceActivites) {
-        let duration = moment(voiceActivity.to).diff(moment(voiceActivity.from), "seconds");
-        if(!voiceActivity.to) duration = moment().diff(moment(voiceActivity.from), "seconds");
-
-        if(allDetails.has(voiceActivity.guildId)) {
-            allDetails.get(voiceActivity.guildId)!.time.voice += duration;
-        } else {
-            allDetails.set(voiceActivity.guildId, {
-                guildId: voiceActivity.guildId,
-                userId: voiceActivity.userId,
-                time: {
-                    voice: duration
-                }
-            });
-        }
-    }
-
-    return allDetails;
-}
-
-const getFavoriteGuildDetails = async (sourceUser: DatabaseUser) => {
-    const details = await getUserGuildsActivityDetails(sourceUser);
-    if(!details.size) return null;
-    const sorted = details.sort((a, b) => b.time.voice - a.time.voice);
-    return sorted.first();
-};
-
 interface ActivityHour {
     hour: number;
-    activePeak: number;
+    activePeak: number | null;
 };
 
 interface ActivityDay {
     day: number;
-    activePeak: number;
+    activePeak: number | null;
     hours: ActivityHour[];
 }
 
 const mockDays = () => {
-    const data: Collection<string, ActivityDay> = new Collection();
+    let data: Collection<string, ActivityDay> = new Collection();
     for(let i = 0; i < 7; i++) {
-        const hours: ActivityHour[] = [];
+        let hours: ActivityHour[] = [];
         for(let j = 0; j < 24; j++) {
             hours.push({
                 hour: j,
-                activePeak: 0
+                activePeak: null
             });
         }
         data.set(i.toString(), {
             day: i,
-            activePeak: 0,
+            activePeak: null,
             hours
         });
     }
     return data;
 };
 
-const getActiveUsersInHour = (voiceActivities: VoiceActivity[] | PresenceActivity[], day: number, hour: number): number => {
-    const activeUsers = new Set<string>();
-    for (const activity of voiceActivities) {
+const getActiveUsersInHour = (activities: VoiceActivity[] | PresenceActivity[], day: number, hour: number): number => {
+    let activeUsers = new Set<string>();
+    for (const activity of activities) {
         if(!activity.to) activity.to = moment().toDate();
 
         if (
@@ -195,9 +160,9 @@ const getActiveUsersInHour = (voiceActivities: VoiceActivity[] | PresenceActivit
     return activeUsers.size;
 }
 
-const getActiveUsersInDay = (voiceActivities: VoiceActivity[] | PresenceActivity[], day: number): number => {
-    const activeUsers = new Set<string>();
-    for (const activity of voiceActivities) {
+const getActiveUsersInDay = (activities: VoiceActivity[] | PresenceActivity[], day: number): number => {
+    let activeUsers = new Set<string>();
+    for (const activity of activities) {
         if(!activity.to) activity.to = moment().toDate();
 
         if (
@@ -288,74 +253,6 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
     return data;
 }
 
-const getGuildMostVoiceActiveUserAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").toDate();
-    const endWeek = moment().endOf("week").toDate();
-    const query = await voiceActivityModel.aggregate([
-        {
-          $match: {
-            guildId: guild.guildId,
-            from: { $gte: startWeek },
-            to: { $lte: endWeek }
-          }
-        },
-        {
-          $group: {
-            _id: "$userId",
-            time: {
-              $sum: {
-                $divide: [{ $subtract: ["$to", "$from"] }, 1000]
-              }
-            }
-          }
-        },
-        {
-          $sort: {
-            time: -1
-          }
-        },
-        {
-          $limit: 1
-        }
-    ])
-
-    return query[0];
-};
-
-const getGuildMostPresenceActiveUserAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").toDate();
-    const endWeek = moment().endOf("week").toDate();
-    const query = await presenceActivityModel.aggregate([
-        {
-          $match: {
-            guildId: guild.guildId,
-            from: { $gte: startWeek },
-            to: { $lte: endWeek }
-          }
-        },
-        {
-          $group: {
-            _id: "$userId",
-            time: {
-              $sum: {
-                $divide: [{ $subtract: ["$to", "$from"] }, 1000]
-              }
-            }
-          }
-        },
-        {
-          $sort: {
-            time: -1
-          }
-        },
-        {
-          $limit: 1
-        }
-    ])
-
-    return query[0];
-};
-
 const getVoiceActivity = async (member: GuildMember) => {
     const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
@@ -376,4 +273,4 @@ const getUserPresenceActivity = async (user: DatabaseUser) => {
     return exists;
 }
 
-export { startVoiceActivity, getUserPresenceActivity, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, getGuildMostVoiceActiveUserAcrossWeek, getGuildMostPresenceActiveUserAcrossWeek, startPresenceActivity, getFavoriteGuildDetails, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, getUserGuildsActivityDetails, voiceActivityModel };
+export { startVoiceActivity, getUserPresenceActivity, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
