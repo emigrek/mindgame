@@ -25,6 +25,15 @@ class ExtendedClient extends Client {
     public i18n = i18n;
 
     public async init() {
+        process
+            .on('unhandledRejection', (reason, p) => {
+                console.error(reason, 'Unhandled Rejection at Promise', p);
+            })
+            .on('uncaughtException', err => {
+                console.error(err, 'Uncaught Exception thrown');
+                process.exit(1);
+            });
+
         this.i18n.configure({
             locales: [ "en", "pl-PL" ],
             directory: join(__dirname, "..", "translations"),
