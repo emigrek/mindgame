@@ -1,4 +1,4 @@
-import { ColorResolvable, Guild, GuildMember, PermissionResolvable, PermissionsBitField, Role, User } from "discord.js";
+import { Guild, GuildMember, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { Guild as DatabaseGuild, User as DatabaseUser } from "../../interfaces";
 import { getGuild, getGuilds } from "../guild";
@@ -43,6 +43,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
                 hoist: sourceGuild.levelRolesHoist,
+                permissions: treshold.permissions,
                 position: 0
             });
             return role;
