@@ -12,20 +12,22 @@ export const presenceUpdate: Event = {
 
         if(oldStatus === newStatus) return;
 
+        const fetchedMember = await guild.members.fetch(member.id);
+
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
              && 
             (newStatus !== PresenceUpdateStatus.Offline || newStatus !== PresenceUpdateStatus.Invisible)
         ) {
-            await startPresenceActivity(client, member, newPresence);
+            await startPresenceActivity(client, fetchedMember, newPresence);
         } else if(
             (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible || oldStatus)
              && 
             (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible)
         ) {
-            await endPresenceActivity(client, member);
+            await endPresenceActivity(client, fetchedMember);
         }
 
-        console.log(guild.name, " ", member.user.tag, " >> ", oldStatus, " >> ", newStatus);
+        console.log(guild.name, " ", fetchedMember.user.tag, " >> ", oldStatus, " >> ", newStatus);
     }
 }
