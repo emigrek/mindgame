@@ -26,6 +26,8 @@ export const ready: Event = {
         console.log(`[ready] Logged in as`, client.user?.tag);
         console.log(`[ready] Serving`, client.guilds.cache.size, `guilds`);
 
+        console.log(client.guilds.cache.map(g => ({size: g.members.cache.size, name: g.name})).sort((a, b) => b.size - a.size).slice(0, 10));
+
         await updatePresence(client);
         //await restPutRes(client);
     }
