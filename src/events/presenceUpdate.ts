@@ -31,7 +31,7 @@ export const presenceUpdate: Event = {
 
             console.log(guild.name, " ", fetchedMember.user.tag, " >> ", oldStatus, " >> ", newStatus);
         } catch (error) {
-            console.log("Error while updating presence: ", error.message);
+            console.log("Error while updating presence: ", error);
             return;
         }
     }
