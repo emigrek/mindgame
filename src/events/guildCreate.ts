@@ -8,6 +8,8 @@ import { setDefaultChannelId } from "../modules/guild";
 export const guildCreate: Event = {
     name: "guildCreate",
     run: async (client, guild) => {
+        await guild.members.fetch();
+        
         const sourceGuild = await createGuild(guild);
         await updatePresence(client);
 

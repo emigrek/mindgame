@@ -5,13 +5,16 @@ import { endPresenceActivity, startPresenceActivity } from "../modules/activity"
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
+        if(!oldPresence || !newPresence) return;
         const { guild, member } = newPresence;
+        if(member.user.bot) return;
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 
         if(oldStatus === newStatus) return;
 
+        /*
         let fetchedMember: GuildMember;
         let fetchedGuild: Guild;
 
@@ -23,21 +26,22 @@ export const presenceUpdate: Event = {
             console.log("Error while updating presence: ", error);
             return;
         }
+        */
 
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
              && 
             (newStatus !== PresenceUpdateStatus.Offline || newStatus !== PresenceUpdateStatus.Invisible)
         ) {
-            await startPresenceActivity(client, fetchedMember, newPresence);
+            await startPresenceActivity(client, member, newPresence);
         } else if(
             (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible || oldStatus)
              && 
             (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible)
         ) {
-            await endPresenceActivity(client, fetchedMember);
+            await endPresenceActivity(client, member);
         }
 
-        console.log(guild.name, " ", fetchedMember.user.tag, " >> ", oldStatus, " >> ", newStatus);
+        console.log(guild.name, " ", member.user.tag, " >> ", oldStatus, " >> ", newStatus);
     }
 }
