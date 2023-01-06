@@ -20,7 +20,7 @@ export const userLeveledUp: Event = {
 
             if(!notifications || !channelId) continue;
 
-            if(sourceGuild && guild.id === sourceGuild.id) {
+            if(sourceGuild && guild.id === sourceGuild.guildId) {
                 const channel = guild.channels.cache.get(channelId) as TextChannel;
                 if(!channel) continue;
                 const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
