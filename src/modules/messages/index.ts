@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 
 import Vibrant = require('node-vibrant');
@@ -70,6 +70,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     });
     
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
+    const statisticsNotificationButton = await getStatisticsNotificationButton(client, sourceGuild);
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
     const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
     const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
@@ -102,7 +103,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(levelRolesButton, levelRolesHoistButton);
     const row4 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton, autoSweepingButton);
+        .setComponents(notificationsButton, autoSweepingButton, statisticsNotificationButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
     var colors: ImageHexColors = await useImageHex(guildIcon!);

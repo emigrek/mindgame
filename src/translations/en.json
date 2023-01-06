@@ -10,6 +10,7 @@
 	"config.selectLocalePlaceholder": "Language: {locale}",
 	"config.languageChanged": "Language has been changed.",
 	"config.notificationsButtonLabel": "Notifications 🔔",
+	"config.statisticsNotificationButtonLabel": "Daily statistics 📅",
 	"config.levelRolesButtonLabel": "Level roles ✨",
 	"config.levelRolesHoistButtonLabel": "Level roles hoist 📌",
 	"config.close": "Close ❌",

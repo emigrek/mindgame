@@ -10,6 +10,7 @@
 	"config.selectLocalePlaceholder": "Język: {locale}",
 	"config.languageChanged": "Język został zmieniony.",
 	"config.notificationsButtonLabel": "Powiadomienia 🔔",
+	"config.statisticsNotificationButtonLabel": "Codzienne statystyki 📅",
 	"config.levelRolesButtonLabel": "Role wg. poziomu ✨",
 	"config.levelRolesHoistButtonLabel": "Przypięte role wg. poziomu 📌",
 	"config.close": "Zamknij ❌",
@@ -34,16 +35,16 @@
 	"notifications.levelUpDescription": "**{tag}** osiągnął(eła) następny poziom!",
 	"notifications.levelField": "Poziom",
 	"notifications.winsField": "Wygrane",
-    "notifications.dailyRewardTitle": "Codzienna nagroda",
+	"notifications.dailyRewardTitle": "Codzienna nagroda",
 	"notifications.dailyRewardDescription": "**{tag}** odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
-    "notifications.dailyRewardField": "Nagroda",
+	"notifications.dailyRewardField": "Nagroda",
 	"notifications.weekVoiceTimeField": "W tym tygodniu",
 	"roles.missingPermissions": "Nie mam wystarczających uprawnień. Ustaw moją rolę nad rolami które chcesz zarządzać.",
 	"utils.missingPermissions": "Nie mam wystarczających uprawnień.",
 	"utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 	"quickButton.profileLabel": "Profil ✨",
 	"quickButton.guildStatisticsLabel": "Statystyki 📅",
-    "quickButton.sweepLabel": "Spam? 🧹",
+	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
-    "sweeper.sweeped": "Usunięto {count} wiadomości."
+	"sweeper.sweeped": "Usunięto {count} wiadomości."
 }

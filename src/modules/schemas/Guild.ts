@@ -8,6 +8,7 @@ const guildSchema = new Schema<Guild>({
     guildId: reqString,
     channelId: channelId,
     notifications: { type: Boolean, default: true },
+    statisticsNotification: { type: Boolean, default: false },
     autoSweeping: { type: Boolean, default: true },
     levelRoles: { type: Boolean, default: false },
     levelRolesHoist: { type: Boolean, default: false },

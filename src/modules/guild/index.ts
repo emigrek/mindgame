@@ -54,6 +54,15 @@ const setNotifications = async (guild: Guild) => {
     return guildToUpdate;
 }
 
+const setStatisticsNotification = async (guild: Guild) => {
+    const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
+    if(!guildToUpdate) return null;
+
+    guildToUpdate.statisticsNotification = !guildToUpdate.statisticsNotification;
+    await guildToUpdate.save();
+    return guildToUpdate;
+}
+
 const setLevelRoles = async (guild: Guild) => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
@@ -97,4 +106,4 @@ const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild
     })
 }
 
-export { createGuild, setAutoSweeing, deleteGuild, setDefaultChannelId, getGuild, getGuilds, setNotifications, everyGuild, setLevelRoles, setLevelRolesHoist };
+export { createGuild, setAutoSweeing, deleteGuild, setDefaultChannelId, setStatisticsNotification, getGuild, getGuilds, setNotifications, everyGuild, setLevelRoles, setLevelRolesHoist };
