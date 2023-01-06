@@ -10,9 +10,8 @@ export const presenceUpdate: Event = {
 
         try {
             await guild.fetch();
-            await member.fetch();
         } catch (err) {
-            console.log("An error occured when fetching: ", err);
+            console.log("An error occured while fetching guild: ", err);
             return;
         }
 
