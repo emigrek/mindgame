@@ -10,6 +10,8 @@ export const presenceUpdate: Event = {
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 
+        if(oldStatus === newStatus) return;
+
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
              && 
