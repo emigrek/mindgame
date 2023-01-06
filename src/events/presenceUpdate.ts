@@ -6,14 +6,6 @@ export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
         const { guild, member } = newPresence;
-        if(!member) return;
-
-        try {
-            await guild.fetch();
-        } catch (err) {
-            console.log("An error occured while fetching guild: ", err);
-            return;
-        }
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
@@ -31,5 +23,7 @@ export const presenceUpdate: Event = {
         ) {
             await endPresenceActivity(client, member);
         }
+
+        console.log(guild.name, " ", member.user.tag, " >> ", oldStatus, " >> ", newStatus);
     }
 }
