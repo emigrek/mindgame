@@ -14,8 +14,10 @@ const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivit
 
 const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) => {
     const userLastVoiceActivity = await voiceActivityModel.findOne({
-        userId: member.id
-    }).sort({ to: -1 }).limit(1);
+        userId: member.id,
+        guildId: member.guild.id,
+        to: { $ne: null }
+    }).sort({ to: -1 });
 
     if(!userLastVoiceActivity || !userLastVoiceActivity.to) return;
 

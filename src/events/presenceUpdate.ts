@@ -8,6 +8,14 @@ export const presenceUpdate: Event = {
         const { guild, member } = newPresence;
         if(!member) return;
 
+        try {
+            await guild.fetch();
+            await member.fetch();
+        } catch (err) {
+            console.log("An error occured when fetching: ", err);
+            return;
+        }
+
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 

@@ -223,14 +223,20 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     };
 };
 
-const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string) => {
+const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary: boolean = true) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
     if(!sourceGuild.channelId) return null;
     
     const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
     if(!defaultChannel) return null;
 
-    await defaultChannel.send(message);
+    const messageSent = await defaultChannel.send(message);
+
+    if(temporary) {
+        setTimeout(async () => {
+            await messageSent.delete();
+        }, 5000);
+    }
 };
 
 const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: TextChannel) => {
@@ -245,6 +251,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
         } catch (error) {
             reject(error);
         }
+        
         const messagesToDelete = messages.filter((message: Message) => {
             const filter =
                 popularPrefixes.some(prefix => message.content.startsWith(prefix)) || 
