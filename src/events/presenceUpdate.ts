@@ -18,6 +18,7 @@ export const presenceUpdate: Event = {
 
         try {
             fetchedGuild = await client.guilds.fetch(guild.id);
+            await fetchedGuild.members.fetch();
             fetchedMember = await fetchedGuild.members.fetch(member.id);
         } catch (error) {
             console.log("Error while updating presence: ", error);
