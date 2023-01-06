@@ -5,7 +5,6 @@ import { endPresenceActivity, startPresenceActivity } from "../modules/activity"
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
-        console.log("presenceUpdate");
         const { guild, member } = newPresence;
 
         const oldStatus = oldPresence?.status;
