@@ -8,7 +8,7 @@ const sweepContext: ContextMenu = {
         .setName(`Sweep this channel`)
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
-        withGuildLocale(client, interaction.guild!);
+        await withGuildLocale(client, interaction.guild!);
         await interaction.deferReply({ ephemeral: true });
 
         const sweeped = await sweepTextChannel(client, interaction.guild!, interaction.channel as TextChannel);

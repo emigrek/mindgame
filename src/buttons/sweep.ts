@@ -6,7 +6,7 @@ import { sweepTextChannel } from "../modules/messages";
 const sweep: Button = {
     customId: `sweep`,
     run: async (client, interaction) => {
-        withGuildLocale(client, interaction.guild!);
+        await withGuildLocale(client, interaction.guild!);
         
         await interaction.deferReply({ ephemeral: true });
 

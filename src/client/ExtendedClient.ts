@@ -26,7 +26,7 @@ class ExtendedClient extends Client {
 
     public async init() {
         this.i18n.configure({
-            locales: [ "en", "pl" ],
+            locales: [ "en", "pl-PL" ],
             directory: join(__dirname, "..", "translations"),
             defaultLocale: "en"
         });

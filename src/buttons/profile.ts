@@ -6,7 +6,7 @@ import { getUserMessagePayload } from "../modules/messages";
 const profile: Button = {
     customId: `profile`,
     run: async (client, interaction) => {
-        withGuildLocale(client, interaction.guild!);
+        await withGuildLocale(client, interaction.guild!);
 
         await interaction.deferReply({ ephemeral: true });
         

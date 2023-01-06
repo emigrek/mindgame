@@ -6,7 +6,7 @@ import { getStatisticsMessagePayload, getUserMessagePayload } from "../modules/m
 const guildStatistics: Button = {
     customId: `guildStatistics`,
     run: async (client, interaction) => {
-        withGuildLocale(client, interaction.guild!);
+        await withGuildLocale(client, interaction.guild!);
 
         await interaction.deferReply({ ephemeral: true });
         const sourceGuild = await getGuild(interaction.guild!);

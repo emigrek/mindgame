@@ -49,7 +49,7 @@ const useHtmlFile = async (html: string) => {
 }
 
 const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    withGuildLocale(client, guild);
+    await withGuildLocale(client, guild);
 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
@@ -81,16 +81,12 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const languageNames = new Intl.DisplayNames([currentLocale], {
         type: 'language'
     });
-    const languageOptions: SelectMenuOption[] = [];
-
-    locales.forEach((locale) => {
-        const flagCode = locale.toLowerCase().slice(0,2);
-        const label = `${languageNames.of(flagCode)}`;
-        languageOptions.push({
-            label: label,
+    const languageOptions: SelectMenuOption[] = locales.map((locale) => {
+        return {
+            label: `${languageNames.of(locale)}`,
             description: locale,
             value: locale
-        });
+        }
     });
 
     const languageSelect = await getLanguageSelect(client, currentLocale, languageOptions);
@@ -118,7 +114,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 }
 
 const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUser?: DatabaseUser) => {
-    withGuildLocale(client, interaction.guild!);
+    await withGuildLocale(client, interaction.guild!);
 
     const sourceUser = await getUser(interaction.user) as DatabaseUser;
     if(!sourceUser) {
@@ -143,7 +139,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    withGuildLocale(client, guild);
+    await withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild) as GuildInterface;
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     var colors: ImageHexColors = await useImageHex(guildIcon!);
@@ -156,7 +152,7 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
 };
 
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
-    withGuildLocale(client, guild);
+    await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user) as DatabaseUser;
     var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
@@ -193,7 +189,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 };
 
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
-    withGuildLocale(client, guild);
+    await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user) as DatabaseUser;
     var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
@@ -276,7 +272,7 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
-    withGuildLocale(client, channel.guild!);
+    await withGuildLocale(client, channel.guild!);
 
     let lastMessages = new Collection<string, Message>();
 

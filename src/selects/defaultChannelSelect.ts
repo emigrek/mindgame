@@ -13,7 +13,7 @@ export const defaultChannelSelect: Select = {
         
         await setDefaultChannelId(guild!, selected);
 
-        withGuildLocale(client, guild!);
+        await withGuildLocale(client, guild!);
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
         await interaction.editReply({
             files: configMessage!.files,

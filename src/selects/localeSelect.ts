@@ -12,7 +12,7 @@ export const localeSelect: Select = {
         client.i18n.setLocale(selected);
         await setLocale(guild!, selected);
 
-        withGuildLocale(client, guild!);
+        await withGuildLocale(client, guild!);
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
         await interaction.editReply({
             files: configMessage!.files,
