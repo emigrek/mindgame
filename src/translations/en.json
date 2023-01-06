@@ -39,6 +39,7 @@
 	"notifications.dailyRewardField": "Reward",
 	"notifications.weekVoiceTimeField": "Weekly voice time",
 	"roles.missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
+	"utils.missingPermissions": "Seems like I don't have enough permissions.",
 	"utils.noPermissions": "You don't have permission to use this.",
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
 	"quickButton.profileLabel": "Profile ✨",

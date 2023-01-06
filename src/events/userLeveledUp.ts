@@ -1,34 +1,30 @@
-import { Guild, TextChannel } from "discord.js";
-import { Guild as DatabaseGuild } from "../interfaces";
+import { TextChannel } from "discord.js";
 import { Event } from "../interfaces";
-import { everyGuild, getGuilds } from "../modules/guild";
+import { getGuilds } from "../modules/guild";
 import { getLevelUpMessagePayload } from "../modules/messages";
 import { assignUserLevelRole } from "../modules/roles";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
-    run: async (client, user) => {
+    run: async (client, user, sourceGuild) => {
         const sourceGuilds = await getGuilds();
 
-        for await (const sourceGuild of sourceGuilds) {
-            const guild = client.guilds.cache.get(sourceGuild.guildId)!;
-            const { notifications, channelId, levelRoles } = sourceGuild;
-            if(!notifications || !channelId || !guild)
-                continue;
+        for await (const sG of sourceGuilds) {
+            const guild = client.guilds.cache.get(sG.guildId)!;
+            const { notifications, channelId, levelRoles } = sG;
 
-            const channel = guild.channels.cache.get(channelId) as TextChannel;
-            if(!channel)
-                continue;
+            if(!guild) continue;
 
             if(levelRoles)
                 await assignUserLevelRole(client, user, guild);
 
-            const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
+            if(!notifications || !channelId) continue;
 
-            try {
+            if(sourceGuild && guild.id === sourceGuild.id) {
+                const channel = guild.channels.cache.get(channelId) as TextChannel;
+                if(!channel) continue;
+                const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
                 await channel.send(levelUpMesssagePayload);
-            } catch (error) {
-                console.log(error);
             }
         }
     }

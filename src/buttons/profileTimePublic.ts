@@ -1,7 +1,7 @@
-import { ButtonInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { ButtonInteraction } from "discord.js";
 import { Button } from "../interfaces/Button";
 import { getUserMessagePayload } from "../modules/messages";
-import { getUser, setPublicTimeStats, updateUserStatistics } from "../modules/user";
+import { setPublicTimeStats } from "../modules/user";
 
 const profileTimePublic: Button = {
     customId: `profileTimePublic`,

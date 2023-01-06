@@ -248,8 +248,9 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 
         try {
             messages = await channel.messages.fetch({ limit: 50 });
-        } catch (error) {
-            reject(error);
+        } catch (e) {
+            await sendToDefaultChannel(client, guild, client.i18n.__("utils.missingPermissions"));
+            reject(e);
         }
         
         const messagesToDelete = messages.filter((message: Message) => {
@@ -280,10 +281,11 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
     try {
         lastMessages = await channel.messages.fetch({ limit: 50 });
-    } catch (error) {
-        console.error(error);
+    } catch (e) {
+        await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
         return;
     }
+    
     const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;
@@ -294,16 +296,20 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
     for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {
-            await message.edit({ components: [] });
+            try {
+                await message.edit({ components: [] });
+            } catch (e) {
+                await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
+                return;
+            }
         }
     }
 
     try {
         await lastMessage.edit({ components: [row] });
-    } catch (error) {
-        const authorGuild = await client.guilds.fetch(lastMessage.guild!.id);
-        await sendToDefaultChannel(client, authorGuild, client.i18n.__("roles.missingPermissions"));
-        return null;
+    } catch (e) {
+        await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
+        return;
     }
 };
 

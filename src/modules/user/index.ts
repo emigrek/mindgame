@@ -1,10 +1,9 @@
 import mongoose, { Document } from "mongoose";
 import { User, Guild } from "discord.js";
-import { User as DatabaseUser } from "../../interfaces";
+import { User as DatabaseUser, Guild as DatabaseGuild } from "../../interfaces";
 import userSchema from "../schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
 import ExtendedClient from "../../client/ExtendedClient";
-import { getUserPresenceActivity, getUserVoiceActivity } from "../activity";
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -117,7 +116,7 @@ const setPublicTimeStats = async (user: User) => {
     return exists;
 }
 
-const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload) => {
+const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload, sourceGuild?: DatabaseGuild) => {
     const userSource = await updateUser(user) as DatabaseUser & Document;
     const newExtendedStatistics: ExtendedStatistics = {
         level: userSource.stats.level + (extendedStatisticsPayload.level || 0),
@@ -192,7 +191,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
 
     await userSource.save();
     
-    if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", user); // Emiting event
+    if(userLeveledUpDuringUpdate) await client.emit("userLeveledUp", user, sourceGuild); // Emiting event
 
     return userSource;
 };
