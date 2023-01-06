@@ -1,4 +1,4 @@
-import { GuildMember, PresenceUpdateStatus } from "discord.js";
+import { Guild, GuildMember, PresenceUpdateStatus } from "discord.js";
 import { Event } from "../interfaces";
 import { endPresenceActivity, startPresenceActivity } from "../modules/activity";
 
@@ -13,9 +13,11 @@ export const presenceUpdate: Event = {
         if(oldStatus === newStatus) return;
 
         let fetchedMember: GuildMember;
+        let fetchedGuild: Guild;
 
         try {
-            fetchedMember = await guild.members.fetch(member.id);
+            fetchedGuild = await client.guilds.fetch(guild.id);
+            fetchedMember = await fetchedGuild.members.fetch(member.id);
         } catch (error) {
             console.log("Error while updating presence: ", error);
             return;
