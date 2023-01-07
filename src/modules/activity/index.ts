@@ -21,7 +21,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
 
     if(!userLastVoiceActivity) return;
 
-    const lastVoiceActivityDate = moment(userLastVoiceActivity.to);
+    const lastVoiceActivityDate = moment(userLastVoiceActivity.from);
     const now = moment();
     const next = lastVoiceActivityDate.add(1, "days");
 
