@@ -5,15 +5,12 @@ import { endPresenceActivity, startPresenceActivity } from "../modules/activity"
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
-        if(!oldPresence || !newPresence) return;
         const { guild, member } = newPresence;
-        
-        if(member.user.bot) return;
-
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 
-        if(oldStatus === newStatus) return;
+        if((oldStatus === newStatus) || member.user.bot) 
+            return;
 
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
