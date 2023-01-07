@@ -7,8 +7,7 @@ export const presenceUpdate: Event = {
     run: async (client, oldPresence, newPresence) => {
         if(!oldPresence || !newPresence) return;
         const { guild, member } = newPresence;
-        await member.fetch().catch((e: Error) => console.error(e));
-
+        
         if(member.user.bot) return;
 
         const oldStatus = oldPresence?.status;

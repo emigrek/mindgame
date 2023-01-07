@@ -5,6 +5,7 @@ import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
 import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
+import moment from "moment";
 
 const embedSpacer = () => {
     return `
@@ -64,30 +65,46 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
 }
 
 const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
+    const days = moment.weekdaysShort();
+
     const hoursTh = () => {
-        let hours = '';
-        for(let i = 0; i < 24; i++) {
-            hours += `<th>${i}</th>`;
-        }
-        return hours;
+        return Array(24).fill(0).map((_, i) => {
+            return `<th>${i}</th>`;
+        }).join('');
+    }
+
+    const daysTr = () => {
+        return Array(7).fill(0).map((_, i) => {
+            return `<tr>
+                <td>${days[i]}</td>
+                ${dayTd(i)}
+            </tr>`;
+        }).join('');
     }
 
     const dayTd = (day: number) => {
-        let hours = '';
         let dayStat = guildStatistics.get(day.toString());
 
-        for(let i = 0; i < 24; i++) {
+        return Array(24).fill(0).map((_, i) => {
             let hour = dayStat.hours.find((hour: any) => hour.hour === i);
-            let hourAlpha = dayStat.activePeak ? Math.round((hour.activePeak / dayStat.activePeak) * 100) : 0;
+            let isHourInPast = moment().day(day).hour(i).isBefore(moment());
 
             if(!hour.activePeak || !dayStat.activePeak) {
-                hours += `<td>
-                    <div class="text-center rounded w-6 h-6 bg-white/5 opacity-20"></div>
-                </td>`;
-                continue;
+                if(isHourInPast)
+                    return `<td>
+                        <div class="text-center w-6 h-6 bg-white/5 opacity-20"></div>
+                    </td>`;
+                else
+                    return `<td>
+                        <div class="text-center w-6 h-6 bg-white/5 opacity-10"></div>
+                    </td>`;
             }
 
-            hours += `<td>
+
+
+            let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
+
+            return `<td>
                 <div 
                     class="text-center shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
                     style="opacity: ${hourAlpha}%"
@@ -95,47 +112,19 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
                     ${hour.activePeak}
                     </div>
             </td>`;
-        }
-        return hours;
+        }).join('');
     }
 
     return `<table class="text-white/50">
-    <thead class="font-medium border-collapse m-0 p-0">
-      <tr>
-        <th></th>
-        ${hoursTh()}
-      </tr>
-    </thead>
-    <tbody class="font-medium border-collapse m-0 p-0">
-      <tr>
-        <td>Su</td>
-        ${dayTd(0)}
-      </tr>
-      <tr>
-        <td>Mo</td>
-        ${dayTd(1)}
-      </tr>
-      <tr>
-        <td>Tu</td>
-        ${dayTd(2)}
-      </tr>
-      <tr>
-        <td>We</td>
-        ${dayTd(3)}
-      </tr>
-      <tr>
-        <td>Th</td>
-        ${dayTd(4)}
-      </tr>
-      <tr>
-        <td>Fr</td>
-        ${dayTd(5)}
-      </tr>
-      <tr>
-        <td>Sa</td>
-        ${dayTd(6)}
-      </tr>
-    </tbody>
+        <thead class="font-medium border-collapse m-0 p-0">
+            <tr>
+                <th></th>
+                ${hoursTh()}
+            </tr>
+        </thead>
+        <tbody class="font-medium border-collapse m-0 p-0">
+            ${daysTr()}
+        </tbody>
     </table>`;
 }
 

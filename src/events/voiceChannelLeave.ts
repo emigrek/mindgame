@@ -13,7 +13,7 @@ export const voiceChannelLeave: Event = {
         if(!sourceGuild) return;
         if(!sourceGuild.autoSweeping) return;
 
-        const guild = await channel.guild.fetch();
+        const guild = channel.guild;
         const guildDefaultChannel = guild.channels.cache.get(sourceGuild.channelId);
         const guildVoiceActiveUsers = guild.members.cache.filter((m: GuildMember) => m.voice.channel && !m.user.bot).size;
 
