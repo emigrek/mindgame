@@ -78,9 +78,15 @@ const endPresenceActivity = async (client: ExtendedClient, member: GuildMember) 
     if(!exists) return;
 
     exists.to = moment().toDate();
+    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
+    if(duration < 60) {
+        await exists.delete();
+        return exists;
+    }
+
     await exists.save();
 
-    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
+    
     const expGained = Math.round(
         duration * 0.0063817
     );
