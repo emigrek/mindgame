@@ -17,7 +17,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
         userId: member.id,
         guildId: member.guild.id,
         to: { $ne: null }
-    }).sort({ to: -1 }).limit(1);
+    }).sort({ from: -1 }).limit(1);
 
     if(!userLastVoiceActivity) return;
 
