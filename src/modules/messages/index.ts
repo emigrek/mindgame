@@ -193,6 +193,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 
     const sourceUser = await getUser(user) as DatabaseUser;
     var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+    let reward = parseInt(process.env.DAILY_REWARD!);
 
     const embed = {
         color: getColorInt(colors.Vibrant!),
@@ -201,7 +202,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         fields: [
             { 
                 name: client.i18n.__("notifications.dailyRewardField"),
-                value: `\`\`\`${process.env.DAILY_REWARD}EXP\`\`\``,
+                value: `\`\`\`${client.numberFormat.format(reward)} EXP\`\`\``,
                 inline: true
             },
             { 

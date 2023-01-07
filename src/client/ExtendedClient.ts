@@ -23,6 +23,7 @@ class ExtendedClient extends Client {
     public contexts: Collection<string, ContextMenu> = new Collection();
 
     public i18n = i18n;
+    public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
     public async init() {
         process
