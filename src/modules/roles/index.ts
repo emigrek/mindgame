@@ -119,7 +119,7 @@ const assignLevelRolesInAllGuilds = async (client: ExtendedClient, user: User) =
     const guilds = await getGuilds();
 
     for await(const sourceGuild of guilds) {
-        const guild = await client.guilds.fetch(sourceGuild.guildId);
+        const guild = client.guilds.cache.get(sourceGuild.guildId);
         if(!guild) continue;
 
         if(!guild.members.cache.has(user.id)) continue;

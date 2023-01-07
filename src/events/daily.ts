@@ -14,7 +14,8 @@ export const daily: Event = {
             if(!sourceGuild.statisticsNotification) continue;
             if(!sourceGuild.channelId) continue;
 
-            const guild = await client.guilds.fetch(sourceGuild.guildId);
+            const guild = client.guilds.cache.get(sourceGuild.guildId);
+            if(!guild) continue;
             const guildStatisticsPayload = await getStatisticsMessagePayload(client, guild);
             const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
             if(!channel) continue;
