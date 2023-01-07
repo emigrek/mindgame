@@ -51,7 +51,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[900px] h-[900px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[750px] h-[750px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,8 +75,10 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
     const daysTr = () => {
         return Array(7).fill(0).map((_, i) => {
+            let day = days[i];
+            let dayCapitalized = day.charAt(0).toUpperCase() + day.slice(1);
             return `<tr>
-                <td>${days[i]}</td>
+                <td>${dayCapitalized}</td>
                 ${dayTd(i)}
             </tr>`;
         }).join('');
@@ -96,7 +98,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
                     </td>`;
                 else
                     return `<td>
-                        <div class="text-center w-6 h-6 bg-white/5 opacity-10"></div>
+                        <div class="text-center w-6 h-6 bg-white/5 opacity-5"></div>
                     </td>`;
             }
 
@@ -106,7 +108,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
             return `<td>
                 <div 
-                    class="text-center shadow-[${colors.Vibrant}] bg-[${colors.Vibrant}] shadow w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
+                    class="text-center bg-[${colors.Vibrant}] w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
                     style="opacity: ${hourAlpha}%"
                 >
                     ${hour.activePeak}
@@ -301,6 +303,8 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 }
 
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
+    moment.locale(sourceGuild.locale);
+    
     const guild = await client.guilds.fetch(sourceGuild.guildId);
     const guildIcon = guild.iconURL({ extension: "png" });    
 
@@ -309,38 +313,27 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     
     return `
         <div class="flex flex-col items-center">
-            <div class="mx-auto w-[300px] flex items-center justify-center align-middle space-x-10 mb-7">
-                ${
-                    guildIcon ? 
-                        `<img src="${guildIcon}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />` 
-                    : 
-                        ''
-                }
-                <div class="flex flex-col">
-                    <div class="text-2xl text-white font-medium">${guild.name}</div>
-                </div>
-            </div>
-            <div class="w-full bg-[#202225] rounded-t-xl text-white/80 py-5 px-5 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-2xl">${client.i18n.__("statistics.voiceHeader")}</div>
+            <div class="w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
+                <div class="text-3xl">${client.i18n.__("statistics.voiceHeader")}</div>
                 <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 fill-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 fill-white">
                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
                         <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
                     </svg>              
                 </div>
             </div>
-            <div class="w-full rounded-b-xl h-[250px] shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full rounded-lg h-[250px] shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, colors) }
             </div>
-            <div class="mt-2 w-full rounded-t-xl bg-[#202225] text-white/80 py-5 px-5 space-x-2 flex items-center justify-between backdrop-blur-2xl align-middle">
-                <div class="text-2xl">${client.i18n.__("statistics.presenceHeader")}</div>
+            <div class="mt-2 w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
+                <div class="text-3xl">${client.i18n.__("statistics.presenceHeader")}</div>
                 <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
                     </svg>    
                 </div>
             </div>
-            <div class="w-full h-[250px] rounded-b-xl shadow-lg text-white p-3 bg-[#202225]/80 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full h-[250px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3d679f",
