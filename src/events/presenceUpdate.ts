@@ -7,26 +7,14 @@ export const presenceUpdate: Event = {
     run: async (client, oldPresence, newPresence) => {
         if(!oldPresence || !newPresence) return;
         const { guild, member } = newPresence;
+        await member.fetch().catch((e: Error) => console.error(e));
+
         if(member.user.bot) return;
 
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 
         if(oldStatus === newStatus) return;
-
-        /*
-        let fetchedMember: GuildMember;
-        let fetchedGuild: Guild;
-
-        try {
-            fetchedGuild = await client.guilds.fetch(guild.id);
-            await fetchedGuild.members.fetch();
-            fetchedMember = await fetchedGuild.members.fetch(member.id);
-        } catch (error) {
-            console.log("Error while updating presence: ", error);
-            return;
-        }
-        */
 
         if(
             (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
@@ -41,7 +29,5 @@ export const presenceUpdate: Event = {
         ) {
             await endPresenceActivity(client, member);
         }
-
-        console.log(guild.name, " ", member.user.tag, " >> ", oldStatus, " >> ", newStatus);
     }
 }
