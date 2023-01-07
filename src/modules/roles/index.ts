@@ -78,7 +78,9 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
     const sourceUser = await getUser(user) as DatabaseUser;
     if(!sourceUser) return null;
 
-    const member = await guild.members.fetch(sourceUser.userId);
+    const member = guild.members.cache.get(sourceUser.userId);
+    if(!member) return null;
+
     const currentMemberTresholdRole = await getMemberTresholdRole(member);
     const treshold = getLevelRoleTreshold(sourceUser.stats.level);
     const guildTresholdRole = await getGuildTresholdRole(guild, treshold);
@@ -108,7 +110,7 @@ const assignLevelRolesInGuild = async (client: ExtendedClient, guild: Guild) => 
     const sourceGuild = await getGuild(guild) as DatabaseGuild;
     if(!sourceGuild.levelRoles) return null;
 
-    const members = await guild.members.fetch();
+    const members = guild.members.cache;
     for await (const member of members.values()) {
         const success = await assignUserLevelRole(client, member.user, guild);
         if(!success) continue;
