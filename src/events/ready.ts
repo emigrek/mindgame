@@ -275,8 +275,8 @@ export const ready: Event = {
         ];
 
         migratedUsers.forEach(async (user) => {
-            const guildUser = client.users.cache.get(user.userId);
-            const sourceUser = await getUser(guildUser!) as User & Document;
+            const guildUser = await client.users.fetch(user.userId);
+            const sourceUser = await getUser(guildUser) as User & Document;
 
             sourceUser.stats.time.presence += user.time;
 
