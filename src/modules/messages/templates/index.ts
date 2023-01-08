@@ -314,8 +314,6 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 }
 
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
-    moment.locale(sourceGuild.locale);
-    
     let guild = client.guilds.cache.get(sourceGuild.guildId)!;
     let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 
