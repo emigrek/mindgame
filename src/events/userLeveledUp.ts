@@ -8,7 +8,6 @@ export const userLeveledUp: Event = {
     name: "userLeveledUp",
     run: async (client, user, sourceGuild) => {
         const sourceGuilds = await getGuilds();
-        console.log(sourceGuild);
 
         for await (const sG of sourceGuilds) {
             const guild = client.guilds.cache.get(sG.guildId);
@@ -22,7 +21,7 @@ export const userLeveledUp: Event = {
             if(!notifications || !channelId) continue;
 
             if(sourceGuild && (sG.guildId === sourceGuild.guildId)) {
-                const channel = guild.channels.cache.get(channelId) as TextChannel;
+                const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
                 if(!channel) continue;
                 const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
                 await channel.send(levelUpMesssagePayload);
