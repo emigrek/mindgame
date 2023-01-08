@@ -186,8 +186,8 @@ const getActiveUsersInDay = (activities: VoiceActivity[] | PresenceActivity[], d
 }
 
 const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").toDate();
-    const endWeek = moment().endOf("week").toDate();
+    const startWeek = moment().startOf("week").add(1, 'hour').toDate();
+    const endWeek = moment().endOf("week").add(1, 'hour').toDate();
 
     const query = await presenceActivityModel.find({
         guildId: guild.guildId,
@@ -226,8 +226,8 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) =
 }
 
 const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").toDate();
-    const endWeek = moment().endOf("week").toDate();
+    const startWeek = moment().startOf("week").add(1, 'hour').toDate();
+    const endWeek = moment().endOf("week").add(1, 'hour').toDate();
 
     const query = await voiceActivityModel.find({
         guildId: guild.guildId,

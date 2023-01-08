@@ -52,7 +52,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[750px] h-[750px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[800px] h-[750px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,6 +67,8 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
 
 const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
     const days = moment.weekdaysShort();
+    days.push(days.shift() as string);
+
     const chromaColor = chroma(colors.Vibrant);
 
     const hoursTh = () => {
@@ -77,11 +79,14 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
     const daysTr = () => {
         return Array(7).fill(0).map((_, i) => {
+            // if i == 0, then dayIndex == 6, if i == 6 then dayIndex == 0 else if dayIndex == i
+            // due to shift in days array
+            let dayIndex: number = i == 0 ? 6 : i == 6 ? 0 : i;
             let day = days[i];
             let dayCapitalized = day.charAt(0).toUpperCase() + day.slice(1);
             return `<tr>
                 <td>${dayCapitalized}</td>
-                ${dayTd(i)}
+                ${dayTd(dayIndex)}
             </tr>`;
         }).join('');
     }
@@ -91,28 +96,28 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
         return Array(24).fill(0).map((_, i) => {
             let hour = dayStat.hours.find((hour: any) => hour.hour === i);
-            let hourMoment = moment().day(day).hour(i).seconds(0);
+            let hourMoment = moment().day(day).hour(i);
             let isHourInPast = hourMoment.isBefore(moment());
             let hoursDiff = moment().diff(hourMoment, 'hours');
-            let hoursAlpha = Math.round((1-(hoursDiff/7)) * 100) > 0 ? Math.round((1-(hoursDiff/7)) * 100) > 100 ? 0 : Math.round((1-(hoursDiff/7)) * 100) : 0;
+            let hoursAlpha = Math.round((1-(hoursDiff/7)) * 100) > 0 ? Math.floor((1-(hoursDiff/7)) * 100) > 100 ? 0 : Math.floor((1-(hoursDiff/7)) * 100) : 0;
             let shadowColor = chromaColor.alpha(hoursAlpha).rgba().join(',');
 
             if(!hour.activePeak || !dayStat.activePeak) {
                 if(isHourInPast)
                     return `<td>
-                        <div class="text-center w-6 h-6 bg-white/5" style="opacity: ${hoursAlpha}%"></div>
+                        <div class="text-center w-7 h-7 bg-white/5" style="opacity: ${hoursAlpha || 5}%"></div>
                     </td>`;
                 else
                     return `<td>
-                        <div class="text-center w-6 h-6 bg-white/5" style="opacity: ${hoursAlpha}%"></div>
+                        <div class="text-center w-7 h-7 bg-white/5" style="opacity: ${hoursAlpha || 5}%"></div>
                     </td>`;
             }
 
             let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
 
-            return `<td>
+            return `<td class="m-0 p-0 w-6 h-6">
                 <div 
-                    class="text-center bg-[${colors.Vibrant}] shadow-lg w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
+                    class="text-center bg-[${colors.Vibrant}] w-7 h-7 text-black/60 font-bold text-sm flex items-center justify-center"
                     style="opacity: ${hourAlpha}%;box-shadow: 0 0 10px rgba(${shadowColor});"
                 >
                     ${hour.activePeak}
@@ -121,14 +126,14 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
         }).join('');
     }
 
-    return `<table class="text-white/50">
-        <thead class="font-medium border-collapse m-0 p-0">
+    return `<table class="text-white/50 border-none border-0 ">
+        <thead class="font-medium m-0 p-0">
             <tr>
                 <th></th>
                 ${hoursTh()}
             </tr>
         </thead>
-        <tbody class="font-medium border-collapse m-0 p-0">
+        <tbody class="font-medium m-0 p-0">
             ${daysTr()}
         </tbody>
     </table>`;
@@ -309,8 +314,12 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
     moment.locale(sourceGuild.locale);
     
+    let guild = client.guilds.cache.get(sourceGuild.guildId)!;
+    let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
+
     let guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
     let guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
+    let dateNowFormatted = moment().format("DD.MM.YYYY");
     
     return `
         <div class="flex flex-col items-center">
@@ -340,6 +349,10 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     Vibrant: "#3c94dc",
                 }) }
             </div>
+            <div class="mt-2 w-full text-white/60 py-2 px-5 space-x-3 flex flex-row text-center items-center justify-center align-middle">
+                <img src="${guildIconUrl}" class="w-8 h-8 rounded-full" />
+                <div class="text-lg">${dateNowFormatted}</div>
+            <div>
         </div>
     `;
 }
