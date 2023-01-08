@@ -6,6 +6,7 @@ import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHours
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
+import chroma from "chroma-js";
 
 const embedSpacer = () => {
     return `
@@ -66,6 +67,7 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
 
 const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
     const days = moment.weekdaysShort();
+    const chromaColor = chroma(colors.Vibrant);
 
     const hoursTh = () => {
         return Array(24).fill(0).map((_, i) => {
@@ -89,30 +91,32 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
         return Array(24).fill(0).map((_, i) => {
             let hour = dayStat.hours.find((hour: any) => hour.hour === i);
-            let isHourInPast = moment().day(day).hour(i).isBefore(moment());
+            let hourMoment = moment().day(day).hour(i).seconds(0);
+            let isHourInPast = hourMoment.isBefore(moment());
+            let hoursDiff = moment().diff(hourMoment, 'hours');
+            let hoursAlpha = Math.round((1-(hoursDiff/7)) * 100) > 0 ? Math.round((1-(hoursDiff/7)) * 100) > 100 ? 0 : Math.round((1-(hoursDiff/7)) * 100) : 0;
+            let shadowColor = chromaColor.alpha(hoursAlpha).rgba().join(',');
 
             if(!hour.activePeak || !dayStat.activePeak) {
                 if(isHourInPast)
                     return `<td>
-                        <div class="text-center w-6 h-6 bg-white/5 opacity-20"></div>
+                        <div class="text-center w-6 h-6 bg-white/5" style="opacity: ${hoursAlpha}%"></div>
                     </td>`;
                 else
                     return `<td>
-                        <div class="text-center w-6 h-6 bg-white/5 opacity-5"></div>
+                        <div class="text-center w-6 h-6 bg-white/5" style="opacity: ${hoursAlpha}%"></div>
                     </td>`;
             }
-
-
 
             let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
 
             return `<td>
                 <div 
-                    class="text-center bg-[${colors.Vibrant}] w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
-                    style="opacity: ${hourAlpha}%"
+                    class="text-center bg-[${colors.Vibrant}] shadow-lg w-6 h-6 text-black/60 font-bold text-sm flex items-center justify-center"
+                    style="opacity: ${hourAlpha}%;box-shadow: 0 0 10px rgba(${shadowColor});"
                 >
                     ${hour.activePeak}
-                    </div>
+                </div>
             </td>`;
         }).join('');
     }

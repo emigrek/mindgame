@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
+import { getGuild } from "../guild";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -113,12 +114,13 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
         duration * 0.16
     );
 
+    const sourceGuild = await getGuild(member.guild);
     await updateUserStatistics(client, member.user, {
         exp: expGained,
         time: {
             voice: duration
         }
-    });
+    }, sourceGuild!);
 
     return exists;
 }
