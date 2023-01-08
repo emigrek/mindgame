@@ -8,10 +8,9 @@ import { User } from "discord.js";
 export const database: Module = {
     name: "database",
     run: async (client) => {
-        
         try {
             await mongoose.connect(config.mongoUri);
-            mongoose.set('strictQuery', true);
+            mongoose.set('strictQuery', false);
             console.log("[Database] Connected to mongo");
         } catch (err) {
             console.error("[Database] Error", err);
