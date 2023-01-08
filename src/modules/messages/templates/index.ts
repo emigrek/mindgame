@@ -115,8 +115,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
 
             let shadowColor = chromaColor.alpha(hoursAlpha/100).rgba().join(',');
             let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
-            let hourHsl = chromaColor.hsl();
-            let hourColor = chroma.hsl(hourHsl[0], hourAlpha/100, hourHsl[2]).rgba().join(',');
+            let hourColor = chromaColor.luminance(hourAlpha/100).rgba().join(',');
 
             return `<td class="m-0 p-0 w-7 h-7" style="box-shadow: 0 0 10px rgba(${shadowColor});">
                 <div 
