@@ -131,15 +131,15 @@ interface ActivityHour {
 interface ActivityDay {
     day: number;
     activePeak: number | null;
-    hours: ActivityHour[];
+    hours: Collection<string, ActivityHour>;
 }
 
 const mockDays = () => {
     let data: Collection<string, ActivityDay> = new Collection();
     for(let i = 0; i < 7; i++) {
-        let hours: ActivityHour[] = [];
+        let hours: Collection<string, ActivityHour> = new Collection();
         for(let j = 0; j < 24; j++) {
-            hours.push({
+            hours.set(j.toString(), {
                 hour: j,
                 activePeak: null
             });
@@ -186,6 +186,7 @@ const getActiveUsersInDay = (activities: VoiceActivity[] | PresenceActivity[], d
 const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
     const startWeek = moment().startOf("week").toDate();
     const endWeek = moment().endOf("week").toDate();
+
     const query = await presenceActivityModel.find({
         guildId: guild.guildId,
         from: {
@@ -213,7 +214,7 @@ const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) =
 
         day.activePeak = getActiveUsersInDay(query, day.day);
 
-        const hour = day.hours.find(h => h.hour === activityHour);
+        const hour = day.hours.get(activityHour.toString());
         if(hour) {
             hour.activePeak = getActiveUsersInHour(query, day.day, activityHour);
         }
@@ -252,7 +253,7 @@ const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
 
         day.activePeak = await getActiveUsersInDay(query, day.day);
 
-        const hour = day.hours.find(h => h.hour === activityHour);
+        const hour = day.hours.get(activityHour.toString());
         if(hour) {
             hour.activePeak = getActiveUsersInHour(query, day.day, activityHour);
         }

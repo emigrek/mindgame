@@ -12,6 +12,7 @@ import contexts from "../contexts";
 
 import config from "../utils/config";
 import { join } from "path";
+import moment from "moment";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -22,6 +23,7 @@ class ExtendedClient extends Client {
     public selects: Collection<string, Select> = new Collection();
     public contexts: Collection<string, ContextMenu> = new Collection();
 
+    public locales = [ "en", "pl-PL" ];
     public i18n = i18n;
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -36,7 +38,7 @@ class ExtendedClient extends Client {
             });
 
         this.i18n.configure({
-            locales: [ "en", "pl-PL" ],
+            locales: this.locales,
             directory: join(__dirname, "..", "translations"),
             defaultLocale: "en"
         });

@@ -305,9 +305,6 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
     moment.locale(sourceGuild.locale);
     
-    const guild = await client.guilds.fetch(sourceGuild.guildId);
-    const guildIcon = guild.iconURL({ extension: "png" });    
-
     let guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
     let guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
     
@@ -336,7 +333,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
             <div class="w-full h-[250px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, {
                     DarkVibrant: "#3d679f",
-                    Vibrant: "#3d679f",
+                    Vibrant: "#3c94dc",
                 }) }
             </div>
         </div>
