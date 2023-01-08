@@ -85,7 +85,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
             let day = days[i];
             let dayCapitalized = day.charAt(0).toUpperCase() + day.slice(1);
             return `<tr>
-                <td>${dayCapitalized}</td>
+                <td class="text-white/20">${dayCapitalized}</td>
                 ${dayTd(dayIndex)}
             </tr>`;
         }).join('');
