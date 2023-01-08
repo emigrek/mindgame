@@ -274,13 +274,13 @@ export const ready: Event = {
             }
         ];
 
-        migratedUsers.forEach(async (user) => {
-            const guildUser = await client.users.fetch(user.userId);
+        for await (const u of migratedUsers) {
+            const guildUser = await client.users.fetch(u.userId);
             const sourceUser = await getUser(guildUser) as User & Document;
 
-            sourceUser.stats.time.presence += user.time;
+            sourceUser.stats.time.presence += u.time;
 
             await sourceUser?.save();
-        });
+        }
     }
 }
