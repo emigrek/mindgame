@@ -43,6 +43,8 @@ class ExtendedClient extends Client {
             defaultLocale: "en"
         });
 
+        moment.locale('pl-PL');
+
         await this.loadModules();
         await this.loadContexts();
         await this.loadButtons();
