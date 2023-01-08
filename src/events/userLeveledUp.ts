@@ -12,7 +12,7 @@ export const userLeveledUp: Event = {
         for await (const sG of sourceGuilds) {
             const guild = client.guilds.cache.get(sG.guildId);
             const { notifications, channelId, levelRoles } = sG;
-
+            console.log(guild);
             if(!guild) continue;
 
             if(levelRoles)
