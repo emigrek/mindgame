@@ -314,9 +314,10 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 }
 
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
-    moment.locale(sourceGuild.locale, {
+    moment.locale(sourceGuild.locale);
+    moment.updateLocale(sourceGuild.locale, {
         week: {
-            dow: 6
+            dow: 7
         }
     });
     
