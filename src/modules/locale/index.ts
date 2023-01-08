@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import { Guild as GuildInterface } from "../../interfaces";
 
 import GuildSchema from "../schemas/Guild";
-import moment from "moment";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);
 
