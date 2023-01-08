@@ -99,8 +99,8 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
             let hourMoment = moment().day(day).hour(i);
             let isHourInPast = hourMoment.isBefore(moment());
             let hoursDiff = moment().diff(hourMoment, 'hours');
+            
             let hoursAlpha = Math.round((1-(hoursDiff/7)) * 100) > 0 ? Math.floor((1-(hoursDiff/7)) * 100) > 100 ? 0 : Math.floor((1-(hoursDiff/7)) * 100) : 0;
-            let shadowColor = chromaColor.alpha(hoursAlpha).rgba().join(',');
 
             if(!hour.activePeak || !dayStat.activePeak) {
                 if(isHourInPast)
@@ -113,12 +113,13 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
                     </td>`;
             }
 
+            let shadowColor = chromaColor.alpha(hoursAlpha/100).rgba().join(',');
             let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
 
-            return `<td class="m-0 p-0 w-6 h-6">
+            return `<td class="m-0 p-0 w-7 h-7" style="box-shadow: 0 0 10px rgba(${shadowColor});">
                 <div 
                     class="text-center bg-[${colors.Vibrant}] w-7 h-7 text-black/60 font-bold text-sm flex items-center justify-center"
-                    style="opacity: ${hourAlpha}%;box-shadow: 0 0 10px rgba(${shadowColor});"
+                    style="opacity: ${hourAlpha}%;"
                 >
                     ${hour.activePeak}
                 </div>
@@ -126,7 +127,7 @@ const getStatisticsTable = (guildStatistics: any, colors: ImageHexColors) => {
         }).join('');
     }
 
-    return `<table class="text-white/50 border-none border-0 ">
+    return `<table class="text-white/50 border-none border-0" cellspacing="0" cellpadding="0">
         <thead class="font-medium m-0 p-0">
             <tr>
                 <th></th>
@@ -351,7 +352,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
             </div>
             <div class="mt-2 w-full text-white/60 py-2 px-5 space-x-3 flex flex-row text-center items-center justify-center align-middle">
                 <img src="${guildIconUrl}" class="w-8 h-8 rounded-full" />
-                <div class="text-lg">${dateNowFormatted}</div>
+                <div class="text-lg font-medium">${dateNowFormatted}</div>
             <div>
         </div>
     `;
