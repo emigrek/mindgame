@@ -52,7 +52,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[800px] h-[750px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[800px] h-[800px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
