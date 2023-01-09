@@ -8,6 +8,7 @@ import { userUsernameUpdate } from "./userUsernameUpdate";
 import { userDiscriminatorUpdate } from "./userDiscriminatorUpdate";
 import { guildMemberEntered } from "./guildMemberEntered";
 import { userLeveledUp } from "./userLeveledUp";
+import { quarter } from './quarter';
 import { daily } from "./daily";
 import { weekly } from "./weekly";
 import { monthly } from "./monthly";

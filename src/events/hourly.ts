@@ -1,9 +1,7 @@
 import { Event } from "../interfaces";
-import { updatePresence } from "../modules/presence/index";
 
-export const daily: Event = {
-    name: "daily",
+export const hourly: Event = {
+    name: "hourly",
     run: async (client) => {
-        await updatePresence(client);
     }
 }

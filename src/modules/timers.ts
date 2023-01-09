@@ -1,6 +1,7 @@
 import { Module } from "../interfaces";
 import * as cron from "node-cron";
 
+const quarterCron = "*/15 * * * *";
 const hourlyCron = "0 * * * *";
 const dailyCron = "0 0 * * *";
 const weeklyCron = "0 0 * * 0";
@@ -8,6 +9,10 @@ const monthlyCron = "0 0 1 * *";
 const yearlyCron = "0 0 1 1 *";
 
 const schedules = [
+    {
+        name: 'quarter',
+        cron: quarterCron
+    },
     {
         name: "hourly",
         cron: hourlyCron

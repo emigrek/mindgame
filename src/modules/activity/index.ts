@@ -136,6 +136,17 @@ interface ActivityDay {
     hours: Collection<string, ActivityHour>;
 }
 
+const getShortWeekDays = (locale: string, capitalize = true) => {
+    moment.locale(locale);
+    const days = moment.weekdaysShort();
+    moment.locale('pl-PL');
+
+    if(capitalize)
+        return days.map(d => d.toUpperCase());
+    else
+        return days;
+}
+
 const mockDays = () => {
     let data: Collection<string, ActivityDay> = new Collection();
     for(let i = 0; i < 7; i++) {
@@ -284,4 +295,4 @@ const getUserPresenceActivity = async (user: DatabaseUser) => {
     return exists;
 }
 
-export { startVoiceActivity, getUserPresenceActivity, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
