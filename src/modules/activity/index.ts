@@ -41,7 +41,7 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     const exists = await getVoiceActivity(member);
     if(exists) return;
 
-    await checkForDailyReward(client, member);
+    //await checkForDailyReward(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
         userId: member.id,
