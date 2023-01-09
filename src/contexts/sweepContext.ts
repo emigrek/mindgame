@@ -5,7 +5,7 @@ import { sweepTextChannel } from "../modules/messages";
 
 const sweepContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
-        .setName(`Sweep this channel 🧹`)
+        .setName(`Sweep this channel`)
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
         await withGuildLocale(client, interaction.guild!);
