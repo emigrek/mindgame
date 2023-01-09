@@ -6,7 +6,7 @@ import { getUser } from "../modules/user";
 
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
-        .setName(`Show user profile`)
+        .setName(`Show user profile ✨`)
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });

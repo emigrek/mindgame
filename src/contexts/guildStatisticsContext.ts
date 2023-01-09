@@ -5,7 +5,7 @@ import { getGuild } from "../modules/guild";
 
 const guildStatisticsContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
-        .setName(`Show guild statistics`)
+        .setName(`Show guild week statistics 📅`)
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
