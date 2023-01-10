@@ -295,4 +295,30 @@ const getUserPresenceActivity = async (user: DatabaseUser) => {
     return exists;
 }
 
-export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+const getPresenceActivityColor = (activity: PresenceActivity) => {
+    const colors = [
+        {
+            name: 'online',
+            color: '#3ba55d'
+        },
+        {
+            name: 'idle',
+            color: '#faa81a'
+        },
+        {
+            name: 'dnd',
+            color: '#faa81a'
+        },
+        {
+            name: 'offline',
+            color: '#68717e'
+        }
+    ];
+
+    if(!activity) return '#68717e';
+    const color = colors.find(c => c.name === activity.status);
+    if(color) return color.color;
+    return '#68717e';
+}
+
+export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getPresenceActivityColor, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };

@@ -1,8 +1,8 @@
 import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.js";
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
-import { Guild, User, ExtendedStatisticsPayload } from "../../../interfaces";
-import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
+import { Guild, User, ExtendedStatisticsPayload, VoiceActivity, PresenceActivity } from "../../../interfaces";
+import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
@@ -37,7 +37,7 @@ const layoutMedium = (html: string, colors?: ImageHexColors) => {
 
 const layoutLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[700px] h-[500px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[500px] h-[500px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -198,19 +198,60 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
 
 const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
     const userRank = await getUserRank(user) as number;
+    const first = userRank == 1;
+
     const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
     const userTreshold = await getLevelRoleTreshold(user.stats.level);
+
+    const voiceActivity = await getUserVoiceActivity(user) as VoiceActivity;
+    const voiceActivityGuild = voiceActivity ? client.guilds.cache.get(voiceActivity.guildId) : null;
+    const active = voiceActivity ? true : false;
+
+    const presenceActivity = await getUserPresenceActivity(user) as PresenceActivity;
+    const presenceActivityColor = await getPresenceActivityColor(presenceActivity);
+
+    
 
     return `
         <div class="flex flex-col items-center space-y-3">
             <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
-                <img src="${user.avatarUrl}" class="w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]" />
+                <div class="relative">
+                    <img 
+                        src="${user.avatarUrl}" 
+                        class="
+                            w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]
+                            ${active ? 'border-4 border-green-700' : '' } 
+                        " 
+                    />
+                    <span class="bottom-1 right-2 absolute w-6 h-6 bg-[${presenceActivityColor}] rounded-full"></span>
+                </div> 
                 <div class="flex flex-col">
                     <div class="text-2xl text-white font-medium">${user.tag.slice(0, -5)}</div>
                     <div class="flex flex-row items-center text-white/60">
                         <div>#</div>
                         <div>${user.tag.slice(-4)}</div>
                     </div>
+                    ${ voiceActivityGuild ? 
+                        `
+                        <div class="flex items-center mt-2">
+                            <div class="text-white flex items-center space-x-2 p-1 px-2 rounded-full bg-green-700">
+                                <img 
+                                    src="${voiceActivityGuild.iconURL({ extension: "png", size: 512 })}" 
+                                    class="
+                                        w-6 h-6 rounded-full shadow-lg
+                                    " 
+                                />
+                                <div>${voiceActivityGuild.name}</div>
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-green-500">
+                                        <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
+                                        <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''
+                    }
                 </div>
             </div>
             <div class="w-full h-[125px] flex items-center text-white">
@@ -225,10 +266,8 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                             </div>
                         </div>
                         <div class="flex items-center justify-center space-x-2 text-4xl">
-                            ${ userRank == 1 ? `
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-[#eab308]">
-                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
-                                </svg>
+                            ${ first ? `
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor" class="w-6 h-6 shadow-[#eab308] fill-[#eab308]"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M309 106c11.4-7 19-19.7 19-34c0-22.1-17.9-40-40-40s-40 17.9-40 40c0 14.4 7.6 27 19 34L209.7 220.6c-9.1 18.2-32.7 23.4-48.6 10.7L72 160c5-6.7 8-15 8-24c0-22.1-17.9-40-40-40S0 113.9 0 136s17.9 40 40 40c.2 0 .5 0 .7 0L86.4 427.4c5.5 30.4 32 52.6 63 52.6H426.6c30.9 0 57.4-22.1 63-52.6L535.3 176c.2 0 .5 0 .7 0c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40c0 9 3 17.3 8 24l-89.1 71.3c-15.9 12.7-39.5 7.5-48.6-10.7L309 106z"/></svg>
                             ` : ''}
                             <div class="text-4xl">#${userRank}</div>
                         </div>
@@ -299,7 +338,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                         `
             : '' }
             ${ selfCall && !user.stats.time.public ? `
-                <div class="w-full p-1 text-center flex items-center justify-center text-white opacity-70">
+                <div class="w-full p-1 text-center flex items-center justify-center text-white opacity-50">
                     <div>${ client.i18n.__("profile.visibilityNotification") }</div>
                 </div>
             ` : '' }
