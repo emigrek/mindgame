@@ -10,6 +10,11 @@ export const config: Command = {
         .setDescription(`Sends guild config message.`)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     execute: async (client, interaction) => {
+        if(!interaction.guild) {
+            await interaction.reply({ content: `This command can only be used in guilds.`, ephemeral: true });
+            return;
+        }
+
         await interaction.deferReply({ ephemeral: true });
         await updateUserStatistics(client, interaction.user, {
             commands: 1
