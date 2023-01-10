@@ -209,7 +209,6 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 
     const presenceActivity = await getUserPresenceActivity(user) as PresenceActivity;
     const presenceActivityColor = await getPresenceActivityColor(presenceActivity);
-
     
 
     return `
