@@ -16,7 +16,7 @@ const sweepContext: ContextMenu = {
         await withGuildLocale(client, interaction.guild!);
         await interaction.deferReply({ ephemeral: true });
 
-        const sweeped = await sweepTextChannel(client, interaction.guild!, interaction.channel as TextChannel);
+        const sweeped = await sweepTextChannel(client, interaction.channel as TextChannel);
 
         await interaction.followUp({
             content: client.i18n.__mf("sweeper.sweeped", { count: sweeped }),

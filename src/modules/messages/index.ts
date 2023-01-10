@@ -114,8 +114,6 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 }
 
 const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUser?: DatabaseUser) => {
-    await withGuildLocale(client, interaction.guild!);
-
     const sourceUser = await getUser(interaction.user) as DatabaseUser;
     if(!sourceUser) {
         return { content: client.i18n.__("profile.notFound"), ephemeral: true };
@@ -237,18 +235,18 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
     }
 };
 
-const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: TextChannel) => {
+const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
     return new Promise(async (resolve, reject) => {
-        const sourceGuild = await getGuild(guild) as GuildInterface;
-        if(!sourceGuild.channelId) return null;
         const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')'];
         let messages = new Collection<string, Message>();
 
         try {
             messages = await channel.messages.fetch({ limit: 50 });
         } catch (e) {
-            await sendToDefaultChannel(client, guild, client.i18n.__("utils.missingPermissions"));
-            reject(e);
+            let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+            setTimeout(async () => {
+                await missingPermissions.delete();
+            }, 5000);
         }
         
         const messagesToDelete = messages.filter((message: Message) => {
@@ -273,15 +271,19 @@ const sweepTextChannel = async (client: ExtendedClient, guild: Guild, channel: T
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
-    await withGuildLocale(client, channel.guild!);
+    if(channel.guild) {
+        await withGuildLocale(client, channel.guild!);
+    }
 
     let lastMessages = new Collection<string, Message>();
 
     try {
         lastMessages = await channel.messages.fetch({ limit: 50 });
     } catch (e) {
-        await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
-        return;
+        let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+        setTimeout(async () => {
+            await missingPermissions.delete();
+        }, 5000);
     }
     
     const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
@@ -297,8 +299,10 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
             try {
                 await message.edit({ components: [] });
             } catch (e) {
-                await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
-                return;
+                let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+                setTimeout(async () => {
+                    await missingPermissions.delete();
+                }, 5000);
             }
         }
     }
@@ -306,8 +310,10 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     try {
         await lastMessage.edit({ components: [row] });
     } catch (e) {
-        await sendToDefaultChannel(client, channel.guild, client.i18n.__("utils.missingPermissions"));
-        return;
+        let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+        setTimeout(async () => {
+            await missingPermissions.delete();
+        }, 5000);
     }
 };
 
