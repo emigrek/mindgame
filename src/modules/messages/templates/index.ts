@@ -239,7 +239,12 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                         w-6 h-6 rounded-full shadow-lg
                                     " 
                                 />
-                                <div>${voiceActivityGuild.name}</div>
+                                <div>${
+                                    voiceActivityGuild.name.length > 10 ?
+                                        voiceActivityGuild.name.slice(0, 10) + '...' 
+                                    :
+                                        voiceActivityGuild.name
+                                }</div>
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 fill-green-500">
                                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
