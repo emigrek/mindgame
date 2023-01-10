@@ -9,11 +9,6 @@ const profileContext: ContextMenu = {
         .setName(`Show user profile`)
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
-        if(!interaction.guild) {
-            await interaction.reply({ content: `This context can only be used in guilds.`, ephemeral: true });
-            return;
-        }
-
         await interaction.deferReply({ ephemeral: true });
         
         const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction);
