@@ -209,7 +209,6 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 
     const presenceActivity = await getUserPresenceActivity(user) as PresenceActivity;
     const presenceActivityColor = await getPresenceActivityColor(presenceActivity);
-    
 
     return `
         <div class="flex flex-col items-center space-y-3">
@@ -218,7 +217,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                     <img 
                         src="${user.avatarUrl}" 
                         class="
-                            w-26 h-26 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]
+                            w-28 h-28 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]
                             ${active ? 'border-4 border-green-700' : '' } 
                         " 
                     />
