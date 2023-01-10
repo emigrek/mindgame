@@ -8,6 +8,11 @@ const sweepContext: ContextMenu = {
         .setName(`Sweep this channel`)
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
+        if(!interaction.guild) {
+            await interaction.reply({ content: `I can't sweep private channels.`, ephemeral: true });
+            return;
+        }
+
         await withGuildLocale(client, interaction.guild!);
         await interaction.deferReply({ ephemeral: true });
 
