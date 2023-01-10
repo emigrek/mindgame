@@ -52,6 +52,12 @@ npm run build
     * Progress bar ✅
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM
+    * Gather presence activities
+        * Show profile badges depending on most frequent activities
+        * Example badges
+            * Gamer (playing)
+                * [game name] lover
+            * Listener (listening)
 
 * Games
     * Invitable and automatic using cron
