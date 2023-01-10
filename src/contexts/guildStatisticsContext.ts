@@ -8,6 +8,10 @@ const guildStatisticsContext: ContextMenu = {
         .setName(`Show guild week statistics`)
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
+        if(!interaction.guild) {
+            return;
+        }
+
         await interaction.deferReply({ ephemeral: true });
         const sourceGuild = await getGuild(interaction.guild!);
         if(!sourceGuild) return;
