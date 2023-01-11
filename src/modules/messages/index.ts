@@ -169,7 +169,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
             },
             {
                 name: client.i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${sourceUser.day.time.voice}\`\`\``,
+                value: `\`\`\`${(Math.round(sourceUser.day.time.voice)/3600)}H\`\`\``,
                 inline: true
             },
             { 
@@ -226,7 +226,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             {
                 name: client.i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${sourceUser.day.time.voice}\`\`\``,
+                value: `\`\`\`${(Math.round(sourceUser.day.time.voice)/3600)}H\`\`\``,
                 inline: true
             },
             { 
