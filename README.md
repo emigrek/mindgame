@@ -1,6 +1,6 @@
 ![Mindgame](https://raw.githubusercontent.com/emigrek/mindgame/main/media/repo-banner.png)
 
-# 🌌 Mindgame
+# 🌌 Mindgame [(invite me)](https://discord.com/api/oauth2/authorize?client_id=1049355872389832714&permissions=8&scope=bot%20applications.commands)
 Advanced discord application with **leveling** and **activity tracking** utilities.
 
 ## 📦 Used packages
