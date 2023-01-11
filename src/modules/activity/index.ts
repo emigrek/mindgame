@@ -18,18 +18,20 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
         userId: member.id,
         guildId: member.guild.id,
         to: { $ne: null }
-    }).sort({ from: -1 }).limit(1);
+    }).sort({ to: -1 }).limit(1);
 
     if(!userLastVoiceActivity) return;
 
-    const lastVoiceActivityDate = moment(userLastVoiceActivity.from);
-    const now = moment();
-    const next = now.add(1, "days");
+    const last = userLastVoiceActivity.to!.getTime();
+    const now = new Date().getTime();
+    const diff = Math.abs(now - last);
+    const diffDays = diff/(1000*60*60*24);
 
-    const diff = now.diff(lastVoiceActivityDate, "days");
-    if(diff >= 1) {
-        await client.emit("userRecievedDailyReward", member.user, member.guild, next.unix());
+    if(diffDays < 1) {
+        return false;
     }
+
+    await client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
 };
 
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel) => {
@@ -41,7 +43,7 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     const exists = await getVoiceActivity(member);
     if(exists) return;
 
-    //await checkForDailyReward(client, member);
+    await checkForDailyReward(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
         userId: member.id,
