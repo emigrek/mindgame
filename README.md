@@ -3,6 +3,12 @@
 # 🌌 Mindgame [(invite me)](https://discord.com/api/oauth2/authorize?client_id=1049355872389832714&permissions=8&scope=bot%20applications.commands)
 Advanced discord application with **leveling** and **activity tracking** utilities.
 
+# ✨ [Experience](https://docs.google.com/spreadsheets/d/1X20H9ZW5LRT_xLXmg1M8WZG3lsxSERbqzfkl7-oYz_8) your discord server in a new way!
+<img src="https://cdn.discordapp.com/ephemeral-attachments/442778022693830668/1062581303100330034/image.png" alt="experience" width="200"/>
+
+# 👨‍👩‍👧‍👦 View your community backstage
+<img src="https://cdn.discordapp.com/attachments/271045960363278357/1061682368118796399/image.png" alt="backstage" width="200"/>
+
 ## 📦 Used packages
 | 📦 Package  | 📋 Reasons |
 | ------------- | ------------- |
