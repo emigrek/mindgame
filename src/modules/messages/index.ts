@@ -194,7 +194,7 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     const commits = await getLastCommits(repo, 10);
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
-        value: `\`\`\`${commit.commit.message}\`\`\`[Link](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
+        value: `\`\`\`${commit.commit.message}\`\`\`[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
         inline: true
     }));
 
@@ -318,7 +318,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
     const buttons: Collection<string, ButtonBuilder> = await getQuickButtons(client, channel.guild);
     const row = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!);
+        .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!, buttons.get("commits")!);
 
     for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {

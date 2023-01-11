@@ -82,11 +82,17 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
         .setLabel(client.i18n.__("quickButton.sweepLabel"))
         .setStyle(ButtonStyle.Secondary);
 
+    const commitsButton = new ButtonBuilder()
+        .setCustomId("commits")
+        .setLabel(client.i18n.__("quickButton.commitsLabel"))
+        .setStyle(ButtonStyle.Secondary);
+
     const quickButtonsCollection: Collection<string, ButtonBuilder> = new Collection();
     
     quickButtonsCollection.set("sweep", sweepButton);
     quickButtonsCollection.set("profile", profileButon);
     quickButtonsCollection.set("statistics", statisticsButton);
+    quickButtonsCollection.set("commits", commitsButton);
 
     return quickButtonsCollection;
 }   

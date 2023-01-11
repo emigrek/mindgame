@@ -9,6 +9,7 @@ import sweep from "./sweep";
 import guildStatistics from "./guildStatistics";
 import profile from "./profile";
 import autoSweeping from "./autoSweeping";
+import commits from "./commits";
 
 const buttons: Button[] = [
     notifications,
@@ -19,7 +20,8 @@ const buttons: Button[] = [
     guildStatistics,
     profile,
     autoSweeping,
-    statisticsNotification
+    statisticsNotification,
+    commits
 ];
 
 export default buttons;
