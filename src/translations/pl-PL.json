@@ -17,6 +17,7 @@
 	"config.footer": "Zmień konfiguracje serwera kiedy chcesz używając /config",
 	"config.textChannelField": "Kanały tekstowe",
 	"config.voiceChannelField": "Kanały głosowe",
+	"commits.title": "Ostatnie zmiany ({count})",
 	"config.membersField": "Członkowie",
 	"profile.notFound": "Użytkownik nie ma profilu.",
 	"profile.rank": "Ranking",

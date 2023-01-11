@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
@@ -6,7 +6,9 @@ import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
+import { getLastCommits } from "../../utils/commits";
 
+import moment from "moment";
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
@@ -186,6 +188,25 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     };
 };
 
+const getCommitsMessagePayload = async (client: ExtendedClient) => {
+    const packageJsonRepoUrl = (await import("../../../package.json")).repository.url;
+    const repo = packageJsonRepoUrl.split("/").slice(-2).join("/");
+    const commits = await getLastCommits(repo, 10);
+    const fields: EmbedField[] = commits.map((commit: any) => ({
+        name: `${commit.author.login}`,
+        value: `\`\`\`${commit.commit.message}\`\`\`[Link](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
+        inline: true
+    }));
+
+    return {
+        embeds: [{
+            color: 0x0099ff,
+            title: client.i18n.__mf("commits.title", { count: commits.length }),
+            fields: fields
+        }]
+    };
+};
+
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
     await withGuildLocale(client, guild);
 
@@ -317,4 +338,4 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     }
 };
 
-export { getDailyRewardMessagePayload, getConfigMessagePayload, attachQuickButtons, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getDailyRewardMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

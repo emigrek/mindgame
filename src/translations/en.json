@@ -17,6 +17,7 @@
 	"config.footer": "Change guild config any time by running /config",
 	"config.textChannelField": "Text channels",
 	"config.voiceChannelField": "Voice channels",
+	"commits.title": "Last changes ({count})",
 	"config.membersField": "Members",
 	"profile.notFound": "This user doesn't have a profile yet.",
 	"profile.rank": "Rank",
