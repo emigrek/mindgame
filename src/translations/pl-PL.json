@@ -39,6 +39,7 @@
 	"notifications.dailyRewardTitle": "Codzienna nagroda",
 	"notifications.dailyRewardDescription": "**{tag}** odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
 	"notifications.dailyRewardField": "Nagroda",
+	"notifications.todayVoiceTimeField": "Dziś",
 	"notifications.weekVoiceTimeField": "W tym tygodniu",
 	"roles.missingPermissions": "Nie mam wystarczających uprawnień. Ustaw moją rolę nad rolami które chcesz zarządzać.",
 	"utils.missingPermissions": "Nie mam wystarczających uprawnień.",
