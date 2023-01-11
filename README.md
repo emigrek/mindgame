@@ -25,6 +25,7 @@ Advanced discord application with **leveling** and **activity tracking** utiliti
 | node-vibrant | cool looking embed colors |
 | canvas | image processing |
 | node-cron | scheduling |
+| @octokit/rest | github commits |
 
 ## 🚀 Running
 Get running MongoDB instance for storing data
