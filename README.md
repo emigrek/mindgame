@@ -42,14 +42,10 @@ npm run build
 ## 🚧 TODO
 * Experience system
     * Level formula ([spreadsheet](https://docs.google.com/spreadsheets/d/1X20H9ZW5LRT_xLXmg1M8WZG3lsxSERbqzfkl7-oYz_8/edit#gid=0)) ✅
-    * Experience based roles ✅
     * Experience based permissions
     * Experience based channels
 
 * User profile
-    * Show/hide time spent ✅
-    * Most frequent guild based on time spent ✅
-    * Progress bar ✅
     * Follow system
         * When user follows another user, they will receive notifications about their new status in DM
     * Gather presence activities
@@ -71,3 +67,5 @@ npm run build
         * Collect answer speed and create ranking
     * Caching
         * Caching skin/skill images to reduce API calls
+
+* API

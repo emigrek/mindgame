@@ -240,8 +240,8 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                     " 
                                 />
                                 <div class="text-sm">${
-                                    voiceActivityGuild.name.length > 10 ?
-                                        voiceActivityGuild.name.slice(0, 10) + '...' 
+                                    voiceActivityGuild.name.length > 16 ?
+                                        voiceActivityGuild.name.slice(0, 16) + '...' 
                                     :
                                         voiceActivityGuild.name
                                 }</div>
