@@ -239,7 +239,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                                         w-6 h-6 rounded-full shadow-lg
                                     " 
                                 />
-                                <div>${
+                                <div class="text-sm">${
                                     voiceActivityGuild.name.length > 10 ?
                                         voiceActivityGuild.name.slice(0, 10) + '...' 
                                     :
