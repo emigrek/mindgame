@@ -23,6 +23,7 @@
 	"color.roleColorOnButtonLabel": "Włącz ✅",
 	"color.roleColorOffButtonLabel": "Wyłącz ❌",
 	"color.roleColorUpdateButtonLabel": "Zaaktualizuj 🔄",
+	"color.noColor": "Nie wybrano koloru.",
 	"config.membersField": "Członkowie",
 	"profile.notFound": "Użytkownik nie ma profilu.",
 	"profile.rank": "Ranking",
@@ -55,6 +56,5 @@
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
 	"sweeper.sweeped": "Usunięto {count} wiadomości.",
-	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie.",
-	"color.noColor": "color.noColor"
+	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie."
 }

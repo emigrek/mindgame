@@ -10,6 +10,8 @@ import guildStatistics from "./guildStatistics";
 import profile from "./profile";
 import autoSweeping from "./autoSweeping";
 import commits from "./commits";
+import roleColorSwitch from "./roleColorSwitch";
+import roleColorUpdate from "./roleColorUpdate";
 
 const buttons: Button[] = [
     notifications,
@@ -21,7 +23,9 @@ const buttons: Button[] = [
     profile,
     autoSweeping,
     statisticsNotification,
-    commits
+    commits,
+    roleColorSwitch,
+    roleColorUpdate
 ];
 
 export default buttons;

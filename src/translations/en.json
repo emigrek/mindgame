@@ -23,6 +23,7 @@
 	"color.roleColorOnButtonLabel": "Enabled ✅",
 	"color.roleColorOffButtonLabel": "Disabled ❌",
 	"color.roleColorUpdateButtonLabel": "Update 🔄",
+	"color.noColor": "Please set your banner color first.",
 	"config.membersField": "Members",
 	"profile.notFound": "This user doesn't have a profile yet.",
 	"profile.rank": "Rank",

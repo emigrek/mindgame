@@ -132,4 +132,69 @@ const assignLevelRolesInAllGuilds = async (client: ExtendedClient, user: User) =
     }
 };
 
-export { assignUserLevelRole, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };
+const getMemberColorRole = (member: GuildMember) => {
+    const colorRole = member.roles.cache.find(role => role.name.includes("🎨"));
+    if(!colorRole) return null;
+    return colorRole;
+}
+
+const switchColorRole = async (client: ExtendedClient, member: GuildMember) => {
+    return new Promise(async (resolve, reject) => {
+        let colorRole = getMemberColorRole(member);
+        let user = await member.user.fetch(true);
+        let color = user.hexAccentColor!;
+        let clientRole = member.guild.members.cache.get(client.user!.id)!.roles.highest;
+
+        if(!colorRole) {
+            try {
+                colorRole = await member.guild.roles.create({
+                    name: "🎨",
+                    color: color,
+                    hoist: false,
+                    position: clientRole.position
+                });
+
+                await member.roles.add(colorRole);
+                resolve(colorRole);
+                return;
+            } catch (error) {
+                reject(false);
+                return;
+            }
+        }
+
+        try {
+            colorRole?.delete();
+            resolve(true);
+        } catch(e) {
+            reject(false);
+        }
+    });
+
+};
+
+const updateColorRole = async (client: ExtendedClient, member: GuildMember) => {
+    return new Promise(async (resolve, reject) => {
+        let colorRole = getMemberColorRole(member);
+        let user = await member.user.fetch(true);
+        let color = user.hexAccentColor!;
+
+        if(!colorRole) {
+            resolve(false);
+            return;
+        }
+
+        try {
+            await colorRole.edit({
+                color: color
+            });
+            resolve(colorRole);
+            return;
+        } catch (e) {
+            reject(false);
+            return;
+        }
+    });
+};
+
+export { assignUserLevelRole, getMemberColorRole, updateColorRole, switchColorRole, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };

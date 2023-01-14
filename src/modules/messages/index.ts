@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, Interaction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, Interaction, GuildMember } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
@@ -13,6 +13,7 @@ import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 import { getUser } from "../user";
+import { getMemberColorRole } from "../roles";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -207,12 +208,13 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     };
 };
 
-const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction) => {
+const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
     let sourceUser = await getUser(interaction.user) as DatabaseUser;
     let user = await client.users.fetch(sourceUser.userId, {
         force: true
     });
     var color = getColorInt(user.hexAccentColor!);
+    let roleColor = getMemberColorRole(interaction.member as GuildMember);
 
     if(!color) {
         let embed = {
@@ -229,7 +231,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         }
     }
 
-    if(sourceUser.stats.level < 0) {
+    if(sourceUser.stats.level < 160 && !roleColor) {
         let embed = {
             color: color,
             title: client.i18n.__("color.title"),
@@ -244,9 +246,13 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         };
     }
 
-    let roleColorSwitchButton = await getRoleColorSwitchButton(client, false);
+    let roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
     let roleColorUpdateButton = await getRoleColorUpdateButton(client);
-    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(roleColorSwitchButton, roleColorUpdateButton);
+    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(roleColorSwitchButton);
+
+    if(roleColor) {
+        row.addComponents(roleColorUpdateButton);
+    }
 
     let embed = {
         color: color,
