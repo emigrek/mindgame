@@ -18,6 +18,11 @@
 	"config.textChannelField": "Text channels",
 	"config.voiceChannelField": "Voice channels",
 	"commits.title": "Last changes ({count})",
+	"color.title": "Custom color",
+	"color.description": "Equip yourself with a custom color role.\nSet desired banner color in profile and enable color.",
+	"color.roleColorOnButtonLabel": "Enabled ✅",
+	"color.roleColorOffButtonLabel": "Disabled ❌",
+	"color.roleColorUpdateButtonLabel": "Update 🔄",
 	"config.membersField": "Members",
 	"profile.notFound": "This user doesn't have a profile yet.",
 	"profile.rank": "Rank",
@@ -50,5 +55,6 @@
 	"quickButton.guildStatisticsLabel": "Statistics 📅",
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Auto sweeping 🧹",
-	"sweeper.sweeped": "Sweeped {count} messages."
+	"sweeper.sweeped": "Sweeped {count} messages.",
+	"levelRequirement": "Your level is to low.\nReach {level} level and try again."
 }

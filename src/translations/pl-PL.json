@@ -18,6 +18,11 @@
 	"config.textChannelField": "Kanały tekstowe",
 	"config.voiceChannelField": "Kanały głosowe",
 	"commits.title": "Ostatnie zmiany ({count})",
+	"color.title": "Niestandardowy kolor",
+	"color.description": "Wyposaż rolę o wybranym kolorze.\nUstaw kolor baneru w profilu i włącz kolor.",
+	"color.roleColorOnButtonLabel": "Włącz ✅",
+	"color.roleColorOffButtonLabel": "Wyłącz ❌",
+	"color.roleColorUpdateButtonLabel": "Zaaktualizuj 🔄",
 	"config.membersField": "Członkowie",
 	"profile.notFound": "Użytkownik nie ma profilu.",
 	"profile.rank": "Ranking",
@@ -49,5 +54,7 @@
 	"quickButton.commitsLabel": "Zmiany 📝",
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
-	"sweeper.sweeped": "Usunięto {count} wiadomości."
+	"sweeper.sweeped": "Usunięto {count} wiadomości.",
+	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie.",
+	"color.noColor": "color.noColor"
 }

@@ -66,6 +66,24 @@ const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: Us
     return publicProfileButton;
 }
 
+const getRoleColorSwitchButton = async (client: ExtendedClient, current: boolean) => {
+    const roleColorSwitchButton = new ButtonBuilder()
+        .setCustomId("roleColorSwitch")
+        .setLabel(!current ? client.i18n.__("color.roleColorOnButtonLabel") : client.i18n.__("color.roleColorOffButtonLabel"))
+        .setStyle(current ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+    return roleColorSwitchButton;
+}
+
+const getRoleColorUpdateButton = async (client: ExtendedClient) => {
+    const roleColorUpdateButton = new ButtonBuilder()
+        .setCustomId("roleColorUpdate")
+        .setLabel(client.i18n.__("color.roleColorUpdateButtonLabel"))
+        .setStyle(ButtonStyle.Primary);
+
+    return roleColorUpdateButton;
+}
+
 const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
     const profileButon = new ButtonBuilder()
         .setCustomId("profile")
@@ -97,4 +115,4 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
     return quickButtonsCollection;
 }   
 
-export { getExitButton, getAutoSweepingButton, getQuickButtons, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtons, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

@@ -1,10 +1,10 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, SelectMenuOptionBuilder, SelectMenuComponentOptionData, MessagePayload, StringSelectMenuOptionBuilder, BaseInteraction, InteractionType, ButtonInteraction, InteractionResponse, CommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, Interaction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 
@@ -207,6 +207,62 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     };
 };
 
+const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction) => {
+    let sourceUser = await getUser(interaction.user) as DatabaseUser;
+    let user = await client.users.fetch(sourceUser.userId, {
+        force: true
+    });
+    var color = getColorInt(user.hexAccentColor!);
+
+    if(!color) {
+        let embed = {
+            color: 0x000000,
+            title: client.i18n.__("color.title"),
+            description: client.i18n.__("color.noColor"),
+            thumbnail: {
+                url: sourceUser.avatarUrl
+            }
+        }
+
+        return {
+            embeds: [embed]
+        }
+    }
+
+    if(sourceUser.stats.level < 0) {
+        let embed = {
+            color: color,
+            title: client.i18n.__("color.title"),
+            description: client.i18n.__mf("levelRequirement", { level: 160 }),
+            thumbnail: {
+                url: sourceUser.avatarUrl
+            }
+        };
+
+        return { 
+            embeds: [embed]
+        };
+    }
+
+    let roleColorSwitchButton = await getRoleColorSwitchButton(client, false);
+    let roleColorUpdateButton = await getRoleColorUpdateButton(client);
+    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(roleColorSwitchButton, roleColorUpdateButton);
+
+    let embed = {
+        color: color,
+        title: client.i18n.__("color.title"),
+        description: client.i18n.__("color.description"),
+        thumbnail: {
+            url: sourceUser.avatarUrl
+        }
+    };
+
+    return {
+        embeds: [embed],
+        components: [row]
+    };
+};
+
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
     await withGuildLocale(client, guild);
 
@@ -343,4 +399,4 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     }
 };
 
-export { getDailyRewardMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
