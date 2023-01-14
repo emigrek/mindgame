@@ -82,7 +82,7 @@ const getStatisticsTable = (guildStatistics: any, locale: string, colors: ImageH
         daysLayout.forEach((n) => {
             tr += `
                 <tr>
-                    <td>${days[n]}</td>
+                    <td class="text-sm text-white/30">${days[n]}</td>
                     ${dayTd(n)}
                 </tr>
             `;
@@ -113,9 +113,10 @@ const getStatisticsTable = (guildStatistics: any, locale: string, colors: ImageH
 
             return `<td class="m-0 p-0 w-7 h-7" style="box-shadow: 0 0 10px rgba(${shadowColor});">
                 <div 
-                    class="text-center bg-[${colors.Vibrant}] w-7 h-7 font-bold text-sm flex items-center justify-center"
+                    class="text-center bg-[${colors.Vibrant}] w-7 h-7 text-black/30 font-bold text-sm flex items-center justify-center"
                     style="background-color: rgba(${hourColor});"
                 >
+                    ${hour.activePeak}
                 </div>
             </td>`;
         }).join('');
