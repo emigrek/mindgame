@@ -52,7 +52,7 @@
 	"utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 	"quickButton.profileLabel": "Profil ✨",
 	"quickButton.guildStatisticsLabel": "Statystyki 📅",
-	"quickButton.commitsLabel": "Zmiany 📝",
+	"quickButton.commitsLabel": "📝",
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
 	"sweeper.sweeped": "Usunięto {count} wiadomości.",
