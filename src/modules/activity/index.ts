@@ -171,21 +171,18 @@ const mockDays = () => {
 };
 
 const getActiveUsersInHour = (activities: VoiceActivity[] | PresenceActivity[], day: number, hour: number): number => {
-    let activeUsers = new Set<string>();
-    for (const activity of activities) {
-        if(!activity.to) activity.to = moment().toDate();
-        
-        let from = moment(activity.from);
-        let to = moment(activity.to);
+    const hourMoment = moment().day(day).hour(hour);
+    const filtered = [...activities].filter(a => {
+        let from = moment(a.from);
+        let to = moment(a.to);
 
-        if(
-            from.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour) ||
-            to.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour)
-        ) {
-            activeUsers.add(activity.userId);
-        }
-    }
-    return activeUsers.size;
+        let dayCondition = from.isSame(hourMoment, 'day') && to.isSame(hourMoment, 'day');
+        let hourCondition = from.isSameOrBefore(hourMoment) || to.isSameOrAfter(hourMoment);
+
+        return dayCondition && hourCondition;
+    });
+    
+    return filtered.length;
 }
 
 const getActiveUsersInDay = (activities: VoiceActivity[] | PresenceActivity[], day: number): number => {
