@@ -1,7 +1,7 @@
 import { TextChannel } from "discord.js";
 import { Event } from "../interfaces";
 import { getGuilds } from "../modules/guild";
-import { getLevelUpMessagePayload } from "../modules/messages";
+import { createMessage, getLevelUpMessagePayload } from "../modules/messages";
 import { assignUserLevelRole } from "../modules/roles";
 
 export const userLeveledUp: Event = {
@@ -24,7 +24,10 @@ export const userLeveledUp: Event = {
                 const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
                 if(!channel) continue;
                 const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
-                await channel.send(levelUpMesssagePayload);
+                const message = await channel.send(levelUpMesssagePayload);
+                await message.react("🎉");
+                
+                await createMessage(message, user.id, "levelUpMessage");
             }
         }
     }

@@ -14,8 +14,8 @@ const profileContext: ContextMenu = {
             await withGuildLocale(client, interaction.guild!);
         }
         await interaction.deferReply({ ephemeral: true });
-        
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction);
+
+        const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction, interaction.targetId);
         await interaction.followUp({ ...profileMessagePayload, ephemeral: true });
     }
 };

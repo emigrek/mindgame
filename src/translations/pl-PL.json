@@ -51,6 +51,7 @@
 	"utils.missingPermissions": "Nie mam wystarczających uprawnień.",
 	"utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 	"quickButton.profileLabel": "Profil ✨",
+	"quickButton.profileTargetLabel": "Profil {tag} ✨",
 	"quickButton.guildStatisticsLabel": "Statystyki 📅",
 	"quickButton.commitsLabel": "📝",
 	"quickButton.sweepLabel": "Spam? 🧹",

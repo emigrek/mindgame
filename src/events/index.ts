@@ -24,6 +24,8 @@ import { messageCreate } from "./messageCreate";
 import { userRecievedDailyReward } from "./userRecievedDailyReward";
 import { yearly } from "./yearly";
 import { error } from "./error";
+import { messageDelete } from "./messageDelete";
+import { messageDeleteBulk } from "./messageDeleteBulk";
 
 const events: Event[] = [
     ready,
@@ -49,7 +51,9 @@ const events: Event[] = [
     messageCreate,
     userRecievedDailyReward,
     yearly,
-    error
+    error,
+    messageDelete,
+    messageDeleteBulk,
 ];
 
 export default events;

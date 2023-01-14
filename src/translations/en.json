@@ -52,6 +52,7 @@
 	"utils.noPermissions": "You don't have permission to use this.",
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
 	"quickButton.profileLabel": "Profile ✨",
+	"quickButton.profileTargetLabel": "Profile {tag} ✨",
 	"quickButton.commitsLabel": "📝",
 	"quickButton.guildStatisticsLabel": "Statistics 📅",
 	"quickButton.sweepLabel": "Spam? 🧹",

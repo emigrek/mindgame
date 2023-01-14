@@ -10,7 +10,7 @@ const profileTimePublic: Button = {
 
         await setPublicTimeStats(interaction.user);
     
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction);
+        const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction, interaction.user.id);
         await interaction.editReply({
             files: profileMessagePayload!.files,
             components: profileMessagePayload!.components

@@ -1,7 +1,9 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
-import { ButtonStyle, Collection, Guild } from "discord.js";
+import { ButtonStyle, Collection, Guild, Message } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
+import { getMessage } from "..";
+import { getUser } from "../../user";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -84,11 +86,23 @@ const getRoleColorUpdateButton = async (client: ExtendedClient) => {
     return roleColorUpdateButton;
 }
 
-const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
-    const profileButon = new ButtonBuilder()
-        .setCustomId("profile")
-        .setLabel(client.i18n.__("quickButton.profileLabel"))
-        .setStyle(ButtonStyle.Primary);
+const getQuickButtons = async (client: ExtendedClient, guild: Guild, message: Message) => {
+    const sourceMessage = await getMessage(message.id);
+
+    let profileButton;
+
+    if(sourceMessage && sourceMessage.targetUserId) {
+        const targetUser = client.users.cache.get(sourceMessage.targetUserId)!;
+        profileButton = new ButtonBuilder()
+            .setCustomId("profile")
+            .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
+            .setStyle(ButtonStyle.Primary);
+    } else {
+        profileButton = new ButtonBuilder()
+            .setCustomId("profile")
+            .setLabel(client.i18n.__("quickButton.profileLabel"))
+            .setStyle(ButtonStyle.Primary);
+    }
     
     const statisticsButton = new ButtonBuilder()
         .setCustomId("guildStatistics")
@@ -108,7 +122,7 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild) => {
     const quickButtonsCollection: Collection<string, ButtonBuilder> = new Collection();
     
     quickButtonsCollection.set("sweep", sweepButton);
-    quickButtonsCollection.set("profile", profileButon);
+    quickButtonsCollection.set("profile", profileButton);
     quickButtonsCollection.set("statistics", statisticsButton);
     quickButtonsCollection.set("commits", commitsButton);
 

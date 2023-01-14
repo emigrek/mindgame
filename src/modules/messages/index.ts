@@ -3,7 +3,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
+import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser, Message as DatabaseMessage } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
@@ -14,11 +14,15 @@ import chroma = require('chroma-js');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 import { getUser } from "../user";
 import { getMemberColorRole } from "../roles";
+import messageSchema from "../schemas/Message";
+import mongoose from "mongoose";
 
 interface ImageHexColors {
     Vibrant: string;
     DarkVibrant: string;
 }
+
+const messageModel = mongoose.model("Message", messageSchema);
 
 const useImageHex = async (image: string) => {
     if(!image) return { Vibrant: "#373b48", DarkVibrant: "#373b48" };
@@ -116,24 +120,24 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     };
 }
 
-const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUser?: DatabaseUser) => {
+const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUserId: string) => {
     const sourceUser = await getUser(interaction.user) as DatabaseUser;
+
+    const targetUser = client.users.cache.get(targetUserId)!;
+    const sourceTargetUser = await getUser(targetUser) as DatabaseUser;
+
     if(!sourceUser) {
         return { content: client.i18n.__("profile.notFound"), ephemeral: true };
     }
+    
+    const selfCall = sourceUser.userId === targetUser.id;
+    const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
-    if(interaction instanceof UserContextMenuCommandInteraction) {
-        targetUser = await getUser(interaction.targetUser) as DatabaseUser;
-    }
-
-    let sourceTargetUser = targetUser ? targetUser : sourceUser;
-
-    const selfCall = sourceUser.userId == sourceTargetUser.userId;
-    const colors = await useImageHex(sourceTargetUser.avatarUrl);
-    const userProfileHtml = await userProfile(client, sourceTargetUser, colors, selfCall);
+    const colors = await useImageHex(renderedUser.avatarUrl);
+    const userProfileHtml = await userProfile(client, renderedUser, colors, selfCall);
 
     const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
-    const profileTimePublic = await getProfileTimePublicButton(client, sourceTargetUser);
+    const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
     const row = new ActionRowBuilder<ButtonBuilder>().setComponents(profileTimePublic!);
         
     return { files: [file], ephemeral: true, components: selfCall ? [row] : [] };
@@ -378,7 +382,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;
 
-    const buttons: Collection<string, ButtonBuilder> = await getQuickButtons(client, channel.guild);
+    const buttons: Collection<string, ButtonBuilder> = await getQuickButtons(client, channel.guild, lastMessage);
     const row = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!, buttons.get("commits")!);
 
@@ -405,4 +409,32 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     }
 };
 
-export { getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+const createMessage = async (message: Message, targetUserId: string | null, name: string | null) => {
+    const exists = await getMessage(message.id);
+    if(exists) return exists;
+
+    const newMessage = new messageModel({
+        messageId: message.id,
+        channelId: message.channel.id,
+        targetUserId: targetUserId,
+        name: name
+    });
+
+    await newMessage.save();
+    return newMessage;
+};
+
+const getMessage = async (messageId: string) => {
+    const message = await messageModel.findOne({ messageId: messageId });
+    return message;
+};
+
+const deleteMessage = async (messageId: string) => {
+    await messageModel.deleteOne({
+        messageId: messageId
+    });
+
+    return true;
+};
+
+export { createMessage, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

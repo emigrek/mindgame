@@ -2,7 +2,7 @@ import { Guild, TextChannel, User } from "discord.js";
 import ExtendedClient from "../client/ExtendedClient";
 import { Event } from "../interfaces";
 import { getGuild } from "../modules/guild";
-import { getDailyRewardMessagePayload } from "../modules/messages";
+import { createMessage, getDailyRewardMessagePayload } from "../modules/messages";
 
 
 export const userRecievedDailyReward: Event = {
@@ -17,7 +17,9 @@ export const userRecievedDailyReward: Event = {
         const dailyRewardMessagePayload = await getDailyRewardMessagePayload(client, user, guild, next);
         
         try {
-            await defaultChannel.send(dailyRewardMessagePayload);
+            const message = await defaultChannel.send(dailyRewardMessagePayload);
+            
+            await createMessage(message, user.id, "dailyRewardMessage");
         } catch (error) {
             console.log(error);
         }
