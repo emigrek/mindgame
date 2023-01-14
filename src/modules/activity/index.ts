@@ -179,8 +179,8 @@ const getActiveUsersInHour = (activities: VoiceActivity[] | PresenceActivity[], 
         let to = moment(activity.to);
 
         if(
-            from.get('day') === day && (from.get('hours') <= hour || to.get('hours') >= hour) ||
-            to.get('day') === day && (from.get('hours') <= hour || to.get('hours') >= hour)
+            from.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour) ||
+            to.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour)
         ) {
             activeUsers.add(activity.userId);
         }
