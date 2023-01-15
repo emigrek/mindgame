@@ -426,6 +426,7 @@ const createMessage = async (message: Message, targetUserId: string | null, name
 
 const getMessage = async (messageId: string) => {
     const message = await messageModel.findOne({ messageId: messageId });
+    if(!message) return null;
     return message;
 };
 
