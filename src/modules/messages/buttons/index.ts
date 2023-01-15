@@ -88,21 +88,17 @@ const getRoleColorUpdateButton = async (client: ExtendedClient) => {
 
 const getQuickButtons = async (client: ExtendedClient, guild: Guild, message: Message) => {
     const sourceMessage = await getMessage(message.id);
+    const targetUser = (sourceMessage && sourceMessage.targetUserId) ? client.users.cache.get(sourceMessage.targetUserId)! : null;
 
-    let profileButton;
+    const profileButton = new ButtonBuilder()
+        .setCustomId("profile")
+        .setLabel(client.i18n.__("quickButton.profileLabel"))
+        .setStyle(ButtonStyle.Primary);
 
-    if(sourceMessage && sourceMessage.targetUserId) {
-        const targetUser = client.users.cache.get(sourceMessage.targetUserId)!;
-        profileButton = new ButtonBuilder()
-            .setCustomId("profile")
-            .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
-            .setStyle(ButtonStyle.Primary);
-    } else {
-        profileButton = new ButtonBuilder()
-            .setCustomId("profile")
-            .setLabel(client.i18n.__("quickButton.profileLabel"))
-            .setStyle(ButtonStyle.Primary);
-    }
+    const profileTargettedButton = new ButtonBuilder()
+        .setCustomId("profile")
+        .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser!.tag }))
+        .setStyle(ButtonStyle.Primary);
     
     const statisticsButton = new ButtonBuilder()
         .setCustomId("guildStatistics")
@@ -122,7 +118,7 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild, message: Me
     const quickButtonsCollection: Collection<string, ButtonBuilder> = new Collection();
     
     quickButtonsCollection.set("sweep", sweepButton);
-    quickButtonsCollection.set("profile", profileButton);
+    quickButtonsCollection.set("profile", (sourceMessage && sourceMessage.targetUserId) ? profileTargettedButton : profileButton);
     quickButtonsCollection.set("statistics", statisticsButton);
     quickButtonsCollection.set("commits", commitsButton);
 
