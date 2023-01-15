@@ -92,7 +92,7 @@ const getQuickButtons = async (client: ExtendedClient, guild: Guild, message: Me
     let profileButton;
 
     if(sourceMessage && sourceMessage.targetUserId) {
-        const targetUser = client.users.cache.get(sourceMessage.targetUserId)!;
+        const targetUser = await client.users.fetch(sourceMessage.targetUserId);
         profileButton = new ButtonBuilder()
             .setCustomId("profile")
             .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
