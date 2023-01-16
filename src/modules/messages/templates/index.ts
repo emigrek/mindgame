@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload, VoiceActivity, PresenceActivity } from "../../../interfaces";
-import { getGuildPresenceActivityInHoursAcrossWeek, getGuildVoiceActivityInHoursAcrossWeek, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivity } from "../../activity";
+import { getPresenceActivePeaks, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivePeaks, getVoiceActivity } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
@@ -65,7 +65,7 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     `;
 }
 
-const getStatisticsTable = (guildStatistics: any, locale: string, colors: ImageHexColors) => {
+const getStatisticsTable = (activityPeaks: any, locale: string, colors: ImageHexColors) => {
     const days = getShortWeekDays(locale);
     const chromaColor = chroma(colors.Vibrant);
     const daysLayout = [1, 2, 3, 4, 5, 6, 0];
@@ -92,7 +92,7 @@ const getStatisticsTable = (guildStatistics: any, locale: string, colors: ImageH
     }
 
     const dayTd = (day: number) => {
-        let dayStat = guildStatistics.get(day.toString());
+        let dayStat = activityPeaks.find((dayStat: any) => dayStat.day === day);
 
         return Array(24).fill(0).map((_, i) => {
             let hour = dayStat.hours.find((hour: any) => hour.hour === i);
@@ -353,9 +353,16 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     let guild = client.guilds.cache.get(sourceGuild.guildId)!;
     let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 
+    /*
     let guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
     let guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
+    */
+    let startWeek = moment().startOf("week").add(1, 'hour').toDate();
+    let endWeek = moment().endOf("week").add(1, 'hour').toDate();
     let dateNowFormatted = moment().format("DD.MM.YYYY");
+    
+    let voiceActivityPeaks = await getVoiceActivePeaks(sourceGuild, startWeek, endWeek);
+    let presenceActivityPeaks = await getPresenceActivePeaks(sourceGuild, startWeek, endWeek);
     
     return `
         <div class="flex flex-col items-center">
@@ -369,7 +376,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                 </div>
             </div>
             <div class="w-full rounded-lg h-[250px] shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildVoiceActivityInHoursAcrossWeek, sourceGuild.locale, colors) }
+                ${ getStatisticsTable(voiceActivityPeaks, sourceGuild.locale, colors) }
             </div>
             <div class="mt-2 w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
                 <div class="text-3xl">${client.i18n.__("statistics.presenceHeader")}</div>
@@ -380,7 +387,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                 </div>
             </div>
             <div class="w-full h-[250px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(guildPresenceActivityInHoursAcrossWeek, sourceGuild.locale, {
+                ${ getStatisticsTable(presenceActivityPeaks, sourceGuild.locale, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3c94dc",
                 }) }

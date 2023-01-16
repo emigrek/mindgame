@@ -129,15 +129,15 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     return exists;
 }
 
-interface ActivityHour {
+interface ActivityPeakHour {
     hour: number;
-    activePeak: number | null;
+    activePeak: number;
 };
 
-interface ActivityDay {
+interface ActivityPeakDay {
     day: number;
-    activePeak: number | null;
-    hours: Collection<string, ActivityHour>;
+    activePeak: number;
+    hours: ActivityPeakHour[];
 }
 
 const getShortWeekDays = (locale: string, capitalize = true) => {
@@ -151,131 +151,67 @@ const getShortWeekDays = (locale: string, capitalize = true) => {
         return days;
 }
 
-const mockDays = () => {
-    let data: Collection<string, ActivityDay> = new Collection();
-    for(let i = 0; i < 7; i++) {
-        let hours: Collection<string, ActivityHour> = new Collection();
-        for(let j = 0; j < 24; j++) {
-            hours.set(j.toString(), {
-                hour: j,
-                activePeak: null
-            });
-        }
-        data.set(i.toString(), {
-            day: i,
-            activePeak: null,
-            hours
-        });
-    }
+const mockDays = (): ActivityPeakDay[] => {
+    const data = new Array(7).fill(null).map((_, i) => ({day: i, activePeak: 0, hours: new Array(24).fill(null).map((_, j) => ({hour: j, activePeak: 0}))}));
     return data;
 };
 
-const getActiveUsersInHour = (activities: VoiceActivity[] | PresenceActivity[], day: number, hour: number): number => {
-    let activeUsers = new Set<string>();
-    for (const activity of activities) {
-        if(!activity.to) activity.to = moment().toDate();
-        
-        let from = moment(activity.from);
-        let to = moment(activity.to);
-
-        if(
-            from.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour) ||
-            to.get('day') === day && (from.get('hours') <= hour && to.get('hours') >= hour)
-        ) {
-            activeUsers.add(activity.userId);
-        }
-    }
-    return activeUsers.size;
-}
-
-const getActiveUsersInDay = (activities: VoiceActivity[] | PresenceActivity[], day: number): number => {
-    let activeUsers = new Set<string>();
-    for (const activity of activities) {
-        if(!activity.to) activity.to = moment().toDate();
-
-        if (
-            activity.from.getDay() === day || 
-            activity.to.getDay() === day
-        ) {
-            activeUsers.add(activity.userId);
-        }
-    }
-    return activeUsers.size;
-}
-
-const getGuildPresenceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").add(1, 'hour').toDate();
-    const endWeek = moment().endOf("week").add(1, 'hour').toDate();
-
-    const query = await presenceActivityModel.find({
+const getVoiceActivePeaks = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+    const activities = await voiceActivityModel.find({
         guildId: guild.guildId,
         from: {
-            $gte: startWeek,
-            $lte: endWeek
+            $gte: startDate,
         },
         $or: [
             { to: { $eq: null } },
-            { to: { $lte: endWeek } }
+            { to: { $lte: endDate } }
         ]
     });
 
-    let data: Collection<string, ActivityDay> = mockDays();
+    let data = mockDays();
 
-    query.forEach((activity: PresenceActivity) => {
-        if(!activity.to) {
-            activity.to = moment().toDate();
-        }
+    activities.forEach((activity: VoiceActivity) => {
+        const fromDay = moment(activity.from).day();
+        const toDay = activity.to ? moment(activity.to).day() : moment().day();
+        const fromHour = moment(activity.from).hour();
+        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
 
-        const activityDay = moment(activity.to).day();
-        const activityHour = moment(activity.to).hour();
-
-        const day = data.get(activityDay.toString());
-        if(!day) return;
-
-        day.activePeak = getActiveUsersInDay(query, day.day);
-
-        const hour = day.hours.get(activityHour.toString());
-        if(hour) {
-            hour.activePeak = getActiveUsersInHour(query, day.day, activityHour);
+        for(let i = fromDay; i <= toDay; i++) {
+            data[i].activePeak++;
+            for(let j = fromHour; j <= toHour; j++) {
+                data[i].hours[j].activePeak++;
+            }
         }
     });
 
     return data;
 }
 
-const getGuildVoiceActivityInHoursAcrossWeek = async (guild: DatabaseGuild) => {
-    const startWeek = moment().startOf("week").add(1, 'hour').toDate();
-    const endWeek = moment().endOf("week").add(1, 'hour').toDate();
-
-    const query = await voiceActivityModel.find({
+const getPresenceActivePeaks = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+    const activities = await presenceActivityModel.find({
         guildId: guild.guildId,
         from: {
-            $gte: startWeek,
-            $lte: endWeek
+            $gte: startDate,
         },
         $or: [
             { to: { $eq: null } },
-            { to: { $lte: endWeek } }
+            { to: { $lte: endDate } }
         ]
     });
 
-    let data: Collection<string, ActivityDay> = mockDays();
+    let data = mockDays();
 
-    query.forEach(async (activity: VoiceActivity) => {
-        if(!activity.to) {
-            activity.to = moment().toDate();
-        }
-        const activityDay = moment(activity.to).day();
-        const activityHour = moment(activity.to).hour();  
+    activities.forEach((activity: PresenceActivity) => {
+        const fromDay = moment(activity.from).day();
+        const toDay = activity.to ? moment(activity.to).day() : moment().day();
+        const fromHour = moment(activity.from).hour();
+        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
 
-        const day = data.get(activityDay.toString());
-        if(!day) return;
-
-        day.activePeak = await getActiveUsersInDay(query, day.day);
-
-        const hour = day.hours.get(activityHour.toString());
-        if(hour) {
-            hour.activePeak = getActiveUsersInHour(query, day.day, activityHour);
+        for(let i = fromDay; i <= toDay; i++) {
+            data[i].activePeak++;
+            for(let j = fromHour; j <= toHour; j++) {
+                data[i].hours[j].activePeak++;
+            }
         }
     });
 
@@ -328,4 +264,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getPresenceActivityColor, getUserVoiceActivity, getGuildPresenceActivityInHoursAcrossWeek,  getGuildVoiceActivityInHoursAcrossWeek, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getPresenceActivePeaks, getVoiceActivePeaks, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
