@@ -353,12 +353,8 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     let guild = client.guilds.cache.get(sourceGuild.guildId)!;
     let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 
-    /*
-    let guildVoiceActivityInHoursAcrossWeek = await getGuildVoiceActivityInHoursAcrossWeek(sourceGuild);
-    let guildPresenceActivityInHoursAcrossWeek = await getGuildPresenceActivityInHoursAcrossWeek(sourceGuild);
-    */
-    let startWeek = moment().startOf("week").add(1, 'hour').toDate();
-    let endWeek = moment().endOf("week").add(1, 'hour').toDate();
+    let startWeek = moment().startOf("week").toDate();
+    let endWeek = moment().endOf("week").toDate();
     let dateNowFormatted = moment().format("DD.MM.YYYY");
     
     let voiceActivityPeaks = await getVoiceActivePeaks(sourceGuild, startWeek, endWeek);
