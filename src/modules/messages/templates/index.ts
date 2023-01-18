@@ -52,7 +52,7 @@ const layoutLarge = (html: string, colors?: ImageHexColors) => {
 
 const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     return `
-        <html class="w-[800px] h-[800px] ${colors ? `bg-[${colors.DarkVibrant}]` : ''}">
+        <html class="w-[800px] h-[800px] ${colors ? `bg-gradient-to-b from-[${colors.Vibrant}] to-[${colors.DarkVibrant}]` : ''}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,13 +70,13 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     const chromaColor = chroma(colors.Vibrant);
     const daysLayout = [1, 2, 3, 4, 5, 6, 0];
 
-    const dataMinPeakDayExclude = data.filter((d) => d.activePeak !== 0);
-    const dataMinPeakDay = dataMinPeakDayExclude.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
-    const dataMinPeakHourExclude = dataMinPeakDay.hours.filter((h) => h.activePeak !== 0);
-    const dataMinPeakHour = dataMinPeakHourExclude.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    const dataSortedPeakDsc = data.sort((a, b) => b.activePeak - a.activePeak);
 
-    const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
-    const dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
+    const minActivityPeakDay = dataSortedPeakDsc[dataSortedPeakDsc.length - 1];
+    const minAcitivtyPeakHour = minActivityPeakDay.hours.sort((a, b) => a.activePeak - b.activePeak)[0];
+
+    const maxActivityPeakDay = dataSortedPeakDsc[0];
+    const maxAcitivtyPeakHour = maxActivityPeakDay.hours.find((h) => h.activePeak === maxActivityPeakDay.activePeak)!;
 
     const hoursTh = () => {
         return Array(24).fill(0).map((_, i) => {
@@ -144,10 +144,10 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
             <div class="w-full text-white/40 space-x-1 flex items-center justify-end py-1 px-1">
                 <div class="flex flex items-center justify-center space-x-1">
                     <div>min</div>
-                    ${daySquare(dataMinPeakDay, dataMinPeakHour.hour)}
+                    ${daySquare(minActivityPeakDay, minAcitivtyPeakHour.hour)}
                 </div>
                 <div class="flex flex items-center justify-center space-x-1">
-                    ${daySquare(dataMaxPeakDay, dataMaxPeakHour.hour)}
+                    ${daySquare(maxActivityPeakDay, maxAcitivtyPeakHour.hour)}
                     <div>max</div>
                 </div>
             </div>
@@ -410,7 +410,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
             </div>
             <div class="mt-2 w-full text-white/60 py-2 px-5 space-x-3 flex flex-row text-center items-center justify-center align-middle">
                 <img src="${guildIconUrl}" class="w-8 h-8 rounded-full" />
-                <div class="text-lg font-medium">${dateNowFormatted}</div>
+                <div class="text-xl">${dateNowFormatted}</div>
             <div>
         </div>
     `;
