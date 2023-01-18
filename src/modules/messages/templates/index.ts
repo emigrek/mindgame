@@ -70,13 +70,12 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     const chromaColor = chroma(colors.Vibrant);
     const daysLayout = [1, 2, 3, 4, 5, 6, 0];
 
-    const dataSortedPeakDsc = data.sort((a, b) => b.activePeak - a.activePeak);
+    const dataMinPeakDay = data.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    const dataMinPeakHourExcludeZero = dataMinPeakDay.hours.find((hour) => hour.activePeak > 0);
+    const dataMinPeakHour = dataMinPeakHourExcludeZero ? dataMinPeakHourExcludeZero : dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
 
-    const minActivityPeakDay = dataSortedPeakDsc[dataSortedPeakDsc.length - 1];
-    const minAcitivtyPeakHour = minActivityPeakDay.hours.sort((a, b) => a.activePeak - b.activePeak)[0];
-
-    const maxActivityPeakDay = dataSortedPeakDsc[0];
-    const maxAcitivtyPeakHour = maxActivityPeakDay.hours.find((h) => h.activePeak === maxActivityPeakDay.activePeak)!;
+    const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
+    const dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
 
     const hoursTh = () => {
         return Array(24).fill(0).map((_, i) => {
@@ -144,10 +143,10 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
             <div class="w-full text-white/40 space-x-1 flex items-center justify-end py-1 px-1">
                 <div class="flex flex items-center justify-center space-x-1">
                     <div>min</div>
-                    ${daySquare(minActivityPeakDay, minAcitivtyPeakHour.hour)}
+                    ${daySquare(dataMinPeakDay, dataMinPeakHour.hour)}
                 </div>
                 <div class="flex flex items-center justify-center space-x-1">
-                    ${daySquare(maxActivityPeakDay, maxAcitivtyPeakHour.hour)}
+                    ${daySquare(dataMaxPeakDay, dataMaxPeakHour.hour)}
                     <div>max</div>
                 </div>
             </div>
