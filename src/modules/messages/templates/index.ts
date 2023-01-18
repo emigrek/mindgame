@@ -73,9 +73,6 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     const dataMinPeakDay = data.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
     const dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
 
-    const dataMidPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
-    const dataMidPeakHour = dataMidPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
-
     const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
     const dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
 
@@ -142,17 +139,14 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
                     ${daysTr()}
                 </tbody>
             </table>
-            <div class="w-full text-white/30 space-x-1 text-sm flex items-center justify-end py-2 px-1">
+            <div class="w-full text-white/40 space-x-1 flex items-center justify-end py-1 px-1">
                 <div class="flex flex items-center justify-center space-x-1">
-                    <div>Min</div>
+                    <div>min</div>
                     ${daySquare(dataMinPeakDay, dataMinPeakHour.hour)}
-                </div>
-                <div class="flex flex items-center justify-center">
-                    ${daySquare(dataMidPeakDay, dataMidPeakHour.hour)}
                 </div>
                 <div class="flex flex items-center justify-center space-x-1">
                     ${daySquare(dataMaxPeakDay, dataMaxPeakHour.hour)}
-                    <div>Max</div>
+                    <div>max</div>
                 </div>
             </div>
         </div>
