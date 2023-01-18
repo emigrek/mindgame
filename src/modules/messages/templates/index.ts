@@ -70,7 +70,8 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     const chromaColor = chroma(colors.Vibrant);
     const daysLayout = [1, 2, 3, 4, 5, 6, 0];
 
-    const dataMinPeakDay = data.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    const dataMinPeakDayExclude = data.filter((d) => d.activePeak !== 0);
+    const dataMinPeakDay = dataMinPeakDayExclude.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
     const dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
 
     const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
