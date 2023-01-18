@@ -84,7 +84,12 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     
     dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
     
-    dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    let dataMinPeakExcludedHours = dataMinPeakDay.hours.filter((h) => h.activePeak > 0);
+    if(dataMinPeakExcludedHours.length > 0)
+        dataMinPeakHour = dataMinPeakExcludedHours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    else
+        dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+        
     dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
     
 
