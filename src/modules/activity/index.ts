@@ -264,4 +264,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { startVoiceActivity, getShortWeekDays, getUserPresenceActivity, getPresenceActivePeaks, getVoiceActivePeaks, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { startVoiceActivity, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getPresenceActivePeaks, getVoiceActivePeaks, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };

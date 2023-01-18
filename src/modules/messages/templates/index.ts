@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload, VoiceActivity, PresenceActivity } from "../../../interfaces";
-import { getPresenceActivePeaks, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivePeaks, getVoiceActivity } from "../../activity";
+import { ActivityPeakDay, ActivityPeakHour, getPresenceActivePeaks, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivePeaks, getVoiceActivity } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
@@ -65,10 +65,19 @@ const layoutXLarge = (html: string, colors?: ImageHexColors) => {
     `;
 }
 
-const getStatisticsTable = (activityPeaks: any, locale: string, colors: ImageHexColors) => {
+const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: ImageHexColors) => {
     const days = getShortWeekDays(locale);
     const chromaColor = chroma(colors.Vibrant);
     const daysLayout = [1, 2, 3, 4, 5, 6, 0];
+
+    const dataMinPeakDay = data.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+    const dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
+
+    const dataMidPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
+    const dataMidPeakHour = dataMidPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
+
+    const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
+    const dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
 
     const hoursTh = () => {
         return Array(24).fill(0).map((_, i) => {
@@ -91,48 +100,63 @@ const getStatisticsTable = (activityPeaks: any, locale: string, colors: ImageHex
         return tr;
     }
 
+    const daySquare = (day: ActivityPeakDay, hour: number) => {
+        if(!day || !day.hours[hour] || !day.hours[hour].activePeak || !day.activePeak) {
+            return `<div class="text-center w-7 h-7 bg-white/5" style="opacity: 5%"></div>`;  
+        }
+
+        let activityHour: ActivityPeakHour = day.hours[hour];
+        let hourAlpha = Math.round((activityHour.activePeak/day.activePeak) * 100);
+        let hourColor = chromaColor.luminance(hourAlpha/100).rgba().join(',');
+
+        return `
+            <div 
+                class="text-center bg-[${colors.Vibrant}] w-7 h-7 text-black/30 font-bold text-sm flex items-center justify-center"
+                style="background-color: rgba(${hourColor});"
+            >
+                ${activityHour.activePeak}
+            </div>
+        `;
+    }
+
     const dayTd = (day: number) => {
-        let dayStat = activityPeaks.find((dayStat: any) => dayStat.day === day);
+        let dayPeak = data.find((dayStat: ActivityPeakDay) => dayStat.day === day)!;
 
         return Array(24).fill(0).map((_, i) => {
-            let hour = dayStat.hours.find((hour: any) => hour.hour === i);
-            let hourMoment = moment().day(day).hour(i);
-            let hoursDiff = moment().diff(hourMoment, 'hours');
-            
-            let hoursAlpha = Math.round((1-(hoursDiff/7)) * 100) > 0 ? Math.floor((1-(hoursDiff/7)) * 100) > 100 ? 0 : Math.floor((1-(hoursDiff/7)) * 100) : 0;
-            let shadowColor = chromaColor.alpha(hoursAlpha/100).rgba().join(',');
-
-            if(!hour.activePeak || !dayStat.activePeak) {
-                return `<td>
-                    <div class="text-center w-7 h-7 bg-white/5" style="opacity: ${5}%"></div>
-                </td>`;  
-            }
-            
-            let hourAlpha = Math.round((hour.activePeak/dayStat.activePeak) * 100);
-            let hourColor = chromaColor.luminance(hourAlpha/100).rgba().join(',');
-
-            return `<td class="m-0 p-0 w-7 h-7" style="box-shadow: 0 0 10px rgba(${shadowColor});">
-                <div 
-                    class="text-center bg-[${colors.Vibrant}] w-7 h-7 text-black/30 font-bold text-sm flex items-center justify-center"
-                    style="background-color: rgba(${hourColor});"
-                >
-                    ${hour.activePeak}
-                </div>
-            </td>`;
+            return `
+                <td class="m-0 p-0 w-7 h-7">${daySquare(dayPeak, i)}</td>
+            `
         }).join('');
     }
 
-    return `<table class="text-white/50 border-none border-0" cellspacing="0" cellpadding="0">
-        <thead class="font-medium m-0 p-0">
-            <tr>
-                <th></th>
-                ${hoursTh()}
-            </tr>
-        </thead>
-        <tbody class="font-medium m-0 p-0">
-            ${daysTr()}
-        </tbody>
-    </table>`;
+    return `
+        <div class="w-full flex-col items-center justify-center">
+            <table class="text-white/50 border-none border-0" cellspacing="0" cellpadding="0">
+                <thead class="font-medium m-0 p-0">
+                    <tr>
+                        <th></th>
+                        ${hoursTh()}
+                    </tr>
+                </thead>
+                <tbody class="font-medium m-0 p-0">
+                    ${daysTr()}
+                </tbody>
+            </table>
+            <div class="w-full text-white/30 space-x-1 text-sm flex items-center justify-end py-2 px-1">
+                <div class="flex flex items-center justify-center space-x-1">
+                    <div>Min</div>
+                    ${daySquare(dataMinPeakDay, dataMinPeakHour.hour)}
+                </div>
+                <div class="flex flex items-center justify-center">
+                    ${daySquare(dataMidPeakDay, dataMidPeakHour.hour)}
+                </div>
+                <div class="flex flex items-center justify-center space-x-1">
+                    ${daySquare(dataMaxPeakDay, dataMaxPeakHour.hour)}
+                    <div>Max</div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
@@ -371,7 +395,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     </svg>              
                 </div>
             </div>
-            <div class="w-full rounded-lg h-[250px] shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full rounded-lg h-[275px] shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(voiceActivityPeaks, sourceGuild.locale, colors) }
             </div>
             <div class="mt-2 w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
@@ -382,7 +406,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
                     </svg>    
                 </div>
             </div>
-            <div class="w-full h-[250px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full h-[275px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(presenceActivityPeaks, sourceGuild.locale, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3c94dc",
