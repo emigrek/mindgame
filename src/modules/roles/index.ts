@@ -22,7 +22,7 @@ const getLevelRoleTreshold = (level: number) => {
 }
 
 const getGuildTresholdRole = (guild: Guild, treshold: LevelTreshold) => {
-    const levelRole = guild.roles.cache.find(role => role.name.includes(`Level ${treshold.level}`));
+    const levelRole = guild.roles.cache.find(role => role.name === `Level ${treshold.level}`);
     if(!levelRole) return null;
     return levelRole;
 }
