@@ -1,6 +1,6 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
-import { ButtonStyle, Collection, Guild, Message } from "discord.js";
+import { ActionRowBuilder, ButtonStyle, Collection, Guild, Message, UserResolvable } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
 import { getUser } from "../../user";
@@ -86,47 +86,68 @@ const getRoleColorUpdateButton = async (client: ExtendedClient) => {
     return roleColorUpdateButton;
 }
 
-const getQuickButtons = async (client: ExtendedClient, guild: Guild, message: Message) => {
-    const sourceMessage = await getMessage(message.id);
-
+const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResolvable) => {
     let profileButton;
 
-    if(sourceMessage && sourceMessage.targetUserId) {
-        const targetUser = await client.users.fetch(sourceMessage.targetUserId);
+    if(targetUserId) {
+        const targetUser = await client.users.fetch(targetUserId);
+
         profileButton = new ButtonBuilder()
             .setCustomId("profile")
             .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
             .setStyle(ButtonStyle.Primary);
-    } else {
-        profileButton = new ButtonBuilder()
+
+        return profileButton;
+    }
+
+    profileButton = new ButtonBuilder()
             .setCustomId("profile")
             .setLabel(client.i18n.__("quickButton.profileLabel"))
             .setStyle(ButtonStyle.Primary);
-    }
-    
+
+    return profileButton;
+}
+
+const getGuildStatisticsButton = async (client: ExtendedClient) => {
     const statisticsButton = new ButtonBuilder()
         .setCustomId("guildStatistics")
         .setLabel(client.i18n.__("quickButton.guildStatisticsLabel"))
         .setStyle(ButtonStyle.Secondary);
 
+    return statisticsButton;
+}
+
+const getSweepButton = async (client: ExtendedClient) => {
     const sweepButton = new ButtonBuilder()
         .setCustomId("sweep")
         .setLabel(client.i18n.__("quickButton.sweepLabel"))
         .setStyle(ButtonStyle.Secondary);
+    
+    return sweepButton;
+};
 
+const getCommitsButton = async (client: ExtendedClient) => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
         .setLabel(client.i18n.__("quickButton.commitsLabel"))
-        .setStyle(ButtonStyle.Secondary);
+        .setStyle(ButtonStyle.Secondary); 
 
-    const quickButtonsCollection: Collection<string, ButtonBuilder> = new Collection();
-    
-    quickButtonsCollection.set("sweep", sweepButton);
-    quickButtonsCollection.set("profile", profileButton);
-    quickButtonsCollection.set("statistics", statisticsButton);
-    quickButtonsCollection.set("commits", commitsButton);
+    return commitsButton;
+};
 
-    return quickButtonsCollection;
+const getQuickButtonsRow = async (client: ExtendedClient, message: Message) => {
+    const sourceMessage = await getMessage(message.id);
+
+    const row = new ActionRowBuilder<ButtonBuilder>();
+
+    const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
+    const guildStatisticsButton = await getGuildStatisticsButton(client);
+    const sweepButton = await getSweepButton(client);
+    //const commitsButton = await getCommitsButton(client);
+
+    row.setComponents(sweepButton, profileButton, guildStatisticsButton);
+
+    return row;
 }   
 
-export { getExitButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtons, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRow, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

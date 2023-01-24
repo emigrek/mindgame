@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser, Message as DatabaseMessage } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtons, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 
@@ -382,9 +382,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;
 
-    const buttons: Collection<string, ButtonBuilder> = await getQuickButtons(client, channel.guild, lastMessage);
-    const row = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(buttons.get("sweep")!, buttons.get("profile")!, buttons.get("statistics")!, buttons.get("commits")!);
+    const quickButtonsRow = await getQuickButtonsRow(client, lastMessage);
 
     for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {
@@ -400,7 +398,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     }
 
     try {
-        await lastMessage.edit({ components: [row] });
+        await lastMessage.edit({ components: [quickButtonsRow] });
     } catch (e) {
         let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
         setTimeout(async () => {

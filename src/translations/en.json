@@ -53,7 +53,7 @@
 	"config.publicProfileButtonLabel": "config.publicProfileButtonLabel",
 	"quickButton.profileLabel": "Profile ✨",
 	"quickButton.profileTargetLabel": "Profile {tag} ✨",
-	"quickButton.commitsLabel": "📝",
+	"quickButton.commitsLabel": "Commits 📝",
 	"quickButton.guildStatisticsLabel": "Statistics 📅",
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Auto sweeping 🧹",

@@ -53,7 +53,7 @@
 	"quickButton.profileLabel": "Profil ✨",
 	"quickButton.profileTargetLabel": "Profil {tag} ✨",
 	"quickButton.guildStatisticsLabel": "Statystyki 📅",
-	"quickButton.commitsLabel": "📝",
+	"quickButton.commitsLabel": "Zmiany 📝",
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
 	"sweeper.sweeped": "Usunięto {count} wiadomości.",
