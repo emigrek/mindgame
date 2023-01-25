@@ -164,11 +164,15 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
             const active = [...activities].filter(a => {
                 const from = moment(a.from);
                 const to = a.to ? moment(a.to) : moment();
-                return from.hour() <= h.hour && to.hour() >= h.hour && from.day() === d.day && to.day() === d.day;
-            });
+                const hourCondition = from.hour() <= h.hour && to.hour() >= h.hour;
+                const dayCondition = from.day() <= d.day && to.day() >= d.day;
+                return hourCondition && dayCondition;
+            }).length;
 
-            if(active.length > h.activePeak) h.activePeak = active.length;
-            if(active.length > d.activePeak) d.activePeak = active.length;
+            if(active > h.activePeak)
+                h.activePeak = active;
+            if(active > d.activePeak)
+                d.activePeak = active;
         });
     });
 
