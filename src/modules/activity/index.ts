@@ -169,12 +169,9 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
             const day = data[i];
             for(let j = fromHour; j <= toHour; j++) {
                 const simultenous = [...activities].filter((a: VoiceActivity & Document | PresenceActivity & Document) => {
-                    const aFromDay = moment(a.from).day();
-                    const aToDay = a.to ? moment(a.to).day() : moment().day();
-                    const aFromHour = moment(a.from).hour();
-                    const aToHour = a.to ? moment(a.to).hour() : moment().hour();
-
-                    return aFromDay === i && aToDay === i && aFromHour <= j && aToHour >= j;
+                    const from = moment(a.from).day(i).hour(j).toDate();
+                    const to = a.to ? moment(a.to).day(i).hour(j).toDate() : moment().day(i).hour(j).toDate();
+                    return moment(activity.from).isBetween(from, to) || moment(activity.to).isBetween(from, to);
                 }).length;
 
                 if(simultenous > day.activePeak) {
