@@ -2,7 +2,7 @@ import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.
 import { ImageHexColors, useImageHex } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { Guild, User, ExtendedStatisticsPayload, VoiceActivity, PresenceActivity } from "../../../interfaces";
-import { ActivityPeakDay, ActivityPeakHour, getPresenceActivePeaks, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivePeaks, getVoiceActivity } from "../../activity";
+import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getVoiceActivity, getActivePeaks } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
@@ -391,9 +391,12 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     let startWeek = moment().startOf("week").toDate();
     let endWeek = moment().endOf("week").toDate();
     let dateNowFormatted = moment().format("DD.MM.YYYY");
+
+    let voiceActivityData = await getVoiceActivityBetween(sourceGuild, startWeek, endWeek);
+    let voiceActivityPeaks = await getActivePeaks(voiceActivityData);
     
-    let voiceActivityPeaks = await getVoiceActivePeaks(sourceGuild, startWeek, endWeek);
-    let presenceActivityPeaks = await getPresenceActivePeaks(sourceGuild, startWeek, endWeek);
+    let presenceActivityData = await getPresenceActivityBetween(sourceGuild, startWeek, endWeek);
+    let presenceActivityPeaks = await getActivePeaks(presenceActivityData);
     
     return `
         <div class="flex flex-col items-center">

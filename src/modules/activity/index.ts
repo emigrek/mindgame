@@ -4,7 +4,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import voiceActivitySchema from "../schemas/VoiceActivity";
 import presenceActivitySchema from "../schemas/PresenceActivity";
 
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
@@ -156,7 +156,42 @@ const mockDays = (): ActivityPeakDay[] => {
     return data;
 };
 
-const getVoiceActivePeaks = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (PresenceActivity & Document)[]) => {
+    let data = mockDays();
+
+    activities.forEach((activity: VoiceActivity & Document | PresenceActivity & Document) => {
+        const fromDay = moment(activity.from).day();
+        const toDay = activity.to ? moment(activity.to).day() : moment().day();
+        const fromHour = moment(activity.from).hour();
+        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
+        
+        for(let i = fromDay; i <= toDay; i++) {
+            const day = data[i];
+            for(let j = fromHour; j <= toHour; j++) {
+                const simultenous = [...activities].filter((a: VoiceActivity & Document | PresenceActivity & Document) => {
+                    const aFromDay = moment(a.from).day();
+                    const aToDay = a.to ? moment(a.to).day() : moment().day();
+                    const aFromHour = moment(a.from).hour();
+                    const aToHour = a.to ? moment(a.to).hour() : moment().hour();
+
+                    return aFromDay === i && aToDay === i && aFromHour <= j && aToHour >= j;
+                }).length;
+
+                if(simultenous > day.activePeak) {
+                    day.activePeak = simultenous;
+                }
+
+                if(simultenous > day.hours[j].activePeak) {
+                    day.hours[j].activePeak = simultenous;
+                }
+            }
+        }
+    });
+
+    return data;
+};
+
+const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
     const activities = await voiceActivityModel.find({
         guildId: guild.guildId,
         from: {
@@ -168,26 +203,10 @@ const getVoiceActivePeaks = async (guild: DatabaseGuild, startDate: Date, endDat
         ]
     });
 
-    let data = mockDays();
-
-    activities.forEach((activity: VoiceActivity) => {
-        const fromDay = moment(activity.from).day();
-        const toDay = activity.to ? moment(activity.to).day() : moment().day();
-        const fromHour = moment(activity.from).hour();
-        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
-
-        for(let i = fromDay; i <= toDay; i++) {
-            data[i].activePeak++;
-            for(let j = fromHour; j <= toHour; j++) {
-                data[i].hours[j].activePeak++;
-            }
-        }
-    });
-
-    return data;
+    return activities;
 }
 
-const getPresenceActivePeaks = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
     const activities = await presenceActivityModel.find({
         guildId: guild.guildId,
         from: {
@@ -199,23 +218,7 @@ const getPresenceActivePeaks = async (guild: DatabaseGuild, startDate: Date, end
         ]
     });
 
-    let data = mockDays();
-
-    activities.forEach((activity: PresenceActivity) => {
-        const fromDay = moment(activity.from).day();
-        const toDay = activity.to ? moment(activity.to).day() : moment().day();
-        const fromHour = moment(activity.from).hour();
-        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
-
-        for(let i = fromDay; i <= toDay; i++) {
-            data[i].activePeak++;
-            for(let j = fromHour; j <= toHour; j++) {
-                data[i].hours[j].activePeak++;
-            }
-        }
-    });
-
-    return data;
+    return activities;
 }
 
 const getVoiceActivity = async (member: GuildMember) => {
@@ -264,4 +267,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { startVoiceActivity, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getPresenceActivePeaks, getVoiceActivePeaks, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
