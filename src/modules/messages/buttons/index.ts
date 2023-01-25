@@ -112,7 +112,7 @@ const getGuildStatisticsButton = async (client: ExtendedClient) => {
     const statisticsButton = new ButtonBuilder()
         .setCustomId("guildStatistics")
         .setLabel(client.i18n.__("quickButton.guildStatisticsLabel"))
-        .setStyle(ButtonStyle.Secondary);
+        .setStyle(ButtonStyle.Primary);
 
     return statisticsButton;
 }
