@@ -400,27 +400,27 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     
     return `
         <div class="flex flex-col items-center">
-            <div class="w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
-                <div class="text-3xl">${client.i18n.__("statistics.voiceHeader")}</div>
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 fill-white">
+            <div class="w-full bg-[#202225]/90 rounded-t-lg text-slate-50 py-4 px-5 space-x-2 flex items-center justify-between align-middle">
+                <div class="text-2xl">${client.i18n.__("statistics.voiceHeader")}</div>
+                <div class="flex p-2 items-center justify-center rounded-full bg-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-white">
                         <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
                         <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
                     </svg>              
                 </div>
             </div>
-            <div class="w-full rounded-lg h-[275px] shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full rounded-b-lg h-[275px] shadow-lg text-white p-3 bg-[#202225]/70 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(voiceActivityPeaks, sourceGuild.locale, colors) }
             </div>
-            <div class="mt-2 w-full text-slate-50 py-5 px-5 space-x-2 flex items-center justify-between align-middle">
-                <div class="text-3xl">${client.i18n.__("statistics.presenceHeader")}</div>
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+            <div class="mt-2 w-full rounded-t-lg bg-[#202225]/90 text-slate-50 py-4 px-5 space-x-2 flex items-center justify-between align-middle">
+                <div class="text-2xl">${client.i18n.__("statistics.presenceHeader")}</div>
+                <div class="flex p-2 items-center justify-center rounded-full bg-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
                     </svg>    
                 </div>
             </div>
-            <div class="w-full h-[275px] rounded-lg shadow-lg text-white p-3 bg-[#202225]/90 flex items-center justify-center align-middle backdrop-blur-3xl">
+            <div class="w-full h-[275px] rounded-b-lg shadow-lg text-white p-3 bg-[#202225]/70 flex items-center justify-center align-middle backdrop-blur-3xl">
                 ${ getStatisticsTable(presenceActivityPeaks, sourceGuild.locale, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3c94dc",
