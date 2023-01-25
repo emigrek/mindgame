@@ -389,7 +389,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
     let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 
     let startWeek = moment().startOf("week").toDate();
-    let endWeek = moment().endOf("week").toDate();
+    let endWeek = moment().endOf("week").subtract(1, "second").toDate();
     let dateNowFormatted = moment().format("DD.MM.YYYY");
 
     let voiceActivityData = await getVoiceActivityBetween(sourceGuild, startWeek, endWeek);
