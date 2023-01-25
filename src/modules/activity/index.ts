@@ -159,36 +159,17 @@ const mockDays = (): ActivityPeakDay[] => {
 const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (PresenceActivity & Document)[]) => {
     let data = mockDays();
 
-    activities.forEach((activity: VoiceActivity & Document | PresenceActivity & Document) => {
-        const fromDay = moment(activity.from).day();
-        const toDay = activity.to ? moment(activity.to).day() : moment().day();
-        const fromHour = moment(activity.from).hour();
-        const toHour = activity.to ? moment(activity.to).hour() : moment().hour();
-        
-        for(let i = fromDay; i <= toDay; i++) {
-            const day = data[i];
-            for(let j = fromHour; j <= toHour; j++) {
-                const simultenousActivities = [...activities].filter((a: VoiceActivity & Document | PresenceActivity & Document) => {
-                    const from = moment(a.from);
-                    const to = a.to ? moment(a.to) : moment();
-                    const start = moment().day(i).hour(j).minute(0).second(0);
-                    const end = moment().day(i).hour(j).minute(59).second(59);
+    data.forEach((d: ActivityPeakDay) => {
+        d.hours.forEach((h: ActivityPeakHour) => {
+            const active = [...activities].filter(a => {
+                const from = moment(a.from);
+                const to = a.to ? moment(a.to) : moment();
+                return from.hour() <= h.hour && to.hour() >= h.hour && from.day() === d.day && to.day() === d.day;
+            });
 
-                    const isBetween = start.isBetween(from, to) || end.isBetween(from, to);
-                    return isBetween;
-                });
-
-                const activePeak = simultenousActivities.length;
-                if(activePeak > day.activePeak) {
-                    day.activePeak = activePeak;
-                }
-
-                const hour = day.hours[j];
-                if(activePeak > hour.activePeak) {
-                    hour.activePeak = activePeak;
-                }
-            }
-        }
+            if(active.length > h.activePeak) h.activePeak = active.length;
+            if(active.length > d.activePeak) d.activePeak = active.length;
+        });
     });
 
     return data;
