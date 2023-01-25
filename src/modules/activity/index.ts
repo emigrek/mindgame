@@ -166,8 +166,8 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
                 const to = a.to ? moment(a.to) : moment();
                 const hourCondition = from.hour() <= h.hour && to.hour() >= h.hour;
                 const dayCondition = from.day() <= d.day && to.day() >= d.day;
-                const secondsCondition = to.diff(from, 'seconds') > 60;
-                return hourCondition && dayCondition && secondsCondition;
+                const minutesCondition = to.diff(from, "minutes") > 5;
+                return hourCondition && dayCondition && minutesCondition;
             }).length;
 
             if(active > h.activePeak)
