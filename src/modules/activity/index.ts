@@ -168,21 +168,18 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
         for(let i = fromDay; i <= toDay; i++) {
             const day = data[i];
             for(let j = fromHour; j <= toHour; j++) {
-                const simultenousActivities = [...activities].filter((a: VoiceActivity & Document | PresenceActivity & Document) => {
-                    const aFromDay = moment(a.from).day();
-                    const aToDay = a.to ? moment(a.to).day() : moment().day();
-                    const aFromHour = moment(a.from).hour();
-                    const aToHour = a.to ? moment(a.to).hour() : moment().hour();
+                const concurrentActivities = [...activities].filter((a: VoiceActivity & Document | PresenceActivity & Document) => {
+                    const from = moment(a.from).day(i).hour(j).toDate();
+                    const to = a.to ? moment(a.to).day(i).hour(j).toDate() : moment().day(i).hour(j).toDate();
+                    return moment(activity.from).isBetween(from, to, null, '[]') || moment(activity.to).isBetween(from, to, null, '[]');
+                }).length;
 
-                    return aFromDay <= i && aToDay >= i && aFromHour <= j && aToHour >= j;
-                });
-
-                if(simultenousActivities.length > day.hours[j].activePeak) {
-                    day.hours[j].activePeak = simultenousActivities.length;
+                if(concurrentActivities > day.hours[j].activePeak) {
+                    day.hours[j].activePeak = concurrentActivities;
                 }
 
-                if(simultenousActivities.length > day.activePeak) {
-                    day.activePeak = simultenousActivities.length;
+                if(concurrentActivities > day.activePeak) {
+                    day.activePeak = concurrentActivities;
                 }
             }
         }
