@@ -95,15 +95,15 @@ const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResol
         profileButton = new ButtonBuilder()
             .setCustomId("profile")
             .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
-            .setStyle(ButtonStyle.Primary);
+            .setStyle(ButtonStyle.Success);
 
         return profileButton;
     }
 
     profileButton = new ButtonBuilder()
-            .setCustomId("profile")
-            .setLabel(client.i18n.__("quickButton.profileLabel"))
-            .setStyle(ButtonStyle.Primary);
+        .setCustomId("profile")
+        .setLabel(client.i18n.__("quickButton.profileLabel"))
+        .setStyle(ButtonStyle.Success);
 
     return profileButton;
 }
