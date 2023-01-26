@@ -1,9 +1,8 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
-import { ActionRowBuilder, ButtonStyle, Collection, Guild, Message, UserResolvable } from "discord.js";
+import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
-import { getUser } from "../../user";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()

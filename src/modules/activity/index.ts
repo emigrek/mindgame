@@ -1,4 +1,4 @@
-import { Activity, ActivityType, Collection, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
 import voiceActivitySchema from "../schemas/VoiceActivity";
@@ -7,7 +7,7 @@ import presenceActivitySchema from "../schemas/PresenceActivity";
 import mongoose, { Document } from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "../user";
-import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, UserGuildActivityDetails, VoiceActivity } from "../../interfaces";
+import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "../../interfaces";
 import { getGuild } from "../guild";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
@@ -166,7 +166,7 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
                 const to = a.to ? moment(a.to) : moment();
                 const hourCondition = from.hour() <= h.hour && to.hour() >= h.hour;
                 const dayCondition = from.day() <= d.day && to.day() >= d.day;
-                const minutesCondition = to.diff(from, "minutes") > 10;
+                const minutesCondition = to.diff(from, "minutes") >= 10;
                 return hourCondition && dayCondition && minutesCondition;
             }).length;
 

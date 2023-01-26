@@ -1,8 +1,8 @@
 import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.js";
-import { ImageHexColors, useImageHex } from "..";
+import { ImageHexColors } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
-import { Guild, User, ExtendedStatisticsPayload, VoiceActivity, PresenceActivity } from "../../../interfaces";
-import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivity, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getVoiceActivity, getActivePeaks } from "../../activity";
+import { Guild, User, VoiceActivity, PresenceActivity } from "../../../interfaces";
+import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getActivePeaks } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
@@ -390,7 +390,6 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
 
     let startWeek = moment().startOf("week").toDate();
     let endWeek = moment().endOf("week").subtract(1, "second").toDate();
-    let dateNowFormatted = moment().format("DD.MM.YYYY");
 
     let voiceActivityData = await getVoiceActivityBetween(sourceGuild, startWeek, endWeek);
     let voiceActivityPeaks = await getActivePeaks(voiceActivityData);
@@ -428,7 +427,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, color
             </div>
             <div class="mt-2 w-full text-white/60 py-2 px-5 space-x-3 flex flex-row text-center items-center justify-center align-middle">
                 <img src="${guildIconUrl}" class="w-8 h-8 rounded-full" />
-                <div class="text-xl">${dateNowFormatted}</div>
+                <div class="text-xl">${moment(startWeek).format("DD.MM.YYYY")} - ${moment(endWeek).format("DD.MM.YYYY")}</div>
             <div>
         </div>
     `;

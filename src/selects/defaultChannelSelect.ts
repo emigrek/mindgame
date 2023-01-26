@@ -1,4 +1,3 @@
-import { PermissionFlagsBits, StringSelectMenuInteraction } from "discord.js";
 import { withGuildLocale } from "../modules/locale";
 import { setDefaultChannelId } from "../modules/guild";
 import { getConfigMessagePayload } from "../modules/messages";
