@@ -139,7 +139,7 @@ const getQuickButtonsRow = async (client: ExtendedClient, message: Message) => {
 
     const row = new ActionRowBuilder<ButtonBuilder>();
 
-    const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
+    const profileButton = await getProfileButton(client, sourceMessage!.targetUserId || undefined);
     const guildStatisticsButton = await getGuildStatisticsButton(client);
     const sweepButton = await getSweepButton(client);
     //const commitsButton = await getCommitsButton(client);
