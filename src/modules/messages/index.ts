@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, Select, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 
@@ -275,12 +275,12 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 
 const sortings = ["exp", "skill", "skin", "day exp", "day voice", "week exp", "week voice", "month exp", "month voice"];
 
-const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, type: string, page: number) => {
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, type: string, page: number, guild?: Guild) => {
     if(interaction.guild) {
         await withGuildLocale(client, interaction.guild);
     }
 
-    const users = await getRanking(client, type, page) as (DatabaseUser & mongoose.Document)[];
+    const users = await getRanking(client, type, page, guild) as (DatabaseUser & mongoose.Document)[];
     const getUserValue = (user: DatabaseUser & mongoose.Document): string => {
         switch(type) {
             case "exp":
@@ -317,12 +317,13 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
     }));
     const colors = await useImageHex(interaction.user.avatarURL({ extension: "png", size: 256 })!);
     const color = getColorInt(colors.Vibrant!);
+    const pagesCount = await getRankingPagesCount(client, type, guild);
     const embed = {
-        title: client.i18n.__mf("ranking.title", { type: type.toUpperCase() }),
+        title: client.i18n.__mf("ranking.title", { type: type.toUpperCase(), scope: guild ? 'GUILD' : 'GLOBAL' }),
         fields: fields,
         color: color,
         footer: {
-            text: client.i18n.__mf("ranking.footer", { page: page, pages: await getRankingPagesCount(client, type) })
+            text: client.i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
         }
     }
     const selectOptions = sortings.map((sorting) => ({
@@ -332,14 +333,18 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
     const rankingSortSelect = await getRankingSortSelect(client, type, selectOptions);
     const up = await getRankingPageUpButton(client);
     const down = await getRankingPageDownButton(client);
+    const guildOnly = await getRankingGuildOnlyButton(client, guild ? true : false);
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(rankingSortSelect);
     const row2 = new ActionRowBuilder<ButtonBuilder>();
     if(page > 1) {
         row2.addComponents(up);
     }
-    if(page < await getRankingPagesCount(client, type)) {
+    if(page < pagesCount) {
         row2.addComponents(down);
+    }
+    if(interaction.guild) {
+        row2.addComponents(guildOnly);
     }
     return {
         embeds: [embed],

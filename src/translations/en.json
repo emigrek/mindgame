@@ -59,12 +59,14 @@
 	"config.autoSweepingButtonLabel": "Auto sweeping 🧹",
 	"sweeper.sweeped": "Sweeped {count} messages.",
 	"levelRequirement": "Your level is to low.\nReach {level} level and try again.",
-	"ranking.title": "Ranking - {type}",
+	"ranking.title": "Ranking {scope} - {type}",
 	"ranking.footer": "Page {page} of {pages}",
 	"ranking.first": "👑",
 	"ranking.you": "👈",
-	"quickButton.rankingLabel": "Ranking 🌎",
+	"quickButton.rankingLabel": "Ranking 👑",
 	"ranking.rankingSortSelect": "{sort}",
 	"ranking.pageUpButtonLabel": "⬅️ Back",
-	"ranking.pageDownButtonLabel": "Next ➡️"
+	"ranking.pageDownButtonLabel": "Next ➡️",
+	"ranking.guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
+	"ranking.allGuildsButtonLabel": "Global 🌎"
 }

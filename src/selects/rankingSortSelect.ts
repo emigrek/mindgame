@@ -12,8 +12,9 @@ export const rankingSortSelect: Select = {
         });
 
         const selected = interaction.values[0];
-        const page = await findUserRankingPage(client, selected, interaction.user!);
-        const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction, selected, page);
+        const messageRankingSope = interaction.message.embeds[0].title!.split(" ")[1].toLowerCase() == "guild" ? true : false;
+        const page: number = await findUserRankingPage(client, selected, interaction.user!, messageRankingSope ? interaction.guild! : undefined);
+        const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction, selected, page, messageRankingSope ? interaction.guild! : undefined);
         await interaction.editReply(rankingMessagePayload);
     }
 }

@@ -238,24 +238,45 @@ const sortValuesByType = (type: string): SortValues => {
     }
 };
 
-const getRanking = async (client: ExtendedClient, type: string, page: number) => {
+const getRanking = async (client: ExtendedClient, type: string, page: number, guild?: Guild) => {
     const sorting = sortValuesByType(type);
-    const users = await UserModel.find({}).sort(sorting);
-    const usersOnPage = users.slice((page - 1) * 10, page * 10);
-    return usersOnPage;
+    if(guild) {
+        const guildUserIds = guild.members.cache.map((member) => member.id);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        const onPage = users.slice((page - 1) * 10, page * 10);
+        return onPage;
+    } else {
+        const users = await UserModel.find({}).sort(sorting);
+        const onPage = users.slice((page - 1) * 10, page * 10);
+        return onPage;
+    }
+
 };
 
-const findUserRankingPage = async (client: ExtendedClient, type: string, user: User) => {
+const findUserRankingPage = async (client: ExtendedClient, type: string, user: User, guild?: Guild) => {
     const sorting = sortValuesByType(type);
-    const users = await UserModel.find({}).sort(sorting);
-    const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-    return Math.ceil((userIndex + 1) / 10);
+    if(guild) {
+        const guildUserIds = guild.members.cache.map((member) => member.id);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
+        return Math.ceil(userIndex / 10) + 1;
+    } else {
+        const users = await UserModel.find({}).sort(sorting);
+        const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
+        return Math.ceil(userIndex / 10) + 1;
+    }
 };
 
-const getRankingPagesCount = async (client: ExtendedClient, type: string) => {
+const getRankingPagesCount = async (client: ExtendedClient, type: string, guild?: Guild) => {
     const sorting = sortValuesByType(type);
-    const users = await UserModel.find({}).sort(sorting);
-    return Math.ceil(users.length / 10);
+    if(guild) {
+        const guildUserIds = guild.members.cache.map((member) => member.id);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        return Math.ceil(users.length / 10);
+    } else {
+        const users = await UserModel.find({}).sort(sorting);
+        return Math.ceil(users.length / 10);
+    }
 };
 
 const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {

@@ -15,6 +15,7 @@ import roleColorUpdate from "./roleColorUpdate";
 import ranking from "./ranking";
 import rankingPageUp from "./rankingPageUp";
 import rankingPageDown from "./rankingPageDown";
+import rankingGuildOnly from "./rankingGuildOnly";
 
 const buttons: Button[] = [
     notifications,
@@ -31,7 +32,8 @@ const buttons: Button[] = [
     roleColorUpdate,
     ranking,
     rankingPageUp,
-    rankingPageDown
+    rankingPageDown,
+    rankingGuildOnly
 ];
 
 export default buttons;

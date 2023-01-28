@@ -58,12 +58,14 @@
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
 	"sweeper.sweeped": "Usunięto {count} wiadomości.",
 	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie.",
-	"ranking.title": "Ranking - {type}",
+	"ranking.title": "Ranking {scope} - {type}",
 	"ranking.footer": "Strona {page} z {pages}",
 	"ranking.first": "👑",
 	"ranking.you": "👈",
-	"quickButton.rankingLabel": "Ranking 🌎",
+	"quickButton.rankingLabel": "Ranking 👑",
 	"ranking.rankingSortSelect": "{sort}",
 	"ranking.pageUpButtonLabel": "⬅️ Poprzednia",
-	"ranking.pageDownButtonLabel": "Następna ➡️"
+	"ranking.pageDownButtonLabel": "Następna ➡️",
+	"ranking.guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
+	"ranking.allGuildsButtonLabel": "Globalny 🌎"
 }
