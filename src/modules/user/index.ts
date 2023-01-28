@@ -1,5 +1,5 @@
-import mongoose, { Document } from "mongoose";
-import { User, Guild } from "discord.js";
+import mongoose, { Document, SortOrder } from "mongoose";
+import { User, Guild, EmbedField, Embed } from "discord.js";
 import { User as DatabaseUser, Guild as DatabaseGuild } from "../../interfaces";
 import userSchema from "../schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
@@ -117,7 +117,7 @@ const setPublicTimeStats = async (user: User) => {
 }
 
 const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload, sourceGuild?: DatabaseGuild) => {
-    const userSource = await updateUser(user) as DatabaseUser & Document;
+    const userSource = await updateUser(user) as DatabaseUser & mongoose.Document;
     const newExtendedStatistics: ExtendedStatistics = {
         level: userSource.stats.level + (extendedStatisticsPayload.level || 0),
         exp: userSource.stats.exp + (extendedStatisticsPayload.exp || 0),
@@ -207,6 +207,57 @@ const clearExperience = async () => {
     await UserModel.updateMany({}, { $set: { "stats.exp": 0, "stats.level": 0 } });
 }
 
+type SortValues = { [key: string]: mongoose.SortOrder | { $meta: "textScore"; } };
+
+const sortValuesByType = (type: string): SortValues => {
+    switch(type) {
+        case "exp":
+            return { "stats.exp": -1 };
+        case "time":
+            return { "stats.time.voice": -1 };
+        case "skill":
+            return { "stats.games.won.skill": -1 };
+        case "skin":
+            return { "stats.games.won.skin": -1 };
+        case "commands":
+            return { "stats.commands": -1 };
+        case "day exp":
+            return { "day.exp": -1 };
+        case "day voice":
+            return { "day.time.voice": -1 };
+        case "week exp":
+            return { "week.exp": -1 };
+        case "week voice":
+            return { "week.time.voice": -1 };
+        case "month exp":
+            return { "month.exp": -1 };
+        case "month voice":
+            return { "month.time.voice": -1 };
+        default:
+            return { "stats.exp": -1 };
+    }
+};
+
+const getRanking = async (client: ExtendedClient, type: string, page: number) => {
+    const sorting = sortValuesByType(type);
+    const users = await UserModel.find({}).sort(sorting);
+    const usersOnPage = users.slice((page - 1) * 10, page * 10);
+    return usersOnPage;
+};
+
+const findUserRankingPage = async (client: ExtendedClient, type: string, user: User) => {
+    const sorting = sortValuesByType(type);
+    const users = await UserModel.find({}).sort(sorting);
+    const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
+    return Math.ceil((userIndex + 1) / 10);
+};
+
+const getRankingPagesCount = async (client: ExtendedClient, type: string) => {
+    const sorting = sortValuesByType(type);
+    const users = await UserModel.find({}).sort(sorting);
+    return Math.ceil(users.length / 10);
+};
+
 const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
     const blankTemporaryStatistic = {
         exp: 0,
@@ -239,4 +290,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, sortValuesByType, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };

@@ -12,6 +12,7 @@ import autoSweeping from "./autoSweeping";
 import commits from "./commits";
 import roleColorSwitch from "./roleColorSwitch";
 import roleColorUpdate from "./roleColorUpdate";
+import ranking from "./ranking";
 
 const buttons: Button[] = [
     notifications,
@@ -25,7 +26,8 @@ const buttons: Button[] = [
     statisticsNotification,
     commits,
     roleColorSwitch,
-    roleColorUpdate
+    roleColorUpdate,
+    ranking
 ];
 
 export default buttons;

@@ -24,4 +24,15 @@ const getLanguageSelect = async (client: ExtendedClient, currentLocale: string, 
     return localeSelect;
 }
 
-export { getChannelSelect, getLanguageSelect };
+const getRankingSortSelect = async (client: ExtendedClient, currentSort: string, options: SelectMenuOption[]) => {
+    const rankingSortSelect = new StringSelectMenuBuilder()
+        .setCustomId("rankingSortSelect")
+        .setPlaceholder(client.i18n.__mf("ranking.rankingSortSelect", { sort: currentSort.toUpperCase() }))
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(options);
+
+    return rankingSortSelect;
+};
+
+export { getChannelSelect, getLanguageSelect, getRankingSortSelect };

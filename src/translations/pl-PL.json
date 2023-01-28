@@ -57,5 +57,11 @@
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹",
 	"sweeper.sweeped": "Usunięto {count} wiadomości.",
-	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie."
+	"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie.",
+	"ranking.title": "Ranking - {type}",
+	"ranking.footer": "Strona {page} z {pages}",
+	"ranking.first": "👑",
+	"ranking.you": "👈",
+	"quickButton.rankingLabel": "Ranking 🌎",
+	"ranking.rankingSortSelect": "{sort}"
 }

@@ -1,10 +1,7 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import { ContextMenu } from "../interfaces";
 import { withGuildLocale } from "../modules/locale";
-import { getUserMessagePayload, useHtmlFile, useImageHex } from "../modules/messages";
-import { assignLevelRolesInGuild, assignUserLevelRole } from "../modules/roles";
-import { getUser } from "../modules/user";
-
+import { getUserMessagePayload } from "../modules/messages";
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
         .setName(`Show user profile`)

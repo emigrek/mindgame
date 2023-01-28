@@ -1,21 +1,21 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, Embed, StringSelectMenuInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { Guild as GuildInterface, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
+import { Guild as GuildInterface, Select, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
-import { getChannelSelect, getLanguageSelect } from "./selects";
+import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 
 import moment from "moment";
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
-import { getUser } from "../user";
+import { getRanking, getRankingPagesCount, getUser } from "../user";
 import { getMemberColorRole } from "../roles";
 import messageSchema from "../schemas/Message";
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -273,6 +273,71 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     };
 };
 
+const sortings = ["exp", "skill", "skin", "day exp", "day voice", "week exp", "week voice", "month exp", "month voice"];
+
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, type: string, page: number) => {
+    if(interaction.guild) {
+        await withGuildLocale(client, interaction.guild);
+    }
+
+    const users = await getRanking(client, type, page) as (DatabaseUser & mongoose.Document)[];
+    const getUserValue = (user: DatabaseUser & mongoose.Document): string => {
+        switch(type) {
+            case "exp":
+                return `${client.numberFormat.format(user.stats.exp)} EXP`;
+            case "skill":
+                return `${user.stats.games.won.skill}`;
+            case "skin":
+                return `${user.stats.games.won.skin}`;
+            case "commands":
+                return `${user.stats.commands} wywołań`;
+            case "day exp":
+                return `${client.numberFormat.format(user.day.exp)} EXP`;
+            case "day voice":
+                return `${Math.round(user.day.time.voice/3600)}H`;
+            case "week exp":
+                return `${client.numberFormat.format(user.week.exp)} EXP`;
+            case "week voice":
+                return `${Math.round(user.week.time.voice/3600)}H`;
+            case "month exp":
+                return `${client.numberFormat.format(user.month.exp)} EXP`;
+            case "month voice":
+                return `${Math.round(user.month.time.voice/3600)}H`;
+            default:
+                return `${client.numberFormat.format(user.stats.exp)} EXP`;
+        }
+    };
+    const isInteractionCaller = (user: DatabaseUser & mongoose.Document): boolean => {
+        return user.userId === interaction.user!.id;
+    };
+    const fields: EmbedField[] = users.map((user: (DatabaseUser & mongoose.Document), index) => ({
+        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag} ${isInteractionCaller(user) ? client.i18n.__("ranking.you") : ""}`,
+        value: `\`\`\`${getUserValue(user)}\`\`\``,
+        inline: true
+    }));
+    const colors = await useImageHex(interaction.user.avatarURL({ extension: "png", size: 256 })!);
+    const color = getColorInt(colors.Vibrant!);
+    const embed = {
+        title: client.i18n.__mf("ranking.title", { type: type.toUpperCase() }),
+        fields: fields,
+        color: color,
+        footer: {
+            text: client.i18n.__mf("ranking.footer", { page: page, pages: await getRankingPagesCount(client, type) })
+        }
+    }
+    const selectOptions = sortings.map((sorting) => ({
+        label: sorting.toUpperCase(),
+        value: sorting,
+    }));
+    const rankingSortSelect = await getRankingSortSelect(client, type, selectOptions);
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .addComponents(rankingSortSelect)
+    return {
+        embeds: [embed],
+        components: [row]
+    };
+};
+
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
     await withGuildLocale(client, guild);
 
@@ -436,4 +501,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { createMessage, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

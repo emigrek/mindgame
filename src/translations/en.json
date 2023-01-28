@@ -58,5 +58,11 @@
 	"quickButton.sweepLabel": "Spam? 🧹",
 	"config.autoSweepingButtonLabel": "Auto sweeping 🧹",
 	"sweeper.sweeped": "Sweeped {count} messages.",
-	"levelRequirement": "Your level is to low.\nReach {level} level and try again."
+	"levelRequirement": "Your level is to low.\nReach {level} level and try again.",
+	"ranking.title": "Ranking - {type}",
+	"ranking.footer": "Page {page} of {pages}",
+	"ranking.first": "👑",
+	"ranking.you": "👈",
+	"quickButton.rankingLabel": "Ranking 🌎",
+	"ranking.rankingSortSelect": "{sort}"
 }

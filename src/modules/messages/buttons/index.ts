@@ -125,6 +125,15 @@ const getSweepButton = async (client: ExtendedClient) => {
     return sweepButton;
 };
 
+const getRankingButton = async (client: ExtendedClient) => {
+    const rankingButton = new ButtonBuilder()
+        .setCustomId("ranking")
+        .setLabel(client.i18n.__("quickButton.rankingLabel"))
+        .setStyle(ButtonStyle.Success);
+
+    return rankingButton;
+};
+
 const getCommitsButton = async (client: ExtendedClient) => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
@@ -142,9 +151,10 @@ const getQuickButtonsRow = async (client: ExtendedClient, message: Message) => {
     const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
     const guildStatisticsButton = await getGuildStatisticsButton(client);
     const sweepButton = await getSweepButton(client);
+    const rankingButton = await getRankingButton(client);
     //const commitsButton = await getCommitsButton(client);
 
-    row.setComponents(sweepButton, profileButton, guildStatisticsButton);
+    row.setComponents(sweepButton, profileButton, guildStatisticsButton, rankingButton);
 
     return row;
 }   
