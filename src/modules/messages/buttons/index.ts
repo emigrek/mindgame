@@ -134,18 +134,20 @@ const getRankingButton = async (client: ExtendedClient) => {
     return rankingButton;
 };
 
-const getRankingPageUpButton = async (client: ExtendedClient) => {
+const getRankingPageUpButton = async (client: ExtendedClient, disabled: boolean = false) => {
     const rankingPageUpButton = new ButtonBuilder()
         .setCustomId("rankingPageUp")
+        .setDisabled(disabled)
         .setLabel(client.i18n.__("ranking.pageUpButtonLabel"))
         .setStyle(ButtonStyle.Secondary);
     
     return rankingPageUpButton;
 };
 
-const getRankingPageDownButton = async (client: ExtendedClient) => {
+const getRankingPageDownButton = async (client: ExtendedClient, disabled: boolean = false) => {
     const rankingPageDownButton = new ButtonBuilder()
         .setCustomId("rankingPageDown")
+        .setDisabled(disabled)
         .setLabel(client.i18n.__("ranking.pageDownButtonLabel"))
         .setStyle(ButtonStyle.Secondary);
 

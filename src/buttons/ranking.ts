@@ -1,6 +1,7 @@
 import { Button } from "../interfaces/Button";
 import { getRankingMessagePayload } from "../modules/messages";
 import { findUserRankingPage, updateUserStatistics } from "../modules/user";
+import { getSortingByType } from "../modules/user/sortings";
 
 const defaultType = "exp";
 
@@ -12,8 +13,9 @@ const ranking: Button = {
             commands: 1
         });
 
-        const page = await findUserRankingPage(client, defaultType, interaction.user!);
-        const rankingMessagePayload = await getRankingMessagePayload(client, interaction, defaultType, page);
+        const sorting = await getSortingByType(defaultType);
+        const page = await findUserRankingPage(client, sorting, interaction.user!);
+        const rankingMessagePayload = await getRankingMessagePayload(client, interaction, sorting, page);
         await interaction.followUp({ ...rankingMessagePayload, ephemeral: true });
     }
 }

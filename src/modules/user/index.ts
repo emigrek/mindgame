@@ -1,6 +1,6 @@
 import mongoose, { Document, SortOrder } from "mongoose";
 import { User, Guild, EmbedField, Embed } from "discord.js";
-import { User as DatabaseUser, Guild as DatabaseGuild } from "../../interfaces";
+import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "../../interfaces";
 import userSchema from "../schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
 import ExtendedClient from "../../client/ExtendedClient";
@@ -207,74 +207,40 @@ const clearExperience = async () => {
     await UserModel.updateMany({}, { $set: { "stats.exp": 0, "stats.level": 0 } });
 }
 
-type SortValues = { [key: string]: mongoose.SortOrder | { $meta: "textScore"; } };
-
-const sortValuesByType = (type: string): SortValues => {
-    switch(type) {
-        case "exp":
-            return { "stats.exp": -1 };
-        case "time":
-            return { "stats.time.voice": -1 };
-        case "skill":
-            return { "stats.games.won.skill": -1 };
-        case "skin":
-            return { "stats.games.won.skin": -1 };
-        case "commands":
-            return { "stats.commands": -1 };
-        case "day exp":
-            return { "day.exp": -1 };
-        case "day voice":
-            return { "day.time.voice": -1 };
-        case "week exp":
-            return { "week.exp": -1 };
-        case "week voice":
-            return { "week.time.voice": -1 };
-        case "month exp":
-            return { "month.exp": -1 };
-        case "month voice":
-            return { "month.time.voice": -1 };
-        default:
-            return { "stats.exp": -1 };
-    }
-};
-
-const getRanking = async (client: ExtendedClient, type: string, page: number, guild?: Guild) => {
-    const sorting = sortValuesByType(type);
+const getRanking = async (client: ExtendedClient, type: Sorting, page: number, guild?: Guild) => {
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
         const onPage = users.slice((page - 1) * 10, page * 10);
         return onPage;
     } else {
-        const users = await UserModel.find({}).sort(sorting);
+        const users = await UserModel.find({}).sort(type.value);
         const onPage = users.slice((page - 1) * 10, page * 10);
         return onPage;
     }
 
 };
 
-const findUserRankingPage = async (client: ExtendedClient, type: string, user: User, guild?: Guild) => {
-    const sorting = sortValuesByType(type);
+const findUserRankingPage = async (client: ExtendedClient, type: Sorting, user: User, guild?: Guild) => {
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
         const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
         return Math.ceil(userIndex / 10) || 1;
     } else {
-        const users = await UserModel.find({}).sort(sorting);
+        const users = await UserModel.find({}).sort(type.value);
         const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
         return Math.ceil(userIndex / 10) || 1;
     }
 };
 
-const getRankingPagesCount = async (client: ExtendedClient, type: string, guild?: Guild) => {
-    const sorting = sortValuesByType(type);
+const getRankingPagesCount = async (client: ExtendedClient, type: Sorting, guild?: Guild) => {
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
+        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
         return Math.ceil(users.length / 10);
     } else {
-        const users = await UserModel.find({}).sort(sorting);
+        const users = await UserModel.find({}).sort(type.value);
         return Math.ceil(users.length / 10);
     }
 };
@@ -311,4 +277,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, sortValuesByType, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
