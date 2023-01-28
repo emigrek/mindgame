@@ -259,11 +259,11 @@ const findUserRankingPage = async (client: ExtendedClient, type: string, user: U
         const guildUserIds = guild.members.cache.map((member) => member.id);
         const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(sorting);
         const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-        return Math.ceil(userIndex / 10) + 1;
+        return Math.ceil(userIndex / 10) || 1;
     } else {
         const users = await UserModel.find({}).sort(sorting);
         const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-        return Math.ceil(userIndex / 10) + 1;
+        return Math.ceil(userIndex / 10) || 1;
     }
 };
 
