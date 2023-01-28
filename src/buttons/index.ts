@@ -13,6 +13,8 @@ import commits from "./commits";
 import roleColorSwitch from "./roleColorSwitch";
 import roleColorUpdate from "./roleColorUpdate";
 import ranking from "./ranking";
+import rankingPageUp from "./rankingPageUp";
+import rankingPageDown from "./rankingPageDown";
 
 const buttons: Button[] = [
     notifications,
@@ -27,7 +29,9 @@ const buttons: Button[] = [
     commits,
     roleColorSwitch,
     roleColorUpdate,
-    ranking
+    ranking,
+    rankingPageUp,
+    rankingPageDown
 ];
 
 export default buttons;

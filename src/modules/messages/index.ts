@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, Select, SelectMenuOption, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 
@@ -330,11 +330,20 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
         value: sorting,
     }));
     const rankingSortSelect = await getRankingSortSelect(client, type, selectOptions);
+    const up = await getRankingPageUpButton(client);
+    const down = await getRankingPageDownButton(client);
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .addComponents(rankingSortSelect)
+        .addComponents(rankingSortSelect);
+    const row2 = new ActionRowBuilder<ButtonBuilder>();
+    if(page > 1) {
+        row2.addComponents(up);
+    }
+    if(page < await getRankingPagesCount(client, type)) {
+        row2.addComponents(down);
+    }
     return {
         embeds: [embed],
-        components: [row]
+        components: [row, row2]
     };
 };
 

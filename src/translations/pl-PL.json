@@ -63,5 +63,7 @@
 	"ranking.first": "👑",
 	"ranking.you": "👈",
 	"quickButton.rankingLabel": "Ranking 🌎",
-	"ranking.rankingSortSelect": "{sort}"
+	"ranking.rankingSortSelect": "{sort}",
+	"ranking.pageUpButtonLabel": "⬅️ Poprzednia",
+	"ranking.pageDownButtonLabel": "Następna ➡️"
 }

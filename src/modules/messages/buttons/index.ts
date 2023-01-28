@@ -134,6 +134,24 @@ const getRankingButton = async (client: ExtendedClient) => {
     return rankingButton;
 };
 
+const getRankingPageUpButton = async (client: ExtendedClient) => {
+    const rankingPageUpButton = new ButtonBuilder()
+        .setCustomId("rankingPageUp")
+        .setLabel(client.i18n.__("ranking.pageUpButtonLabel"))
+        .setStyle(ButtonStyle.Secondary);
+    
+    return rankingPageUpButton;
+};
+
+const getRankingPageDownButton = async (client: ExtendedClient) => {
+    const rankingPageDownButton = new ButtonBuilder()
+        .setCustomId("rankingPageDown")
+        .setLabel(client.i18n.__("ranking.pageDownButtonLabel"))
+        .setStyle(ButtonStyle.Secondary);
+
+    return rankingPageDownButton;
+};
+
 const getCommitsButton = async (client: ExtendedClient) => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
@@ -159,4 +177,4 @@ const getQuickButtonsRow = async (client: ExtendedClient, message: Message) => {
     return row;
 }   
 
-export { getExitButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRow, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRow, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
