@@ -39,7 +39,6 @@ export interface User {
   userId: string;
   tag: string;
   avatarUrl: string;
-  followers: string[];
   stats: ExtendedStatistics;
   day: Statistics,
   week: Statistics,

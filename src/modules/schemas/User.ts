@@ -28,7 +28,6 @@ const userSchema = new Schema<User>({
   userId: reqString,
   tag: reqString,
   avatarUrl: reqString,
-  followers: { type: [String], default: [] },
   stats: ExtendedStatistics,
   day: Statistics,
   week: Statistics,

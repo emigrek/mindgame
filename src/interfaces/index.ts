@@ -17,3 +17,4 @@ export { UserGuildActivityDetails } from './UserGuildActivityDetails';
 export { ExtendedStatisticsPayload } from './User';
 export { Message } from './Message';
 export { Sorting } from './Sorting';
+export { Follow } from './Follow';

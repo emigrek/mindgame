@@ -36,6 +36,23 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
     return true;
 };
 
+const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) => {
+    const activity = await getLastVoiceActivity(member);
+    if(!activity) return false;
+
+    const last = activity.to!.getTime();
+    const now = new Date().getTime();
+    const diff = Math.abs(now - last);
+    const diffHours = diff/(1000*60*60);
+
+    if(diffHours < 8) {
+        return false;
+    }
+    
+    await client.emit("userBackFromLongVoiceBreak", member);
+    return true;
+};
+
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel) => {
     if(
         member.user.bot ||
@@ -46,6 +63,7 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     if(exists) return;
 
     await checkForDailyReward(client, member);
+    await checkLongVoiceBreak(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
         userId: member.id,
@@ -215,6 +233,11 @@ const getVoiceActivity = async (member: GuildMember) => {
     return exists;
 };
 
+const getLastVoiceActivity = async (member: GuildMember) => {
+    const last = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id }).sort({ to: -1 });
+    return last;
+};
+
 const getUserVoiceActivity = async (user: DatabaseUser) => {
     const exists = await voiceActivityModel.findOne({ userId: user.userId, to: null });
     return exists;
@@ -256,4 +279,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { getLastVoiceActivity, startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };

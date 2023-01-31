@@ -3,6 +3,7 @@ import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
+import { getFollowers } from "../../follow/index";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -167,25 +168,27 @@ const getCommitsButton = async (client: ExtendedClient) => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
         .setLabel(client.i18n.__("quickButton.commitsLabel"))
-        .setStyle(ButtonStyle.Secondary); 
+        .setStyle(ButtonStyle.Primary); 
 
     return commitsButton;
 };
 
-const getQuickButtonsRow = async (client: ExtendedClient, message: Message) => {
+const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => {
     const sourceMessage = await getMessage(message.id);
 
     const row = new ActionRowBuilder<ButtonBuilder>();
+    const row2 = new ActionRowBuilder<ButtonBuilder>();
 
     const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
     const guildStatisticsButton = await getGuildStatisticsButton(client);
     const sweepButton = await getSweepButton(client);
     const rankingButton = await getRankingButton(client);
-    //const commitsButton = await getCommitsButton(client);
+    const commitsButton = await getCommitsButton(client);
 
-    row.setComponents(sweepButton, profileButton, guildStatisticsButton, rankingButton);
+    row.setComponents(sweepButton, profileButton, rankingButton);
+    row2.setComponents(guildStatisticsButton, commitsButton);
 
-    return row;
+    return [row, row2];
 }   
 
-export { getExitButton, getRankingGuildOnlyButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRow, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getRankingGuildOnlyButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

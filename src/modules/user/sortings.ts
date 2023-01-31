@@ -9,16 +9,23 @@ export const getSortingByType = (type: string): Sorting => {
 
 export const runMask = (client: ExtendedClient, mask: string, user: DatabaseUser & mongoose.Document): string => {
     return mask
+        .replace("{stats.commands}", user.stats.commands.toString())
+        .replace("{stats.level}", user.stats.level.toString())
         .replace("{stats.exp}", client.numberFormat.format(user.stats.exp).toString())
         .replace("{stats.games.won.skill}", user.stats.games.won.skill.toString())
         .replace("{stats.games.won.skin}", user.stats.games.won.skin.toString())
-        .replace("{stats.commands}", user.stats.commands.toString())
         .replace("{day.exp}", client.numberFormat.format(user.day.exp).toString())
         .replace("{day.time.voice}", Math.round(user.day.time.voice/3600).toString())
+        .replace("{day.games.won.skill}", user.day.games.won.skill.toString())
+        .replace("{day.games.won.skin}", user.day.games.won.skin.toString())
         .replace("{week.exp}", client.numberFormat.format(user.week.exp).toString())
         .replace("{week.time.voice}", Math.round(user.week.time.voice/3600).toString())
+        .replace("{week.games.won.skill}", user.week.games.won.skill.toString())
+        .replace("{week.games.won.skin}", user.week.games.won.skin.toString())
         .replace("{month.exp}", client.numberFormat.format(user.month.exp).toString())
         .replace("{month.time.voice}", Math.round(user.month.time.voice/3600).toString())
+        .replace("{month.games.won.skill}", user.month.games.won.skill.toString())
+        .replace("{month.games.won.skin}", user.month.games.won.skin.toString())
 };
 export const sortings: Sorting[] = [
     {
@@ -26,7 +33,7 @@ export const sortings: Sorting[] = [
         label: "Experience",
         range: "total",
         value: { "stats.exp": -1 },
-        mask: "{stats.exp} EXP"
+        mask: "{stats.level} LVL ({stats.exp} EXP)"
     },
     {
         type: "skill",
@@ -64,6 +71,20 @@ export const sortings: Sorting[] = [
         mask: "{day.time.voice}H"
     },
     {
+        type: "day skill",
+        label: "Skill games won",
+        range: "day",
+        value: { "day.games.won.skill": -1 },
+        mask: "{day.games.won.skill}"
+    },
+    {
+        type: "day skin",
+        label: "Skin games won",
+        range: "day",
+        value: { "day.games.won.skin": -1 },
+        mask: "{day.games.won.skin}"
+    },
+    {
         type: "week exp",
         label: "Experience",
         range: "week",
@@ -78,6 +99,20 @@ export const sortings: Sorting[] = [
         mask: "{week.time.voice}H"
     },
     {
+        type: "week skill",
+        label: "Skill games won",
+        range: "week",
+        value: { "day.games.won.skill": -1 },
+        mask: "{day.games.won.skill}"
+    },
+    {
+        type: "week skin",
+        label: "Skin games won",
+        range: "week",
+        value: { "week.games.won.skin": -1 },
+        mask: "{week.games.won.skin}"
+    },
+    {
         type: "month exp",
         label: "Experience",
         range: "month",
@@ -90,5 +125,19 @@ export const sortings: Sorting[] = [
         range: "month",
         value: { "month.time.voice": -1 },
         mask: "{month.time.voice}H"
+    },
+    {
+        type: "month skill",
+        label: "Skill games won",
+        range: "month",
+        value: { "month.games.won.skill": -1 },
+        mask: "{month.games.won.skill}"
+    },
+    {
+        type: "month skin",
+        label: "Skin games won",
+        range: "month",
+        value: { "month.games.won.skin": -1 },
+        mask: "{month.games.won.skin}"
     }
 ];

@@ -1,10 +1,10 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, Embed, StringSelectMenuInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, Embed, StringSelectMenuInteraction, GuildAuditLogs } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, Select, SelectMenuOption, Sorting, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRow, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { getSortingByType, runMask, sortings } from "../user/sortings";
@@ -139,9 +139,12 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 
     const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
-    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(profileTimePublic!);
-        
-    return { files: [file], ephemeral: true, components: selfCall ? [row] : [] };
+    const row = new ActionRowBuilder<ButtonBuilder>();
+
+    if(selfCall)
+        row.addComponents(profileTimePublic);
+
+    return { files: [file], ephemeral: true, components: [row] };
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
@@ -429,7 +432,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     const lastMessage = clientLastMessages.first();
     if(!lastMessage) return;
 
-    const quickButtonsRow = await getQuickButtonsRow(client, lastMessage);
+    const quickButtonsRows = await getQuickButtonsRows(client, lastMessage);
 
     for await (const message of clientLastMessages.values()) {
         if(message.components.length > 0 && message.id != lastMessage.id) {
@@ -445,7 +448,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     }
 
     try {
-        await lastMessage.edit({ components: [quickButtonsRow] });
+        await lastMessage.edit({ components: quickButtonsRows });
     } catch (e) {
         let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
         setTimeout(async () => {

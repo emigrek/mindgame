@@ -26,6 +26,7 @@ import { yearly } from "./yearly";
 import { error } from "./error";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
+import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
 
 const events: Event[] = [
     ready,
@@ -54,6 +55,7 @@ const events: Event[] = [
     error,
     messageDelete,
     messageDeleteBulk,
+    userBackFromLongVoiceBreak,
 ];
 
 export default events;

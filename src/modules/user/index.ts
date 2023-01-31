@@ -208,41 +208,42 @@ const clearExperience = async () => {
 }
 
 const getRanking = async (client: ExtendedClient, type: Sorting, page: number, guild?: Guild) => {
+    const userIds = [];
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
-        const onPage = users.slice((page - 1) * 10, page * 10);
-        return onPage;
-    } else {
-        const users = await UserModel.find({}).sort(type.value);
-        const onPage = users.slice((page - 1) * 10, page * 10);
-        return onPage;
+        userIds.push(...guildUserIds);
     }
-
+    const users = await UserModel.find(userIds.length ? {
+        userId: { $in: userIds }
+    } : {}).sort(type.value);
+    const onPage = users.slice((page - 1) * 10, page * 10);
+    return onPage;
 };
 
 const findUserRankingPage = async (client: ExtendedClient, type: Sorting, user: User, guild?: Guild) => {
+    const userIds = [];
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
-        const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-        return Math.ceil(userIndex / 10) || 1;
-    } else {
-        const users = await UserModel.find({}).sort(type.value);
-        const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-        return Math.ceil(userIndex / 10) || 1;
+        userIds.push(...guildUserIds);
     }
+    const users = await UserModel.find(userIds.length ? {
+        userId: { $in: userIds }
+    } : {}).sort(type.value);
+    const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
+    return Math.ceil(userIndex / 10) || 1;
 };
 
 const getRankingPagesCount = async (client: ExtendedClient, type: Sorting, guild?: Guild) => {
+    const userIds = [];
     if(guild) {
         const guildUserIds = guild.members.cache.map((member) => member.id);
-        const users = await UserModel.find({ userId: { $in: guildUserIds } }).sort(type.value);
-        return Math.ceil(users.length / 10);
-    } else {
-        const users = await UserModel.find({}).sort(type.value);
-        return Math.ceil(users.length / 10);
+        userIds.push(...guildUserIds);
     }
+
+    const users = await UserModel.find(userIds.length ? {
+        userId: { $in: userIds }
+    } : {}).sort(type.value);
+    return Math.ceil(users.length / 10);
 };
 
 const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
