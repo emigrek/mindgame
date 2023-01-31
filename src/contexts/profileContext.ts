@@ -2,6 +2,7 @@ import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuComma
 import { ContextMenu } from "../interfaces";
 import { withGuildLocale } from "../modules/locale";
 import { getUserMessagePayload } from "../modules/messages";
+
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
         .setName(`Show user profile`)

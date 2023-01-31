@@ -1,6 +1,8 @@
 import { GuildMember } from "discord.js";
+import moment from "moment";
 import ExtendedClient from "../client/ExtendedClient";
 import { Event } from "../interfaces";
+import { getLastVoiceActivity } from "../modules/activity";
 import { getFollowers } from "../modules/follow";
 import { getColorInt, useImageHex } from "../modules/messages";
 import { getUser } from "../modules/user";
@@ -14,6 +16,9 @@ export const userBackFromLongVoiceBreak: Event = {
         const followers = await getFollowers(member.user.id);
         if(!followers) return;
 
+        const lastActivity = await getLastVoiceActivity(member);
+        const unix = lastActivity ? moment(lastActivity.to).unix() : 0;
+
         for(const follower of followers) {
             const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
             const imageHex = await useImageHex(avatar);
@@ -21,12 +26,12 @@ export const userBackFromLongVoiceBreak: Event = {
             const embed = {
                 color: color,
                 author: {
-                    name: member.user.tag
+                    name: member.guild.name,
+                    icon_url: member.guild.iconURL({ extension: "png", size: 256 })!,
+                    url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
                 },
-                title: client.i18n.__mf("follow.followNotificationTitle", { name: member.guild.name }),
-                footer: {
-                    text: client.i18n.__("follow.followNotificationFooter"),
-                },
+                title: client.i18n.__mf("follow.followNotificationTitle", { name: member.guild.name, tag: member.user.tag }),
+                description: client.i18n.__mf("follow.followNotificationDescription", { time: unix }),
                 thumbnail: {
                     url: avatar
                 }
