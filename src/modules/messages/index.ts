@@ -123,12 +123,16 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 
 const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUserId: string) => {
     const sourceUser = await getUser(interaction.user) as DatabaseUser;
-
     const targetUser = client.users.cache.get(targetUserId)!;
     const sourceTargetUser = await getUser(targetUser) as DatabaseUser;
 
-    if(!sourceUser) {
-        return { content: client.i18n.__("profile.notFound"), ephemeral: true };
+    if(!sourceUser || !sourceTargetUser) {
+        return {
+            embeds: [{
+                description: client.i18n.__("profile.notFound")
+            }],
+            ephemeral: true
+        };
     }
     
     const selfCall = sourceUser.userId === targetUser.id;
@@ -139,12 +143,21 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 
     const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
-    const row = new ActionRowBuilder<ButtonBuilder>();
+    if(selfCall) {
+        const row = new ActionRowBuilder<ButtonBuilder>()
+            .setComponents(profileTimePublic);
 
-    if(selfCall)
-        row.addComponents(profileTimePublic);
-
-    return { files: [file], ephemeral: true, components: [row] };
+        return {
+            components: [row],
+            files: [file],
+            ephemeral: true
+        };
+    } else {
+        return {
+            files: [file],
+            ephemeral: true
+        };
+    }
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
