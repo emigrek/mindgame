@@ -365,7 +365,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
         ],
         thumbnail: {
-            url: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/60/microsoft/74/shortcake_1f370.png',
+            url: 'https://em-content.zobj.net/thumbs/60/microsoft/74/birthday-cake_1f382.png',
         }
     };
 
