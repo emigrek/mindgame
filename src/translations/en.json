@@ -36,7 +36,7 @@
 	"follow.alreadyFollowing": "You are already following {tag}.",
 	"follow.unfollowed": "Successfully unfollowed {tag}.",
 	"follow.followNotificationTitle": "{tag} joined\nvoice channel.",
-	"follow.followNotificationDescription": "Last <t:{time}:R>.",
+	"follow.followNotificationDescription": "Last <t:{time}:d>.",
 	"profile.unfollowButtonLabel": "Unfollow 🖤",
 	"profile.timePublicButtonLabel": "Public time statistics 👀",
 	"profile.visibilityNotification": "Only you can see this.",

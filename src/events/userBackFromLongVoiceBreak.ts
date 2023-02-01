@@ -17,7 +17,8 @@ export const userBackFromLongVoiceBreak: Event = {
         if(!followers) return;
 
         const lastActivity = await getLastVoiceActivity(member);
-        const unix = lastActivity ? moment(lastActivity.to).unix() : 0;
+        const last = lastActivity ? lastActivity.to ? moment(lastActivity.to) : moment() : moment()
+        const unix = last.unix();
 
         for(const follower of followers) {
             const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });

@@ -37,7 +37,7 @@
 	"follow.alreadyFollowing": "Obserwujesz już {tag}.",
 	"follow.unfollowed": "Przestałeś obserwować {tag}.",
 	"follow.followNotificationTitle": "{tag} dołączył(a)\nna kanał głosowy!",
-	"follow.followNotificationDescription": "Ostatnio <t:{time}:R>.",
+	"follow.followNotificationDescription": "Ostatnio <t:{time}:d>.",
 	"profile.visibilityNotification": "Tylko Ty możesz to zobaczyć.",
 	"statistics.voiceHeader": "Aktywność głosowa w tygodniu",
 	"statistics.presenceHeader": "Ogólna aktywność w tygodniu",
