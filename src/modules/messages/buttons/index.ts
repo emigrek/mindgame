@@ -182,6 +182,16 @@ const getHelpButton = async (client: ExtendedClient) => {
     return helpButton;
 };
 
+const getRepoButton = async (client: ExtendedClient) => {
+    const repoUrl = (await import("../../../../package.json")).repository.url;
+    const repoButton = new ButtonBuilder()
+        .setStyle(ButtonStyle.Link)
+        .setURL(repoUrl)
+        .setLabel(client.i18n.__("help.repoButtonLabel"));
+
+    return repoButton;
+}
+
 const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => {
     const sourceMessage = await getMessage(message.id);
 
@@ -201,4 +211,4 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }   
 
-export { getExitButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getRepoButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };

@@ -4,7 +4,7 @@ import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { Guild as GuildInterface, Select, SelectMenuOption, Sorting, User as DatabaseUser } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { getSortingByType, runMask, sortings } from "../user/sortings";
@@ -244,9 +244,13 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
             text: client.i18n.__("help.footer")
         }
     }
+    const row = new ActionRowBuilder<ButtonBuilder>()
+    const repoButton = await getRepoButton(client);
+    row.setComponents(repoButton);
 
     return {
-        embeds: [embed]
+        embeds: [embed],
+        components: [row]
     }
 }
 
