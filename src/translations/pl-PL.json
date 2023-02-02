@@ -70,5 +70,9 @@
 	"ranking.pageUpButtonLabel": "⬅️ Poprzednia",
 	"ranking.pageDownButtonLabel": "Następna ➡️",
 	"ranking.guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
-	"ranking.allGuildsButtonLabel": "Globalny 🌎"
+	"ranking.allGuildsButtonLabel": "Globalny 🌎",
+	"quickButton.helpLabel": "Pomoc",
+	"help.title": "Pomoc",
+	"help.description": "**System poziomów**\n- Mindgame śledzi Twój głos i aktywność na serwerze Discord i przyznaje punkty doświadczenia za Twoją aktywność.\n- Będziesz awansować, gdy zdobędziesz więcej punktów doświadczenia.\n- Każdy poziom odblokowuje nowe uprawnienia poziomu, takie jak dostęp do ekskluzywnych kanałów lub ról.\n\n**Polecenia**\n- `/ranking` Pokazuje twój ranking na serwerze.\n- `/commits` Wysyła ostatnie zatwierdzenia kodu źródłowego.\n- `/color` Umożliwia skonfigurowanie niestandardowej roli.\n- `/help` Wysyła pomoc (patrzysz na nią).\n\n**Menu kontekstowe**\n- `Follow` Otrzymuj powiadomienie za każdym razem, gdy obserwowany użytkownik wróci z <8-godzinnej przerwy.\n- `Show user profile` Pokazuje profil użytkownika.\n- `Unfollow` Przestań otrzymywać powiadomienia.",
+	"help.footer": "Użyj szybkich przycisków do jeszcze szybszej nawigacji."
 }

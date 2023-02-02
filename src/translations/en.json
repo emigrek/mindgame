@@ -72,5 +72,9 @@
 	"ranking.pageUpButtonLabel": "⬅️ Back",
 	"ranking.pageDownButtonLabel": "Next ➡️",
 	"ranking.guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
-	"ranking.allGuildsButtonLabel": "Global 🌎"
+	"ranking.allGuildsButtonLabel": "Global 🌎",
+	"quickButton.helpLabel": "Help",
+	"help.title": "Help",
+	"help.description": "**Leveling system**\n- Mindgame tracks your voice and activity on the Discord server and awards experience points for your activity.\n- You will advance as you earn more experience points.\n- Each level unlocks new level permissions such as access to exclusive channels or roles.\n\n**Commands**\n- `/ranking` Shows your ranking on the server.\n- `/commits` Sends the latest source code commits.\n- `/color` Allows configuring a custom role.\n- `/help` Sends help (u looking at).\n\n**Context menus**\n- `Follow` Receive a notification every time the followed user comes back from an <8 hour break.\n- `Show user profile` Shows the user profile.\n- `Unfollow` Stop receiving notifications.",
+	"help.footer": "Use quick buttons to navigate even faster."
 }

@@ -229,6 +229,27 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     };
 };
 
+const getHelpMessagePayload = async (client: ExtendedClient) => {
+    const embed = {
+        color: 0x0099ff,
+        thumbnail: {
+            url: client.user!.displayAvatarURL({ extension: "png" })
+        },
+        title: client.i18n.__("help.title"),
+        description: client.i18n.__("help.description"),
+        image: {
+            url: "https://i.imgur.com/ncCPDum.png"
+        },
+        footer: {
+            text: client.i18n.__("help.footer")
+        }
+    }
+
+    return {
+        embeds: [embed]
+    }
+}
+
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
     let sourceUser = await getUser(interaction.user) as DatabaseUser;
     let user = await client.users.fetch(sourceUser.userId, {
@@ -499,4 +520,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };

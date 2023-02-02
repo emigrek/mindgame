@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^19.0.5",
+    "@sefinek/random-emoji": "^1.4.5",
     "@types/node-cron": "^3.0.6",
     "@vibrant/types": "^3.2.1-alpha.1",
     "axios": "^1.2.1",

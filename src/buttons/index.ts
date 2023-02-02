@@ -16,6 +16,7 @@ import ranking from "./ranking";
 import rankingPageUp from "./rankingPageUp";
 import rankingPageDown from "./rankingPageDown";
 import rankingGuildOnly from "./rankingGuildOnly";
+import help from "./help";
 
 const buttons: Button[] = [
     notifications,
@@ -33,7 +34,8 @@ const buttons: Button[] = [
     ranking,
     rankingPageUp,
     rankingPageDown,
-    rankingGuildOnly
+    rankingGuildOnly,
+    help
 ];
 
 export default buttons;

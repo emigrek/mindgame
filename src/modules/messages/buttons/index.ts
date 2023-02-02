@@ -3,7 +3,7 @@ import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
-import { getFollowers } from "../../follow/index";
+import { getRandomHeartEmoji } from "../../../utils/emojis";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -95,7 +95,7 @@ const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResol
         profileButton = new ButtonBuilder()
             .setCustomId("profile")
             .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
-            .setStyle(ButtonStyle.Success);
+            .setStyle(ButtonStyle.Primary);
 
         return profileButton;
     }
@@ -103,7 +103,7 @@ const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResol
     profileButton = new ButtonBuilder()
         .setCustomId("profile")
         .setLabel(client.i18n.__("quickButton.profileLabel"))
-        .setStyle(ButtonStyle.Success);
+        .setStyle(ButtonStyle.Primary);
 
     return profileButton;
 }
@@ -112,7 +112,7 @@ const getGuildStatisticsButton = async (client: ExtendedClient) => {
     const statisticsButton = new ButtonBuilder()
         .setCustomId("guildStatistics")
         .setLabel(client.i18n.__("quickButton.guildStatisticsLabel"))
-        .setStyle(ButtonStyle.Primary);
+        .setStyle(ButtonStyle.Secondary);
 
     return statisticsButton;
 }
@@ -130,7 +130,7 @@ const getRankingButton = async (client: ExtendedClient) => {
     const rankingButton = new ButtonBuilder()
         .setCustomId("ranking")
         .setLabel(client.i18n.__("quickButton.rankingLabel"))
-        .setStyle(ButtonStyle.Success);
+        .setStyle(ButtonStyle.Primary);
 
     return rankingButton;
 };
@@ -168,9 +168,18 @@ const getCommitsButton = async (client: ExtendedClient) => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
         .setLabel(client.i18n.__("quickButton.commitsLabel"))
-        .setStyle(ButtonStyle.Primary); 
+        .setStyle(ButtonStyle.Secondary); 
 
     return commitsButton;
+};
+
+const getHelpButton = async (client: ExtendedClient) => {
+    const helpButton = new ButtonBuilder()
+        .setCustomId("help")
+        .setLabel(`${client.i18n.__("quickButton.helpLabel")} ${getRandomHeartEmoji()}`)
+        .setStyle(ButtonStyle.Success);
+    
+    return helpButton;
 };
 
 const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => {
@@ -184,11 +193,12 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     const sweepButton = await getSweepButton(client);
     const rankingButton = await getRankingButton(client);
     const commitsButton = await getCommitsButton(client);
+    const helpButton = await getHelpButton(client);
 
     row.setComponents(sweepButton, profileButton, rankingButton);
-    row2.setComponents(guildStatisticsButton, commitsButton);
+    row2.setComponents(guildStatisticsButton, commitsButton, helpButton);
 
     return [row, row2];
 }   
 
-export { getExitButton, getRankingGuildOnlyButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
