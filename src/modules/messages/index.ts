@@ -182,7 +182,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     const embed = {
         color: getColorInt(colors.Vibrant!),
         title: client.i18n.__("notifications.levelUpTitle"),
-        description: client.i18n.__mf("notifications.levelUpDescription", { tag: sourceUser.tag, level: sourceUser.stats.level }),
+        description: client.i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, level: sourceUser.stats.level }),
         fields: [
             {
                 name: client.i18n.__("notifications.levelField"),
@@ -371,7 +371,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     const embed = {
         color: getColorInt(colors.Vibrant!),
         title: client.i18n.__("notifications.dailyRewardTitle"),
-        description: client.i18n.__mf("notifications.dailyRewardDescription", { tag: sourceUser.tag, time: next }),
+        description: client.i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId, time: next }),
         fields: [
             { 
                 name: client.i18n.__("notifications.dailyRewardField"),
