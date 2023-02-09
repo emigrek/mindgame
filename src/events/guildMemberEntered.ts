@@ -9,13 +9,9 @@ export const guildMemberEntered: Event = {
         await createUser(member.user);
         
         const sourceGuild = await getGuild(member.guild.id);
-        if(sourceGuild && sourceGuild.levelRoles) {
-            const guild = client.guilds.cache.get(sourceGuild.guildId)!;
+        if(!sourceGuild || !sourceGuild.levelRoles) return;
 
-            if(!guild)
-                return;
-
-            await assignUserLevelRole(client, member.user, guild);
-        }
+        const guild = client.guilds.cache.get(sourceGuild.guildId)!;
+        await assignUserLevelRole(client, member.user, guild);
     }
 }
