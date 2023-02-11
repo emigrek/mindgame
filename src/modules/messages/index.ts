@@ -7,7 +7,7 @@ import { Guild as GuildInterface, Select, SelectMenuOption, Sorting, User as Dat
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
-import { getSortingByType, runMask, sortings } from "../user/sortings";
+import { runMask, sortings } from "../user/sortings";
 
 import moment from "moment";
 import Vibrant = require('node-vibrant');

@@ -6,7 +6,7 @@ import { interactionCreate } from "./interactionCreate";
 import { userAvatarUpdate } from "./userAvatarUpdate";
 import { userUsernameUpdate } from "./userUsernameUpdate";
 import { userDiscriminatorUpdate } from "./userDiscriminatorUpdate";
-import { guildMemberEntered } from "./guildMemberEntered";
+import { guildMemberAdd } from "./guildMemberAdd";
 import { userLeveledUp } from "./userLeveledUp";
 import { quarter } from './quarter';
 import { daily } from "./daily";
@@ -37,7 +37,7 @@ const events: Event[] = [
     userUsernameUpdate,
     userDiscriminatorUpdate,
     userLeveledUp,
-    guildMemberEntered,
+    guildMemberAdd,
     daily,
     weekly,
     monthly,
@@ -56,6 +56,7 @@ const events: Event[] = [
     messageDelete,
     messageDeleteBulk,
     userBackFromLongVoiceBreak,
+    quarter
 ];
 
 export default events;
