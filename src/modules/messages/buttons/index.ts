@@ -3,7 +3,7 @@ import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
-import { getRandomHeartEmoji } from "../../../utils/emojis";
+import { getRandomAnimalEmoji } from "../../../utils/emojis";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -176,7 +176,7 @@ const getCommitsButton = async (client: ExtendedClient) => {
 const getHelpButton = async (client: ExtendedClient) => {
     const helpButton = new ButtonBuilder()
         .setCustomId("help")
-        .setLabel(`${client.i18n.__("quickButton.helpLabel")} ${getRandomHeartEmoji()}`)
+        .setLabel(`${client.i18n.__("quickButton.helpLabel")} ${getRandomAnimalEmoji()}`)
         .setStyle(ButtonStyle.Success);
     
     return helpButton;
