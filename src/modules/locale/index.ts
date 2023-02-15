@@ -9,6 +9,7 @@ import GuildSchema from "../schemas/Guild";
 const GuildModel = mongoose.model("Guild", GuildSchema);
 
 const withGuildLocale = async (client: ExtendedClient, guild: DiscordGuild) => {
+    if(!guild) return;
     const sourceGuild = await getGuild(guild) as GuildInterface;
     client.i18n.setLocale(sourceGuild?.locale);
 }
