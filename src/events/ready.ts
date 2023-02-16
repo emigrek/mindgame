@@ -1,11 +1,10 @@
 import ExtendedClient from "../client/ExtendedClient";
 import { Event, User } from "../interfaces";
-import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes, TextChannel } from 'discord.js';
+import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js';
 import { updatePresence } from "../modules/presence/";
-
 import config from "../utils/config";
-import { getUser } from "../modules/user";
-import { Document } from "mongoose";
+import moment from "moment";
+
 
 const restPutRes = async (client: ExtendedClient) => {
     const rest = new REST({ version: '10' }).setToken(config.token);
@@ -24,8 +23,8 @@ const restPutRes = async (client: ExtendedClient) => {
 export const ready: Event = {
     name: "ready",
     run: async (client) => {
-        console.log(`[ready] Logged in as`, client.user?.tag);
-        console.log(`[ready] Serving`, client.guilds.cache.size, `guilds`);
+        console.log(`[${moment().toDate()}][ready] Logged in as ${client.user?.tag}`);
+        console.log(`[ready] Serving ${client.guilds.cache.size} guilds`);
         
         await updatePresence(client);
         await restPutRes(client);
