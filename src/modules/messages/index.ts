@@ -417,7 +417,7 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
     return new Promise(async (resolve, reject) => {
-        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')'];
+        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
         let messages = new Collection<string, Message>();
 
         try {
