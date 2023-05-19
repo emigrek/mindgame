@@ -131,16 +131,21 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     exists.to = moment().toDate();
     await exists.save();
 
-    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
-    const expGained = Math.round(
-        duration * 0.16
+    const seconds = moment(exists.to).diff(moment(exists.from), "seconds");
+    const hours = moment(exists.to).diff(moment(exists.from), "hours", true);
+
+    const base = seconds * 0.16;
+    const boost = hours < 1 ? 1 : hours**2;
+    
+    const income = Math.round(
+        base * boost
     );
 
     const sourceGuild = await getGuild(member.guild);
     await updateUserStatistics(client, member.user, {
-        exp: expGained,
+        exp: income,
         time: {
-            voice: duration
+            voice: seconds
         }
     }, sourceGuild!);
 
