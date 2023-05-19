@@ -19,9 +19,9 @@ export const presenceUpdate: Event = {
         ) {
             await startPresenceActivity(client, member, newPresence);
         } else if(
-            (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible || oldStatus)
+            (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible)
              && 
-            (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible)
+            (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible || !newStatus)
         ) {
             await endPresenceActivity(client, member);
         }
