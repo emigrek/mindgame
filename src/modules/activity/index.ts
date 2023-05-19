@@ -163,7 +163,7 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         const guild = client.guilds.cache.get(activity.guildId);
         if(!guild) continue;
 
-        const member = await guild.members.fetch(activity.userId);
+        const member = guild.members.cache.get(activity.userId);
         if(!member) continue;
 
         const channel = client.channels.cache.get(activity.channelId) as VoiceBasedChannel;
@@ -201,7 +201,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
         const guild = client.guilds.cache.get(activity.guildId);
         if(!guild) continue;
 
-        const member = await guild.members.fetch(activity.userId);
+        const member = guild.members.cache.get(activity.userId);
         if(!member) continue;
 
         const presence = member.presence;
