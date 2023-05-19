@@ -4,6 +4,7 @@ import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js
 import { updatePresence } from "../modules/presence/";
 import config from "../utils/config";
 import moment from "moment";
+import { validatePresenceActivities, validateVoiceActivities } from "../modules/activity";
 
 
 const restPutRes = async (client: ExtendedClient) => {
@@ -28,5 +29,8 @@ export const ready: Event = {
         
         await updatePresence(client);
         await restPutRes(client);
+
+        await validateVoiceActivities(client);
+        await validatePresenceActivities(client);
     }
 }

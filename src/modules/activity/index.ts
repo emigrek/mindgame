@@ -152,6 +152,76 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => 
     return exists;
 }
 
+const validateVoiceActivities = async (client: ExtendedClient) => {
+    const activities = await voiceActivityModel.find({
+        to: null
+    });
+
+    console.log(`[Activity] Validating ${activities.length} voice activities...`);
+    const outOfSync: string[] = [];
+    for await(const activity of activities) {
+        const guild = client.guilds.cache.get(activity.guildId);
+        if(!guild) continue;
+
+        const member = await guild.members.fetch(activity.userId);
+        if(!member) continue;
+
+        const channel = client.channels.cache.get(activity.channelId) as VoiceBasedChannel;
+        if(!channel) {
+            outOfSync.push(activity.userId);
+            await endVoiceActivity(client, member);
+            continue;
+        }
+
+        if(!member.voice?.channelId || !member.voice?.channel) {
+            outOfSync.push(activity.userId);
+            await endVoiceActivity(client, member);
+            continue;
+        }
+
+        if(!member.voice.channel.equals(channel)) {
+            outOfSync.push(activity.userId);
+            await endVoiceActivity(client, member);
+            await startVoiceActivity(client, member, member.voice.channel);
+            continue;
+        }
+    }
+
+    console.log(`[Activity] ${outOfSync.length} voice activities were out of sync.`);
+};
+
+const validatePresenceActivities = async (client: ExtendedClient) => {
+    const activities = await presenceActivityModel.find({
+        to: null
+    });
+
+    console.log(`[Activity] Validating ${activities.length} presence activities...`);
+    const outOfSync: string[] = [];
+    for await(const activity of activities) {
+        const guild = client.guilds.cache.get(activity.guildId);
+        if(!guild) continue;
+
+        const member = await guild.members.fetch(activity.userId);
+        if(!member) continue;
+
+        const presence = member.presence;
+        if(!presence) {
+            outOfSync.push(activity.userId);
+            await endPresenceActivity(client, member);
+            continue;
+        }
+
+        if(presence.status !== activity.status) {
+            outOfSync.push(activity.userId);
+            await endPresenceActivity(client, member);
+            await startPresenceActivity(client, member, presence);
+            continue;
+        }
+    }
+
+    console.log(`[Activity] ${outOfSync.length} presence activities were out of sync.`);
+};
+
 interface ActivityPeakHour {
     hour: number;
     activePeak: number;
@@ -284,4 +354,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { getLastVoiceActivity, startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel };
+export { getLastVoiceActivity, startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
