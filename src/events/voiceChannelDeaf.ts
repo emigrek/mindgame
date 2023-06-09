@@ -1,5 +1,5 @@
 import { Event } from "../interfaces";
-import { endVoiceActivity } from "../modules/activity";
+import { endVoiceActivity, getGuildActiveVoiceActivities } from "../modules/activity";
 
 export const voiceChannelDeaf: Event = {
     name: "voiceChannelDeaf",
@@ -7,5 +7,9 @@ export const voiceChannelDeaf: Event = {
         if(!member.voice.channel) return;
         
         await endVoiceActivity(client, member);
+
+        const activeVoiceActivities = await getGuildActiveVoiceActivities(member.guild);
+        if(!activeVoiceActivities.length)
+            client.emit("guildVoiceEmpty", member.guild, member.voice.channel);
     }
 }

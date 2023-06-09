@@ -1,4 +1,4 @@
-import { GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
 import voiceActivitySchema from "../schemas/VoiceActivity";
@@ -328,6 +328,11 @@ const getUserPresenceActivity = async (user: DatabaseUser) => {
     return exists;
 }
 
+const getGuildActiveVoiceActivities = async (guild: Guild) => {
+    const activities = await voiceActivityModel.find({ guildId: guild.id, to: null });
+    return activities;
+};
+
 const getPresenceActivityColor = (activity: PresenceActivity) => {
     const colors = [
         {
@@ -354,4 +359,4 @@ const getPresenceActivityColor = (activity: PresenceActivity) => {
     return '#68717e';
 }
 
-export { getLastVoiceActivity, startVoiceActivity, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { getLastVoiceActivity, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

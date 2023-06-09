@@ -27,6 +27,7 @@ import { error } from "./error";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
 import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
+import { guildVoiceEmpty } from "./guildVoiceEmpty";
 
 const events: Event[] = [
     ready,
@@ -56,7 +57,8 @@ const events: Event[] = [
     messageDelete,
     messageDeleteBulk,
     userBackFromLongVoiceBreak,
-    quarter
+    quarter,
+    guildVoiceEmpty
 ];
 
 export default events;

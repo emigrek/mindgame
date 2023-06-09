@@ -24,7 +24,7 @@ const restPutRes = async (client: ExtendedClient) => {
 export const ready: Event = {
     name: "ready",
     run: async (client) => {
-        console.log(`[${moment().toDate()}][ready] Logged in as ${client.user?.tag}`);
+        console.log(`[ready] Logged in as ${client.user?.tag}`);
         console.log(`[ready] Serving ${client.guilds.cache.size} guilds`);
         
         await updatePresence(client);

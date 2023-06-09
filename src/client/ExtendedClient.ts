@@ -28,15 +28,6 @@ class ExtendedClient extends Client {
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
     public async init() {
-        process
-            .on('unhandledRejection', (reason, p) => {
-                console.error(reason, 'Unhandled Rejection at Promise', p);
-            })
-            .on('uncaughtException', err => {
-                console.error(err, 'Uncaught Exception thrown');
-                process.exit(1);
-            });
-
         this.i18n.configure({
             locales: this.locales,
             directory: join(__dirname, "..", "translations"),
