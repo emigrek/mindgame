@@ -225,7 +225,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 interface ActivityPeakHour {
     hour: number;
     activePeak: number;
-};
+}
 
 interface ActivityPeakDay {
     day: number;
@@ -250,7 +250,7 @@ const mockDays = (): ActivityPeakDay[] => {
 };
 
 const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (PresenceActivity & Document)[]) => {
-    let data = mockDays();
+    const data = mockDays();
 
     data.forEach((d: ActivityPeakDay) => {
         d.hours.forEach((h: ActivityPeakHour) => {

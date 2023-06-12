@@ -77,5 +77,13 @@
 	"help.title": "Help",
 	"help.description": "**Leveling system**\n- Mindgame tracks your voice and activity on the Discord server and awards experience points for your activity.\n- You will advance as you earn more experience points.\n- Each level unlocks new level permissions such as access to exclusive channels or roles.\n\n**Commands**\n- `/ranking` Shows your ranking on the server.\n- `/commits` Sends the latest source code commits.\n- `/color` Allows configuring a custom role.\n- `/help` Sends help (u looking at).\n\n**Context menus**\n- `Follow` Receive a notification every time the followed user comes back from an <8 hour break.\n- `Show user profile` Shows the user profile.\n- `Unfollow` Stop receiving notifications.",
 	"help.footer": "Use quick buttons to navigate even faster.",
-	"help.repoButtonLabel": "Source code"
+	"help.repoButtonLabel": "Source code",
+	"ephemeralChannel.alreadyExists": "This channel is already an ephemeral channel. Use edit subcommand to change timeout.",
+	"ephemeralChannel.created": "<#{channelId}> is now an ephemeral channel. Messages in this channel will dissapear after {timeout} minute(s).",
+	"ephemeralChannel.edited": "<#{channelId}> timeout has been changed to {timeout} minute(s).",
+	"ephemeralChannel.deleted": "<#{channelId}> is no longer an ephemeral channel.",
+	"ephemeralChannel.notFound": "This channel is not ephemeral channel.",
+	"ephemeralChannel.limitReached": "You have reached the limit of ephemeral channels. Please delete some of them in order to create new.",
+	"textChannelOnly": "This feature can only be used in text channels.",
+	"guildOnly": "This feature can only be used in guilds."
 }

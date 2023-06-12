@@ -135,7 +135,7 @@ const getRankingButton = async (client: ExtendedClient) => {
     return rankingButton;
 };
 
-const getRankingPageUpButton = async (client: ExtendedClient, disabled: boolean = false) => {
+const getRankingPageUpButton = async (client: ExtendedClient, disabled = false) => {
     const rankingPageUpButton = new ButtonBuilder()
         .setCustomId("rankingPageUp")
         .setDisabled(disabled)
@@ -145,7 +145,7 @@ const getRankingPageUpButton = async (client: ExtendedClient, disabled: boolean 
     return rankingPageUpButton;
 };
 
-const getRankingPageDownButton = async (client: ExtendedClient, disabled: boolean = false) => {
+const getRankingPageDownButton = async (client: ExtendedClient, disabled = false) => {
     const rankingPageDownButton = new ButtonBuilder()
         .setCustomId("rankingPageDown")
         .setDisabled(disabled)

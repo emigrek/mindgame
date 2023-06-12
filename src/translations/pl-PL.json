@@ -75,5 +75,13 @@
 	"help.title": "Pomoc",
 	"help.description": "**System poziomów**\n- Mindgame śledzi Twój głos i aktywność na serwerze Discord i przyznaje punkty doświadczenia za Twoją aktywność.\n- Będziesz awansować, gdy zdobędziesz więcej punktów doświadczenia.\n- Każdy poziom odblokowuje nowe uprawnienia poziomu, takie jak dostęp do ekskluzywnych kanałów lub ról.\n\n**Polecenia**\n- `/ranking` Pokazuje twój ranking na serwerze.\n- `/commits` Wysyła ostatnie zatwierdzenia kodu źródłowego.\n- `/color` Umożliwia skonfigurowanie niestandardowej roli.\n- `/help` Wysyła pomoc (patrzysz na nią).\n\n**Menu kontekstowe**\n- `Follow` Otrzymuj powiadomienie za każdym razem, gdy obserwowany użytkownik wróci z <8-godzinnej przerwy.\n- `Show user profile` Pokazuje profil użytkownika.\n- `Unfollow` Przestań otrzymywać powiadomienia.",
 	"help.footer": "Użyj szybkich przycisków do jeszcze szybszej nawigacji.",
-	"help.repoButtonLabel": "Repozytorium"
+	"help.repoButtonLabel": "Repozytorium",
+	"ephemeralChannel.alreadyExists": "Ten kanał jest już kanałem efemerycznym. Użyj podkomendy `edit` aby zmienić czas.",
+	"ephemeralChannel.created": "<#{channelId}> jest teraz kanałem efemerycznym. Wiadomości na tym kanalę będą znikać po {timeout} minutach.",
+	"ephemeralChannel.edited": "Czas znikania wiadomości na kanalę <#{channelId}> został zmieniony na {timeout} minut(y).",
+	"ephemeralChannel.deleted": "<#{channelId}> nie jest już kanałem efemerycznym.",
+	"ephemeralChannel.notFound": "Ten kanał nie jest kanałem efemerycznym.",
+	"ephemeralChannel.limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze. Usuń jeden z nich aby utworzyć nowy.",
+	"textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
+	"guildOnly": "Ta funkcja może zostać użyta tylko w gildiach."
 }

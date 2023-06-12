@@ -8,4 +8,4 @@ interface Run {
 export interface ContextMenu {
     data: ContextMenuCommandBuilder;
     run: Run;
-};
+}

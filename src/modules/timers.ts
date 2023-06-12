@@ -1,6 +1,7 @@
 import { Module } from "../interfaces";
 import * as cron from "node-cron";
 
+const minuteCron = "* * * * *";
 const quarterCron = "*/15 * * * *";
 const hourlyCron = "0 * * * *";
 const dailyCron = "0 0 * * *";
@@ -9,6 +10,10 @@ const monthlyCron = "0 0 1 * *";
 const yearlyCron = "0 0 1 1 *";
 
 const schedules = [
+    {
+        name: 'minute',
+        cron: minuteCron
+    },
     {
         name: 'quarter',
         cron: quarterCron
@@ -41,7 +46,7 @@ export const timers: Module = {
         console.log("[Timers] Loaded module");
 
         for (const schedule of schedules) {
-            cron.schedule(schedule.cron, async () => await client.emit(schedule.name));
+            cron.schedule(schedule.cron, () => client.emit(schedule.name));
         }
     }
 }   

@@ -26,10 +26,10 @@ interface ImageHexColors {
 const messageModel = mongoose.model("Message", messageSchema);
 
 const useImageHex = async (image: string) => {
-    if(!image) return { Vibrant: "#373b48", DarkVibrant: "#373b48" };
+    if (!image) return { Vibrant: "#373b48", DarkVibrant: "#373b48" };
     const colors = await Vibrant.from(image).getPalette();
     return {
-        Vibrant: chroma(colors.Vibrant!.hex!).hex(), 
+        Vibrant: chroma(colors.Vibrant!.hex!).hex(),
         DarkVibrant: chroma(colors.DarkVibrant!.hex!).hex()
     };
 }
@@ -64,7 +64,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const sourceGuild = await getGuild(guild) as GuildInterface;
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild!.channelId);
 
-    if(!textChannels.size) {
+    if (!textChannels.size) {
         await owner?.send({ content: client.i18n.__("config.noValidChannels") });
         return;
     }
@@ -76,7 +76,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
             value: channel.id
         }
     });
-    
+
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
     const statisticsNotificationButton = await getStatisticsNotificationButton(client, sourceGuild);
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
@@ -85,7 +85,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const locales = client.i18n.getLocales();
-    const currentLocale = client.i18n.getLocale(); 
+    const currentLocale = client.i18n.getLocale();
     const languageNames = new Intl.DisplayNames([currentLocale], {
         type: 'language'
     });
@@ -98,8 +98,8 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     });
 
     const languageSelect = await getLanguageSelect(client, currentLocale, languageOptions);
-    
-        
+
+
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(channelSelect);
     const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
@@ -110,7 +110,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         .setComponents(notificationsButton, autoSweepingButton, statisticsNotificationButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
-    var colors: ImageHexColors = await useImageHex(guildIcon!);
+    const colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutMedium(guildConfigHtml, colors));
 
@@ -126,7 +126,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const targetUser = client.users.cache.get(targetUserId)!;
     const sourceTargetUser = await getUser(targetUser) as DatabaseUser;
 
-    if(!sourceUser || !sourceTargetUser) {
+    if (!sourceUser || !sourceTargetUser) {
         return {
             embeds: [{
                 description: client.i18n.__("profile.notFound")
@@ -134,7 +134,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
             ephemeral: true
         };
     }
-    
+
     const selfCall = sourceUser.userId === targetUser.id;
     const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
@@ -143,7 +143,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 
     const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
-    if(selfCall) {
+    if (selfCall) {
         const row = new ActionRowBuilder<ButtonBuilder>()
             .setComponents(profileTimePublic);
 
@@ -164,7 +164,7 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
     await withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild) as GuildInterface;
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
-    var colors: ImageHexColors = await useImageHex(guildIcon!);
+    const colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutXLarge(guildStatisticsHtml, colors));
 
@@ -177,7 +177,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user) as DatabaseUser;
-    var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+    const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
 
     const embed = {
         color: getColorInt(colors.Vibrant!),
@@ -191,12 +191,12 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
             },
             {
                 name: client.i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.day.time.voice/3600))}H\`\`\``,
+                value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
                 inline: true
             },
-            { 
+            {
                 name: client.i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${Math.round((sourceUser.week.time.voice/3600))}H\`\`\``,
+                value: `\`\`\`${Math.round((sourceUser.week.time.voice / 3600))}H\`\`\``,
                 inline: true
             }
         ],
@@ -255,15 +255,15 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 }
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
-    let sourceUser = await getUser(interaction.user) as DatabaseUser;
-    let user = await client.users.fetch(sourceUser.userId, {
+    const sourceUser = await getUser(interaction.user) as DatabaseUser;
+    const user = await client.users.fetch(sourceUser.userId, {
         force: true
     });
-    var color = getColorInt(user.hexAccentColor!);
-    let roleColor = getMemberColorRole(interaction.member as GuildMember);
+    const color = getColorInt(user.hexAccentColor!);
+    const roleColor = getMemberColorRole(interaction.member as GuildMember);
 
-    if(!color) {
-        let embed = {
+    if (!color) {
+        const embed = {
             color: 0x000000,
             title: client.i18n.__("color.title"),
             description: client.i18n.__("color.noColor"),
@@ -277,8 +277,8 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         }
     }
 
-    if(sourceUser.stats.level < 160 && !roleColor) {
-        let embed = {
+    if (sourceUser.stats.level < 160 && !roleColor) {
+        const embed = {
             color: color,
             title: client.i18n.__("color.title"),
             description: client.i18n.__mf("levelRequirement", { level: 160 }),
@@ -287,20 +287,20 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
             }
         };
 
-        return { 
+        return {
             embeds: [embed]
         };
     }
 
-    let roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
-    let roleColorUpdateButton = await getRoleColorUpdateButton(client);
+    const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
+    const roleColorUpdateButton = await getRoleColorUpdateButton(client);
     const row = new ActionRowBuilder<ButtonBuilder>().setComponents(roleColorSwitchButton);
 
-    if(roleColor) {
+    if (roleColor) {
         row.addComponents(roleColorUpdateButton);
     }
 
-    let embed = {
+    const embed = {
         color: color,
         title: client.i18n.__("color.title"),
         description: client.i18n.__("color.description"),
@@ -316,7 +316,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 };
 
 const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, sorting: Sorting, page: number, guild?: Guild) => {
-    if(interaction.guild) {
+    if (interaction.guild) {
         await withGuildLocale(client, interaction.guild);
     }
     const users = await getRanking(client, sorting, page, guild) as (DatabaseUser & mongoose.Document)[];
@@ -352,7 +352,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
         .addComponents(rankingSortSelect);
     const row2 = new ActionRowBuilder<ButtonBuilder>();
     row2.addComponents(up, down);
-    if(interaction.guild) {
+    if (interaction.guild) {
         row2.addComponents(guildOnly);
     }
     return {
@@ -365,27 +365,27 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user) as DatabaseUser;
-    var colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
-    let reward = parseInt(process.env.DAILY_REWARD!);
+    const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+    const reward = parseInt(process.env.DAILY_REWARD!);
 
     const embed = {
         color: getColorInt(colors.Vibrant!),
         title: client.i18n.__("notifications.dailyRewardTitle"),
         description: client.i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId, time: next }),
         fields: [
-            { 
+            {
                 name: client.i18n.__("notifications.dailyRewardField"),
                 value: `\`\`\`${client.numberFormat.format(reward)} EXP\`\`\``,
                 inline: true
             },
             {
                 name: client.i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.day.time.voice/3600))}H\`\`\``,
+                value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
                 inline: true
             },
-            { 
+            {
                 name: client.i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.week.time.voice/3600))}H\`\`\``,
+                value: `\`\`\`${(Math.round(sourceUser.week.time.voice / 3600))}H\`\`\``,
                 inline: true
             },
         ],
@@ -399,16 +399,16 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     };
 };
 
-const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary: boolean = true) => {
+const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary = true) => {
     const sourceGuild = await getGuild(guild) as GuildInterface;
-    if(!sourceGuild.channelId) return null;
-    
+    if (!sourceGuild.channelId) return null;
+
     const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
-    if(!defaultChannel) return null;
+    if (!defaultChannel) return null;
 
     const messageSent = await defaultChannel.send(message);
 
-    if(temporary) {
+    if (temporary) {
         setTimeout(async () => {
             await messageSent.delete();
         }, 5000);
@@ -416,42 +416,40 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
 };
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
-    return new Promise(async (resolve, reject) => {
-        const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
-        let messages = new Collection<string, Message>();
+    const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
+    let messages = new Collection<string, Message>();
 
-        try {
-            messages = await channel.messages.fetch({ limit: 50 });
-        } catch (e) {
-            let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
-            setTimeout(async () => {
-                await missingPermissions.delete();
-            }, 5000);
-        }
-        
-        const messagesToDelete = messages.filter((message: Message) => {
-            const filter =
-                popularPrefixes.some(prefix => message.content.startsWith(prefix)) || 
-                (message.author.bot && message.attachments && message.attachments.size == 0) ||
-                (message.author.bot && message.embeds.length)
-            return filter;
-        });
-        let count = 0;
-        const promises = messagesToDelete.map(async (message: Message) => {
-            if(!message.deletable) return;
-            
-            await message.delete();
-            count++;
-        });
+    try {
+        messages = await channel.messages.fetch({ limit: 50 });
+    } catch (e) {
+        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+        setTimeout(async () => {
+            await missingPermissions.delete();
+        }, 5000);
+    }
 
-        await Promise.all(promises);
-        await attachQuickButtons(client, channel);
-        resolve(count);
+    const messagesToDelete = messages.filter((message: Message) => {
+        const filter =
+            popularPrefixes.some(prefix => message.content.startsWith(prefix)) ||
+            (message.author.bot && message.attachments && message.attachments.size == 0) ||
+            (message.author.bot && message.embeds.length)
+        return filter;
     });
+    let count = 0;
+    const promises = messagesToDelete.map(async (message: Message) => {
+        if (!message.deletable) return;
+
+        await message.delete();
+        count++;
+    });
+
+    await Promise.all(promises);
+    await attachQuickButtons(client, channel);
+    return count;
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
-    if(channel.guild) {
+    if (channel.guild) {
         await withGuildLocale(client, channel.guild!);
     }
 
@@ -460,24 +458,24 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     try {
         lastMessages = await channel.messages.fetch({ limit: 50 });
     } catch (e) {
-        let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
         setTimeout(async () => {
             await missingPermissions.delete();
         }, 5000);
     }
-    
+
     const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
-    if(!lastMessage) return;
+    if (!lastMessage) return;
 
     const quickButtonsRows = await getQuickButtonsRows(client, lastMessage);
 
     for await (const message of clientLastMessages.values()) {
-        if(message.components.length > 0 && message.id != lastMessage.id) {
+        if (message.components.length > 0 && message.id != lastMessage.id) {
             try {
                 await message.edit({ components: [] });
             } catch (e) {
-                let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+                const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
                 setTimeout(async () => {
                     await missingPermissions.delete();
                 }, 5000);
@@ -488,7 +486,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
     try {
         await lastMessage.edit({ components: quickButtonsRows });
     } catch (e) {
-        let missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
+        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
         setTimeout(async () => {
             await missingPermissions.delete();
         }, 5000);
@@ -497,7 +495,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
 const createMessage = async (message: Message, targetUserId: string | null, name: string | null) => {
     const exists = await getMessage(message.id);
-    if(exists) return exists;
+    if (exists) return exists;
 
     const newMessage = new messageModel({
         messageId: message.id,
@@ -512,7 +510,7 @@ const createMessage = async (message: Message, targetUserId: string | null, name
 
 const getMessage = async (messageId: string) => {
     const message = await messageModel.findOne({ messageId: messageId });
-    if(!message) return null;
+    if (!message) return null;
     return message;
 };
 

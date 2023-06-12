@@ -5,7 +5,7 @@ export interface LevelTreshold {
     level: number;
     color: ColorResolvable;
     permissions: PermissionResolvable;
-};
+}
 
 export const levelTresholds: LevelTreshold[] = [
     {

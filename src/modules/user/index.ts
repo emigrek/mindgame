@@ -7,8 +7,8 @@ import ExtendedClient from "../../client/ExtendedClient";
 
 const UserModel = mongoose.model("User", userSchema);
 
-const expConstant: number = 0.3829;
-const expInflationRate: number = 1;
+const expConstant = 0.3829;
+const expInflationRate = 1;
 
 const root = (x: number, n: number) => {
     return Math.pow(Math.E, Math.log(x) / n);
@@ -182,7 +182,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
     userSource.week = week;
     userSource.month = month;
 
-    let userLeveledUpDuringUpdate: boolean = false; // Flag
+    let userLeveledUpDuringUpdate = false; // Flag
 
     if(userSource.stats.exp >= levelToExp(userSource.stats.level + 1)) // When exceed exp needed to level up
         userLeveledUpDuringUpdate = true; // Mark flag to emit event

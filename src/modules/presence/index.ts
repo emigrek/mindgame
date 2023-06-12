@@ -3,6 +3,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { Guild as DatabaseGuild } from "../../interfaces";
 import { getGuilds } from "../guild";
 import { getUsers } from "../user";
+import presencesData from "./presences.json";
 
 const replacePlaceholders = async (activity: ActivitiesOptions, guilds: DatabaseGuild[]) => {
     const users = await getUsers();
@@ -21,9 +22,7 @@ const replacePlaceholders = async (activity: ActivitiesOptions, guilds: Database
 };
 
 const generatePresence = async (client: ExtendedClient, guilds: DatabaseGuild[]) => {
-    const data = require('./presences.json');
-
-    const presences: PresenceData[] = JSON.parse(JSON.stringify(data));
+    const presences: PresenceData[] = JSON.parse(JSON.stringify(presencesData));
     const random = presences[Math.floor(Math.random() * presences.length)];
     
     if(random.activities) {

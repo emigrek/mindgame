@@ -73,25 +73,20 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     const exclusedDays = data.filter((d) => d.activePeak > 0);
 
     let dataMinPeakDay: ActivityPeakDay;
-    let dataMaxPeakDay: ActivityPeakDay;
-    let dataMaxPeakHour: ActivityPeakHour;
-    let dataMinPeakHour: ActivityPeakHour;
-
     if(exclusedDays.length > 0) 
         dataMinPeakDay = exclusedDays.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
     else
         dataMinPeakDay = data.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
     
-    dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
-    
-    let dataMinPeakExcludedHours = dataMinPeakDay.hours.filter((h) => h.activePeak > 0);
+    let dataMinPeakHour: ActivityPeakHour;
+    const dataMinPeakExcludedHours = dataMinPeakDay.hours.filter((h) => h.activePeak > 0);
     if(dataMinPeakExcludedHours.length > 0)
         dataMinPeakHour = dataMinPeakExcludedHours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
     else
         dataMinPeakHour = dataMinPeakDay.hours.reduce((prev, current) => (prev.activePeak < current.activePeak) ? prev : current);
-        
-    dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
-    
+       
+    const dataMaxPeakDay = data.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current); 
+    const dataMaxPeakHour = dataMaxPeakDay.hours.reduce((prev, current) => (prev.activePeak > current.activePeak) ? prev : current);
 
     const hoursTh = () => {
         return Array(24).fill(0).map((_, i) => {
@@ -119,9 +114,9 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
             return `<div class="text-center w-7 h-7 bg-white/5" style="opacity: 5%"></div>`;  
         }
 
-        let activityHour: ActivityPeakHour = day.hours[hour];
-        let hourAlpha = Math.round((activityHour.activePeak/day.activePeak) * 100);
-        let hourColor = chromaColor.luminance(hourAlpha/100).rgba().join(',');
+        const activityHour: ActivityPeakHour = day.hours[hour];
+        const hourAlpha = Math.round((activityHour.activePeak/day.activePeak) * 100);
+        const hourColor = chromaColor.luminance(hourAlpha/100).rgba().join(',');
 
         return `
             <div 
@@ -134,7 +129,7 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     }
 
     const dayTd = (day: number) => {
-        let dayPeak = data.find((dayStat: ActivityPeakDay) => dayStat.day === day)!;
+        const dayPeak = data.find((dayStat: ActivityPeakDay) => dayStat.day === day)!;
 
         return Array(24).fill(0).map((_, i) => {
             return `
@@ -385,17 +380,17 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
 }
 
 const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
-    let guild = client.guilds.cache.get(sourceGuild.guildId)!;
-    let guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
+    const guild = client.guilds.cache.get(sourceGuild.guildId)!;
+    const guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 
-    let startWeek = moment().startOf("week").toDate();
-    let endWeek = moment().endOf("week").subtract(1, "second").toDate();
+    const startWeek = moment().startOf("week").toDate();
+    const endWeek = moment().endOf("week").subtract(1, "second").toDate();
 
-    let voiceActivityData = await getVoiceActivityBetween(sourceGuild, startWeek, endWeek);
-    let voiceActivityPeaks = await getActivePeaks(voiceActivityData);
+    const voiceActivityData = await getVoiceActivityBetween(sourceGuild, startWeek, endWeek);
+    const voiceActivityPeaks = await getActivePeaks(voiceActivityData);
     
-    let presenceActivityData = await getPresenceActivityBetween(sourceGuild, startWeek, endWeek);
-    let presenceActivityPeaks = await getActivePeaks(presenceActivityData);
+    const presenceActivityData = await getPresenceActivityBetween(sourceGuild, startWeek, endWeek);
+    const presenceActivityPeaks = await getActivePeaks(presenceActivityData);
     
     return `
         <div class="flex flex-col items-center">

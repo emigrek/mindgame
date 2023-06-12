@@ -26,8 +26,12 @@ import { yearly } from "./yearly";
 import { error } from "./error";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
+import { messageReactionAdd } from "./messageReactionAdd";
+import { messageReactionRemove } from "./messageReactionRemove";
 import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
 import { guildVoiceEmpty } from "./guildVoiceEmpty";
+import { minute } from "./minute";
+import { channelDelete } from "./channelDelete";
 
 const events: Event[] = [
     ready,
@@ -57,8 +61,12 @@ const events: Event[] = [
     messageDelete,
     messageDeleteBulk,
     userBackFromLongVoiceBreak,
+    messageReactionAdd,
+    messageReactionRemove,
     quarter,
-    guildVoiceEmpty
+    guildVoiceEmpty,
+    minute,
+    channelDelete
 ];
 
 export default events;
