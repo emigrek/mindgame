@@ -94,7 +94,7 @@ const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResol
 
         profileButton = new ButtonBuilder()
             .setCustomId("profile")
-            .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { tag: targetUser.tag }))
+            .setLabel(client.i18n.__mf("quickButton.profileTargetLabel", { username: targetUser.username }))
             .setStyle(ButtonStyle.Primary);
 
         return profileButton;
