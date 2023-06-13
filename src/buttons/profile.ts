@@ -1,4 +1,4 @@
-import { ButtonInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { ButtonInteraction } from "discord.js";
 import { Button } from "../interfaces/Button";
 import { withGuildLocale } from "../modules/locale";
 import { getMessage, getUserMessagePayload } from "../modules/messages";

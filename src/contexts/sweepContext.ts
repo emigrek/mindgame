@@ -1,4 +1,4 @@
-import { ApplicationCommandType, ContextMenuCommandBuilder, TextChannel, UserContextMenuCommandInteraction } from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder, TextChannel } from "discord.js";
 import { ContextMenu } from "../interfaces";
 import { withGuildLocale } from "../modules/locale";
 import { sweepTextChannel } from "../modules/messages";

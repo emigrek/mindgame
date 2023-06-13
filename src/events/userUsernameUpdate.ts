@@ -3,7 +3,7 @@ import { updateUser } from "../modules/user";
 
 export const userUsernameUpdate: Event = {
     name: "userUsernameUpdate",
-    run: async (client, user, oldUsername, newUsername) => {
+    run: async (client, user) => {
         await updateUser(user);
     }
 }

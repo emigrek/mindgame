@@ -1,6 +1,6 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { ContextMenu } from "../interfaces";
-import { createFollow, deleteFollow } from "../modules/follow";
+import { deleteFollow } from "../modules/follow";
 import { withGuildLocale } from "../modules/locale";
 
 const unfollowContext: ContextMenu = {

@@ -88,7 +88,7 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
             const valid = messages
                 .filter((message: Message) => moment(message.createdAt).isAfter(moment(ephemeralChannel.createdAt as string)));
 
-            for await (const [messageId, message] of valid) {
+            for await (const [, message] of valid) {
                 const cacheable = await isMessageCacheable(message);
 
                 if (!cacheable) continue;
@@ -113,7 +113,7 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
     const reactions = message.reactions.cache;
     const users = new Set<string>();
 
-    for await (const [reactionId, reaction] of reactions) {
+    for await (const [, reaction] of reactions) {
         const reactionUsers = await reaction.users.fetch();
 
         for (const [userId, user] of reactionUsers) {

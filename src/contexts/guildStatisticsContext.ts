@@ -1,6 +1,6 @@
-import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { ContextMenu } from "../interfaces";
-import { getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex } from "../modules/messages";
+import { getStatisticsMessagePayload } from "../modules/messages";
 import { getGuild } from "../modules/guild";
 
 const guildStatisticsContext: ContextMenu = {

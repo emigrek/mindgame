@@ -6,7 +6,7 @@ import { ephemeralChannelMessageCache } from "../modules/ephemeral-channel/cache
 
 export const messageReactionRemove: Event = {
     name: "messageReactionRemove",
-    run: async (client, messageReaction: MessageReaction, user) => {
+    run: async (client, messageReaction: MessageReaction) => {
         const { message } = messageReaction;
         const { channel } = message;
 

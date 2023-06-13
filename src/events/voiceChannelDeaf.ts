@@ -3,7 +3,7 @@ import { endVoiceActivity, getGuildActiveVoiceActivities } from "../modules/acti
 
 export const voiceChannelDeaf: Event = {
     name: "voiceChannelDeaf",
-    run: async (client, member, deafType) => {
+    run: async (client, member) => {
         if(!member.voice.channel) return;
         
         await endVoiceActivity(client, member);

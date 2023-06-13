@@ -1,7 +1,6 @@
-import { TextChannel } from "discord.js";
 import { Button } from "../interfaces";
 import { withGuildLocale } from "../modules/locale";
-import { getCommitsMessagePayload, sweepTextChannel } from "../modules/messages";
+import { getCommitsMessagePayload } from "../modules/messages";
 import { updateUserStatistics } from "../modules/user";
 
 const commits: Button = {

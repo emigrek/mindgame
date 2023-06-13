@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 export const database: Module = {
     name: "database",
-    run: async (client) => {
+    run: async () => {
         try {
             await mongoose.connect(config.mongoUri);
             mongoose.set('strictQuery', false);

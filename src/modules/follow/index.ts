@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import { Follow } from "../../interfaces/Follow";
 import followSchema from "../schemas/Follow";
 

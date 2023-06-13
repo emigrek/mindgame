@@ -1,9 +1,8 @@
 import ExtendedClient from "../client/ExtendedClient";
-import { Event, User } from "../interfaces";
+import { Event } from "../interfaces";
 import { REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js';
 import { updatePresence } from "../modules/presence/";
 import config from "../utils/config";
-import moment from "moment";
 import { validatePresenceActivities, validateVoiceActivities } from "../modules/activity";
 import { syncEphemeralChannelMessages } from "../modules/ephemeral-channel";
 

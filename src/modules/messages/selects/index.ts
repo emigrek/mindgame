@@ -1,4 +1,4 @@
-import { SelectMenuOptionBuilder, StringSelectMenuBuilder, TextChannel } from "discord.js";
+import { StringSelectMenuBuilder, TextChannel } from "discord.js";
 import ExtendedClient from "../../../client/ExtendedClient";
 import { SelectMenuOption, Sorting } from "../../../interfaces";
 

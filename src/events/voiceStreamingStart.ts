@@ -4,7 +4,7 @@ import { getVoiceActivity } from "../modules/activity";
 
 export const voiceStreamingStart: Event = {
     name: "voiceStreamingStart",
-    run: async (client, member, voiceChannel) => {
+    run: async (client, member) => {
         const voiceActivity = await getVoiceActivity(member) as VoiceActivity & Document;
         if (!voiceActivity) return;
         

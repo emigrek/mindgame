@@ -3,7 +3,7 @@ import { deleteCachedMessages } from "../modules/ephemeral-channel";
 
 export const minute: Event = {
     name: "minute",
-    run: async (client) => {
+    run: async () => {
         await deleteCachedMessages();
     }
 }

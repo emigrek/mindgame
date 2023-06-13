@@ -1,14 +1,13 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, Embed, StringSelectMenuInteraction, GuildAuditLogs } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { Guild as GuildInterface, Select, SelectMenuOption, Sorting, User as DatabaseUser } from "../../interfaces";
+import { Guild as GuildInterface, SelectMenuOption, Sorting, User as DatabaseUser } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { runMask, sortings } from "../user/sortings";
-
 import moment from "moment";
 import Vibrant = require('node-vibrant');
 import chroma = require('chroma-js');
@@ -16,7 +15,7 @@ import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, 
 import { getRanking, getRankingPagesCount, getUser } from "../user";
 import { getMemberColorRole } from "../roles";
 import messageSchema from "../schemas/Message";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 
 interface ImageHexColors {
     Vibrant: string;

@@ -1,11 +1,11 @@
-import { Guild, GuildMember, PresenceUpdateStatus } from "discord.js";
+import { PresenceUpdateStatus } from "discord.js";
 import { Event } from "../interfaces";
 import { endPresenceActivity, startPresenceActivity } from "../modules/activity";
 
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
     run: async (client, oldPresence, newPresence) => {
-        const { guild, member } = newPresence;
+        const { member } = newPresence;
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence?.status;
 

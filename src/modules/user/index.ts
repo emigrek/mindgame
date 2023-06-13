@@ -1,5 +1,5 @@
-import mongoose, { Document, SortOrder } from "mongoose";
-import { User, Guild, EmbedField, Embed } from "discord.js";
+import mongoose, { Document } from "mongoose";
+import { User, Guild } from "discord.js";
 import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "../../interfaces";
 import userSchema from "../schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";

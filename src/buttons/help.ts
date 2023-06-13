@@ -1,7 +1,6 @@
 import { Button } from "../interfaces";
-import { getGuild } from "../modules/guild";
 import { withGuildLocale } from "../modules/locale";
-import { getHelpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload } from "../modules/messages";
+import { getHelpMessagePayload } from "../modules/messages";
 
 const help: Button = {
     customId: `help`,

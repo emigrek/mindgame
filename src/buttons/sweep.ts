@@ -1,6 +1,5 @@
 import { TextChannel } from "discord.js";
 import { Button } from "../interfaces";
-import { withGuildLocale } from "../modules/locale";
 import { sweepTextChannel } from "../modules/messages";
 
 const sweep: Button = {

@@ -3,7 +3,7 @@ import { clearExperience } from "../modules/user";
 
 export const yearly: Event = {
     name: "yearly",
-    run: async (client) => {
+    run: async () => {
         await clearExperience();
     }
 }
