@@ -254,11 +254,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
                     <span class="bottom-1 right-2 absolute w-6 h-6 bg-[${presenceActivityColor}] rounded-full"></span>
                 </div> 
                 <div class="flex flex-col">
-                    <div class="text-2xl text-white font-medium">${user.tag.slice(0, -5)}</div>
-                    <div class="flex flex-row items-center text-white/60">
-                        <div>#</div>
-                        <div>${user.tag.slice(-4)}</div>
-                    </div>
+                    <div class="text-2xl text-white font-medium">${user.tag.split('#').shift()}</div>
                     ${ voiceActivityGuild ? 
                         `
                         <div class="flex items-center mt-2">

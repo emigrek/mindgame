@@ -1,7 +1,6 @@
 import { Event } from "../interfaces";
 import { ready } from "./ready";
 import { guildCreate } from "./guildCreate";
-import { guildDelete } from "./guildDelete";
 import { interactionCreate } from "./interactionCreate";
 import { userAvatarUpdate } from "./userAvatarUpdate";
 import { userUsernameUpdate } from "./userUsernameUpdate";
@@ -36,7 +35,6 @@ import { channelDelete } from "./channelDelete";
 const events: Event[] = [
     ready,
     guildCreate,
-    guildDelete,
     interactionCreate,
     userAvatarUpdate,
     userUsernameUpdate,
