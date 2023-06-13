@@ -6,10 +6,13 @@ import { getLastVoiceActivity } from "../modules/activity";
 import { getFollowers } from "../modules/follow";
 import { getColorInt, useImageHex } from "../modules/messages";
 import { getUser } from "../modules/user";
+import { withGuildLocale } from "../modules/locale";
 
 export const userBackFromLongVoiceBreak: Event = {
     name: "userBackFromLongVoiceBreak",
     run: async (client: ExtendedClient, member: GuildMember) => {
+        await withGuildLocale(client, member.guild);
+
         const sourceUser = await getUser(member.user);
         if(!sourceUser) return;
 
@@ -31,7 +34,7 @@ export const userBackFromLongVoiceBreak: Event = {
                     icon_url: member.guild.iconURL({ extension: "png", size: 256 })!,
                     url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
                 },
-                title: client.i18n.__mf("follow.followNotificationTitle", { name: member.guild.name, tag: member.user.tag }),
+                title: member.user.username,
                 description: client.i18n.__mf("follow.followNotificationDescription", { time: unix }),
                 thumbnail: {
                     url: avatar
