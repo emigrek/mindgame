@@ -323,7 +323,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
         return user.userId === interaction.user!.id;
     };
     const fields: EmbedField[] = users.map((user: (DatabaseUser & mongoose.Document), index) => ({
-        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag} ${isInteractionCaller(user) ? client.i18n.__("ranking.you") : ""}`,
+        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag.split('#').shift()} ${isInteractionCaller(user) ? client.i18n.__("ranking.you") : ""}`,
         value: `\`\`\`${runMask(client, sorting.mask, user)}\`\`\``,
         inline: true
     }));
