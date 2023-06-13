@@ -16,7 +16,7 @@ export const ranking: Command = {
             commands: 1
         });
 
-        const sorting = await getSortingByType(defaultType)
+        const sorting = getSortingByType(defaultType);
         const page = await findUserRankingPage(client, sorting, interaction.user!);
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction, sorting, page);
         await interaction.followUp({ ...rankingMessagePayload, ephemeral: true });
