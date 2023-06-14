@@ -26,6 +26,7 @@
     "@types/chroma-js": "^2.1.4",
     "@types/i18n": "^0.13.6",
     "@types/node": "^18.11.10",
+    "@types/node-cron": "^3.0.7",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
     "eslint": "^8.42.0",
@@ -35,9 +36,6 @@
   },
   "dependencies": {
     "@octokit/rest": "^19.0.5",
-    "@sefinek/random-emoji": "^1.4.5",
-    "@types/node-cron": "^3.0.6",
-    "@vibrant/types": "^3.2.1-alpha.1",
     "axios": "^1.2.1",
     "canvas": "^2.10.2",
     "chroma-js": "^2.4.2",
