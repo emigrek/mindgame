@@ -102,7 +102,13 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
 
     await Promise.all(syncPromises)
         .catch(error => console.log("Error syncing ephemeral channel messages: ", error))
-        .finally(() => console.log(ephemeralChannelMessageCache.getCache()));
+        .finally(() => {
+            const cache = ephemeralChannelMessageCache.getCache();
+            const channels = Array.from(cache.keys());
+            const messages = cache.map((messages) => messages.length).reduce((a, b) => a + b, 0);
+
+            console.log(`[Ephemeral Channel] Synced ${messages} messages in ${channels.length} ephemeral channels.`);
+        });
 }
 
 const isMessageCacheable = async (message: Message): Promise<boolean> => {
