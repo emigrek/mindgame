@@ -9,6 +9,7 @@ import moment from "moment";
 import { updateUserStatistics } from "../user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "../../interfaces";
 import { getGuild } from "../guild";
+import config from "../../utils/config";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -30,6 +31,10 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
     if(diffDays < 1) {
         return false;
     }
+
+    await updateUserStatistics(client, member.user, {
+        exp: parseInt(config.dailyReward)
+    });
 
     await client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
 

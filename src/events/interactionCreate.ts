@@ -1,4 +1,5 @@
 import { Event } from "../interfaces";
+import config from "../utils/config";
 
 export const interactionCreate: Event = {
     name: "interactionCreate",
@@ -14,22 +15,18 @@ export const interactionCreate: Event = {
             }
         }
 
-        if (interaction.isCommand()) {
+        if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;
 
             if (command.options?.ownerOnly) {
-                if (!process.env.OWNER_ID) {
-                    interaction.reply({ content: `If you are the bot owner, please set the OWNER_ID environment variable.`, ephemeral: true });
-                    return;
-                }
-                if (process.env.OWNER_ID !== interaction.user.id) {
+                if (config.ownerId !== interaction.user.id) {
                     interaction.reply({ content: `You are not the bot owner.`, ephemeral: true });
                     return;
                 }
             }
 
-            client.commands.get(interaction.commandName)?.execute(client, interaction);
+            command.execute(client, interaction);
         }
         if (interaction.isAnySelectMenu()) {
             client.selects.get(interaction.customId)?.run(client, interaction);
