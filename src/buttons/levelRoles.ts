@@ -9,7 +9,6 @@ const levelRoles: Button = {
         if(!interaction.guild) return;
         await interaction.deferUpdate();
 
-        
         const syncSuccess = await syncGuildLevelRoles(client, interaction, interaction.guild);
         if(syncSuccess) {
             await setLevelRoles(interaction.guild);

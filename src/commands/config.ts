@@ -1,5 +1,5 @@
 import { Command } from "../interfaces";
-import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload } from "../modules/messages";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord.js";
 import { updateUserStatistics } from "../modules/user";

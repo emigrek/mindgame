@@ -3,7 +3,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { Guild as GuildInterface, SelectMenuOption, Sorting, User as DatabaseUser } from "../../interfaces";
+import { SelectMenuOption, Sorting } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
@@ -17,6 +17,7 @@ import { getMemberColorRole } from "../roles";
 import messageSchema from "../schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "../schemas/User";
+import { VoiceActivityDocument } from "../schemas/VoiceActivity";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -216,7 +217,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 const getCommitsMessagePayload = async (client: ExtendedClient) => {
     const packageJsonRepoUrl = (await import("../../../package.json")).repository.url;
     const repo = packageJsonRepoUrl.split("/").slice(-2).join("/");
-    const commits = await getLastCommits(repo, 10).catch(e => {
+    const commits = await getLastCommits(repo, 10).catch(() => {
         return null;
     });
 
@@ -422,6 +423,30 @@ const getErrorMessagePayload = (client: ExtendedClient) => {
     };
 }
 
+const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMember, lastActivity: VoiceActivityDocument) => {
+    const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
+    const imageHex = await useImageHex(avatar);
+    const color = getColorInt(imageHex.Vibrant);
+
+    const activityEndMoment = lastActivity ? lastActivity.to ? moment(lastActivity.to) : moment() : moment()
+    const unix = activityEndMoment.unix();
+
+    const embed = new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({
+            name: member.guild.name,
+            iconURL: member.guild.iconURL({ extension: "png", size: 256 })!,
+            url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
+        })
+        .setTitle(member.user.username)
+        .setDescription(client.i18n.__mf("follow.followNotificationDescription", { time: unix }))
+        .setThumbnail(avatar);
+    
+    return {
+        embeds: [embed]
+    }
+};
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary = true) => {
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild || !sourceGuild.channelId) return null;
@@ -527,4 +552,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel, getErrorMessagePayload };
+export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel, getErrorMessagePayload, getFollowMessagePayload };

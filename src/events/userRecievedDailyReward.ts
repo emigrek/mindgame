@@ -17,12 +17,12 @@ export const userRecievedDailyReward: Event = {
         const dailyRewardMessagePayload = await getDailyRewardMessagePayload(client, user, guild, next);
         if(!dailyRewardMessagePayload) return;
         
-        try {
-            const message = await defaultChannel.send(dailyRewardMessagePayload);
-            
-            await createMessage(message, user.id, "dailyRewardMessage");
-        } catch (error) {
-            console.log(error);
-        }
+        await defaultChannel.send(dailyRewardMessagePayload)
+            .then(async message => {
+                await createMessage(message, user.id, "dailyRewardMessage");
+            })
+            .catch(error => {
+                console.log("Error while sending daily reward message: ", error);
+            });
     }
 }

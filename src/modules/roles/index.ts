@@ -1,7 +1,6 @@
 import { ButtonInteraction, Guild, GuildMember, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { getGuild, getGuilds, setLevelRolesHoist } from "../guild";
-import { sendToDefaultChannel } from "../messages";
 import { getUser } from "../user";
 import { LevelTreshold } from "./tresholds";
 import { levelTresholds } from "./tresholds";
@@ -51,7 +50,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
         });
 
         return await Promise.all(creationPromise)
-            .catch(async (error) => {
+            .catch(async () => {
                 await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
                 return null;
             })
@@ -65,7 +64,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
         });
 
         return await Promise.all(deletionPromise)
-            .catch(async (error) => {
+            .catch(async () => {
                 await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
                 return null;
             })
@@ -89,7 +88,7 @@ const syncGuildLevelRolesHoisting = async (client: ExtendedClient, interaction: 
     });
 
     return await Promise.all(hoistingPromise)
-        .catch(async (error) => {
+        .catch(async () => {
             await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
             return null;
         })

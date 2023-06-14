@@ -1,4 +1,4 @@
-import { getErrorMessagePayload, getRankingMessagePayload } from "../modules/messages";
+import { getRankingMessagePayload } from "../modules/messages";
 import { Select } from "../interfaces/Select";
 import { findUserRankingPage } from "../modules/user";
 import { StringSelectMenuInteraction } from "discord.js";

@@ -1,10 +1,14 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { EmbedBuilder } from "discord.js";
+import { inspect } from "util";
 
 const clean = async (input: any, depth: number) => {
-    if (input instanceof Promise) input = await input;
-    if (typeof input !== `string`) input = require(`util`).inspect(input, { depth: depth });
+    if (input instanceof Promise)
+        input = await input;
+    
+    if (typeof input !== `string`)
+        input = inspect(input, { depth });
 
     input = input
         .replace(/`/g, "`" + String.fromCharCode(8203))

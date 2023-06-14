@@ -4,7 +4,7 @@ import ExtendedClient from "../client/ExtendedClient";
 import { Event } from "../interfaces";
 import { getLastVoiceActivity } from "../modules/activity";
 import { getFollowers } from "../modules/follow";
-import { getColorInt, useImageHex } from "../modules/messages";
+import { getColorInt, getFollowMessagePayload, useImageHex } from "../modules/messages";
 import { getUser } from "../modules/user";
 import { withGuildLocale } from "../modules/locale";
 
@@ -20,30 +20,15 @@ export const userBackFromLongVoiceBreak: Event = {
         if(!followers) return;
 
         const lastActivity = await getLastVoiceActivity(member);
-        const last = lastActivity ? lastActivity.to ? moment(lastActivity.to) : moment() : moment()
-        const unix = last.unix();
+        if(!lastActivity) return;
 
         for(const follower of followers) {
-            const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
-            const imageHex = await useImageHex(avatar);
-            const color = getColorInt(imageHex.Vibrant);
-            const embed = {
-                color: color,
-                author: {
-                    name: member.guild.name,
-                    icon_url: member.guild.iconURL({ extension: "png", size: 256 })!,
-                    url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
-                },
-                title: member.user.username,
-                description: client.i18n.__mf("follow.followNotificationDescription", { time: unix }),
-                thumbnail: {
-                    url: avatar
-                }
-            }
+            const followMessage = await getFollowMessagePayload(client, member, lastActivity);
+
             const followerUser = await client.users.fetch(follower.sourceUserId);
             if(!followerUser) continue;
 
-            await followerUser.send({ embeds: [embed] });
+            await followerUser.send(followMessage);
         }
     }
 }

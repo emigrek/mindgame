@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import { User, Guild } from "discord.js";
 import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "../../interfaces";
 import userSchema, { UserDocument } from "../schemas/User";

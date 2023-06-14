@@ -1,7 +1,7 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { findUserRankingPage, updateUserStatistics } from "../modules/user";
-import { getErrorMessagePayload, getRankingMessagePayload } from "../modules/messages";
+import { getRankingMessagePayload } from "../modules/messages";
 import { getSortingByType } from "../modules/user/sortings";
 
 const defaultType = "exp";

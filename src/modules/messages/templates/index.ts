@@ -1,7 +1,6 @@
 import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.js";
 import { ImageHexColors } from "..";
 import ExtendedClient from "../../../client/ExtendedClient";
-import { Guild, User, VoiceActivity, PresenceActivity } from "../../../interfaces";
 import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getActivePeaks } from "../../activity";
 import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
