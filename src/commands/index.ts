@@ -5,6 +5,7 @@ import { color } from "./color";
 import { ranking } from "./ranking";
 import { help } from "./help";
 import { ephemeralChannel } from "./ephemeralChannel";
+import { evalCommand } from "./eval";
 
 const commands: Command[] = [
     config,
@@ -12,7 +13,8 @@ const commands: Command[] = [
     color,
     ranking,
     help,
-    ephemeralChannel
+    ephemeralChannel,
+    evalCommand
 ];
 
 export default commands;
