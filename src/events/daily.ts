@@ -21,8 +21,6 @@ export const daily: Event = {
             if(!channel) continue;
 
             const guildStatisticsPayload = await getStatisticsMessagePayload(client, guild);
-            if(!guildStatisticsPayload) continue;
-            
             await channel.send(guildStatisticsPayload);
         }
     }

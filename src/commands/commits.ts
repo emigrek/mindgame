@@ -19,12 +19,6 @@ export const commits: Command = {
         });
 
         const commitsMessagePayload = await getCommitsMessagePayload(client);
-        if(!commitsMessagePayload) {
-            const errorMessage = getErrorMessagePayload(client);
-            await interaction.followUp(errorMessage);
-            return;
-        }
-        
         await interaction.followUp(commitsMessagePayload);
     }
 }

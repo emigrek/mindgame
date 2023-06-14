@@ -14,7 +14,7 @@ const roleColorUpdate: Button = {
         await updateColorRole(client, interaction.member as GuildMember);
 
         const colorMessagePayload = await getColorMessagePayload(client, interaction);
-        await interaction.editReply({ ...colorMessagePayload });
+        await interaction.editReply(colorMessagePayload);
     }
 }
 

@@ -1,6 +1,6 @@
 import { withGuildLocale } from "../modules/locale";
 import { setDefaultChannelId } from "../modules/guild";
-import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload } from "../modules/messages";
 import { Select } from "../interfaces/Select";
 
 export const defaultChannelSelect: Select = {
@@ -13,12 +13,6 @@ export const defaultChannelSelect: Select = {
         await setDefaultChannelId(interaction.guild!, selected);
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        if(!configMessage) {
-            const errorMessage = getErrorMessagePayload(client);
-            await interaction.editReply(errorMessage);
-            return;
-        }
-
         await interaction.editReply(configMessage);
     }
 }

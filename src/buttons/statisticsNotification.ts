@@ -9,9 +9,7 @@ const statisticsNotification: Button = {
         await setStatisticsNotification(interaction.guild!);
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.editReply({
-            components: configMessage!.components
-        });
+        await interaction.editReply(configMessage);
     }
 }
 

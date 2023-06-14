@@ -6,16 +6,16 @@ import { syncGuildLevelRolesHoisting } from "../modules/roles";
 const levelRolesHoist: Button = {
     customId: `levelRolesHoist`,
     run: async (client, interaction) => {
-        if(!interaction.guild) return;
         await interaction.deferUpdate();
+        if(!interaction.guild) return;
 
-        await setLevelRolesHoist(interaction.guild);
-        await syncGuildLevelRolesHoisting(client, interaction.guild);
+        const syncSuccess = await syncGuildLevelRolesHoisting(client, interaction, interaction.guild);
+        if(syncSuccess) {
+            await setLevelRolesHoist(interaction.guild);
+        }
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild);
-        await interaction.editReply({
-            components: configMessage!.components
-        });
+        await interaction.editReply(configMessage);
     }
 }
 

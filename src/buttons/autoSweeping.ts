@@ -9,9 +9,7 @@ const autoSweeping: Button = {
         await setAutoSweeing(interaction.guild!);
         
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.editReply({
-            components: configMessage!.components
-        });
+        await interaction.editReply(configMessage);
     }
 }
 

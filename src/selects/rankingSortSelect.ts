@@ -15,12 +15,6 @@ export const rankingSortSelect: Select = {
         const page: number = await findUserRankingPage(client, sorting, interaction.user!, messageRankingSope ? interaction.guild! : undefined);
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction, sorting, page, messageRankingSope ? interaction.guild! : undefined);
-        if(!rankingMessagePayload) {
-            const errorMessage = getErrorMessagePayload(client);
-            await interaction.editReply(errorMessage);
-            return;
-        }
-
         await interaction.editReply(rankingMessagePayload);
     }
 }

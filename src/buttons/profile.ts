@@ -6,14 +6,14 @@ import { getMessage, getUserMessagePayload } from "../modules/messages";
 const profile: Button = {
     customId: `profile`,
     run: async (client, interaction) => {
-        await withGuildLocale(client, interaction.guild!);
         await interaction.deferReply({ ephemeral: true });
+        await withGuildLocale(client, interaction.guild!);
 
         const sourceMessage = await getMessage(interaction.message.id);
         const renderedUser = sourceMessage ? sourceMessage.targetUserId : interaction.user.id;
         
         const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction, renderedUser!);
-        await interaction.followUp({ ...profileMessagePayload, ephemeral: true });
+        await interaction.followUp(profileMessagePayload);
     }
 }
 

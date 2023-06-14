@@ -62,12 +62,12 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
     const sourceGuild = await getGuild(guild);
-    if(!sourceGuild) return null;
+    if(!sourceGuild) return getErrorMessagePayload(client);
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
         await owner?.send({ content: client.i18n.__("config.noValidChannels") });
-        return;
+        return getErrorMessagePayload(client);
     }
 
     const defaultChannelOptions = textChannels.map((channel) => {
@@ -164,7 +164,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     await withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild);
-    if(!sourceGuild) return null;
+    if(!sourceGuild) return getErrorMessagePayload(client);
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     const colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
@@ -179,7 +179,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user);
-    if(!sourceUser) return null;
+    if(!sourceUser) return getErrorMessagePayload(client);
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
 
     const embed = {
@@ -216,8 +216,11 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 const getCommitsMessagePayload = async (client: ExtendedClient) => {
     const packageJsonRepoUrl = (await import("../../../package.json")).repository.url;
     const repo = packageJsonRepoUrl.split("/").slice(-2).join("/");
-    const commits = await getLastCommits(repo, 10);
-    if(!commits) return null;
+    const commits = await getLastCommits(repo, 10).catch(e => {
+        return null;
+    });
+
+    if(!commits) return getErrorMessagePayload(client);
 
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
@@ -261,7 +264,7 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
     const sourceUser = await getUser(interaction.user);
-    if(!sourceUser) return null;
+    if(!sourceUser) return getErrorMessagePayload(client);
 
     const user = await client.users.fetch(sourceUser.userId, {
         force: true

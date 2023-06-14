@@ -1,6 +1,6 @@
 import { Select } from "../interfaces/Select";
 import { setLocale, withGuildLocale } from "../modules/locale";
-import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload } from "../modules/messages";
 
 export const localeSelect: Select = {
     customId: "localeSelect",
@@ -13,12 +13,6 @@ export const localeSelect: Select = {
         await withGuildLocale(client, interaction.guild!);
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        if(!configMessage) {
-            const errorMessage = getErrorMessagePayload(client);
-            await interaction.editReply(errorMessage);
-            return;
-        }
-
         await interaction.editReply(configMessage);
     }
 }

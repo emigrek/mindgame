@@ -5,13 +5,13 @@ import { getHelpMessagePayload } from "../modules/messages";
 const help: Button = {
     customId: `help`,
     run: async (client, interaction) => {
+        await interaction.deferReply({ ephemeral: true });
         if(interaction.guild) {
             await withGuildLocale(client, interaction.guild!);
         }
 
-        await interaction.deferReply({ ephemeral: true });
         const helpMesagePayload = await getHelpMessagePayload(client);
-        await interaction.followUp({ ...helpMesagePayload, ephemeral: true });
+        await interaction.followUp(helpMesagePayload);
     }
 }
 

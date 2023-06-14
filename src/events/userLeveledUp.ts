@@ -23,9 +23,8 @@ export const userLeveledUp: Event = {
             if(sourceGuild && (sG.guildId === sourceGuild.guildId)) {
                 const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
                 if(!channel) continue;
+                
                 const levelUpMesssagePayload = await getLevelUpMessagePayload(client, user, guild);
-                if(!levelUpMesssagePayload) continue;
-
                 const message = await channel.send(levelUpMesssagePayload);
                 await message.react("🎉");
                 

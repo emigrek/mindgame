@@ -21,12 +21,6 @@ export const config: Command = {
         });
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        if(!configMessage) {
-            const errorMessage = getErrorMessagePayload(client);
-            await interaction.followUp(errorMessage);
-            return;
-        }
-
         await interaction.followUp(configMessage);
     }
 }
