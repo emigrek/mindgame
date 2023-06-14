@@ -1,7 +1,7 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import { ContextMenu } from "../interfaces";
 import { withGuildLocale } from "../modules/locale";
-import { getUserMessagePayload } from "../modules/messages";
+import { getErrorMessagePayload, getUserMessagePayload } from "../modules/messages";
 
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
@@ -14,7 +14,13 @@ const profileContext: ContextMenu = {
         await interaction.deferReply({ ephemeral: true });
 
         const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction, interaction.targetId);
-        await interaction.followUp({ ...profileMessagePayload, ephemeral: true });
+        if(!profileMessagePayload) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.followUp(errorMessage);
+            return;
+        }
+
+        await interaction.followUp(profileMessagePayload);
     }
 };
 

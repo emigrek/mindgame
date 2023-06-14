@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, SchemaTimestampsConfig, Document } from 'mongoose';
 import { PresenceActivity } from '../../interfaces';
+
+export type PresenceActivityDocument = PresenceActivity & Document & SchemaTimestampsConfig;
 
 const presenceActivitySchema = new Schema<PresenceActivity>({
     userId: { type: String, required: true },

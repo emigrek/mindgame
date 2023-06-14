@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import { User, Guild } from "discord.js";
 import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "../../interfaces";
-import userSchema from "../schemas/User";
+import userSchema, { UserDocument } from "../schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
 import ExtendedClient from "../../client/ExtendedClient";
 
@@ -117,7 +117,7 @@ const setPublicTimeStats = async (user: User) => {
 }
 
 const updateUserStatistics = async (client: ExtendedClient, user: User, extendedStatisticsPayload: ExtendedStatisticsPayload, sourceGuild?: DatabaseGuild) => {
-    const userSource = await updateUser(user) as DatabaseUser & mongoose.Document;
+    const userSource = await updateUser(user) as UserDocument;
     const newExtendedStatistics: ExtendedStatistics = {
         level: userSource.stats.level + (extendedStatisticsPayload.level || 0),
         exp: userSource.stats.exp + (extendedStatisticsPayload.exp || 0),
@@ -196,7 +196,7 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
     return userSource;
 };
 
-const everyUser = async (client: ExtendedClient, callback: (user: DatabaseUser & Document) => void) => {
+const everyUser = async (client: ExtendedClient, callback: (user: UserDocument) => void) => {
     const users = await getUsers();
     for await (const user of users) {
         await callback(user);

@@ -1,6 +1,5 @@
 import { Guild, GuildMember, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
-import { Guild as DatabaseGuild, User as DatabaseUser } from "../../interfaces";
 import { getGuild, getGuilds } from "../guild";
 import { sendToDefaultChannel } from "../messages";
 import { getUser } from "../user";
@@ -34,7 +33,9 @@ const getMemberTresholdRole = (member: GuildMember) => {
 }
 
 const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
-    const sourceGuild = await getGuild(guild) as DatabaseGuild;
+    const sourceGuild = await getGuild(guild);
+    if (!sourceGuild) return null;
+
     const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
 
     if (!levelRoles.size) {
@@ -61,7 +62,8 @@ const syncGuildLevelRoles = async (client: ExtendedClient, guild: Guild) => {
 }
 
 const syncGuildLevelRolesHoisting = async (client: ExtendedClient, guild: Guild) => {
-    const sourceGuild = await getGuild(guild) as DatabaseGuild;
+    const sourceGuild = await getGuild(guild);
+    if (!sourceGuild) return null;
     const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
     if (!levelRoles.size) return null;
 
@@ -75,7 +77,7 @@ const syncGuildLevelRolesHoisting = async (client: ExtendedClient, guild: Guild)
 }
 
 const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Guild) => {
-    const sourceUser = await getUser(user) as DatabaseUser;
+    const sourceUser = await getUser(user);
     if (!sourceUser) return null;
 
     const member = guild.members.cache.get(sourceUser.userId);
@@ -107,8 +109,8 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
 }
 
 const assignLevelRolesInGuild = async (client: ExtendedClient, guild: Guild) => {
-    const sourceGuild = await getGuild(guild) as DatabaseGuild;
-    if (!sourceGuild.levelRoles) return null;
+    const sourceGuild = await getGuild(guild);
+    if (!sourceGuild || !sourceGuild.levelRoles) return null;
 
     const members = guild.members.cache;
     for await (const member of members.values()) {

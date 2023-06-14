@@ -14,6 +14,6 @@ export const help: Command = {
         });
 
         const helpMessage = await getHelpMessagePayload(client);
-        await interaction.followUp({ ...helpMessage, ephemeral: true });
+        await interaction.followUp(helpMessage);
     }
 }

@@ -1,4 +1,4 @@
-import { getRankingMessagePayload } from "../modules/messages";
+import { getErrorMessagePayload, getRankingMessagePayload } from "../modules/messages";
 import { Select } from "../interfaces/Select";
 import { findUserRankingPage } from "../modules/user";
 import { StringSelectMenuInteraction } from "discord.js";
@@ -13,7 +13,14 @@ export const rankingSortSelect: Select = {
         const messageRankingSope = interaction.message.embeds[0].title!.split(" ")[1].toLowerCase() == "guild" ? true : false;
         const sorting = await getSortingByType(selected);
         const page: number = await findUserRankingPage(client, sorting, interaction.user!, messageRankingSope ? interaction.guild! : undefined);
+
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction, sorting, page, messageRankingSope ? interaction.guild! : undefined);
+        if(!rankingMessagePayload) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.editReply(errorMessage);
+            return;
+        }
+
         await interaction.editReply(rankingMessagePayload);
     }
 }

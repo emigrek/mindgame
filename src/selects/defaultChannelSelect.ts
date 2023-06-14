@@ -1,22 +1,24 @@
 import { withGuildLocale } from "../modules/locale";
 import { setDefaultChannelId } from "../modules/guild";
-import { getConfigMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { Select } from "../interfaces/Select";
 
 export const defaultChannelSelect: Select = {
     customId: "defaultChannelSelect",
     run: async (client, interaction) => {
+        await withGuildLocale(client, interaction.guild!);
         await interaction.deferUpdate();
-        const guild = interaction.guild;
         const selected = interaction.values[0];
         
-        await setDefaultChannelId(guild!, selected);
+        await setDefaultChannelId(interaction.guild!, selected);
 
-        await withGuildLocale(client, guild!);
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.editReply({
-            files: configMessage!.files,
-            components: configMessage!.components
-        });
+        if(!configMessage) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.editReply(errorMessage);
+            return;
+        }
+
+        await interaction.editReply(configMessage);
     }
 }

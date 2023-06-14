@@ -16,10 +16,13 @@ export const daily: Event = {
 
             const guild = client.guilds.cache.get(sourceGuild.guildId);
             if(!guild) continue;
-            const guildStatisticsPayload = await getStatisticsMessagePayload(client, guild);
+
             const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
             if(!channel) continue;
 
+            const guildStatisticsPayload = await getStatisticsMessagePayload(client, guild);
+            if(!guildStatisticsPayload) continue;
+            
             await channel.send(guildStatisticsPayload);
         }
     }

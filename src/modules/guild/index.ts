@@ -1,12 +1,11 @@
 import { Guild } from "discord.js";
 import mongoose from "mongoose";
 import ExtendedClient from "../../client/ExtendedClient";
-import { Guild as DatabaseGuild } from "../../interfaces"
-import GuildSchema from "../schemas/Guild";
+import GuildSchema, { GuildDocument } from "../schemas/Guild";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);
 
-const createGuild = async (guild: Guild) => {
+const createGuild = async (guild: Guild): Promise<GuildDocument> => {
     const exists = await GuildModel.findOne({ guildId: guild.id });
     if(exists) return exists;
 
@@ -15,7 +14,7 @@ const createGuild = async (guild: Guild) => {
     return newGuild;
 }
 
-const deleteGuild = async (guild: Guild) => {
+const deleteGuild = async (guild: Guild): Promise<boolean | null> => {
     const guildToDelete = await GuildModel.findOne({ guildId: guild.id });
 
     if(!guildToDelete) return null;
@@ -24,19 +23,19 @@ const deleteGuild = async (guild: Guild) => {
     return true;
 }
 
-const getGuild = async (guild: Guild) => {
+const getGuild = async (guild: Guild): Promise<GuildDocument | null> => {
     const exist = await GuildModel.findOne({ guildId: guild.id });
     if(!exist) return null;
 
     return exist;
 }
 
-const getGuilds = async () => {
+const getGuilds = async (): Promise<GuildDocument[]> => {
     const guilds = await GuildModel.find();
     return guilds;
 }
 
-const setDefaultChannelId = async (guild: Guild, channelId: string) => {
+const setDefaultChannelId = async (guild: Guild, channelId: string): Promise<GuildDocument | null> => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
 
@@ -45,7 +44,7 @@ const setDefaultChannelId = async (guild: Guild, channelId: string) => {
     return guildToUpdate;
 }
 
-const setNotifications = async (guild: Guild) => {
+const setNotifications = async (guild: Guild): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
 
@@ -54,7 +53,7 @@ const setNotifications = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-const setStatisticsNotification = async (guild: Guild) => {
+const setStatisticsNotification = async (guild: Guild): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
 
@@ -63,7 +62,7 @@ const setStatisticsNotification = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-const setLevelRoles = async (guild: Guild) => {
+const setLevelRoles = async (guild: Guild): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
 
@@ -72,7 +71,7 @@ const setLevelRoles = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-const setLevelRolesHoist = async (guild: Guild) => {
+const setLevelRolesHoist = async (guild: Guild): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({ guildId: guild.id });
     if(!guildToUpdate) return null;
 
@@ -81,7 +80,7 @@ const setLevelRolesHoist = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-const setAutoSweeing = async (guild: Guild) => {
+const setAutoSweeing = async (guild: Guild): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({
         guildId: guild.id
     });
@@ -93,7 +92,7 @@ const setAutoSweeing = async (guild: Guild) => {
     return guildToUpdate;
 }
 
-const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild, databaseGuild: DatabaseGuild) => void) => {
+const everyGuild = async (client: ExtendedClient, callback: (discordGuild: Guild, databaseGuild: GuildDocument) => void) => {
     const guilds = await getGuilds();
 
     if(!guilds.length) return new Error("No guilds found in database");

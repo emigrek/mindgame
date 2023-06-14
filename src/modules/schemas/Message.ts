@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 import { Message } from '../../interfaces';
+
+export type MessageDocument = Message & Document;
 
 const reqString = { type: String, required: true };
 

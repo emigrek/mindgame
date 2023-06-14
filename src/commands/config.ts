@@ -1,5 +1,5 @@
 import { Command } from "../interfaces";
-import { getConfigMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord.js";
 import { updateUserStatistics } from "../modules/user";
@@ -21,6 +21,12 @@ export const config: Command = {
         });
 
         const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.followUp({ ...configMessage, ephemeral: true });
+        if(!configMessage) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.followUp(errorMessage);
+            return;
+        }
+
+        await interaction.followUp(configMessage);
     }
 }

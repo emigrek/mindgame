@@ -1,7 +1,7 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { updateUserStatistics } from "../modules/user";
-import { getCommitsMessagePayload } from "../modules/messages";
+import { getCommitsMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { withGuildLocale } from "../modules/locale";
 
 export const commits: Command = {
@@ -19,6 +19,12 @@ export const commits: Command = {
         });
 
         const commitsMessagePayload = await getCommitsMessagePayload(client);
-        await interaction.followUp({ ...commitsMessagePayload, ephemeral: true });
+        if(!commitsMessagePayload) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.followUp(errorMessage);
+            return;
+        }
+        
+        await interaction.followUp(commitsMessagePayload);
     }
 }

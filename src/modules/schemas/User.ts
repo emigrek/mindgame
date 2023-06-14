@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, SchemaTimestampsConfig, Document } from 'mongoose';
 import { User } from '../../interfaces';
+
+export type UserDocument = User & Document & SchemaTimestampsConfig;
 
 const reqString = { type: String, required: true };
 

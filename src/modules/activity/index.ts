@@ -1,8 +1,8 @@
 import { Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 
-import voiceActivitySchema from "../schemas/VoiceActivity";
-import presenceActivitySchema from "../schemas/PresenceActivity";
+import voiceActivitySchema, { VoiceActivityDocument } from "../schemas/VoiceActivity";
+import presenceActivitySchema, { PresenceActivityDocument } from "../schemas/PresenceActivity";
 
 import mongoose, { Document } from "mongoose";
 import moment from "moment";
@@ -53,14 +53,14 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
     return true;
 };
 
-const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel) => {
+const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel): Promise<VoiceActivityDocument | null> => {
     if(
         member.user.bot ||
         channel.equals(member.guild.afkChannel!)
-    ) return;
+    ) return null;
 
     const exists = await getVoiceActivity(member);
-    if(exists) return;
+    if(exists) return null;
 
     await checkForDailyReward(client, member);
     await checkLongVoiceBreak(client, member);
@@ -78,11 +78,11 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     return newVoiceActivity;
 }
 
-const startPresenceActivity = async (client: ExtendedClient, member: GuildMember, presence: Presence) => {
-    if(member.user.bot) return;
+const startPresenceActivity = async (client: ExtendedClient, member: GuildMember, presence: Presence): Promise<PresenceActivityDocument | null> => {
+    if(member.user.bot) return null;
     
     const exists = await getPresenceActivity(member);
-    if(exists) return;
+    if(exists) return null;
 
     const newPresenceActivity = new presenceActivityModel({
         userId: member.id,
@@ -96,9 +96,9 @@ const startPresenceActivity = async (client: ExtendedClient, member: GuildMember
     return newPresenceActivity;
 };
 
-const endPresenceActivity = async (client: ExtendedClient, member: GuildMember) => {
+const endPresenceActivity = async (client: ExtendedClient, member: GuildMember): Promise<PresenceActivityDocument | null> => {
     const exists = await getPresenceActivity(member);
-    if(!exists) return;
+    if(!exists) return null;
 
     exists.to = moment().toDate();
     const duration = moment(exists.to).diff(moment(exists.from), "seconds");
@@ -124,9 +124,9 @@ const endPresenceActivity = async (client: ExtendedClient, member: GuildMember) 
     return exists;
 }
 
-const endVoiceActivity = async (client: ExtendedClient, member: GuildMember) => {
+const endVoiceActivity = async (client: ExtendedClient, member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await getVoiceActivity(member);
-    if(!exists) return;
+    if(!exists) return null;
 
     exists.to = moment().toDate();
     await exists.save();
@@ -273,7 +273,7 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
     return data;
 };
 
-const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date): Promise<VoiceActivityDocument[]> => {
     const activities = await voiceActivityModel.find({
         guildId: guild.guildId,
         from: {
@@ -288,7 +288,7 @@ const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, en
     return activities;
 }
 
-const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date) => {
+const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date): Promise<PresenceActivityDocument[]> => {
     const activities = await presenceActivityModel.find({
         guildId: guild.guildId,
         from: {
@@ -303,37 +303,37 @@ const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date,
     return activities;
 }
 
-const getVoiceActivity = async (member: GuildMember) => {
+const getVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
 };
 
-const getLastVoiceActivity = async (member: GuildMember) => {
+const getLastVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const last = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id }).sort({ to: -1 });
     return last;
 };
 
-const getUserVoiceActivity = async (user: DatabaseUser) => {
+const getUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDocument | null> => {
     const exists = await voiceActivityModel.findOne({ userId: user.userId, to: null });
     return exists;
 }
 
-const getPresenceActivity = async (member: GuildMember) => {
+const getPresenceActivity = async (member: GuildMember): Promise<PresenceActivityDocument | null> => {
     const exists = await presenceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
     return exists;
 }
 
-const getUserPresenceActivity = async (user: DatabaseUser) => {
+const getUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActivityDocument | null> => {
     const exists = await presenceActivityModel.findOne({ userId: user.userId, to: null });
     return exists;
 }
 
-const getGuildActiveVoiceActivities = async (guild: Guild) => {
+const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivityDocument[]> => {
     const activities = await voiceActivityModel.find({ guildId: guild.id, to: null });
     return activities;
 };
 
-const getPresenceActivityColor = (activity: PresenceActivity) => {
+const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     const colors = [
         {
             name: 'online',

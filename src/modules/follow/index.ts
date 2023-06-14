@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
-import { Follow } from "../../interfaces/Follow";
-import followSchema from "../schemas/Follow";
+import followSchema, { FollowDocument } from "../schemas/Follow";
 
 const FollowModel = mongoose.model("Follow", followSchema);
 
-const getFollow = async (sourceUserId: string, targetUserId: string): Promise<(Follow & mongoose.Document) | null> => {
+const getFollow = async (sourceUserId: string, targetUserId: string): Promise<FollowDocument | null> => {
     const follow = await FollowModel.findOne({ sourceUserId, targetUserId });
     return follow;
 };
 
-const createFollow = async (sourceUserId: string, targetUserId: string) => {
+const createFollow = async (sourceUserId: string, targetUserId: string): Promise<FollowDocument | null> => {
     const follow = await getFollow(sourceUserId, targetUserId);
     if(follow) return null;
 
@@ -23,17 +22,17 @@ const deleteFollow = async (sourceUserId: string, targetUserId: string): Promise
     return true;
 };
 
-const getFollowers = async (userId: string): Promise<(Follow & mongoose.Document)[]> => {
+const getFollowers = async (userId: string): Promise<FollowDocument[]> => {
     const followers = await FollowModel.find({ targetUserId: userId });
     return followers;
 }
 
-const getFollowing = async (userId: string): Promise<(Follow & mongoose.Document)[]> => {
+const getFollowing = async (userId: string): Promise<FollowDocument[]> => {
     const following = await FollowModel.find({ sourceUserId: userId });
     return following;
 };
 
-const getMutuals = async (userId: string): Promise<(Follow & mongoose.Document)[]> => {
+const getMutuals = async (userId: string): Promise<FollowDocument[]> => {
     const followers = await getFollowers(userId);
     const following = await getFollowing(userId);
 

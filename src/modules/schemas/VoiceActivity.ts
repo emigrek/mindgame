@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, Document, SchemaTimestampsConfig } from 'mongoose';
 import { VoiceActivity } from '../../interfaces';
+
+export type VoiceActivityDocument = VoiceActivity & Document & SchemaTimestampsConfig;
 
 const reqString = { type: String, required: true };
 

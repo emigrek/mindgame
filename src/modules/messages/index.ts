@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
@@ -16,6 +16,7 @@ import { getRanking, getRankingPagesCount, getUser } from "../user";
 import { getMemberColorRole } from "../roles";
 import messageSchema from "../schemas/Message";
 import mongoose from "mongoose";
+import { UserDocument } from "../schemas/User";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -60,8 +61,9 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
-    const sourceGuild = await getGuild(guild) as GuildInterface;
-    const currentDefault = textChannels.find((channel) => channel.id == sourceGuild!.channelId);
+    const sourceGuild = await getGuild(guild);
+    if(!sourceGuild) return null;
+    const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
         await owner?.send({ content: client.i18n.__("config.noValidChannels") });
@@ -121,9 +123,9 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
 }
 
 const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUserId: string) => {
-    const sourceUser = await getUser(interaction.user) as DatabaseUser;
+    const sourceUser = await getUser(interaction.user);
     const targetUser = client.users.cache.get(targetUserId)!;
-    const sourceTargetUser = await getUser(targetUser) as DatabaseUser;
+    const sourceTargetUser = await getUser(targetUser);
 
     if (!sourceUser || !sourceTargetUser) {
         return {
@@ -161,7 +163,8 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     await withGuildLocale(client, guild);
-    const sourceGuild = await getGuild(guild) as GuildInterface;
+    const sourceGuild = await getGuild(guild);
+    if(!sourceGuild) return null;
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     const colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
@@ -175,7 +178,8 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
     await withGuildLocale(client, guild);
 
-    const sourceUser = await getUser(user) as DatabaseUser;
+    const sourceUser = await getUser(user);
+    if(!sourceUser) return null;
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
 
     const embed = {
@@ -213,6 +217,8 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     const packageJsonRepoUrl = (await import("../../../package.json")).repository.url;
     const repo = packageJsonRepoUrl.split("/").slice(-2).join("/");
     const commits = await getLastCommits(repo, 10);
+    if(!commits) return null;
+
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
         value: `\`\`\`${commit.commit.message}\`\`\`[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
@@ -254,7 +260,9 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 }
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
-    const sourceUser = await getUser(interaction.user) as DatabaseUser;
+    const sourceUser = await getUser(interaction.user);
+    if(!sourceUser) return null;
+
     const user = await client.users.fetch(sourceUser.userId, {
         force: true
     });
@@ -318,11 +326,11 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
     if (interaction.guild) {
         await withGuildLocale(client, interaction.guild);
     }
-    const users = await getRanking(client, sorting, page, guild) as (DatabaseUser & mongoose.Document)[];
-    const isInteractionCaller = (user: DatabaseUser & mongoose.Document): boolean => {
+    const users = await getRanking(client, sorting, page, guild);
+    const isInteractionCaller = (user: UserDocument): boolean => {
         return user.userId === interaction.user!.id;
     };
-    const fields: EmbedField[] = users.map((user: (DatabaseUser & mongoose.Document), index) => ({
+    const fields: EmbedField[] = users.map((user: UserDocument, index) => ({
         name: `${index + 1 + ((page - 1) * 10)}. ${user.tag.split('#').shift()} ${isInteractionCaller(user) ? client.i18n.__("ranking.you") : ""}`,
         value: `\`\`\`${runMask(client, sorting.mask, user)}\`\`\``,
         inline: true
@@ -363,7 +371,9 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
     await withGuildLocale(client, guild);
 
-    const sourceUser = await getUser(user) as DatabaseUser;
+    const sourceUser = await getUser(user);
+    if(!sourceUser) return null;
+
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
     const reward = parseInt(process.env.DAILY_REWARD!);
 
@@ -398,9 +408,20 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     };
 };
 
+const getErrorMessagePayload = (client: ExtendedClient) => {
+    const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setTitle(client.i18n.__("error.title"))
+        .setDescription(client.i18n.__("error.description"));
+    
+    return {
+        embeds: [embed]
+    };
+}
+
 const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary = true) => {
-    const sourceGuild = await getGuild(guild) as GuildInterface;
-    if (!sourceGuild.channelId) return null;
+    const sourceGuild = await getGuild(guild);
+    if (!sourceGuild || !sourceGuild.channelId) return null;
 
     const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
     if (!defaultChannel) return null;
@@ -521,4 +542,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel };
+export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel, getErrorMessagePayload };

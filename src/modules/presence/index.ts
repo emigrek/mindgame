@@ -1,11 +1,11 @@
 import { ActivitiesOptions, PresenceData } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
-import { Guild as DatabaseGuild } from "../../interfaces";
 import { getGuilds } from "../guild";
 import { getUsers } from "../user";
 import presencesData from "./presences.json";
+import { GuildDocument } from "../schemas/Guild";
 
-const replacePlaceholders = async (activity: ActivitiesOptions, guilds: DatabaseGuild[]) => {
+const replacePlaceholders = async (activity: ActivitiesOptions, guilds: GuildDocument[]) => {
     const users = await getUsers();
 
     const guildCount = guilds.length;
@@ -21,7 +21,7 @@ const replacePlaceholders = async (activity: ActivitiesOptions, guilds: Database
     return activity;
 };
 
-const generatePresence = async (client: ExtendedClient, guilds: DatabaseGuild[]) => {
+const generatePresence = async (client: ExtendedClient, guilds: GuildDocument[]) => {
     const presences: PresenceData[] = JSON.parse(JSON.stringify(presencesData));
     const random = presences[Math.floor(Math.random() * presences.length)];
     

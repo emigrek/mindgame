@@ -1,9 +1,10 @@
 import ExtendedClient from "../../../client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
-import { Guild as DatabaseGuild, User } from "../../../interfaces";
 import { getMessage } from "..";
 import { getRandomAnimalEmoji } from "../../../utils/emojis";
+import { GuildDocument } from "../../schemas/Guild";
+import { UserDocument } from "../../schemas/User";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -14,7 +15,7 @@ const getExitButton = async (client: ExtendedClient) => {
     return exitButton;
 }
 
-const getNotificationsButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+const getNotificationsButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const notificationsButton = new ButtonBuilder()
         .setCustomId("notifications")
         .setLabel(client.i18n.__("config.notificationsButtonLabel"))
@@ -23,7 +24,7 @@ const getNotificationsButton = async (client: ExtendedClient, sourceGuild: Datab
     return notificationsButton;
 }
 
-const getStatisticsNotificationButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+const getStatisticsNotificationButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const statisticsNotificationButton = new ButtonBuilder()
         .setCustomId("statisticsNotification")
         .setLabel(client.i18n.__("config.statisticsNotificationButtonLabel"))
@@ -32,7 +33,7 @@ const getStatisticsNotificationButton = async (client: ExtendedClient, sourceGui
     return statisticsNotificationButton;
 }
 
-const getAutoSweepingButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+const getAutoSweepingButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const autoSweepingButton = new ButtonBuilder()
         .setCustomId("autoSweeping")
         .setLabel(client.i18n.__("config.autoSweepingButtonLabel"))
@@ -41,7 +42,7 @@ const getAutoSweepingButton = async (client: ExtendedClient, sourceGuild: Databa
     return autoSweepingButton;
 }
 
-const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const levelRolesButton = new ButtonBuilder()
         .setCustomId("levelRoles")
         .setLabel(client.i18n.__("config.levelRolesButtonLabel"))
@@ -50,7 +51,7 @@ const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: Database
     return levelRolesButton;
 }
 
-const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: DatabaseGuild) => {
+const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const levelRolesHoistButton = new ButtonBuilder()
         .setCustomId("levelRolesHoist")
         .setLabel(client.i18n.__("config.levelRolesHoistButtonLabel"))
@@ -59,7 +60,7 @@ const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: Dat
     return levelRolesHoistButton;
 }
 
-const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: User) => {
+const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: UserDocument) => {
     const publicProfileButton = new ButtonBuilder()
         .setCustomId("profileTimePublic")
         .setLabel(client.i18n.__("profile.timePublicButtonLabel"))

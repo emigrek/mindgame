@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
 import ExtendedClient from "../../client/ExtendedClient";
-import { User as DatabaseUser } from "../../interfaces";
 import { Sorting } from "../../interfaces/Sorting";
+import { UserDocument } from "../schemas/User";
 
 export const getSortingByType = (type: string): Sorting => {
     return sortings.find(s => s.type === type) ?? sortings[0];
 };
 
-export const runMask = (client: ExtendedClient, mask: string, user: DatabaseUser & mongoose.Document): string => {
+export const runMask = (client: ExtendedClient, mask: string, user: UserDocument): string => {
     return mask
         .replace("{stats.commands}", user.stats.commands.toString())
         .replace("{stats.level}", user.stats.level.toString())

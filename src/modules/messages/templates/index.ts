@@ -7,6 +7,8 @@ import { getLevelRoleTreshold } from "../../roles";
 import { getUserRank, levelToExp } from "../../user";
 import moment from "moment";
 import chroma from "chroma-js";
+import { UserDocument } from "../../schemas/User";
+import { GuildDocument } from "../../schemas/Guild";
 
 const embedSpacer = () => {
     return `
@@ -165,7 +167,7 @@ const getStatisticsTable = (data: ActivityPeakDay[], locale: string, colors: Ima
     `;
 }
 
-const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
+const guildConfig = async (client: ExtendedClient, sourceGuild: GuildDocument, colors: ImageHexColors) => {
     const guild = await client.guilds.fetch(sourceGuild.guildId);
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);    
 
@@ -226,18 +228,18 @@ const guildConfig = async (client: ExtendedClient, sourceGuild: Guild, colors: I
     `;
 }
 
-const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexColors, selfCall?: boolean) => {
-    const userRank = await getUserRank(user) as number;
+const userProfile = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
+    const userRank = await getUserRank(user);
     const first = userRank == 1;
 
     const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
     const userTreshold = await getLevelRoleTreshold(user.stats.level);
 
-    const voiceActivity = await getUserVoiceActivity(user) as VoiceActivity;
+    const voiceActivity = await getUserVoiceActivity(user);
     const voiceActivityGuild = voiceActivity ? client.guilds.cache.get(voiceActivity.guildId) : null;
     const active = voiceActivity ? true : false;
 
-    const presenceActivity = await getUserPresenceActivity(user) as PresenceActivity;
+    const presenceActivity = await getUserPresenceActivity(user);
     const presenceActivityColor = await getPresenceActivityColor(presenceActivity);
 
     return `
@@ -375,7 +377,7 @@ const userProfile = async (client: ExtendedClient, user: User, colors: ImageHexC
     `;
 }
 
-const guildStatistics = async (client: ExtendedClient, sourceGuild: Guild, colors: ImageHexColors) => {
+const guildStatistics = async (client: ExtendedClient, sourceGuild: GuildDocument, colors: ImageHexColors) => {
     const guild = client.guilds.cache.get(sourceGuild.guildId)!;
     const guildIconUrl = guild.iconURL({ extension: "png", size: 512 });
 

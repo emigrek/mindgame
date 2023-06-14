@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 import { Guild } from '../../interfaces';
+
+export type GuildDocument = Guild & Document;
 
 const channelId = { type: String, default: null };
 const reqString = { type: String, required: true };

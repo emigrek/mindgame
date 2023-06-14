@@ -7,13 +7,13 @@ import { ephemeralChannelMessageCache } from "./cache";
 
 const EphemeralChannelModel = mongoose.model("EphemeralChannel", ephemeralChannelSchema);
 
-const createEphemeralChannel = async (guildId: string, channelId: string, timeout: number) => {
+const createEphemeralChannel = async (guildId: string, channelId: string, timeout: number): Promise<EphemeralChannelDocument> => {
     const newEphemeralChannel = new EphemeralChannelModel({ guildId, channelId, timeout });
     await newEphemeralChannel.save();
     return newEphemeralChannel;
 }
 
-const editEphemeralChannel = async (channelId: string, timeout: number) => {
+const editEphemeralChannel = async (channelId: string, timeout: number): Promise<EphemeralChannelDocument | null> => {
     const ephemeralChannel = await EphemeralChannelModel.findOne({ channelId });
 
     if (!ephemeralChannel) {
@@ -36,17 +36,17 @@ const deleteEphemeralChannel = async (channelId: string): Promise<boolean> => {
     return true;
 }
 
-const getEphemeralChannel = async (channelId: string): Promise<(EphemeralChannelDocument) | null> => {
+const getEphemeralChannel = async (channelId: string): Promise<EphemeralChannelDocument | null> => {
     const ephemeralChannel = await EphemeralChannelModel.findOne({ channelId });
     return ephemeralChannel;
 }
 
-const getGuildsEphemeralChannels = async (guildId: string): Promise<(EphemeralChannelDocument)[]> => {
+const getGuildsEphemeralChannels = async (guildId: string): Promise<EphemeralChannelDocument[]> => {
     const ephemeralChannels = await EphemeralChannelModel.find({ guildId });
     return ephemeralChannels;
 }
 
-const getEphemeralChannels = async (): Promise<(EphemeralChannelDocument)[]> => {
+const getEphemeralChannels = async (): Promise<EphemeralChannelDocument[]> => {
     const ephemeralChannels = await EphemeralChannelModel.find();
     return ephemeralChannels;
 }
@@ -105,7 +105,7 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
         .finally(() => console.log(ephemeralChannelMessageCache.getCache()));
 }
 
-const isMessageCacheable = async (message: Message) => {
+const isMessageCacheable = async (message: Message): Promise<boolean> => {
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
     return !reactionUsers.length;
 }

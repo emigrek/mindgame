@@ -1,7 +1,7 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { findUserRankingPage, updateUserStatistics } from "../modules/user";
-import { getRankingMessagePayload } from "../modules/messages";
+import { getErrorMessagePayload, getRankingMessagePayload } from "../modules/messages";
 import { getSortingByType } from "../modules/user/sortings";
 
 const defaultType = "exp";
@@ -19,6 +19,12 @@ export const ranking: Command = {
         const sorting = getSortingByType(defaultType);
         const page = await findUserRankingPage(client, sorting, interaction.user!);
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction, sorting, page);
-        await interaction.followUp({ ...rankingMessagePayload, ephemeral: true });
+        if(!rankingMessagePayload) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.followUp(errorMessage);
+            return;
+        }
+
+        await interaction.followUp(rankingMessagePayload);
     }
 }

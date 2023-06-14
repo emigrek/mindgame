@@ -1,7 +1,7 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { updateUserStatistics } from "../modules/user";
-import { getColorMessagePayload } from "../modules/messages";
+import { getColorMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { withGuildLocale } from "../modules/locale";
 
 export const color: Command = {
@@ -17,6 +17,12 @@ export const color: Command = {
         });
 
         const colorMessagePayload = await getColorMessagePayload(client, interaction);
-        await interaction.followUp({ ...colorMessagePayload, ephemeral: true });
+        if(!colorMessagePayload) {
+            const errorMessage = getErrorMessagePayload(client);
+            await interaction.followUp(errorMessage);
+            return;
+        }
+
+        await interaction.followUp(colorMessagePayload);
     }
 }

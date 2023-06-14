@@ -15,6 +15,7 @@ export const userRecievedDailyReward: Event = {
         if(!defaultChannel) return;
 
         const dailyRewardMessagePayload = await getDailyRewardMessagePayload(client, user, guild, next);
+        if(!dailyRewardMessagePayload) return;
         
         try {
             const message = await defaultChannel.send(dailyRewardMessagePayload);
