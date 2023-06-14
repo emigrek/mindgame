@@ -32,8 +32,7 @@ export const evalCommand: Command = {
                 .setDescription(`Output depth`)
                 .setRequired(false)
                 .setMinValue(0)
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        ),
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
