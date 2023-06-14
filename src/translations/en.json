@@ -35,7 +35,7 @@
 	"follow.followed": "Successfully followed {tag}!\nYou'll now receive notifications when he join voice channel after break.",
 	"follow.alreadyFollowing": "You are already following {tag}.",
 	"follow.unfollowed": "Successfully unfollowed {tag}.",
-	"follow.followNotificationDescription": "just joined voice channel.\n\n\nLast <t:{time}:d>.",
+	"follow.followNotificationDescription": "just joined voice channel.\n\nLast <t:{time}:d>.",
 	"profile.unfollowButtonLabel": "Unfollow 🖤",
 	"profile.timePublicButtonLabel": "Public time statistics 👀",
 	"profile.visibilityNotification": "Only you can see this.",

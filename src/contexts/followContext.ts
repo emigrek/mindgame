@@ -8,8 +8,8 @@ const followContext: ContextMenu = {
         .setName(`Follow`)
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
-        if(interaction.user.id === interaction.targetId)
-            return;
+        // if(interaction.user.id === interaction.targetId)
+        //     return;
         if(interaction.guild) {
             await withGuildLocale(client, interaction.guild!);
         }
