@@ -8,12 +8,15 @@ const followContext: ContextMenu = {
         .setName(`Follow`)
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
-        // if(interaction.user.id === interaction.targetId)
-        //     return;
+        await interaction.deferReply({ ephemeral: true });
+
+        if(interaction.user.id === interaction.targetId)
+            return;
+
         if(interaction.guild) {
             await withGuildLocale(client, interaction.guild!);
         }
-        await interaction.deferReply({ ephemeral: true });
+        
         const follow = await createFollow(interaction.user.id, interaction.targetId);
         if(!follow) {
             await interaction.followUp({ content: client.i18n.__mf("follow.alreadyFollowing", {
@@ -21,6 +24,7 @@ const followContext: ContextMenu = {
             }), ephemeral: true });
             return;
         }
+
         await interaction.followUp({ content: client.i18n.__mf("follow.followed", {
             tag: `<@${interaction.targetId}>`
         }), ephemeral: true });
