@@ -83,5 +83,7 @@
 	"ephemeralChannel.notFound": "This channel is not ephemeral channel.",
 	"ephemeralChannel.limitReached": "You have reached the limit of ephemeral channels. Please delete some of them in order to create new.",
 	"textChannelOnly": "This feature can only be used in text channels.",
-	"guildOnly": "This feature can only be used in guilds."
+	"guildOnly": "This feature can only be used in guilds.",
+	"error.title": "Error",
+	"error.description": "Something went wrong. Please try again later."
 }
