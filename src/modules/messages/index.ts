@@ -62,7 +62,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
     const sourceGuild = await getGuild(guild);
-    if(!sourceGuild) return getErrorMessagePayload(client);
+    if (!sourceGuild) return getErrorMessagePayload(client);
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
@@ -164,7 +164,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     await withGuildLocale(client, guild);
     const sourceGuild = await getGuild(guild);
-    if(!sourceGuild) return getErrorMessagePayload(client);
+    if (!sourceGuild) return getErrorMessagePayload(client);
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     const colors: ImageHexColors = await useImageHex(guildIcon!);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
@@ -179,7 +179,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user);
-    if(!sourceUser) return getErrorMessagePayload(client);
+    if (!sourceUser) return getErrorMessagePayload(client);
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
 
     const embed = {
@@ -220,7 +220,7 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
         return null;
     });
 
-    if(!commits) return getErrorMessagePayload(client);
+    if (!commits) return getErrorMessagePayload(client);
 
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
@@ -264,7 +264,7 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
     const sourceUser = await getUser(interaction.user);
-    if(!sourceUser) return getErrorMessagePayload(client);
+    if (!sourceUser) return getErrorMessagePayload(client);
 
     const user = await client.users.fetch(sourceUser.userId, {
         force: true
@@ -375,7 +375,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     await withGuildLocale(client, guild);
 
     const sourceUser = await getUser(user);
-    if(!sourceUser) return null;
+    if (!sourceUser) return null;
 
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
     const reward = parseInt(process.env.DAILY_REWARD!);
@@ -416,7 +416,7 @@ const getErrorMessagePayload = (client: ExtendedClient) => {
         .setColor("Red")
         .setTitle(client.i18n.__("error.title"))
         .setDescription(client.i18n.__("error.description"));
-    
+
     return {
         embeds: [embed]
     };
@@ -440,33 +440,26 @@ const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, messag
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
     const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
-    let messages = new Collection<string, Message>();
-
-    try {
-        messages = await channel.messages.fetch({ limit: 50 });
-    } catch (e) {
-        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
-        setTimeout(async () => {
-            await missingPermissions.delete();
-        }, 5000);
-    }
+    const messages = await channel.messages.fetch({ limit: 50 })
+        .catch(e => {
+            console.log(`There was an error when fetching messages: ${e}`)
+            return new Collection<string, Message>();
+        });
 
     const messagesToDelete = messages.filter((message: Message) => {
-        const filter =
-            popularPrefixes.some(prefix => message.content.startsWith(prefix)) ||
+        return popularPrefixes.some(prefix => message.content.startsWith(prefix)) ||
             (message.author.bot && message.attachments && message.attachments.size == 0) ||
-            (message.author.bot && message.embeds.length)
-        return filter;
+            (message.author.bot && message.embeds.length);
     });
+
     let count = 0;
     const promises = messagesToDelete.map(async (message: Message) => {
         if (!message.deletable) return;
-
         await message.delete();
         count++;
     });
 
-    await Promise.all(promises);
+    await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
     await attachQuickButtons(client, channel);
     return count;
 };
@@ -476,16 +469,11 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
         await withGuildLocale(client, channel.guild!);
     }
 
-    let lastMessages = new Collection<string, Message>();
-
-    try {
-        lastMessages = await channel.messages.fetch({ limit: 50 });
-    } catch (e) {
-        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
-        setTimeout(async () => {
-            await missingPermissions.delete();
-        }, 5000);
-    }
+    const lastMessages = await channel.messages.fetch({ limit: 50 })
+        .catch(e => {
+            console.log(`There was an error when fetching messages: ${e}`)
+            return new Collection<string, Message>();
+        });
 
     const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
@@ -493,27 +481,21 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
 
     const quickButtonsRows = await getQuickButtonsRows(client, lastMessage);
 
-    for await (const message of clientLastMessages.values()) {
+    const clearComponentsPromises = clientLastMessages.map(async (message: Message) => {
         if (message.components.length > 0 && message.id != lastMessage.id) {
-            try {
-                await message.edit({ components: [] });
-            } catch (e) {
-                const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
-                setTimeout(async () => {
-                    await missingPermissions.delete();
-                }, 5000);
-            }
+            await message.edit({ components: [] });
         }
-    }
+    });
 
-    try {
-        await lastMessage.edit({ components: quickButtonsRows });
-    } catch (e) {
-        const missingPermissions = await channel.send(client.i18n.__("utils.missingPermissions"));
-        setTimeout(async () => {
-            await missingPermissions.delete();
-        }, 5000);
-    }
+    await Promise.all(clearComponentsPromises)
+        .catch(e => {
+            console.log(`There was an error when clearing components: ${e}`);
+        });
+
+    await lastMessage.edit({ components: quickButtonsRows })
+        .catch(e => {
+            console.log(`There was an error when editing the message: ${e}`);
+        });
 };
 
 const createMessage = async (message: Message, targetUserId: string | null, name: string | null) => {

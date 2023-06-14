@@ -1,6 +1,6 @@
 import { ButtonInteraction, Guild, GuildMember, Role, User } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
-import { getGuild, getGuilds } from "../guild";
+import { getGuild, getGuilds, setLevelRolesHoist } from "../guild";
 import { sendToDefaultChannel } from "../messages";
 import { getUser } from "../user";
 import { LevelTreshold } from "./tresholds";
@@ -50,26 +50,29 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
             return role;
         });
 
-        await Promise.all(creationPromise)
+        return await Promise.all(creationPromise)
             .catch(async (error) => {
                 await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
                 return null;
             })
             .finally(async () => {
+                await assignLevelRolesInGuild(client, guild);
                 return true;
             });
-        await assignLevelRolesInGuild(client, guild);
     } else {
         const deletionPromise = levelRoles.map(async (role: Role) => {
             return await role.delete();
         });
 
-        await Promise.all(deletionPromise)
+        return await Promise.all(deletionPromise)
             .catch(async (error) => {
                 await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
                 return null;
             })
             .finally(async () => {
+                if(sourceGuild.levelRolesHoist) {
+                    await setLevelRolesHoist(guild);
+                }
                 return true;
             });
     }
@@ -82,7 +85,7 @@ const syncGuildLevelRolesHoisting = async (client: ExtendedClient, interaction: 
     if (!levelRoles.size) return null;
 
     const hoistingPromise = levelRoles.map(async (role: Role) => {
-        return await role.setHoist(sourceGuild.levelRolesHoist);
+        return await role.setHoist(!sourceGuild.levelRolesHoist);
     });
 
     return await Promise.all(hoistingPromise)
@@ -127,9 +130,9 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
 
 const assignLevelRolesInGuild = async (client: ExtendedClient, guild: Guild) => {
     const sourceGuild = await getGuild(guild);
-    if (!sourceGuild || !sourceGuild.levelRoles) return null;
+    if (!sourceGuild) return null;
 
-    const members = guild.members.cache;
+    const members = await guild.members.fetch();
     for await (const member of members.values()) {
         const success = await assignUserLevelRole(client, member.user, guild);
         if (!success) continue;
