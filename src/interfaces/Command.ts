@@ -5,7 +5,12 @@ interface Run {
     (client: Client, interaction: ChatInputCommandInteraction, ...args: any[]): Promise<void>;
 }
 
+interface Options {
+    ownerOnly?: boolean;
+}
+
 export interface Command {
     data: any;
+    options?: Options;
     execute: Run;
 }

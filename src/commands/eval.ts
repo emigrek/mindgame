@@ -1,6 +1,6 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 const clean = async (input: any, depth: number) => {
     if (input instanceof Promise) input = await input;
@@ -33,21 +33,15 @@ export const evalCommand: Command = {
                 .setRequired(false)
                 .setMinValue(0)
         ),
+    options: {
+        ownerOnly: true
+    },
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
-        if (!process.env.OWNER_ID) {
-            await interaction.followUp({ content: `If you are the bot owner, please set the OWNER_ID environment variable.` });
-            return;
-        }
-
-        if (process.env.OWNER_ID !== interaction.user.id) {
-            await interaction.followUp({ content: `You are not the bot owner.` });
-            return;
-        }
-
         const code = interaction.options.getString(`code`);
         const depth = interaction.options.getInteger(`depth`);
+        
         if (!code) {
             await interaction.followUp({ content: `No code provided.` });
             return;
