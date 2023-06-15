@@ -46,7 +46,7 @@
 	"notifications.levelField": "Level",
 	"notifications.winsField": "Wins",
 	"notifications.dailyRewardTitle": "Daily reward",
-	"notifications.dailyRewardDescription": "<@{userId}> has claimed **daily reward**!\nNext daily reward in <t:{time}:R>.",
+	"notifications.dailyRewardDescription": "<@{userId}> has claimed **daily reward**!\nNext daily reward <t:{time}:R>.",
 	"notifications.dailyRewardField": "Reward",
 	"notifications.todayVoiceTimeField": "Today",
 	"notifications.weekVoiceTimeField": "Weekly voice time",

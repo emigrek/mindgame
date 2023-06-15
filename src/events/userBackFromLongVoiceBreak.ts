@@ -22,13 +22,15 @@ export const userBackFromLongVoiceBreak: Event = {
         const lastActivity = await getLastVoiceActivity(member);
         if(!lastActivity) return;
 
-        for(const follower of followers) {
+        const followNotifications = followers.map(async (follower) => {
             const followMessage = await getFollowMessagePayload(client, member, lastActivity);
-
             const followerUser = await client.users.fetch(follower.sourceUserId);
-            if(!followerUser) continue;
-
             await followerUser.send(followMessage);
-        }
+        });
+
+        await Promise.all(followNotifications)
+            .catch(error => {
+                console.log("Error while sending follow message: ", error);
+            });
     }
 }
