@@ -21,6 +21,18 @@ const timeoutVariants: APIApplicationCommandOptionChoice<number>[] = [
         name: "1 hour",
         value: 60
     },
+    {
+        name: "6 hours",
+        value: 360
+    },
+    {
+        name: "12 hours",
+        value: 720
+    },
+    {
+        name: "1 day",
+        value: 1440
+    }
 ];
 
 export default timeoutVariants;
