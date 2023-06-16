@@ -3,40 +3,45 @@ import ExtendedClient from "../../client/ExtendedClient";
 import { getGuilds } from "../guild";
 import { getUsers } from "../user";
 import presencesData from "./presences.json";
-import { GuildDocument } from "../schemas/Guild";
+import { getRandomAnimalEmoji } from "../../utils/emojis";
 
-const replacePlaceholders = async (activity: ActivitiesOptions, guilds: GuildDocument[]) => {
+interface PlaceholdersData {
+    guilds: number;
+    users: number;
+}
+
+const getPlaceholdersData = async (): Promise<PlaceholdersData> => {
+    const guilds = await getGuilds();
     const users = await getUsers();
 
-    const guildCount = guilds.length;
-    const userCount = users.length;
+    return {
+        guilds: guilds.length,
+        users: users.length
+    };
+};
 
-    const name = activity.name!
-        .replace(/{guilds}/g, guildCount.toString())
-        .replace(/{users}/g, userCount.toString());
+const replacePlaceholders = (activity: ActivitiesOptions, data: PlaceholdersData) => {
+    const { guilds, users } = data;
 
-    
-    activity.name = name;
+    activity.name = activity.name!
+        .replace(/{guilds}/g, guilds.toString())
+        .replace(/{users}/g, users.toString())
+        .replace(/{animal}/g, getRandomAnimalEmoji())
 
     return activity;
 };
 
-const generatePresence = async (client: ExtendedClient, guilds: GuildDocument[]) => {
+const updatePresence = async (client: ExtendedClient) => {
     const presences: PresenceData[] = JSON.parse(JSON.stringify(presencesData));
     const random = presences[Math.floor(Math.random() * presences.length)];
-    
-    if(random.activities) {
-        random.activities = await Promise.all(random.activities.map(async (activity: ActivitiesOptions) => {
-            return await replacePlaceholders(activity, guilds);
-        }));
-    }
-    
-    await client.user?.setPresence(random);
-};
 
-const updatePresence = async (client: ExtendedClient) => {
-    const guilds = await getGuilds();
-    await generatePresence(client, guilds);
+    const placeholders = await getPlaceholdersData();
+
+    random.activities = random.activities?.map((activity: ActivitiesOptions) =>
+        replacePlaceholders(activity, placeholders)
+    );
+
+    client.user?.setPresence(random);
 }
 
 export { updatePresence };

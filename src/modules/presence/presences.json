@@ -25,5 +25,14 @@
                 "type": 3
             }
         ]
+    },
+    {
+        "status": "idle",
+        "activities": [
+            {
+                "name": "/help {animal}",
+                "type": 3
+            }
+        ]
     }
 ]
