@@ -6,8 +6,7 @@ export const interactionCreate: Event = {
     run: async (client, interaction) => {
         const sourceInteraction = client.interactions.get(interaction.customId);
 
-        const locale = interaction.guild ? interaction.guild.preferredLocale : interaction.locale;
-        client.i18n.setLocale(locale);
+        client.i18n.setLocale(interaction.locale);
 
         if (sourceInteraction?.permissions) {
             if (!interaction.member.permissions.has(sourceInteraction.permissions)) {
