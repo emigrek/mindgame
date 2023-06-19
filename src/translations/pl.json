@@ -83,6 +83,7 @@
 	"ephemeralChannel.limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze. Usuń jeden z nich aby utworzyć nowy.",
 	"textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
 	"guildOnly": "Ta funkcja może zostać użyta tylko w gildiach.",
+	"ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
 	"error.title": "Błąd",
 	"error.description": "Coś poszło nie tak. Spróbuj ponownie później."
 }

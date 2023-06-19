@@ -6,9 +6,15 @@ const autoSweeping: Button = {
     customId: `autoSweeping`,
     run: async (client, interaction) => {
         await interaction.deferUpdate();
-        await setAutoSweeing(interaction.guild!);
+
+        if(!interaction.guild) {
+            await interaction.followUp(client.i18n.__("guildOnly"));
+            return;
+        }
+
+        await setAutoSweeing(interaction.guild);
         
-        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
+        const configMessage = await getConfigMessagePayload(client, interaction.guild);
         await interaction.editReply(configMessage);
     }
 }

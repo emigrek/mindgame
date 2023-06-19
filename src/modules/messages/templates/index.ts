@@ -401,7 +401,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: GuildDocumen
                 </div>
             </div>
             <div class="w-full rounded-b-lg h-[275px] shadow-lg text-white p-3 bg-[#202225]/70 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(voiceActivityPeaks, sourceGuild.locale, colors) }
+                ${ getStatisticsTable(voiceActivityPeaks, guild.preferredLocale, colors) }
             </div>
             <div class="mt-2 w-full rounded-t-lg bg-[#202225]/90 text-slate-50 py-4 px-5 space-x-2 flex items-center justify-between align-middle">
                 <div class="text-2xl">${client.i18n.__("statistics.presenceHeader")}</div>
@@ -412,7 +412,7 @@ const guildStatistics = async (client: ExtendedClient, sourceGuild: GuildDocumen
                 </div>
             </div>
             <div class="w-full h-[275px] rounded-b-lg shadow-lg text-white p-3 bg-[#202225]/70 flex items-center justify-center align-middle backdrop-blur-3xl">
-                ${ getStatisticsTable(presenceActivityPeaks, sourceGuild.locale, {
+                ${ getStatisticsTable(presenceActivityPeaks, guild.preferredLocale, {
                     DarkVibrant: "#3d679f",
                     Vibrant: "#3c94dc",
                 }) }

@@ -13,8 +13,8 @@ const ranking: Button = {
             commands: 1
         });
 
-        const sorting = await getSortingByType(defaultType);
-        const page = await findUserRankingPage(client, sorting, interaction.user!);
+        const sorting = getSortingByType(defaultType);
+        const page = await findUserRankingPage(client, sorting, interaction.user);
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction, sorting, page);
         await interaction.followUp(rankingMessagePayload);
     }

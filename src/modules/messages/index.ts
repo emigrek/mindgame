@@ -1,11 +1,10 @@
 import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
-import { withGuildLocale } from "../locale";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { SelectMenuOption, Sorting } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
-import { getChannelSelect, getLanguageSelect, getRankingSortSelect } from "./selects";
+import { getChannelSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { runMask, sortings } from "../user/sortings";
 import moment from "moment";
@@ -58,8 +57,6 @@ const useHtmlFile = async (html: string) => {
 }
 
 const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    await withGuildLocale(client, guild);
-
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
     const sourceGuild = await getGuild(guild);
@@ -86,29 +83,11 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
     const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
-    const locales = client.i18n.getLocales();
-    const currentLocale = client.i18n.getLocale();
-    const languageNames = new Intl.DisplayNames([currentLocale], {
-        type: 'language'
-    });
-    const languageOptions: SelectMenuOption[] = locales.map((locale) => {
-        return {
-            label: `${languageNames.of(locale)}`,
-            description: locale,
-            value: locale
-        }
-    });
-
-    const languageSelect = await getLanguageSelect(client, currentLocale, languageOptions);
-
-
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(channelSelect);
-    const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .setComponents(languageSelect);
-    const row3 = new ActionRowBuilder<ButtonBuilder>()
+    const row2 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(levelRolesButton, levelRolesHoistButton);
-    const row4 = new ActionRowBuilder<ButtonBuilder>()
+    const row3 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(notificationsButton, autoSweepingButton, statisticsNotificationButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
@@ -117,7 +96,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const file = await useHtmlFile(layoutMedium(guildConfigHtml, colors));
 
     return {
-        components: [row, row2, row3, row4],
+        components: [row, row2, row3],
         files: [file],
         ephemeral: true
     };
@@ -163,7 +142,8 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    await withGuildLocale(client, guild);
+    client.i18n.setLocale(guild.preferredLocale);
+    
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild) return getErrorMessagePayload(client);
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
@@ -177,7 +157,7 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
 };
 
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
-    await withGuildLocale(client, guild);
+    client.i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
     if (!sourceUser) return getErrorMessagePayload(client);
@@ -327,9 +307,6 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 };
 
 const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, sorting: Sorting, page: number, guild?: Guild) => {
-    if (interaction.guild) {
-        await withGuildLocale(client, interaction.guild);
-    }
     const users = await getRanking(client, sorting, page, guild);
     const isInteractionCaller = (user: UserDocument): boolean => {
         return user.userId === interaction.user!.id;
@@ -373,7 +350,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Com
 };
 
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
-    await withGuildLocale(client, guild);
+    client.i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
     if (!sourceUser) return null;
@@ -424,6 +401,8 @@ const getErrorMessagePayload = (client: ExtendedClient) => {
 }
 
 const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMember, lastActivity: VoiceActivityDocument) => {
+    client.i18n.setLocale(member.guild.preferredLocale);
+
     const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
     const imageHex = await useImageHex(avatar);
     const color = getColorInt(imageHex.Vibrant);
@@ -441,7 +420,7 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
         .setTitle(member.user.username)
         .setDescription(client.i18n.__mf("follow.followNotificationDescription", { time: unix }))
         .setThumbnail(avatar);
-    
+
     return {
         embeds: [embed]
     }
@@ -490,9 +469,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) =>
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
-    if (channel.guild) {
-        await withGuildLocale(client, channel.guild!);
-    }
+    client.i18n.setLocale(channel.guild.preferredLocale);
 
     const lastMessages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {

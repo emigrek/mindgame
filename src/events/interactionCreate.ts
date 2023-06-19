@@ -6,6 +6,9 @@ export const interactionCreate: Event = {
     run: async (client, interaction) => {
         const sourceInteraction = client.interactions.get(interaction.customId);
 
+        const locale = interaction.guild ? interaction.guild.preferredLocale : interaction.locale;
+        client.i18n.setLocale(locale);
+
         if (sourceInteraction?.permissions) {
             if (!interaction.member.permissions.has(sourceInteraction.permissions)) {
                 return interaction.reply({
@@ -21,7 +24,7 @@ export const interactionCreate: Event = {
 
             if (command.options?.ownerOnly) {
                 if (config.ownerId !== interaction.user.id) {
-                    interaction.reply({ content: `You are not the bot owner.`, ephemeral: true });
+                    interaction.reply({ content: client.i18n.__("ownerOnly"), ephemeral: true });
                     return;
                 }
             }

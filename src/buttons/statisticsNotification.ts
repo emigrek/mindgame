@@ -6,9 +6,14 @@ const statisticsNotification: Button = {
     customId: `statisticsNotification`,
     run: async (client, interaction) => {
         await interaction.deferUpdate();
-        await setStatisticsNotification(interaction.guild!);
+        if(!interaction.guild) {
+            await interaction.followUp(client.i18n.__("guildOnly"));
+            return;
+        }
+
+        await setStatisticsNotification(interaction.guild);
         
-        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
+        const configMessage = await getConfigMessagePayload(client, interaction.guild);
         await interaction.editReply(configMessage);
     }
 }

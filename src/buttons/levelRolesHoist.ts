@@ -7,7 +7,11 @@ const levelRolesHoist: Button = {
     customId: `levelRolesHoist`,
     run: async (client, interaction) => {
         await interaction.deferUpdate();
-        if(!interaction.guild) return;
+
+        if(!interaction.guild) {
+            await interaction.followUp(client.i18n.__("guildOnly"));
+            return;
+        }
 
         const syncSuccess = await syncGuildLevelRolesHoisting(client, interaction, interaction.guild);
         if(syncSuccess) {

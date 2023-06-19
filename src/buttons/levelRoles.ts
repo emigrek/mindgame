@@ -6,8 +6,12 @@ import { syncGuildLevelRoles } from "../modules/roles";
 const levelRoles: Button = {
     customId: `levelRoles`,
     run: async (client, interaction) => {
-        if(!interaction.guild) return;
         await interaction.deferUpdate();
+
+        if(!interaction.guild) {
+            await interaction.followUp(client.i18n.__("guildOnly"));
+            return;
+        }
 
         const syncSuccess = await syncGuildLevelRoles(client, interaction, interaction.guild);
         if(syncSuccess) {

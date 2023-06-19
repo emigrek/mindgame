@@ -6,5 +6,4 @@ export interface Guild {
     levelRolesHoist: boolean;
     statisticsNotification: boolean;
     channelId: string | null;
-    locale: string;
 }

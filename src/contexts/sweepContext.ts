@@ -1,6 +1,5 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, TextChannel } from "discord.js";
 import { ContextMenu } from "../interfaces";
-import { withGuildLocale } from "../modules/locale";
 import { sweepTextChannel } from "../modules/messages";
 
 const sweepContext: ContextMenu = {
@@ -9,13 +8,11 @@ const sweepContext: ContextMenu = {
         .setType(ApplicationCommandType.Message),
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-
+        
         if(!interaction.guild) {
-            await interaction.reply({ content: `I can't sweep private channels.`, ephemeral: true });
+            await interaction.followUp(client.i18n.__("guildOnly"));
             return;
         }
-        await withGuildLocale(client, interaction.guild!);
-
 
         const sweeped = await sweepTextChannel(client, interaction.channel as TextChannel);
         await interaction.followUp({

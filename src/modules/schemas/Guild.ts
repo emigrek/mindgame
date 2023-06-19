@@ -13,8 +13,7 @@ const guildSchema = new Schema<Guild>({
     statisticsNotification: { type: Boolean, default: false },
     autoSweeping: { type: Boolean, default: true },
     levelRoles: { type: Boolean, default: false },
-    levelRolesHoist: { type: Boolean, default: false },
-    locale: { type: String, default: "en" }
+    levelRolesHoist: { type: Boolean, default: false }
 });
 
 export default guildSchema;
