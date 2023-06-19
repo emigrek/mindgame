@@ -113,7 +113,7 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
 
 const isMessageCacheable = async (message: Message): Promise<boolean> => {
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
-    return !reactionUsers.length;
+    return !reactionUsers.length && !message.pinned;
 }
 
 const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[]> => {
