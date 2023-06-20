@@ -77,19 +77,6 @@ const getUsers = async () => {
     return users;
 }
 
-const createUsers = async (guild: Guild) => {
-    const members = await guild.members.fetch();
-    const users = members.map(member => member.user).filter(user => !user.bot);
-    const created: DatabaseUser[] = [];
-
-    for await (const user of users) {
-        const newUser = await createUser(user);
-        created.push(newUser);
-    }
-
-    return created;
-}
-
 const updateUser = async (user: User) => {
     let exists = await UserModel.findOne({ userId: user.id });
     if(!exists) {
@@ -279,4 +266,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, createUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };

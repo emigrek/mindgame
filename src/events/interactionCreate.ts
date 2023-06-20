@@ -1,4 +1,5 @@
 import { Event } from "../interfaces";
+import { getUser, updateUserStatistics } from "../modules/user";
 import config from "../utils/config";
 
 export const interactionCreate: Event = {
@@ -18,16 +19,36 @@ export const interactionCreate: Event = {
 
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
-            if (!command) return;
+            if (!command)
+                return;
 
             if (command.options?.ownerOnly) {
                 if (config.ownerId !== interaction.user.id) {
-                    interaction.reply({ content: client.i18n.__("utils.ownerOnly"), ephemeral: true });
-                    return;
+                    return interaction.reply({ content: client.i18n.__("utils.userOnly"), ephemeral: true });
                 }
             }
 
-            command.execute(client, interaction);
+            if (command.options?.level) {
+                const user = await getUser(interaction.user);
+                if (!user) {
+                    return interaction.reply({ content: client.i18n.__("utils.userNotFound"), ephemeral: true });
+                }
+
+                if (user.stats.level < command.options.level) {
+                    return interaction.reply({
+                        content: client.i18n.__mf("utils.levelRequirement", {
+                            level: command.options.level
+                        }), ephemeral: true
+                    });
+                }
+            }
+
+            command.execute(client, interaction)
+                .then(() => {
+                    updateUserStatistics(client, interaction.user, {
+                        commands: 1
+                    });
+                })
         }
         if (interaction.isAnySelectMenu()) {
             client.selects.get(interaction.customId)?.run(client, interaction);

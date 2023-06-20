@@ -7,6 +7,7 @@ interface Run {
 
 interface Options {
     ownerOnly?: boolean;
+    level?: number;
 }
 
 export interface Command {

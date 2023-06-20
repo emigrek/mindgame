@@ -41,29 +41,25 @@ export const evalCommand: Command = {
         ownerOnly: true
     },
     execute: async (client, interaction) => {
+        const { i18n } = client;
         await interaction.deferReply({ ephemeral: true });
 
         const code = interaction.options.getString(`code`);
         const depth = interaction.options.getInteger(`depth`);
-        
-        if (!code) {
-            await interaction.followUp({ content: `No code provided.` });
-            return;
-        }
 
         const embed = new EmbedBuilder();
         try {
-            const evaled = await eval(code);
+            const evaled = await eval(code ?? '');
             const output = await clean(evaled, depth ?? 0);
 
             embed
-                .setTitle(`Evaluation`)
-                .setDescription(`**Output**\n\`\`\`js\n${output}\n\`\`\``)
+                .setTitle(i18n.__("evaluation.title"))
+                .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${output}\n\`\`\``)
                 .setColor('Blurple');
         } catch (e) {
             embed
-                .setTitle(`Evaluation`)
-                .setDescription(`**Output**\n\`\`\`js\n${e}\n\`\`\``)
+                .setTitle(i18n.__("evaluation.title"))
+                .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${e}\n\`\`\``)
                 .setColor('Red');
         }
 

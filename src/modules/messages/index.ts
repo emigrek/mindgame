@@ -244,7 +244,10 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
     const sourceUser = await getUser(interaction.user);
-    if (!sourceUser) return getErrorMessagePayload(client);
+    if (!sourceUser) 
+        return {
+            content: client.i18n.__("utils.userOnly")
+        }
 
     const user = await client.users.fetch(sourceUser.userId, {
         force: true
@@ -267,24 +270,10 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         }
     }
 
-    if (sourceUser.stats.level < 160 && !roleColor) {
-        const embed = {
-            color: color,
-            title: client.i18n.__("color.title"),
-            description: client.i18n.__mf("levelRequirement", { level: 160 }),
-            thumbnail: {
-                url: sourceUser.avatarUrl
-            }
-        };
-
-        return {
-            embeds: [embed]
-        };
-    }
-
     const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
     const roleColorUpdateButton = await getRoleColorUpdateButton(client);
-    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(roleColorSwitchButton);
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(roleColorSwitchButton);
 
     if (roleColor) {
         row.addComponents(roleColorUpdateButton);
@@ -352,7 +341,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     client.i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
-    if (!sourceUser) return null;
+    if (!sourceUser) return getErrorMessagePayload(client);
 
     const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
     const reward = parseInt(process.env.DAILY_REWARD!);
