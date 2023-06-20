@@ -3,7 +3,7 @@ import ExtendedClient from "../../client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { SelectMenuOption, Sorting } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { runMask, sortings } from "../user/sortings";
@@ -122,23 +122,22 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const colors = await useImageHex(renderedUser.avatarUrl);
     const userProfileHtml = await userProfile(client, renderedUser, colors, selfCall);
 
-    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
-    const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
-    if (selfCall) {
-        const row = new ActionRowBuilder<ButtonBuilder>()
-            .setComponents(profileTimePublic);
+    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors))
+        .then((file) => {
+            return file.setName(`${renderedUser.userId}.png`);
+        });
 
-        return {
-            components: [row],
-            files: [file],
-            ephemeral: true
-        };
-    } else {
-        return {
-            files: [file],
-            ephemeral: true
-        };
-    }
+    const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
+    const followButton = await getProfileFollowButton(client, sourceUser, sourceTargetUser);
+
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(selfCall ? profileTimePublic : followButton);
+
+    return {
+        components: [row],
+        files: [file],
+        ephemeral: true
+    };
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {

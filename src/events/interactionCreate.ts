@@ -22,7 +22,7 @@ export const interactionCreate: Event = {
 
             if (command.options?.ownerOnly) {
                 if (config.ownerId !== interaction.user.id) {
-                    interaction.reply({ content: client.i18n.__("ownerOnly"), ephemeral: true });
+                    interaction.reply({ content: client.i18n.__("utils.ownerOnly"), ephemeral: true });
                     return;
                 }
             }

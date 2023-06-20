@@ -60,7 +60,7 @@ export const ephemeralChannel: Command = {
         await interaction.deferReply({ ephemeral: true });
 
         if(!interaction.guild) {
-            await interaction.followUp(i18n.__("guildOnly"));
+            await interaction.followUp(i18n.__("utils.guildOnly"));
             return;
         }
 
@@ -70,7 +70,7 @@ export const ephemeralChannel: Command = {
         const exists = await getEphemeralChannel(channel.id);
         
         if(!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
-            await interaction.followUp(i18n.__("textChannelOnly"));
+            await interaction.followUp(i18n.__("utils.textChannelOnly"));
             return;
         }
 

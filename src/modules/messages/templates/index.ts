@@ -249,7 +249,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                         src="${user.avatarUrl}" 
                         class="
                             w-28 h-28 rounded-full shadow-lg shadow-[${colors.DarkVibrant}]
-                            ${active ? 'ring-4 ring-green-500/40' : '' } 
+                            ${active ? 'ring-4 ring-green-600' : '' } 
                         " 
                     />
                     <span class="bottom-1 right-2 absolute w-6 h-6 bg-[${presenceActivityColor}] rounded-full"></span>
@@ -259,7 +259,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                     ${ voiceActivityGuild ? 
                         `
                         <div class="flex items-center mt-2">
-                            <div class="text-white flex items-center space-x-2 p-1 px-2 rounded-full bg-green-500/40">
+                            <div class="text-white flex items-center space-x-2 p-1 px-2 rounded-full bg-green-600">
                                 <img 
                                     src="${voiceActivityGuild.iconURL({ extension: "png", size: 512 })}" 
                                     class="

@@ -10,7 +10,7 @@ const sweepContext: ContextMenu = {
         await interaction.deferReply({ ephemeral: true });
         
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("guildOnly"));
+            await interaction.followUp(client.i18n.__("utils.guildOnly"));
             return;
         }
 

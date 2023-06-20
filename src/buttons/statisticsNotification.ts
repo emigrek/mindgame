@@ -7,7 +7,7 @@ const statisticsNotification: Button = {
     run: async (client, interaction) => {
         await interaction.deferUpdate();
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("guildOnly"));
+            await interaction.followUp(client.i18n.__("utils.guildOnly"));
             return;
         }
 

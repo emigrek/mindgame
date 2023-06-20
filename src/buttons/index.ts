@@ -17,6 +17,7 @@ import rankingPageUp from "./rankingPageUp";
 import rankingPageDown from "./rankingPageDown";
 import rankingGuildOnly from "./rankingGuildOnly";
 import help from "./help";
+import profileFollow from "./profileFollow";
 
 const buttons: Button[] = [
     notifications,
@@ -26,6 +27,7 @@ const buttons: Button[] = [
     sweep,
     guildStatistics,
     profile,
+    profileFollow,
     autoSweeping,
     statisticsNotification,
     commits,

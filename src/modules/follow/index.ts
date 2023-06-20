@@ -40,4 +40,4 @@ const getMutuals = async (userId: string): Promise<FollowDocument[]> => {
     return mutuals;
 }
 
-export { createFollow, deleteFollow, getFollowers, getFollowing, getMutuals };
+export { createFollow, deleteFollow, getFollowers, getFollowing, getMutuals, getFollow };

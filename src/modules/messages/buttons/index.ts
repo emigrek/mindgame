@@ -5,6 +5,7 @@ import { getMessage } from "..";
 import { getRandomAnimalEmoji } from "../../../utils/emojis";
 import { GuildDocument } from "../../schemas/Guild";
 import { UserDocument } from "../../schemas/User";
+import { getFollow } from "../../follow";
 
 const getExitButton = async (client: ExtendedClient) => {
     const exitButton = new ButtonBuilder()
@@ -67,6 +68,17 @@ const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: Us
         .setStyle(sourceUser!.stats.time.public ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return publicProfileButton;
+}
+
+const getProfileFollowButton = async (client: ExtendedClient, sourceUser: UserDocument, targetUser: UserDocument) => {
+    const following = await getFollow(sourceUser.userId, targetUser.userId);
+
+    const followButton = new ButtonBuilder()
+        .setCustomId("profileFollow")
+        .setLabel(following ? client.i18n.__("profile.unfollowButtonLabel") : client.i18n.__("profile.followButtonLabel"))
+        .setStyle(following ? ButtonStyle.Danger : ButtonStyle.Primary);
+    
+    return followButton;
 }
 
 const getRoleColorSwitchButton = async (client: ExtendedClient, current: boolean) => {
@@ -212,4 +224,4 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }   
 
-export { getExitButton, getRepoButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton };
+export { getExitButton, getRepoButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };
