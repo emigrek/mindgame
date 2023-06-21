@@ -225,6 +225,22 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
         },
         title: client.i18n.__("help.title"),
         description: client.i18n.__("help.description"),
+        fields: [
+            {
+                name: client.i18n.__("help.faqQuestion1"),
+                value: client.i18n.__("help.faqAnswer1"),
+                inline: true
+            },
+            {
+                name: client.i18n.__("help.faqQuestion2"),
+                value: client.i18n.__("help.faqAnswer2"),
+                inline: true
+            },
+            {
+                name: client.i18n.__("help.faqQuestion3"),
+                value: client.i18n.__("help.faqAnswer3"),
+            }
+        ],
         image: {
             url: "https://i.imgur.com/ncCPDum.png"
         },
