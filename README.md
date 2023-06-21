@@ -6,6 +6,11 @@ Advanced discord application with **leveling** and **activity tracking** utiliti
 ## 👀 Preview
 ![Feature preview](https://i.imgur.com/xKjKSUK.png)
 
+## 🌍 Locales
+Available locales:
+- English (en-US)
+- Polish (pl)
+
 ## 📦 Used packages
 | 📦 Package  | 📋 Reasons |
 | ------------- | ------------- |
