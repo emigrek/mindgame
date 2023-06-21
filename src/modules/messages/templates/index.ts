@@ -231,15 +231,17 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
     const userRank = await getUserRank(user);
     const first = userRank == 1;
 
-    const expProcentage = Math.round(user.stats.exp * 100 / levelToExp(user.stats.level+1));
-    const userTreshold = await getLevelRoleTreshold(user.stats.level);
+    const expToCurrentLevel = levelToExp(user.stats.level);
+    const expToLevelUp = levelToExp(user.stats.level+1);
+    const expProcentage = (((user.stats.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed();
+    const userTreshold = getLevelRoleTreshold(user.stats.level);
 
     const voiceActivity = await getUserVoiceActivity(user);
     const voiceActivityGuild = voiceActivity ? client.guilds.cache.get(voiceActivity.guildId) : null;
     const active = voiceActivity ? true : false;
 
     const presenceActivity = await getUserPresenceActivity(user);
-    const presenceActivityColor = await getPresenceActivityColor(presenceActivity);
+    const presenceActivityColor = getPresenceActivityColor(presenceActivity);
 
     return `
         <div class="flex flex-col items-center space-y-3">
