@@ -37,27 +37,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
 
     const levelRoles = guild.roles.cache.filter(role => role.name.includes("Level"));
 
-    if (!levelRoles.size) {
-        const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
-            const role = await guild.roles.create({
-                name: `Level ${treshold.level}`,
-                color: treshold.color,
-                hoist: sourceGuild.levelRolesHoist,
-                position: 0
-            });
-            return role;
-        });
-
-        return await Promise.all(creationPromise)
-            .catch(async () => {
-                await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
-                return null;
-            })
-            .finally(async () => {
-                await assignLevelRolesInGuild(client, guild);
-                return true;
-            });
-    } else {
+    if (levelRoles.size) {
         const deletionPromise = levelRoles.map(async (role: Role) => {
             return await role.delete();
         });
@@ -68,12 +48,32 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
                 return null;
             })
             .finally(async () => {
-                if(sourceGuild.levelRolesHoist) {
+                if (sourceGuild.levelRolesHoist) {
                     await setLevelRolesHoist(guild);
                 }
                 return true;
             });
     }
+
+    const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
+        const role = await guild.roles.create({
+            name: `Level ${treshold.level}`,
+            color: treshold.color,
+            hoist: sourceGuild.levelRolesHoist,
+            position: 0
+        });
+        return role;
+    });
+
+    return await Promise.all(creationPromise)
+        .catch(async () => {
+            await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
+            return null;
+        })
+        .finally(async () => {
+            await assignLevelRolesInGuild(client, guild);
+            return true;
+        });
 }
 
 const syncGuildLevelRolesHoisting = async (client: ExtendedClient, interaction: ButtonInteraction, guild: Guild) => {

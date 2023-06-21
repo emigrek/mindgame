@@ -92,7 +92,7 @@
 	"utils.textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
 	"utils.guildOnly": "Ta funkcja może zostać użyta tylko w gildiach.",
 	"utils.ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
-	"utils.missingPermissions": "Nie mam wystarczających uprawnień.",
+	"utils.missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień. Zaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
 	"utils.noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 	"utils.levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie.",
 	"error.title": "Błąd",

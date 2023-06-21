@@ -92,7 +92,7 @@
 	"utils.textChannelOnly": "This feature can only be used in text channels.",
 	"utils.guildOnly": "This feature can only be used in guilds.",
 	"utils.ownerOnly": "This feature can only be used by application owner.",
-	"utils.missingPermissions": "Seems like I don't have enough permissions.",
+	"utils.missingPermissions": "Seems like I don't have enough permissions to function properly. Invite me again and assure that I have all desired permissions.",
 	"utils.noPermissions": "You don't have permission to use this.",
 	"utils.levelRequirement": "Your level is too low.\nReach {level} level and try again.",
 	"error.title": "Error",
