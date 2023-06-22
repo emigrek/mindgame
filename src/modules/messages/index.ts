@@ -430,22 +430,6 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
     }
 };
 
-const sendToDefaultChannel = async (client: ExtendedClient, guild: Guild, message: MessagePayload | string, temporary = true) => {
-    const sourceGuild = await getGuild(guild);
-    if (!sourceGuild || !sourceGuild.channelId) return null;
-
-    const defaultChannel = await client.channels.fetch(sourceGuild.channelId) as TextChannel;
-    if (!defaultChannel) return null;
-
-    const messageSent = await defaultChannel.send(message);
-
-    if (temporary) {
-        setTimeout(async () => {
-            await messageSent.delete();
-        }, 5000);
-    }
-};
-
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
     const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
     const messages = await channel.messages.fetch({ limit: 50 })
@@ -533,4 +517,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, sendToDefaultChannel, getErrorMessagePayload, getFollowMessagePayload };
+export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

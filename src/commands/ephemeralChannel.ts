@@ -54,7 +54,8 @@ export const ephemeralChannel: Command = {
                         .setRequired(true)
                 )
         )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false),
     execute: async (client, interaction) => {
         const { i18n } = client;
         await interaction.deferReply({ ephemeral: true });

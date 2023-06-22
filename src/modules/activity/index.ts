@@ -322,7 +322,7 @@ const getVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocum
 };
 
 const getLastVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
-    const last = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id }).sort({ to: -1 });
+    const last = await voiceActivityModel.findOne({ userId: member.user.id }).sort({ to: -1 });
     return last;
 };
 

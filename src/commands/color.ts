@@ -5,7 +5,8 @@ import { getColorMessagePayload } from "../modules/messages";
 export const color: Command = {
     data: new SlashCommandBuilder()
         .setName(`color`)
-        .setDescription(`Set up your custom color role`),
+        .setDescription(`Set up your custom color role`)
+        .setDMPermission(false),
     options: {
         level: 160
     },

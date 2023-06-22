@@ -7,7 +7,8 @@ export const config: Command = {
     data: new SlashCommandBuilder()
         .setName(`config`)
         .setDescription(`Sends guild config message.`)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false),
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
         
