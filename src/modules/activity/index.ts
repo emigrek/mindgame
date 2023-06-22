@@ -172,7 +172,6 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         to: null
     });
 
-    console.log(`[Activity] Validating ${activities.length} voice activities...`);
     const outOfSync: string[] = [];
     for await (const activity of activities) {
         const guild = client.guilds.cache.get(activity.guildId);
@@ -202,15 +201,14 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         }
     }
 
-    console.log(`[Activity] ${outOfSync.length} voice activities were out of sync.`);
+    return outOfSync;
 };
 
 const validatePresenceActivities = async (client: ExtendedClient) => {
     const activities = await presenceActivityModel.find({
         to: null
     });
-
-    console.log(`[Activity] Validating ${activities.length} presence activities...`);
+    
     const outOfSync: string[] = [];
     for await (const activity of activities) {
         const guild = client.guilds.cache.get(activity.guildId);
@@ -234,7 +232,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
         }
     }
 
-    console.log(`[Activity] ${outOfSync.length} presence activities were out of sync.`);
+    return outOfSync;
 };
 
 interface ActivityPeakHour {

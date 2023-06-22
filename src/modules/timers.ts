@@ -43,8 +43,6 @@ const schedules = [
 export const timers: Module = {
     name: "timers",
     run: async (client) => {
-        console.log("[Timers] Loaded module");
-
         for (const schedule of schedules) {
             cron.schedule(schedule.cron, () => client.emit(schedule.name));
         }

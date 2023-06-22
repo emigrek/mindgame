@@ -1,4 +1,4 @@
-import { Client, Collection } from "discord.js";
+import { Client, Collection, REST, Routes } from "discord.js";
 import i18n from "i18n";
 import { Event, Module, Interaction, Command, Button, Select, ContextMenu } from "../interfaces";
 
@@ -23,7 +23,7 @@ class ExtendedClient extends Client {
     public selects: Collection<string, Select> = new Collection();
     public contexts: Collection<string, ContextMenu> = new Collection();
 
-    public locales = [ "en-US", "pl" ];
+    public locales = ["en-US", "pl"];
     public i18n = i18n;
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -37,14 +37,13 @@ class ExtendedClient extends Client {
 
         moment.locale("pl-PL");
 
-        await this.loadModules();
-        await this.loadContexts();
-        await this.loadButtons();
-        await this.loadSelects();
-        await this.loadInteractions();
-        await this.loadEvents();
-        await this.loadSlashCommands();
-        
+        this.loadContexts();
+        this.loadButtons();
+        this.loadSelects();
+        this.loadInteractions();
+        this.loadEvents();
+        this.loadSlashCommands();
+
         this.login(config.token).catch((err) => {
             console.error("[Login] Error", err)
             process.exit(1);
@@ -56,8 +55,6 @@ class ExtendedClient extends Client {
             this.events.set(event.name, event);
             this.on(event.name, event.run.bind(null, this));
         }
-
-        console.log("[Events] Loaded", this.events.size);
     }
 
     public async loadModules() {
@@ -65,48 +62,50 @@ class ExtendedClient extends Client {
             this.modules.set(module.name, module);
             await module.run(this);
         }
-
-        console.log("[Modules] Loaded", this.modules.size);
     }
 
     public async loadSlashCommands() {
         for (const command of commands) {
             this.commands.set(command.data.name, command);
         }
-
-        console.log("[SlashCommands] Loaded", this.commands.size);
     }
 
     public async loadButtons() {
         for (const button of buttons) {
             this.buttons.set(button.customId, button);
         }
-
-        console.log("[Buttons] Loaded", this.buttons.size);
     }
 
     public async loadSelects() {
         for (const select of selects) {
             this.selects.set(select.customId, select);
         }
-
-        console.log("[Selects] Loaded", this.selects.size);
     }
-    
+
     public async loadInteractions() {
         for (const interaction of interactions) {
             this.interactions.set(interaction.customId, interaction);
         }
-
-        console.log("[Interactions] Loaded", this.interactions.size);
     }
 
     public async loadContexts() {
         for (const context of contexts) {
             this.contexts.set(context.data.name, context);
         }
+    }
 
-        console.log("[Contexts] Loaded", this.contexts.size);
+    public async putSlashCommands() {
+        const rest = new REST({ version: '10' }).setToken(config.token);
+        const commandsData = this.commands.map(command => command.data.toJSON());
+        const contextsData = this.contexts.map(context => context.data.toJSON());
+        const data = commandsData.concat(contextsData);
+
+        return await rest.put(
+            Routes.applicationCommands(config.clientId),
+            {
+                body: data
+            },
+        );
     }
 }
 
