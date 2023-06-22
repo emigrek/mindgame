@@ -31,7 +31,8 @@ class ExtendedClient extends Client {
         this.i18n.configure({
             locales: this.locales,
             directory: join(__dirname, "..", "translations"),
-            defaultLocale: "en-US"
+            defaultLocale: "en-US",
+            objectNotation: true
         });
 
         moment.locale("pl-PL");
