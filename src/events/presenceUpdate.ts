@@ -1,27 +1,22 @@
-import { PresenceUpdateStatus } from "discord.js";
+import { Presence } from "discord.js";
 import { Event } from "../interfaces";
 import { endPresenceActivity, startPresenceActivity } from "../modules/activity";
 
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
-    run: async (client, oldPresence, newPresence) => {
+    run: async (client, oldPresence: Presence, newPresence: Presence) => {
         const { member } = newPresence;
         const oldStatus = oldPresence?.status;
-        const newStatus = newPresence?.status;
+        const newStatus = newPresence.status;
 
-        if((oldStatus === newStatus) || member.user.bot) 
-            return;
+        if (!member || member.user.bot) return;
 
-        if(
-            (oldStatus === PresenceUpdateStatus.Offline || oldStatus === PresenceUpdateStatus.Invisible || !oldStatus)
-             && 
-            (newStatus !== PresenceUpdateStatus.Offline || newStatus !== PresenceUpdateStatus.Invisible)
+        if (
+            (!oldStatus || oldStatus === 'offline') && (newStatus !== 'offline')
         ) {
             await startPresenceActivity(client, member, newPresence);
-        } else if(
-            (oldStatus !== PresenceUpdateStatus.Offline || oldStatus !== PresenceUpdateStatus.Invisible)
-             && 
-            (newStatus === PresenceUpdateStatus.Offline || newStatus === PresenceUpdateStatus.Invisible || !newStatus)
+        } else if (
+            (oldStatus || oldStatus !== 'offline') && (newStatus === 'offline')
         ) {
             await endPresenceActivity(client, member);
         }

@@ -116,15 +116,9 @@ const endPresenceActivity = async (client: ExtendedClient, member: GuildMember):
     if (!exists) return null;
 
     exists.to = moment().toDate();
-    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
-    if (duration < 60) {
-        await exists.delete();
-        return exists;
-    }
-
     await exists.save();
 
-
+    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
     const expGained = Math.round(
         duration * 0.0063817
     );
@@ -225,6 +219,13 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
         }
 
         if (presence.status !== activity.status) {
+            outOfSync.push(activity.userId);
+            await endPresenceActivity(client, member);
+            await startPresenceActivity(client, member, presence);
+            continue;
+        }
+
+        if (presence.clientStatus !== activity.clientStatus) {
             outOfSync.push(activity.userId);
             await endPresenceActivity(client, member);
             await startPresenceActivity(client, member, presence);
