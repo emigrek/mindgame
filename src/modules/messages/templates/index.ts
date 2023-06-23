@@ -319,8 +319,8 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             </div>  
                             ${ expProcentage ? `
                                 <div class="relative w-full h-3 bottom-0 flex rounded-lg bg-black/80">
-                                    <div style="width: ${expProcentage}%" class="h-3 flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg">
-                                        <div class="text-[0.6rem] text-white/70 rounded text-center font-bold">
+                                    <div style="width: ${expProcentage}%" class="h-full flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg">
+                                        <div class="text-[0.7rem] text-[#202225] rounded text-center font-bold">
                                             ${expProcentage}%
                                         </div>
                                     </div> 
