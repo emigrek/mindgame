@@ -31,7 +31,7 @@ export const interactionCreate: Event = {
                     return interaction.reply({
                         embeds: [
                             InformationEmbed()
-                                .setDescription(i18n.__("utils.userOnly"))
+                                .setDescription(i18n.__("utils.ownerOnly"))
                         ], ephemeral: true
                     });
                 }
