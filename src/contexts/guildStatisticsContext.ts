@@ -1,19 +1,21 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { ContextMenu } from "../interfaces";
-import { getStatisticsMessagePayload } from "../modules/messages";
+import { getErrorMessagePayload, getStatisticsMessagePayload } from "../modules/messages";
 
 const guildStatisticsContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
-        .setName(`Show guild week statistics`)
-        .setType(ApplicationCommandType.Message),
+        .setName('statistics')
+        .setType(ApplicationCommandType.Message)
+        .setDMPermission(false),
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
+
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
+            await interaction.followUp(getErrorMessagePayload(client));
             return;
         }
-        
-        const guildStatisticsPayload = await getStatisticsMessagePayload(client, interaction.guild!);
+
+        const guildStatisticsPayload = await getStatisticsMessagePayload(client, interaction.guild);
         await interaction.followUp(guildStatisticsPayload);
     }
 };

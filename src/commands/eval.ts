@@ -1,39 +1,22 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { EmbedBuilder } from "discord.js";
-import { inspect } from "util";
-
-const clean = async (input: any, depth: number) => {
-    if (input instanceof Promise)
-        input = await input;
-    
-    if (typeof input !== `string`)
-        input = inspect(input, { depth });
-
-    input = input
-        .replace(/`/g, "`" + String.fromCharCode(8203))
-        .replace(/@/g, "@" + String.fromCharCode(8203));
-
-    input = input
-        .replaceAll(process.env.DISCORD_TOKEN, "[TOKEN]")
-
-    return input;
-};
+import { getEvalMessagePayload } from "../modules/messages";
+import i18n from "../client/i18n";
 
 export const evalCommand: Command = {
     data: new SlashCommandBuilder()
-        .setName(`eval`)
-        .setDescription(`Evaluate a code snippet`)
+        .setName("eval")
+        .setDescription(i18n.__("commandLocalizations.eval.description"))
         .addStringOption(option =>
             option
-                .setName(`code`)
-                .setDescription(`Code to evaluate`)
+                .setName("code")
+                .setDescription(i18n.__("commandLocalizations.eval.subcommand.code.description"))
                 .setRequired(true)
         )
         .addIntegerOption(option =>
             option
-                .setName(`depth`)
-                .setDescription(`Output depth`)
+                .setName("depth")
+                .setDescription(i18n.__("commandLocalizations.eval.subcommand.depth.description"))
                 .setRequired(false)
                 .setMinValue(0)
         ),
@@ -41,28 +24,8 @@ export const evalCommand: Command = {
         ownerOnly: true
     },
     execute: async (client, interaction) => {
-        const { i18n } = client;
         await interaction.deferReply({ ephemeral: true });
-
-        const code = interaction.options.getString(`code`);
-        const depth = interaction.options.getInteger(`depth`);
-
-        const embed = new EmbedBuilder();
-        try {
-            const evaled = await eval(code ?? '');
-            const output = await clean(evaled, depth ?? 0);
-
-            embed
-                .setTitle(i18n.__("evaluation.title"))
-                .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${output}\n\`\`\``)
-                .setColor('Blurple');
-        } catch (e) {
-            embed
-                .setTitle(i18n.__("evaluation.title"))
-                .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${e}\n\`\`\``)
-                .setColor('Red');
-        }
-
-        await interaction.followUp({ embeds: [embed] });
+        const evalMessagePayload = await getEvalMessagePayload(client, interaction);
+        await interaction.followUp(evalMessagePayload);
     }
 }

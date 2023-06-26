@@ -1,20 +1,15 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { findUserRankingPage } from "../modules/user";
 import { getRankingMessagePayload } from "../modules/messages";
-import { getSortingByType } from "../modules/user/sortings";
-
-const defaultType = "exp";
+import i18n from "../client/i18n";
 
 export const ranking: Command = {
     data: new SlashCommandBuilder()
-        .setName(`ranking`)
-        .setDescription(`Show your ranking`),
+        .setName("ranking")
+        .setDescription(i18n.__("commandLocalizations.ranking.description")),
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-        const sorting = getSortingByType(defaultType);
-        const page = await findUserRankingPage(client, sorting, interaction.user!);
-        const rankingMessagePayload = await getRankingMessagePayload(client, interaction, sorting, page);
+        const rankingMessagePayload = await getRankingMessagePayload(client, interaction);
         await interaction.followUp(rankingMessagePayload);
     }
 }

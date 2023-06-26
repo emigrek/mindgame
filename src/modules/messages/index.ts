@@ -1,15 +1,14 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, MessagePayload, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
-import { SelectMenuOption, Sorting } from "../../interfaces";
+import { SelectMenuOption } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getRankingSortSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
-import { runMask, sortings } from "../user/sortings";
+import { getSortingByType, runMask, sortings } from "../user/sortings";
 import moment from "moment";
 import Vibrant = require('node-vibrant');
-import chroma = require('chroma-js');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 import { getRanking, getRankingPagesCount, getUser } from "../user";
 import { getMemberColorRole } from "../roles";
@@ -17,6 +16,14 @@ import messageSchema from "../schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "../schemas/User";
 import { VoiceActivityDocument } from "../schemas/VoiceActivity";
+import { ErrorEmbed, InformationEmbed } from "./embeds";
+import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "../ephemeral-channel";
+import clean from "../../utils/clean";
+import config from "../../utils/config";
+import i18n from "../../client/i18n";
+
+import { rankingStore } from "../../stores/rankingStore";
+import { profileStore } from "../../stores/profileStore";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -25,12 +32,20 @@ interface ImageHexColors {
 
 const messageModel = mongoose.model("Message", messageSchema);
 
-const useImageHex = async (image: string) => {
-    if (!image) return { Vibrant: "#373b48", DarkVibrant: "#373b48" };
+const useImageHex = async (image: string | null) => {
+    const defaultColors = { Vibrant: "#373b48", DarkVibrant: "#373b48" };
+
+    if (!image)
+        return defaultColors;
+
     const colors = await Vibrant.from(image).getPalette();
+
+    if (!colors.Vibrant || !colors.DarkVibrant)
+        return defaultColors;
+
     return {
-        Vibrant: chroma(colors.Vibrant!.hex!).hex(),
-        DarkVibrant: chroma(colors.DarkVibrant!.hex!).hex()
+        Vibrant: colors.Vibrant.hex,
+        DarkVibrant: colors.DarkVibrant.hex
     };
 }
 
@@ -56,22 +71,30 @@ const useHtmlFile = async (html: string) => {
     return attachment;
 }
 
-const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => {
+const getConfigMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | AnySelectMenuInteraction) => {
+    const { guild } = interaction;
+    if (!guild) 
+        return getErrorMessagePayload(client);
+
+    const sourceGuild = await getGuild(guild);
+    if (!sourceGuild)
+        return getErrorMessagePayload(client);
+
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
-    const sourceGuild = await getGuild(guild);
-    if (!sourceGuild) return getErrorMessagePayload(client);
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
-        await owner?.send({ content: client.i18n.__("config.noValidChannels") });
+        await owner?.send({ content: i18n.__("config.noValidChannels") });
         return getErrorMessagePayload(client);
     }
 
     const defaultChannelOptions = textChannels.map((channel) => {
         return {
             label: `#${channel.name}`,
-            description: client.i18n.__mf("config.channelWatchers", { count: (channel instanceof ThreadChannel ? 0 : channel.members.filter(member => !member.user.bot).size) }),
+            description: i18n.__mf("config.channelWatchers", {
+                count: (channel instanceof ThreadChannel ? 0 : channel.members.filter(member => !member.user.bot).size)
+            }),
             value: channel.id
         }
     });
@@ -81,7 +104,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
     const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
     const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
-    const channelSelect = await getChannelSelect(client, currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
+    const channelSelect = await getChannelSelect(currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
         .setComponents(channelSelect);
@@ -91,28 +114,38 @@ const getConfigMessagePayload = async (client: ExtendedClient, guild: Guild) => 
         .setComponents(notificationsButton, autoSweepingButton, statisticsNotificationButton);
 
     const guildIcon = guild.iconURL({ extension: "png" });
-    const colors: ImageHexColors = await useImageHex(guildIcon!);
+    const colors: ImageHexColors = await useImageHex(guildIcon);
     const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutMedium(guildConfigHtml, colors));
 
     return {
         components: [row, row2, row3],
-        files: [file],
-        ephemeral: true
+        files: [file]
     };
 }
 
-const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction, targetUserId: string) => {
-    const sourceUser = await getUser(interaction.user);
-    const targetUser = client.users.cache.get(targetUserId)!;
+const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction) => {
+    const { targetUserId } = profileStore.get(interaction.user.id);
+
+    const targetUser = client.users.cache.get(targetUserId ? targetUserId : interaction.user.id);
+    if (!targetUser) {
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__("profile.notFound"))
+            ]
+        };
+    }
+
     const sourceTargetUser = await getUser(targetUser);
+    const sourceUser = await getUser(interaction.user);
 
     if (!sourceUser || !sourceTargetUser) {
         return {
-            embeds: [{
-                description: client.i18n.__("profile.notFound")
-            }],
-            ephemeral: true
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__("profile.notFound"))
+            ]
         };
     }
 
@@ -122,10 +155,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const colors = await useImageHex(renderedUser.avatarUrl);
     const userProfileHtml = await userProfile(client, renderedUser, colors, selfCall);
 
-    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors))
-        .then((file) => {
-            return file.setName(`${renderedUser.userId}.png`);
-        });
+    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
 
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
     const followButton = await getProfileFollowButton(client, sourceUser, sourceTargetUser);
@@ -141,12 +171,14 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
 }
 
 const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    client.i18n.setLocale(guild.preferredLocale);
-    
+    i18n.setLocale(guild.preferredLocale);
+
     const sourceGuild = await getGuild(guild);
-    if (!sourceGuild) return getErrorMessagePayload(client);
+    if (!sourceGuild)
+        return getErrorMessagePayload(client);
+
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
-    const colors: ImageHexColors = await useImageHex(guildIcon!);
+    const colors: ImageHexColors = await useImageHex(guildIcon);
     const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
     const file = await useHtmlFile(layoutXLarge(guildStatisticsHtml, colors));
 
@@ -156,37 +188,36 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
 };
 
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
-    client.i18n.setLocale(guild.preferredLocale);
+    i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
-    if (!sourceUser) return getErrorMessagePayload(client);
-    const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
+    if (!sourceUser)
+        return getErrorMessagePayload(client);
 
-    const embed = {
-        color: getColorInt(colors.Vibrant!),
-        title: client.i18n.__("notifications.levelUpTitle"),
-        description: client.i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, level: sourceUser.stats.level }),
-        fields: [
+    const colors = await useImageHex(sourceUser.avatarUrl);
+
+    const embed = new EmbedBuilder()
+        .setColor(getColorInt(colors.Vibrant))
+        .setTitle(i18n.__("notifications.levelUpTitle"))
+        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, level: sourceUser.stats.level }))
+        .setFields(
             {
-                name: client.i18n.__("notifications.levelField"),
+                name: i18n.__("notifications.levelField"),
                 value: `\`\`\`${sourceUser.stats.level}\`\`\``,
                 inline: true
             },
             {
-                name: client.i18n.__("notifications.todayVoiceTimeField"),
+                name: i18n.__("notifications.todayVoiceTimeField"),
                 value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
                 inline: true
             },
             {
-                name: client.i18n.__("notifications.weekVoiceTimeField"),
+                name: i18n.__("notifications.weekVoiceTimeField"),
                 value: `\`\`\`${Math.round((sourceUser.week.time.voice / 3600))}H\`\`\``,
                 inline: true
             }
-        ],
-        thumbnail: {
-            url: 'https://i.imgur.com/cSTkdFG.png',
-        }
-    };
+        )
+        .setThumbnail("https://i.imgur.com/cSTkdFG.png");
 
     return {
         embeds: [embed]
@@ -194,13 +225,16 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 };
 
 const getCommitsMessagePayload = async (client: ExtendedClient) => {
-    const packageJsonRepoUrl = (await import("../../../package.json")).repository.url;
-    const repo = packageJsonRepoUrl.split("/").slice(-2).join("/");
-    const commits = await getLastCommits(repo, 10).catch(() => {
-        return null;
-    });
+    const projectPackage = await import("../../../package.json");
+    const repo = projectPackage.repository.url.split("/").slice(-2).join("/");
 
-    if (!commits) return getErrorMessagePayload(client);
+    const commits = await getLastCommits(repo, 6)
+        .catch(() => {
+            return null;
+        });
+
+    if (!commits)
+        return getErrorMessagePayload(client);
 
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
@@ -208,49 +242,54 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
         inline: true
     }));
 
+    const embed = InformationEmbed()
+        .setTitle(i18n.__mf("commits.title", { count: commits.length }))
+        .setFields(fields)
+        .setFooter({
+            iconURL: client.user?.avatarURL({ extension: "png" }) || undefined,
+            text: `${projectPackage.name.charAt(0).toUpperCase() + projectPackage.name.slice(1)} (v.${projectPackage.version})`
+        })
+
     return {
-        embeds: [{
-            color: 0x0099ff,
-            title: client.i18n.__mf("commits.title", { count: commits.length }),
-            fields: fields
-        }]
+        embeds: [embed]
     };
 };
 
 const getHelpMessagePayload = async (client: ExtendedClient) => {
-    const embed = {
-        color: 0x0099ff,
-        thumbnail: {
-            url: client.user!.displayAvatarURL({ extension: "png" })
-        },
-        title: client.i18n.__("help.title"),
-        description: client.i18n.__("help.description"),
-        fields: [
+    const clientUserAvatar = client.user?.avatarURL({
+        extension: "png"
+    }) || null;
+    const color = await useImageHex(clientUserAvatar);
+
+    const embed = InformationEmbed()
+        .setColor(getColorInt(color.Vibrant))
+        .setTitle(i18n.__("help.title"))
+        .setDescription(i18n.__("help.description"))
+        .setFields([
             {
-                name: client.i18n.__("help.faqQuestion1"),
-                value: client.i18n.__("help.faqAnswer1"),
+                name: i18n.__("help.faqQuestion1"),
+                value: i18n.__("help.faqAnswer1"),
                 inline: true
             },
             {
-                name: client.i18n.__("help.faqQuestion2"),
-                value: client.i18n.__("help.faqAnswer2"),
+                name: i18n.__("help.faqQuestion2"),
+                value: i18n.__("help.faqAnswer2"),
                 inline: true
             },
             {
-                name: client.i18n.__("help.faqQuestion3"),
-                value: client.i18n.__("help.faqAnswer3"),
+                name: i18n.__("help.faqQuestion3"),
+                value: i18n.__("help.faqAnswer3"),
             }
-        ],
-        image: {
-            url: "https://i.imgur.com/ncCPDum.png"
-        },
-        footer: {
-            text: client.i18n.__("help.footer")
-        }
-    }
+        ])
+        .setThumbnail(clientUserAvatar)
+        .setImage("https://i.imgur.com/ncCPDum.png")
+        .setFooter({
+            text: i18n.__("help.footer")
+        });
+
+    const repoButton = await getRepoButton();
     const row = new ActionRowBuilder<ButtonBuilder>()
-    const repoButton = await getRepoButton(client);
-    row.setComponents(repoButton);
+        .addComponents(repoButton);
 
     return {
         embeds: [embed],
@@ -259,35 +298,45 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 }
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
-    const sourceUser = await getUser(interaction.user);
-    if (!sourceUser) 
-        return {
-            content: client.i18n.__("utils.userOnly")
-        }
+    if (!interaction.guild) 
+        return getErrorMessagePayload(client);
 
-    const user = await client.users.fetch(sourceUser.userId, {
-        force: true
-    });
-    const color = getColorInt(user.hexAccentColor!);
+    const sourceUser = await getUser(interaction.user);
+    if (!sourceUser) {
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__("utils.userOnly"))
+            ]
+        }
+    }
+
+    const user = await client.users.fetch(sourceUser.userId);
+    if (!user.hexAccentColor) {
+        return {
+            embeds: [
+                ErrorEmbed()
+                    .setDescription("error.description")
+            ]
+        }
+    }
+
+    const color = getColorInt(user.hexAccentColor);
     const roleColor = getMemberColorRole(interaction.member as GuildMember);
 
     if (!color) {
-        const embed = {
-            color: 0x000000,
-            title: client.i18n.__("color.title"),
-            description: client.i18n.__("color.noColor"),
-            thumbnail: {
-                url: sourceUser.avatarUrl
-            }
-        }
-
         return {
-            embeds: [embed]
+            embeds: [
+                InformationEmbed()
+                    .setTitle(i18n.__("color.title"))
+                    .setDescription(i18n.__("color.noColor"))
+                    .setThumbnail(sourceUser.avatarUrl)
+            ]
         }
     }
 
     const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
-    const roleColorUpdateButton = await getRoleColorUpdateButton(client);
+    const roleColorUpdateButton = await getRoleColorUpdateButton();
     const row = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(roleColorSwitchButton);
 
@@ -295,14 +344,11 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         row.addComponents(roleColorUpdateButton);
     }
 
-    const embed = {
-        color: color,
-        title: client.i18n.__("color.title"),
-        description: client.i18n.__("color.description"),
-        thumbnail: {
-            url: sourceUser.avatarUrl
-        }
-    };
+    const embed = InformationEmbed()
+        .setColor(color)
+        .setTitle(i18n.__("color.title"))
+        .setDescription(i18n.__("color.description"))
+        .setThumbnail(sourceUser.avatarUrl);
 
     return {
         embeds: [embed],
@@ -310,102 +356,213 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     };
 };
 
-const getRankingMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, sorting: Sorting, page: number, guild?: Guild) => {
-    const users = await getRanking(client, sorting, page, guild);
-    const isInteractionCaller = (user: UserDocument): boolean => {
-        return user.userId === interaction.user!.id;
-    };
-    const fields: EmbedField[] = users.map((user: UserDocument, index) => ({
-        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag.split('#').shift()} ${isInteractionCaller(user) ? client.i18n.__("ranking.you") : ""}`,
-        value: `\`\`\`${runMask(client, sorting.mask, user)}\`\`\``,
-        inline: true
-    }));
-    const colors = await useImageHex(interaction.user.avatarURL({ extension: "png", size: 256 })!);
-    const color = getColorInt(colors.Vibrant!);
-    const pagesCount = await getRankingPagesCount(client, sorting, guild);
-    const embed = {
-        title: client.i18n.__mf("ranking.title", { type: sorting.type.toUpperCase(), scope: guild ? 'GUILD' : 'GLOBAL' }),
-        fields: fields,
-        color: color,
-        footer: {
-            text: client.i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
-        }
-    }
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction) => {
+    const { guildOnly, page, sorting } = rankingStore.get(interaction.user.id);
+    const guild = (guildOnly && interaction.guild) ? interaction.guild : undefined;
+
+    const sortingType = getSortingByType(sorting);
+    const pagesCount = await getRankingPagesCount(client, sortingType, guild);
+
     const selectOptions = sortings.map((sorting) => ({
-        label: sorting.label,
-        description: sorting.range.toUpperCase(),
+        label: i18n.__(`rankingSortings.label.${sorting.label}`),
+        description: i18n.__(`rankingSortings.range.${sorting.range}`),
         value: sorting.type
     }));
-    const rankingSortSelect = await getRankingSortSelect(client, sorting, selectOptions);
-    const guildOnly = await getRankingGuildOnlyButton(client, guild ? true : false);
-    const up = await getRankingPageUpButton(client, page > 1 ? false : true);
-    const down = await getRankingPageDownButton(client, page < pagesCount ? false : true);
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .addComponents(rankingSortSelect);
-    const row2 = new ActionRowBuilder<ButtonBuilder>();
-    row2.addComponents(up, down);
+
+    const users = await getRanking(client, sortingType, page, guild);
+    const fields: EmbedField[] = users.map((user: UserDocument, index) => ({
+        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+        value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
+        inline: true
+    }));
+
+    const sortSelectMenu = await getRankingSortSelect(sortingType, selectOptions);
+    const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
+    const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
+    const guildOnlyButton = await getRankingGuildOnlyButton(guild ? true : false);
+
+    const topRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .addComponents(sortSelectMenu);
+    const bottomRow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(pageUpButton, pageDownButton);
+
     if (interaction.guild) {
-        row2.addComponents(guildOnly);
+        bottomRow.addComponents(guildOnlyButton);
     }
+
     return {
-        embeds: [embed],
-        components: [row, row2]
-    };
+        embeds: [
+            InformationEmbed()
+                .setTitle(i18n.__mf("ranking.title"))
+                .setFields(fields)
+                .setFooter({
+                    text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
+                })
+        ],
+        components: [topRow, bottomRow]
+    }
 };
 
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
-    client.i18n.setLocale(guild.preferredLocale);
+    i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
     if (!sourceUser) return getErrorMessagePayload(client);
 
-    const colors: ImageHexColors = await useImageHex(sourceUser.avatarUrl!);
-    const reward = parseInt(process.env.DAILY_REWARD!);
+    const colors = await useImageHex(sourceUser.avatarUrl);
+    const reward = parseInt(config.dailyReward);
 
-    const embed = {
-        color: getColorInt(colors.Vibrant!),
-        title: client.i18n.__("notifications.dailyRewardTitle"),
-        description: client.i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId, time: next }),
-        fields: [
+    const embed = InformationEmbed()
+        .setColor(getColorInt(colors.Vibrant))
+        .setTitle(i18n.__("notifications.dailyRewardTitle"))
+        .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId, time: next }))
+        .setThumbnail("https://em-content.zobj.net/thumbs/60/microsoft/74/birthday-cake_1f382.png")
+        .setFields([
             {
-                name: client.i18n.__("notifications.dailyRewardField"),
+                name: i18n.__("notifications.dailyRewardField"),
                 value: `\`\`\`${client.numberFormat.format(reward)} EXP\`\`\``,
                 inline: true
             },
             {
-                name: client.i18n.__("notifications.todayVoiceTimeField"),
+                name: i18n.__("notifications.todayVoiceTimeField"),
                 value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
                 inline: true
             },
             {
-                name: client.i18n.__("notifications.weekVoiceTimeField"),
+                name: i18n.__("notifications.weekVoiceTimeField"),
                 value: `\`\`\`${(Math.round(sourceUser.week.time.voice / 3600))}H\`\`\``,
                 inline: true
-            },
-        ],
-        thumbnail: {
-            url: 'https://em-content.zobj.net/thumbs/60/microsoft/74/birthday-cake_1f382.png',
-        }
-    };
+            }
+        ]);
 
     return {
         embeds: [embed]
     };
 };
 
-const getErrorMessagePayload = (client: ExtendedClient) => {
-    const embed = new EmbedBuilder()
-        .setColor("Red")
-        .setTitle(client.i18n.__("error.title"))
-        .setDescription(client.i18n.__("error.description"));
+const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
+    if (!interaction.guild) 
+        return getErrorMessagePayload(client);
+
+    const subcommand = interaction.options.getSubcommand();
+    const channel = interaction.options.getChannel('channel');
+    const timeout = interaction.options.getInteger('timeout');
+
+    if (!channel)
+        return getErrorMessagePayload(client);
+
+    const exists = await getEphemeralChannel(channel.id);
+
+    if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__("utils.textChannelOnly"))
+            ]
+        };
+    }
+
+    if (subcommand === 'create') {
+        if (!timeout)
+            return getErrorMessagePayload(client);
+
+        if (exists) {
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__("ephemeralChannel.alreadyExists"))
+                ]
+            }
+        }
+
+        const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
+
+        if (guildExisting.length >= 2) {
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__("ephemeralChannel.limitReached"))
+                ]
+            }
+        }
+
+        const ephemeralChannel = await createEphemeralChannel(interaction.guild.id, channel.id, timeout);
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__mf("ephemeralChannel.created", {
+                        channelId: ephemeralChannel.channelId,
+                        timeout: ephemeralChannel.timeout.toString()
+                    }))
+            ]
+        }
+    } else if (subcommand === 'edit') {
+        if (!timeout)
+            return getErrorMessagePayload(client);
+
+        const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
+
+        if (!ephemeralChannel) {
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__("ephemeralChannel.notFound"))
+                ]
+            }
+        }
+
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(i18n.__mf("ephemeralChannel.edited", {
+                        channelId: ephemeralChannel.channelId,
+                        timeout: ephemeralChannel.timeout.toString()
+                    }))
+            ]
+        }
+    } else if (subcommand === 'delete') {
+        const result = await deleteEphemeralChannel(channel.id);
+
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setDescription(
+                        result ? i18n.__mf("ephemeralChannel.deleted", { channelId: channel.id }) : i18n.__("ephemeralChannel.notFound")
+                    )
+            ]
+        }
+    } else {
+        return getErrorMessagePayload(client);
+    }
+};
+
+const getEvalMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
+    const code = interaction.options.getString(`code`);
+    const depth = interaction.options.getInteger(`depth`);
+
+    const embed = new EmbedBuilder();
+    try {
+        const evaled = await eval(code ?? '');
+        const output = await clean(evaled, depth ?? 0);
+
+        embed
+            .setTitle(i18n.__("evaluation.title"))
+            .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${output}\n\`\`\``)
+            .setColor('Blurple');
+    } catch (e) {
+        embed
+            .setTitle(i18n.__("evaluation.title"))
+            .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${e}\n\`\`\``)
+            .setColor('Red');
+    }
 
     return {
         embeds: [embed]
-    };
-}
+    }
+};
 
 const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMember, lastActivity: VoiceActivityDocument) => {
-    client.i18n.setLocale(member.guild.preferredLocale);
+    i18n.setLocale(member.guild.preferredLocale);
 
     const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
     const imageHex = await useImageHex(avatar);
@@ -418,17 +575,27 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
         .setColor(color)
         .setAuthor({
             name: member.guild.name,
-            iconURL: member.guild.iconURL({ extension: "png", size: 256 })!,
+            iconURL: member.guild.iconURL({ extension: "png", size: 256 }) || undefined,
             url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
         })
         .setTitle(member.user.username)
-        .setDescription(client.i18n.__mf("follow.followNotificationDescription", { time: unix }))
+        .setDescription(i18n.__mf("follow.followNotificationDescription", { time: unix }))
         .setThumbnail(avatar);
 
     return {
         embeds: [embed]
     }
 };
+
+const getErrorMessagePayload = (client: ExtendedClient) => {
+    const embed = ErrorEmbed()
+        .setTitle(i18n.__("error.title"))
+        .setDescription(i18n.__("error.description"));
+
+    return {
+        embeds: [embed]
+    };
+}
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
     const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
@@ -457,7 +624,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) =>
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
-    client.i18n.setLocale(channel.guild.preferredLocale);
+    i18n.setLocale(channel.guild.preferredLocale);
 
     const lastMessages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {
@@ -465,7 +632,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) 
             return new Collection<string, Message>();
         });
 
-    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user!.id) as Collection<string, Message>;
+    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user?.id) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
     if (!lastMessage) return;
 
@@ -517,4 +684,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

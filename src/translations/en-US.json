@@ -1,4 +1,73 @@
 {
+	"commandLocalizations": {
+		"color": {
+			"name": "color",
+			"description": "Change your display name color."
+		},
+		"commits": {
+			"name": "commits",
+			"description": "See last source code changes."
+		},
+		"config": {
+			"name": "config",
+			"description": "Adjust your server settings."
+		},
+		"ephemeral-channel": {
+			"name": "ephemeral-channel",
+			"description": "Create ephemeral channel (messages in this channel will be deleted after time).",
+			"subcommand": {
+				"create": {
+					"name": "create",
+					"description": "Create ephemeral channel (messages in this channel will be deleted after time)."
+				},
+				"edit": {
+					"name": "edit",
+					"description": "Edit ephemeral channel."
+				},
+				"delete": {
+					"name": "delete",
+					"description": "Delete ephemeral channel."
+				}
+			},
+			"option": {
+				"channel": {
+					"name": "channel",
+					"description": "Desired text channel."
+				},
+				"timeout": {
+					"name": "timeout",
+					"description": "Amount of time after message gets deleted."
+				}
+			}
+		},
+		"eval": {
+			"name": "eval",
+			"description": "Evaluate your code snippet.",
+			"subcommand": {
+				"code": {
+					"name": "code",
+					"description": "Code to evaluate."
+				},
+				"depth": {
+					"name": "depth",
+					"description": "Indentation depth."
+				}
+			}
+		},
+		"help": {
+			"name": "help",
+			"description": "Get more info about Mindgame."
+		},
+		"ranking": {
+			"name": "ranking",
+			"description": "See server or global ranking."
+		}
+	},
+	"contextLocalizations": {
+		"statistics": "Statistics",
+		"profile": "Show profile",
+		"sweep": "Sweep messages"
+	},
 	"config": {
 		"channelWatchers": "{count} 👀 see this channel.",
 		"selectDefaultChannel": "Select default text channel.",
@@ -84,15 +153,26 @@
 		"sweeped": "Sweeped {count} messages."
 	},
 	"ranking": {
-		"title": "Ranking {scope} - {type}",
+		"title": "Ranking",
 		"footer": "Page {page} of {pages}",
 		"first": "👑",
 		"you": "👈",
-		"rankingSortSelect": "{sort}",
 		"pageUpButtonLabel": "⬅️ Back",
 		"pageDownButtonLabel": "Next ➡️",
 		"guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
 		"allGuildsButtonLabel": "Global 🌎"
+	},
+	"rankingSortings": {
+		"label": {
+			"experience": "Experience",
+			"voice time": "Voice time"
+		},
+		"range": {
+			"total": "Overall",
+			"day": "Day",
+			"week": "Week",
+			"month": "Month"
+		}
 	},
 	"help": {
 		"title": "Help",
@@ -121,7 +201,7 @@
 		"ownerOnly": "This feature can only be used by application owner.",
 		"missingPermissions": "Seems like I don't have enough permissions to function properly. Invite me again and assure that I have all desired permissions.",
 		"noPermissions": "You don't have permission to use this.",
-		"levelRequirement": "Your level is too low.\nReach {level} level and try again."
+		"levelRequirement": "Your level is too low.\nReach **Level {level}** and try again."
 	},
 	"error": {
 		"title": "Error",

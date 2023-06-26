@@ -1,11 +1,11 @@
 import { StringSelectMenuBuilder, TextChannel } from "discord.js";
-import ExtendedClient from "../../../client/ExtendedClient";
 import { SelectMenuOption, Sorting } from "../../../interfaces";
+import i18n from "../../../client/i18n";
 
-const getChannelSelect = async (client: ExtendedClient, currentDefault: TextChannel, options: SelectMenuOption[]) => {
+const getChannelSelect = async (currentDefault: TextChannel, options: SelectMenuOption[]) => {
     const channelSelect = new StringSelectMenuBuilder()
         .setCustomId("defaultChannelSelect")
-        .setPlaceholder(currentDefault ? client.i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault!.name }) : client.i18n.__("config.selectChannelPlaceholderNoDefault"))
+        .setPlaceholder(currentDefault ? i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault!.name }) : i18n.__("config.selectChannelPlaceholderNoDefault"))
         .setMinValues(1)
         .setMaxValues(1)
         .addOptions(options);
@@ -13,10 +13,10 @@ const getChannelSelect = async (client: ExtendedClient, currentDefault: TextChan
     return channelSelect;
 }
 
-const getRankingSortSelect = async (client: ExtendedClient, sorting: Sorting, options: SelectMenuOption[]) => {
+const getRankingSortSelect = async (sorting: Sorting, options: SelectMenuOption[]) => {
     const rankingSortSelect = new StringSelectMenuBuilder()
         .setCustomId("rankingSortSelect")
-        .setPlaceholder(client.i18n.__mf("ranking.rankingSortSelect", { sort: `${sorting.label.toUpperCase()} (${sorting.range.toUpperCase()})` }))
+        .setPlaceholder(`${i18n.__(`rankingSortings.label.${sorting.label}`)} (${i18n.__(`rankingSortings.range.${sorting.range}`)})`)
         .setMinValues(1)
         .setMaxValues(1)
         .addOptions(options);

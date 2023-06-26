@@ -1,3 +1,4 @@
+import i18n from "../client/i18n";
 import { Command } from "../interfaces";
 import { getConfigMessagePayload } from "../modules/messages";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -5,19 +6,13 @@ import { PermissionFlagsBits } from "discord.js";
 
 export const config: Command = {
     data: new SlashCommandBuilder()
-        .setName(`config`)
-        .setDescription(`Sends guild config message.`)
+        .setName("config")
+        .setDescription(i18n.__("commandLocalizations.config.description"))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false),
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-        
-        if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
-            return;
-        }
-
-        const configMessage = await getConfigMessagePayload(client, interaction.guild!);
-        await interaction.followUp(configMessage);
+        const configMessagePayload = await getConfigMessagePayload(client, interaction);
+        await interaction.followUp(configMessagePayload);
     }
 }

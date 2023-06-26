@@ -1,4 +1,73 @@
 {
+	"commandLocalizations": {
+		"color": {
+			"name": "kolor",
+			"description": "Zmień kolor nazwy użytkownika."
+		},
+		"commits": {
+			"name": "zmiany",
+			"description": "Zobacz ostatnie zmiany kodu źródłowego."
+		},
+		"config": {
+			"name": "konfiguracja",
+			"description": "Dostosuj ustawienia serwera."
+		},
+		"ephemeral-channel": {
+			"name": "kanał-efemeryczny",
+			"description": "Stwórz kanał efemeryczny (wiadomości na tym kanalę znikają po jakimś czasie).",
+			"subcommand": {
+				"create": {
+					"name": "stwórz",
+					"description": "Stwórz kanał efemeryczny (wiadomości na tym kanalę znikają po jakimś czasie)."
+				},
+				"edit": {
+					"name": "edytuj",
+					"description": "Edytuj kanał efemeryczny."
+				},
+				"delete": {
+					"name": "usuń",
+					"description": "Usuń kanał efemeryczny."
+				}
+			},
+			"option": {
+				"channel": {
+					"name": "kanał",
+					"description": "Wybrany kanał tekstowy."
+				},
+				"timeout": {
+					"name": "opóźnienie",
+					"description": "Ilość czasu po którym wiadomości zostaną usunięte."
+				}
+			}
+		},
+		"eval": {
+			"name": "wywołaj",
+			"description": "Wywołaj kawałek kodu.",
+			"subcommand": {
+				"code": {
+					"name": "kod",
+					"description": "Kod do wywołania."
+				},
+				"depth": {
+					"name": "głębokość",
+					"description": "Głębokość wcięć w kodzie."
+				}
+			}
+		},
+		"help": {
+			"name": "pomoc",
+			"description": "Zdobądź więcej informacji o Mindgame."
+		},
+		"ranking": {
+			"name": "ranking",
+			"description": "Zobacz ranking serwerowy lub globalny."
+		}
+	},
+	"contextLocalizations": {
+		"statistics": "Statystyki",
+		"profile": "Zobacz profil",
+		"sweep": "Posprzątaj wiadomości"
+	},
 	"config": {
 		"channelWatchers": "{count} 👀 widzi ten kanał.",
 		"selectDefaultChannel": "Wybierz domyślny kanał tekstowy.",
@@ -84,15 +153,26 @@
 		"sweeped": "Usunięto {count} wiadomości."
 	},
 	"ranking": {
-		"title": "Ranking {scope} - {type}",
+		"title": "Ranking",
 		"footer": "Strona {page} z {pages}",
 		"first": "👑",
 		"you": "👈",
-		"rankingSortSelect": "{sort}",
 		"pageUpButtonLabel": "⬅️ Poprzednia",
 		"pageDownButtonLabel": "Następna ➡️",
 		"guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
 		"allGuildsButtonLabel": "Globalny 🌎"
+	},
+	"rankingSortings": {
+		"label": {
+			"experience": "Doświadczenie",
+			"voice time": "Czas głosowy"
+		},
+		"range": {
+			"total": "Ogółem",
+			"day": "Dzień",
+			"week": "Tydzień",
+			"month": "Miesiąc"
+		}
 	},
 	"help": {
 		"title": "Pomoc",
@@ -121,7 +201,7 @@
 		"ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
 		"missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień. Zaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
 		"noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
-		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij {level} poziom i spróbuj ponownie."
+		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij **Poziom {level}** i spróbuj ponownie."
 	},
 	"error": {
 		"title": "Błąd",
@@ -130,5 +210,4 @@
 	"roles": {
 		"missingPermissions": "Nie mam wystarczających uprawnień. Ustaw moją rolę nad rolami które chcesz zarządzać."
 	}
-	
 }

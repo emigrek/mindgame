@@ -30,28 +30,28 @@ export const runMask = (client: ExtendedClient, mask: string, user: UserDocument
 export const sortings: Sorting[] = [
     {
         type: "exp",
-        label: "Experience",
+        label: "experience",
         range: "total",
         value: { "stats.exp": -1 },
         mask: "{stats.level} LVL ({stats.exp} EXP)"
     },
     {
         type: "day exp",
-        label: "Experience",
+        label: "experience",
         range: "day",
         value: { "day.exp": -1 },
         mask: "{day.exp} EXP"
     },
     {
         type: "week exp",
-        label: "Experience",
+        label: "experience",
         range: "week",
         value: { "week.exp": -1 },
         mask: "{week.exp} EXP"
     },
     {
         type: "month exp",
-        label: "Experience",
+        label: "experience",
         range: "month",
         value: { "month.exp": -1 },
         mask: "{month.exp} EXP"
@@ -79,7 +79,7 @@ export const sortings: Sorting[] = [
     // },
     {
         type: "day voice",
-        label: "Voice time",
+        label: "voice time",
         range: "day",
         value: { "day.time.voice": -1 },
         mask: "{day.time.voice}H"
@@ -101,7 +101,7 @@ export const sortings: Sorting[] = [
     
     {
         type: "week voice",
-        label: "Voice time",
+        label: "voice time",
         range: "week",
         value: { "week.time.voice": -1 },
         mask: "{week.time.voice}H"
@@ -123,7 +123,7 @@ export const sortings: Sorting[] = [
     
     {
         type: "month voice",
-        label: "Voice time",
+        label: "voice time",
         range: "month",
         value: { "month.time.voice": -1 },
         mask: "{month.time.voice}H"

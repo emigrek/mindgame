@@ -1,14 +1,15 @@
 import { GuildMember } from "discord.js";
 import { Button } from "../interfaces/Button";
-import { getColorMessagePayload } from "../modules/messages";
+import { getColorMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { switchColorRole } from "../modules/roles";
 
 const roleColorSwitch: Button = {
     customId: `roleColorSwitch`,
     run: async (client, interaction) => {
         await interaction.deferUpdate();
+        
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
+            await interaction.followUp({ ...getErrorMessagePayload(client), ephemeral: true });
             return;
         }
 

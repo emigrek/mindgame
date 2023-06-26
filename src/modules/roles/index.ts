@@ -4,6 +4,7 @@ import { getGuild, getGuilds, setLevelRolesHoist } from "../guild";
 import { getUser } from "../user";
 import { LevelTreshold } from "./tresholds";
 import { levelTresholds } from "./tresholds";
+import i18n from "../../client/i18n";
 
 
 const getLevelRoleTreshold = (level: number) => {
@@ -44,7 +45,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
 
         return await Promise.all(deletionPromise)
             .catch(async () => {
-                await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
+                await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
                 return null;
             })
             .finally(async () => {
@@ -67,7 +68,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
 
     return await Promise.all(creationPromise)
         .catch(async () => {
-            await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
+            await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
             return null;
         })
         .finally(async () => {
@@ -88,7 +89,7 @@ const syncGuildLevelRolesHoisting = async (client: ExtendedClient, interaction: 
 
     return await Promise.all(hoistingPromise)
         .catch(async () => {
-            await interaction.followUp({ content: client.i18n.__("roles.missingPermissions"), ephemeral: true });
+            await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
             return null;
         })
         .finally(async () => {

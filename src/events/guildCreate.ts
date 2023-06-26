@@ -4,6 +4,8 @@ import { createGuild } from "../modules/guild/";
 import { updatePresence } from "../modules/presence/";
 import { assignLevelRolesInGuild } from "../modules/roles/";
 import { setDefaultChannelId } from "../modules/guild";
+import i18n from "../client/i18n";
+import { InformationEmbed } from "../modules/messages/embeds";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);
@@ -24,7 +26,12 @@ export const guildCreate: Event = {
 
         const missingPermissions = checkClientMissingPermissions(guild);
         if(!missingPermissions || missingPermissions.length) {
-            await owner?.send(client.i18n.__("utils.missingPermissions"));
+            await owner?.send({
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__("utils.missingPermissions"))
+                ]
+            });
             await guild.leave();
             return;
         }
@@ -38,7 +45,12 @@ export const guildCreate: Event = {
         const textChannels = guild.channels.cache.filter((channel: BaseChannel) => channel.type === ChannelType.GuildText);
 
         if(!textChannels.size) {
-            await owner?.send(client.i18n.__("config.noValidChannels"));
+            await owner?.send({
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__("config.noValidChannels"))
+                ]
+            });
             return;
         }
 

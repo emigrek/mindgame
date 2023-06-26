@@ -1,18 +1,22 @@
+import i18n from "../client/i18n";
 import { Event } from "../interfaces";
+import { InformationEmbed } from "../modules/messages/embeds";
 import { getUser, updateUserStatistics } from "../modules/user";
 import config from "../utils/config";
 
 export const interactionCreate: Event = {
     name: "interactionCreate",
     run: async (client, interaction) => {
-        client.i18n.setLocale(interaction.locale);
+        i18n.setLocale(interaction.locale);
         const sourceInteraction = client.interactions.get(interaction.customId);
 
         if (sourceInteraction?.permissions) {
             if (!interaction.member.permissions.has(sourceInteraction.permissions)) {
                 return interaction.reply({
-                    content: client.i18n.__("utils.noPermissions"),
-                    ephemeral: true
+                    embeds: [
+                        InformationEmbed()
+                            .setDescription(i18n.__("utils.noPermissions"))
+                    ], ephemeral: true
                 });
             }
         }
@@ -24,22 +28,35 @@ export const interactionCreate: Event = {
 
             if (command.options?.ownerOnly) {
                 if (config.ownerId !== interaction.user.id) {
-                    return interaction.reply({ content: client.i18n.__("utils.userOnly"), ephemeral: true });
+                    return interaction.reply({
+                        embeds: [
+                            InformationEmbed()
+                                .setDescription(i18n.__("utils.userOnly"))
+                        ], ephemeral: true
+                    });
                 }
             }
 
             if (command.options?.level) {
                 const user = await getUser(interaction.user);
                 if (!user) {
-                    return interaction.reply({ content: client.i18n.__("utils.userNotFound"), ephemeral: true });
+                    return interaction.reply({
+                        embeds: [
+                            InformationEmbed()
+                                .setDescription(i18n.__("utils.userNotFound"))
+                        ], ephemeral: true
+                    });
                 }
 
                 if (user.stats.level < command.options.level) {
                     return interaction.reply({
-                        content: client.i18n.__mf("utils.levelRequirement", {
-                            level: command.options.level
-                        }), ephemeral: true
-                    });
+                        embeds: [
+                            InformationEmbed()
+                                .setDescription(i18n.__mf("utils.levelRequirement", {
+                                    level: command.options.level
+                                }))
+                        ], ephemeral: true
+                    })
                 }
             }
 

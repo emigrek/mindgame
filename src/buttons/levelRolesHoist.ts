@@ -1,6 +1,6 @@
 import { Button } from "../interfaces/Button";
 import { setLevelRolesHoist } from "../modules/guild";
-import { getConfigMessagePayload } from "../modules/messages";
+import { getConfigMessagePayload, getErrorMessagePayload } from "../modules/messages";
 import { syncGuildLevelRolesHoisting } from "../modules/roles";
 
 const levelRolesHoist: Button = {
@@ -9,7 +9,7 @@ const levelRolesHoist: Button = {
         await interaction.deferUpdate();
 
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
+            await interaction.followUp(getErrorMessagePayload(client));
             return;
         }
 
@@ -18,7 +18,7 @@ const levelRolesHoist: Button = {
             await setLevelRolesHoist(interaction.guild);
         }
         
-        const configMessage = await getConfigMessagePayload(client, interaction.guild);
+        const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);
     }
 }

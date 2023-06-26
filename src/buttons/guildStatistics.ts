@@ -1,5 +1,5 @@
 import { Button } from "../interfaces";
-import { getStatisticsMessagePayload } from "../modules/messages";
+import { getErrorMessagePayload, getStatisticsMessagePayload } from "../modules/messages";
 
 const guildStatistics: Button = {
     customId: `guildStatistics`,
@@ -7,7 +7,7 @@ const guildStatistics: Button = {
         await interaction.deferReply({ ephemeral: true });
 
         if(!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
+            await interaction.followUp(getErrorMessagePayload(client));
             return;
         }
 

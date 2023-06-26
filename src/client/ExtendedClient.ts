@@ -1,5 +1,4 @@
 import { Client, Collection, REST, Routes } from "discord.js";
-import i18n from "i18n";
 import { Event, Module, Interaction, Command, Button, Select, ContextMenu } from "../interfaces";
 
 import events from "../events";
@@ -11,8 +10,10 @@ import selects from "../selects";
 import contexts from "../contexts";
 
 import config from "../utils/config";
-import { join } from "path";
 import moment from "moment";
+
+import localeList from "./localeList";
+import i18n from "./i18n";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -23,18 +24,9 @@ class ExtendedClient extends Client {
     public selects: Collection<string, Select> = new Collection();
     public contexts: Collection<string, ContextMenu> = new Collection();
 
-    public locales = ["en-US", "pl"];
-    public i18n = i18n;
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
     public async init() {
-        this.i18n.configure({
-            locales: this.locales,
-            directory: join(__dirname, "..", "translations"),
-            defaultLocale: "en-US",
-            objectNotation: true
-        });
-
         moment.locale("pl-PL");
 
         this.loadContexts();
@@ -94,7 +86,36 @@ class ExtendedClient extends Client {
         }
     }
 
+    public loadLocalizations() {
+        for (const [name, command] of this.commands) {
+            const { data } = command;
+            for (const locale of localeList) {
+                data.setNameLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.name`, locale }))
+                data.setDescriptionLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.description`, locale }));
+
+                data.options?.forEach((subcommand: any) => {
+                    subcommand.setNameLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.subcommand.${subcommand.name}.name`, locale }))
+                    subcommand.setDescriptionLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.subcommand.${subcommand.name}.description`, locale }));
+
+                    subcommand.options?.forEach((option: any) => {
+                        option.setNameLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.option.${option.name}.name`, locale }))
+                        option.setDescriptionLocalization(locale, i18n.__({ phrase: `commandLocalizations.${name}.option.${option.name}.description`, locale }));
+                    })
+                })
+            }
+        }
+
+        for (const [name, context] of this.contexts) {
+            for (const locale of localeList) {
+                type Locale = 'en-US' | 'en-GB' | 'bg' | 'zh-CN' | 'zh-TW' | 'hr' | 'cs' | 'da' | 'nl' | 'fi' | 'fr' | 'de' | 'el' | 'hi' | 'hu' | 'it' | 'ja' | 'ko' | 'lt' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'ru' | 'es-ES' | 'sv-SE' | 'th' | 'tr' | 'uk' | 'vi';
+                context.data.setNameLocalization(locale as Locale, i18n.__({ phrase: `contextLocalizations.${name}`, locale }));
+            }
+        }
+    }
+
     public async putSlashCommands() {
+        this.loadLocalizations();
+
         const rest = new REST({ version: '10' }).setToken(config.token);
         const commandsData = this.commands.map(command => command.data.toJSON());
         const contextsData = this.contexts.map(context => context.data.toJSON());

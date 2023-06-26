@@ -1,23 +1,18 @@
 import { Command } from "../interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getColorMessagePayload } from "../modules/messages";
+import i18n from "../client/i18n";
 
 export const color: Command = {
     data: new SlashCommandBuilder()
-        .setName(`color`)
-        .setDescription(`Set up your custom color role`)
+        .setName("color")
+        .setDescription(i18n.__("commandLocalizations.color.description"))
         .setDMPermission(false),
     options: {
-        level: 160
+        level: 60
     },
     execute: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
-
-        if (!interaction.guild) {
-            await interaction.followUp(client.i18n.__("utils.guildOnly"));
-            return;
-        }
-
         const colorMessagePayload = await getColorMessagePayload(client, interaction);
         await interaction.followUp(colorMessagePayload);
     }

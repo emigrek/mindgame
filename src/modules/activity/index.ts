@@ -224,13 +224,6 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
             await startPresenceActivity(client, member, presence);
             continue;
         }
-
-        if (presence.clientStatus !== activity.clientStatus) {
-            outOfSync.push(activity.userId);
-            await endPresenceActivity(client, member);
-            await startPresenceActivity(client, member, presence);
-            continue;
-        }
     }
 
     return outOfSync;
