@@ -219,7 +219,7 @@ const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: 
         userId: { $in: Array.from(usersFilter) },
     } : {})) / 13);
 
-    const onPage = results.slice((page - 1) * 13, page * 13);
+    const onPage = results.slice((page - 1) * 12, page * 12);
 
     return {
         onPage,

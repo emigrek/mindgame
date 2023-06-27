@@ -370,7 +370,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const { onPage, pagesCount } = await getRanking(sortingType, page, guild, userIds);
 
     const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
-        const relativeIndex = index + 1 + ((page - 1) * 13);
+        const relativeIndex = index + 1 + ((page - 1) * 12);
 
         return {
             name: `${relativeIndex}. ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
