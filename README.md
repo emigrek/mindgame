@@ -4,7 +4,7 @@
 Advanced discord application with **leveling** and **activity tracking** utilities.
 
 ## 👀 Preview
-![Feature preview](https://i.imgur.com/MBzq7TU.png)
+![Feature preview](https://i.imgur.com/VTAoGN6.png)
 
 ## 🌍 Locales
 This application is fully translated (including slash commands, context menus, etc.) in:
