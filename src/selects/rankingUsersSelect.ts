@@ -12,6 +12,7 @@ export const rankingUsersSelect: Select = {
 
         rankingState.userIds = interaction.values;
         rankingState.guildOnly = false;
+        rankingState.page = 1;
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as UserSelectMenuInteraction);
         await interaction.editReply(rankingMessagePayload);

@@ -374,13 +374,13 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         const indexString = () => {
             switch(relativeIndex) {
                 case 1:
-                    return "`🥇`";
+                    return "`🥇.`";
                 case 2:
-                    return "`🥈`";
+                    return "`🥈.`";
                 case 3:
-                    return "`🥉`";
+                    return "`🥉.`";
                 default:
-                    return `\`${relativeIndex}\``;
+                    return `\`${relativeIndex}.\``;
             }
         }
  
