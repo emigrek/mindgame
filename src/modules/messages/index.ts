@@ -371,9 +371,21 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
         const relativeIndex = index + 1 + ((page - 1) * 12);
-
+        const indexString = () => {
+            switch(relativeIndex) {
+                case 1:
+                    return "`🥇`";
+                case 2:
+                    return "`🥈`";
+                case 3:
+                    return "`🥉`";
+                default:
+                    return `\`${relativeIndex}\``;
+            }
+        }
+ 
         return {
-            name: `${relativeIndex}. ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            name: `${indexString()} ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
             inline: true
         };
