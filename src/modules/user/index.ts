@@ -198,11 +198,11 @@ const clearExperience = async () => {
 const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: string[]) => {
     const usersFilter = new Set<string>();
 
-    if (userIds) {
+    if (userIds?.length) {
         userIds.forEach((userId) => usersFilter.add(userId));
     }
 
-    if (guild && !userIds) {
+    if (guild && !userIds?.length) {
         const guildUserIds = guild.members.cache.map((member) => member.user.id);
         guildUserIds.forEach((userId) => {
             usersFilter.add(userId);
@@ -217,7 +217,7 @@ const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: 
 
     const pagesCount = Math.ceil((await UserModel.countDocuments(usersFilter.size ? {
         userId: { $in: Array.from(usersFilter) },
-    } : {})) / 13);
+    } : {})) / 13) || 1;
 
     const onPage = results.slice((page - 1) * 12, page * 12);
 

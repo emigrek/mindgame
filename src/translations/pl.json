@@ -157,6 +157,7 @@
 		"footer": "Strona {page} z {pages}.",
 		"first": "👑",
 		"you": "👈",
+		"empty": "Brak danych.",
 		"pageUpButtonLabel": "⬅️ Poprzednia",
 		"pageDownButtonLabel": "Następna ➡️",
 		"guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",

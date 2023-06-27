@@ -401,6 +401,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
             InformationEmbed()
                 .setTitle(i18n.__mf("ranking.title"))
                 .setFields(fields)
+                .setDescription(!onPage.length ? i18n.__("ranking.empty") : null)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
                 })

@@ -157,6 +157,7 @@
 		"footer": "Page {page} of {pages}.",
 		"first": "👑",
 		"you": "👈",
+		"empty": "No users found.",
 		"pageUpButtonLabel": "⬅️ Back",
 		"pageDownButtonLabel": "Next ➡️",
 		"guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
