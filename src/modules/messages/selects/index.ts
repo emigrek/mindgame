@@ -1,4 +1,4 @@
-import { StringSelectMenuBuilder, TextChannel } from "discord.js";
+import { StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from "discord.js";
 import { SelectMenuOption, Sorting } from "../../../interfaces";
 import i18n from "../../../client/i18n";
 
@@ -24,4 +24,14 @@ const getRankingSortSelect = async (sorting: Sorting, options: SelectMenuOption[
     return rankingSortSelect;
 };
 
-export { getChannelSelect, getRankingSortSelect };
+const getRankingUsersSelect = () => {
+    const rankingUsersSelect = new UserSelectMenuBuilder()
+        .setCustomId("rankingUsersSelect")
+        .setPlaceholder(i18n.__("ranking.selectUsersPlaceholder"))
+        .setMinValues(0)
+        .setMaxValues(25);
+        
+    return rankingUsersSelect;
+};
+
+export { getChannelSelect, getRankingSortSelect, getRankingUsersSelect };

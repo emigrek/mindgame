@@ -1,16 +1,16 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { SelectMenuOption } from "../../interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
-import { getChannelSelect, getRankingSortSelect } from "./selects";
+import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { getSortingByType, runMask, sortings } from "../user/sortings";
 import moment from "moment";
 import Vibrant = require('node-vibrant');
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
-import { getRanking, getRankingPagesCount, getUser } from "../user";
+import { getRanking, getUser } from "../user";
 import { getMemberColorRole } from "../roles";
 import messageSchema from "../schemas/Message";
 import mongoose from "mongoose";
@@ -73,12 +73,12 @@ const useHtmlFile = async (html: string) => {
 
 const getConfigMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | AnySelectMenuInteraction) => {
     const { guild } = interaction;
-    if (!guild) 
-        return getErrorMessagePayload(client);
+    if (!guild)
+        return getErrorMessagePayload();
 
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild)
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
 
     const owner = await client.users.fetch(guild.ownerId);
     const textChannels = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildText);
@@ -86,7 +86,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
 
     if (!textChannels.size) {
         await owner?.send({ content: i18n.__("config.noValidChannels") });
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
     }
 
     const defaultChannelOptions = textChannels.map((channel) => {
@@ -175,7 +175,7 @@ const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild)
 
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild)
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
 
     const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
     const colors: ImageHexColors = await useImageHex(guildIcon);
@@ -192,7 +192,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 
     const sourceUser = await getUser(user);
     if (!sourceUser)
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
 
@@ -234,7 +234,7 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
         });
 
     if (!commits)
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
 
     const fields: EmbedField[] = commits.map((commit: any) => ({
         name: `${commit.author.login}`,
@@ -298,8 +298,8 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
 }
 
 const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
-    if (!interaction.guild) 
-        return getErrorMessagePayload(client);
+    if (!interaction.guild)
+        return getErrorMessagePayload();
 
     const sourceUser = await getUser(interaction.user);
     if (!sourceUser) {
@@ -356,12 +356,9 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     };
 };
 
-const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction) => {
-    const { guildOnly, page, sorting } = rankingStore.get(interaction.user.id);
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction) => {
+    const { guildOnly, page, userIds, sorting } = rankingStore.get(interaction.user.id);
     const guild = (guildOnly && interaction.guild) ? interaction.guild : undefined;
-
-    const sortingType = getSortingByType(sorting);
-    const pagesCount = await getRankingPagesCount(client, sortingType, guild);
 
     const selectOptions = sortings.map((sorting) => ({
         label: i18n.__(`rankingSortings.label.${sorting.label}`),
@@ -369,25 +366,34 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         value: sorting.type
     }));
 
-    const users = await getRanking(client, sortingType, page, guild);
-    const fields: EmbedField[] = users.map((user: UserDocument, index) => ({
-        name: `${index + 1 + ((page - 1) * 10)}. ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
-        value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
-        inline: true
-    }));
+    const sortingType = getSortingByType(sorting);
+    const { onPage, pagesCount } = await getRanking(sortingType, page, guild, userIds);
+
+    const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
+        const relativeIndex = index + 1 + ((page - 1) * 13);
+
+        return {
+            name: `${relativeIndex}. ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
+            inline: true
+        };
+    });
 
     const sortSelectMenu = await getRankingSortSelect(sortingType, selectOptions);
+    const usersSelectMenu = getRankingUsersSelect();
     const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
     const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
     const guildOnlyButton = await getRankingGuildOnlyButton(guild ? true : false);
 
-    const topRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+    const sortRow = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(sortSelectMenu);
-    const bottomRow = new ActionRowBuilder<ButtonBuilder>()
+    const usersRow = new ActionRowBuilder<UserSelectMenuBuilder>()
+        .addComponents(usersSelectMenu);
+    const paginationRow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(pageUpButton, pageDownButton);
 
-    if (interaction.guild) {
-        bottomRow.addComponents(guildOnlyButton);
+    if (interaction.guild && !userIds.length) {
+        paginationRow.addComponents(guildOnlyButton);
     }
 
     return {
@@ -399,7 +405,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
                 })
         ],
-        components: [topRow, bottomRow]
+        components: [sortRow, usersRow, paginationRow]
     }
 };
 
@@ -407,7 +413,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
-    if (!sourceUser) return getErrorMessagePayload(client);
+    if (!sourceUser) return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
     const reward = parseInt(config.dailyReward);
@@ -441,15 +447,15 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 };
 
 const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
-    if (!interaction.guild) 
-        return getErrorMessagePayload(client);
+    if (!interaction.guild)
+        return getErrorMessagePayload();
 
     const subcommand = interaction.options.getSubcommand();
     const channel = interaction.options.getChannel('channel');
     const timeout = interaction.options.getInteger('timeout');
 
     if (!channel)
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
 
     const exists = await getEphemeralChannel(channel.id);
 
@@ -464,7 +470,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
 
     if (subcommand === 'create') {
         if (!timeout)
-            return getErrorMessagePayload(client);
+            return getErrorMessagePayload();
 
         if (exists) {
             return {
@@ -498,7 +504,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
         }
     } else if (subcommand === 'edit') {
         if (!timeout)
-            return getErrorMessagePayload(client);
+            return getErrorMessagePayload();
 
         const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
 
@@ -532,7 +538,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
             ]
         }
     } else {
-        return getErrorMessagePayload(client);
+        return getErrorMessagePayload();
     }
 };
 
@@ -587,7 +593,7 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
     }
 };
 
-const getErrorMessagePayload = (client: ExtendedClient) => {
+const getErrorMessagePayload = () => {
     const embed = ErrorEmbed()
         .setTitle(i18n.__("error.title"))
         .setDescription(i18n.__("error.description"));

@@ -16,19 +16,19 @@ const root = (x: number, n: number) => {
 
 const expToLevel = (exp: number) => {
     return Math.floor(
-        root(exp/expInflationRate, 3) * expConstant
+        root(exp / expInflationRate, 3) * expConstant
     );
 };
 
 const levelToExp = (level: number) => {
     return Math.floor(
-        Math.pow(level/expConstant, 3) * expInflationRate
+        Math.pow(level / expConstant, 3) * expInflationRate
     );
 };
 
 const createUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });
-    if(exists) return exists;
+    if (exists) return exists;
 
     const newUser = new UserModel({
         userId: user.id,
@@ -42,19 +42,19 @@ const createUser = async (user: User) => {
 
 const deleteUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) return null;
+    if (!exists) return null;
 
     await UserModel.deleteOne({ userId: user.id });
     return true;
 }
 
 const getUser = async (user: User) => {
-    if(user.bot)
+    if (user.bot)
         return null;
 
     let exists = await UserModel.findOne({ userId: user.id });
 
-    if(!exists) {
+    if (!exists) {
         exists = await createUser(user);
     }
 
@@ -63,7 +63,7 @@ const getUser = async (user: User) => {
 
 const getUserRank = async (user: DatabaseUser) => {
     const exists = await UserModel.findOne({ userId: user.userId });
-    if(!exists) return null;
+    if (!exists) return null;
 
     const users = await UserModel.find();
     const sorted = users.sort((a, b) => b.stats.exp - a.stats.exp);
@@ -79,7 +79,7 @@ const getUsers = async () => {
 
 const updateUser = async (user: User) => {
     let exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) {
+    if (!exists) {
         exists = await createUser(user);
     }
 
@@ -93,7 +93,7 @@ const updateUser = async (user: User) => {
 
 const setPublicTimeStats = async (user: User) => {
     let exists = await UserModel.findOne({ userId: user.id });
-    if(!exists) {
+    if (!exists) {
         exists = await createUser(user);
     }
 
@@ -171,14 +171,14 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
 
     let userLeveledUpDuringUpdate = false; // Flag
 
-    if(userSource.stats.exp >= levelToExp(userSource.stats.level + 1)) // When exceed exp needed to level up
+    if (userSource.stats.exp >= levelToExp(userSource.stats.level + 1)) // When exceed exp needed to level up
         userLeveledUpDuringUpdate = true; // Mark flag to emit event
 
     userSource.stats.level = expToLevel(userSource.stats.exp); // Update level
 
     await userSource.save();
-    
-    if(userLeveledUpDuringUpdate)
+
+    if (userLeveledUpDuringUpdate)
         client.emit("userLeveledUp", user, sourceGuild); // Emiting event
 
     return userSource;
@@ -195,43 +195,36 @@ const clearExperience = async () => {
     await UserModel.updateMany({}, { $set: { "stats.exp": 0, "stats.level": 0 } });
 }
 
-const getRanking = async (client: ExtendedClient, type: Sorting, page: number, guild?: Guild) => {
-    const userIds = [];
-    if(guild) {
-        const guildUserIds = guild.members.cache.map((member) => member.id);
-        userIds.push(...guildUserIds);
-    }
-    const users = await UserModel.find(userIds.length ? {
-        userId: { $in: userIds }
-    } : {}).sort(type.value);
-    const onPage = users.slice((page - 1) * 10, page * 10);
-    return onPage;
-};
+const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: string[]) => {
+    const usersFilter = new Set<string>();
 
-const findUserRankingPage = async (client: ExtendedClient, type: Sorting, user: User, guild?: Guild) => {
-    const userIds = [];
-    if(guild) {
-        const guildUserIds = guild.members.cache.map((member) => member.id);
-        userIds.push(...guildUserIds);
-    }
-    const users = await UserModel.find(userIds.length ? {
-        userId: { $in: userIds }
-    } : {}).sort(type.value);
-    const userIndex = users.findIndex((userSource) => userSource.userId === user.id);
-    return Math.ceil(userIndex / 10) || 1;
-};
-
-const getRankingPagesCount = async (client: ExtendedClient, type: Sorting, guild?: Guild) => {
-    const userIds = [];
-    if(guild) {
-        const guildUserIds = guild.members.cache.map((member) => member.id);
-        userIds.push(...guildUserIds);
+    if (userIds) {
+        userIds.forEach((userId) => usersFilter.add(userId));
     }
 
-    const users = await UserModel.find(userIds.length ? {
-        userId: { $in: userIds }
-    } : {}).sort(type.value);
-    return Math.ceil(users.length / 10);
+    if (guild && !userIds) {
+        const guildUserIds = guild.members.cache.map((member) => member.user.id);
+        guildUserIds.forEach((userId) => {
+            usersFilter.add(userId);
+        });
+    }
+
+    const results = await UserModel.find(
+        usersFilter.size ? {
+            userId: { $in: Array.from(usersFilter) },
+        } : {}
+    ).sort(type.value);
+
+    const pagesCount = Math.ceil((await UserModel.countDocuments(usersFilter.size ? {
+        userId: { $in: Array.from(usersFilter) },
+    } : {})) / 13);
+
+    const onPage = results.slice((page - 1) * 13, page * 13);
+
+    return {
+        onPage,
+        pagesCount
+    }
 };
 
 const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
@@ -251,7 +244,7 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     };
 
     everyUser(client, async (sourceUser) => {
-        switch(type) {
+        switch (type) {
             case "day":
                 sourceUser.day = blankTemporaryStatistic;
                 break;
@@ -266,4 +259,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, getRankingPagesCount, findUserRankingPage, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };

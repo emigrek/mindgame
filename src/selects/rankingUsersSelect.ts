@@ -1,19 +1,19 @@
 import { getRankingMessagePayload } from "../modules/messages";
 import { Select } from "../interfaces/Select";
-import { StringSelectMenuInteraction } from "discord.js";
+import { UserSelectMenuInteraction } from "discord.js";
 import { rankingStore } from "../stores/rankingStore";
 
-export const rankingSortSelect: Select = {
-    customId: "rankingSortSelect",
+export const rankingUsersSelect: Select = {
+    customId: "rankingUsersSelect",
     run: async (client, interaction) => {
         await interaction.deferUpdate();
 
         const rankingState = rankingStore.get(interaction.user.id);
 
-        rankingState.sorting = interaction.values[0];
-        rankingState.page = 1;
+        rankingState.userIds = interaction.values;
+        rankingState.guildOnly = false;
 
-        const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction);
+        const rankingMessagePayload = await getRankingMessagePayload(client, interaction as UserSelectMenuInteraction);
         await interaction.editReply(rankingMessagePayload);
     }
 }

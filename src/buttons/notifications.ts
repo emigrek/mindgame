@@ -8,7 +8,7 @@ const notifications: Button = {
         await interaction.deferUpdate();
 
         if(!interaction.guild) {
-            await interaction.followUp(getErrorMessagePayload(client));
+            await interaction.followUp(getErrorMessagePayload());
             return;
         }
 

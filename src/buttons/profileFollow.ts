@@ -13,7 +13,7 @@ const profileFollow: Button = {
 
         const { targetUserId } = profileStore.get(interaction.user.id);
         if (!targetUserId) {
-            await interaction.followUp({ ...getErrorMessagePayload(client), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
             return;
         }
 

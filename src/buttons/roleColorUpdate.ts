@@ -9,7 +9,7 @@ const roleColorUpdate: Button = {
         await interaction.deferUpdate();
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(client), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
             return;
         }
 

@@ -154,13 +154,14 @@
 	},
 	"ranking": {
 		"title": "Ranking",
-		"footer": "Strona {page} z {pages}",
+		"footer": "Strona {page} z {pages}.",
 		"first": "👑",
 		"you": "👈",
 		"pageUpButtonLabel": "⬅️ Poprzednia",
 		"pageDownButtonLabel": "Następna ➡️",
 		"guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
-		"allGuildsButtonLabel": "Globalny 🌎"
+		"allGuildsButtonLabel": "Globalny 🌎",
+		"selectUsersPlaceholder": "Porównaj użytkowników"
 	},
 	"rankingSortings": {
 		"label": {
@@ -187,19 +188,19 @@
 		"repoButtonLabel": "Repozytorium"
 	},
 	"ephemeralChannel": {
-		"alreadyExists": "Ten kanał jest już kanałem efemerycznym. Użyj podkomendy `edit` aby zmienić czas.",
-		"created": "<#{channelId}> jest teraz kanałem efemerycznym. Wiadomości na tym kanalę będą znikać po {timeout} minutach.",
+		"alreadyExists": "Ten kanał jest już kanałem efemerycznym.\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",
+		"created": "<#{channelId}> jest teraz kanałem efemerycznym.\nWiadomości na tym kanalę będą znikać po {timeout} minutach.\n\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",
 		"edited": "Czas znikania wiadomości na kanalę <#{channelId}> został zmieniony na {timeout} minut(y).",
 		"deleted": "<#{channelId}> nie jest już kanałem efemerycznym.",
 		"notFound": "Ten kanał nie jest kanałem efemerycznym.",
-		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze. Usuń jeden z nich aby utworzyć nowy."
+		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze.\nUsuń jeden z nich aby utworzyć nowy."
 	},
 	"utils": {
 		"userOnly": "Ta funkcja może zostać użyta tylko przez użytkowników z profilem.",
 		"textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
 		"guildOnly": "Ta funkcja może zostać użyta tylko w gildiach.",
 		"ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
-		"missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień. Zaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
+		"missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień.\nZaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
 		"noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij **Poziom {level}** i spróbuj ponownie."
 	},

@@ -7,7 +7,7 @@ const guildStatistics: Button = {
         await interaction.deferReply({ ephemeral: true });
 
         if(!interaction.guild) {
-            await interaction.followUp(getErrorMessagePayload(client));
+            await interaction.followUp(getErrorMessagePayload());
             return;
         }
 
