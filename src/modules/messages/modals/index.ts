@@ -1,10 +1,21 @@
 import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
 import i18n from "../../../client/i18n";
 
-const getRankingSettingsModal = (perPage: number) => {
+const getRankingSettingsModal = (page: number, pagesCount: number, perPage: number) => {
     const modal = new ModalBuilder()
         .setCustomId("rankingSettingsModal")
         .setTitle(i18n.__("ranking.settingsModal.title"));
+
+    const currentPage = new TextInputBuilder()
+        .setCustomId("currentPageInput")
+        .setLabel(i18n.__("ranking.settingsModal.currentPageInput.label"))
+        .setPlaceholder(
+            i18n.__mf("ranking.settingsModal.currentPageInput.placeholder", {
+                pagesCount
+            })
+        )
+        .setValue(page.toString())
+        .setStyle(TextInputStyle.Short);
 
     const perPageInput = new TextInputBuilder()
         .setCustomId("perPageInput")
@@ -13,10 +24,13 @@ const getRankingSettingsModal = (perPage: number) => {
         .setValue(perPage.toString())
         .setStyle(TextInputStyle.Short);
 
-    const row = new ActionRowBuilder<TextInputBuilder>()
-        .addComponents(perPageInput);
 
-    modal.addComponents(row);
+    modal.addComponents(
+        new ActionRowBuilder<TextInputBuilder>()
+            .addComponents(currentPage),
+        new ActionRowBuilder<TextInputBuilder>()
+            .addComponents(perPageInput)
+    );
 
     return modal;
 };

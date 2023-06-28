@@ -364,6 +364,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const sortingType = getSortingByType(sorting);
     const { onPage, pagesCount } = await getRanking(sortingType, page, perPage, guild, userIds);
+    
+    rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
     const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);

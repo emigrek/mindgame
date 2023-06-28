@@ -3,6 +3,7 @@ import { Store } from ".";
 interface RankingStoreInterface {
     page: number;
     perPage: number;
+    pagesCount: number;
     sorting: string;
     userIds: string[];
     guildOnly: boolean;
@@ -11,6 +12,7 @@ interface RankingStoreInterface {
 const initial: RankingStoreInterface = {
     page: 1,
     perPage: 6,
+    pagesCount: 1,
     sorting: "exp",
     userIds: [],
     guildOnly: false

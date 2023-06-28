@@ -166,6 +166,11 @@
 		"selectUsersPlaceholder": "Porównaj użytkowników",
 		"settingsModal": {
 			"title": "Ustawienia rankingu ⚙️",
+			"currentPageInput": {
+				"label": "Strona",
+				"placeholder": "Liczba od 1 do {pagesCount}.",
+				"invalid": "Nieprawidłowa liczba, musi być od 1 do {pagesCount}."
+			},
 			"perPageInput": {
 				"label": "Wyniki na stronę",
 				"placeholder": "Liczba od 1 do 25",

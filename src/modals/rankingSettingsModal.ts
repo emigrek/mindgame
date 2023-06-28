@@ -10,7 +10,21 @@ const rankingSettingsModal: Modal = {
         await interaction.deferUpdate();
 
         const rankingState = rankingStore.get(interaction.user.id);
+        const currentPage = parseInt(interaction.fields.getTextInputValue("currentPageInput"));
         const perPage = parseInt(interaction.fields.getTextInputValue("perPageInput"));
+
+        if(isNaN(currentPage) || currentPage < 1 || currentPage > rankingState.pagesCount) {
+            await interaction.followUp({
+                embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__mf("ranking.settingsModal.currentPageInput.invalid", {
+                            pagesCount: rankingState.pagesCount
+                        }))
+                ],
+                ephemeral: true
+            });
+            return;
+        }
         
         if(isNaN(perPage) || perPage < 1 || perPage > 25) {
             await interaction.followUp({
@@ -23,6 +37,7 @@ const rankingSettingsModal: Modal = {
             return;
         }
 
+        rankingState.page = currentPage;
         rankingState.perPage = perPage;
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction);
