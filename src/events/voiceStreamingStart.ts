@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { getVoiceActivity } from "../modules/activity";
+import { Event } from "@/interfaces";
+import { getVoiceActivity } from "@/modules/activity";
 
 export const voiceStreamingStart: Event = {
     name: "voiceStreamingStart",

@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose';
-import { Follow } from '../../interfaces/Follow';
+import { Follow } from '@/interfaces';
 
 export type FollowDocument = Follow & Document;
 

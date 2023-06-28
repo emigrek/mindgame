@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { endVoiceActivity, startVoiceActivity } from "../modules/activity";
+import { Event } from "@/interfaces";
+import { endVoiceActivity, startVoiceActivity } from "@/modules/activity";
 
 export const voiceChannelSwitch: Event = {
     name: "voiceChannelSwitch",

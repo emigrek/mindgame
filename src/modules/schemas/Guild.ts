@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose';
-import { Guild } from '../../interfaces';
+import { Guild } from '@/interfaces';
 
 export type GuildDocument = Guild & Document;
 

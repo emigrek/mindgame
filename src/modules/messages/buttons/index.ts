@@ -1,12 +1,12 @@
-import ExtendedClient from "../../../client/ExtendedClient";
+import ExtendedClient from "@/client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
-import { getMessage } from "..";
-import { getRandomAnimalEmoji } from "../../../utils/emojis";
-import { GuildDocument } from "../../schemas/Guild";
-import { UserDocument } from "../../schemas/User";
-import { getFollow } from "../../follow";
-import i18n from "../../../client/i18n";
+import { getMessage } from "@/modules/messages";
+import { getRandomAnimalEmoji } from "@/utils/emojis";
+import { GuildDocument } from "@/modules/schemas/Guild";
+import { UserDocument } from "@/modules/schemas/User";
+import { getFollow } from "@/modules/follow";
+import i18n from "@/client/i18n";
 
 const getNotificationsButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
     const notificationsButton = new ButtonBuilder()

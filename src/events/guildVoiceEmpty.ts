@@ -1,6 +1,6 @@
-import { Event } from "../interfaces";
-import { getGuild } from "../modules/guild";
-import { sweepTextChannel } from "../modules/messages";
+import { Event } from "@/interfaces";
+import { getGuild } from "@/modules/guild";
+import { sweepTextChannel } from "@/modules/messages";
 
 export const guildVoiceEmpty: Event = {
     name: "guildVoiceEmpty",

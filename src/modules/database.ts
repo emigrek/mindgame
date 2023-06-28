@@ -1,5 +1,5 @@
-import { Module } from "../interfaces";
-import config from "../utils/config";
+import { Module } from "@/interfaces";
+import config from "@/utils/config";
 import mongoose from "mongoose";
 
 export const database: Module = {

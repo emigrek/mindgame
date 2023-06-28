@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { clearExperience } from "../modules/user";
+import { Event } from "@/interfaces";
+import { clearExperience } from "@/modules/user";
 
 export const yearly: Event = {
     name: "yearly",

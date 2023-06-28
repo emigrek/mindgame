@@ -1,8 +1,8 @@
-import { Event } from "../interfaces"
-import { getEphemeralChannel } from "../modules/ephemeral-channel";
-import { isMessageCacheable } from "../modules/ephemeral-channel";
+import { Event } from "@/interfaces"
+import { getEphemeralChannel } from "@/modules/ephemeral-channel";
+import { isMessageCacheable } from "@/modules/ephemeral-channel";
 import { MessageReaction } from "discord.js";
-import { ephemeralChannelMessageCache } from "../modules/ephemeral-channel/cache";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 
 export const messageReactionRemove: Event = {
     name: "messageReactionRemove",

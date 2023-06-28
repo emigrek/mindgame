@@ -1,16 +1,16 @@
 import { Client, Collection, REST, Routes } from "discord.js";
-import { Event, Module, Interaction, Command, Button, Select, ContextMenu, Modal } from "../interfaces";
+import { Event, Module, Command, Button, Select, ContextMenu, Modal } from "@/interfaces";
 
-import events from "../events";
-import modules from "../modules";
-import interactions from "../interactions";
-import commands from "../commands";
-import buttons from "../buttons";
-import selects from "../selects";
-import contexts from "../contexts";
-import modals from "../modals";
+import events from "@/events";
+import modules from "@/modules";
 
-import config from "../utils/config";
+import commands from "@/interactions/commands";
+import buttons from "@/interactions/buttons";
+import selects from "@/interactions/selects";
+import contexts from "@/interactions/contexts";
+import modals from "@/interactions/modals";
+
+import config from "@/utils/config";
 import moment from "moment";
 
 import localeList from "./localeList";
@@ -19,7 +19,6 @@ import i18n from "./i18n";
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
     public modules: Collection<string, Module> = new Collection();
-    public interactions: Collection<string, Interaction> = new Collection();
     public commands: Collection<string, Command> = new Collection();
     public buttons: Collection<string, Button> = new Collection();
     public selects: Collection<string, Select> = new Collection();
@@ -34,7 +33,6 @@ class ExtendedClient extends Client {
         this.loadContexts();
         this.loadButtons();
         this.loadSelects();
-        this.loadInteractions();
         this.loadEvents();
         this.loadSlashCommands();
         this.loadModals();
@@ -74,12 +72,6 @@ class ExtendedClient extends Client {
     public async loadSelects() {
         for (const select of selects) {
             this.selects.set(select.customId, select);
-        }
-    }
-
-    public async loadInteractions() {
-        for (const interaction of interactions) {
-            this.interactions.set(interaction.customId, interaction);
         }
     }
 

@@ -1,25 +1,13 @@
-import i18n from "../client/i18n";
-import { Event } from "../interfaces";
-import { InformationEmbed } from "../modules/messages/embeds";
-import { getUser, updateUserStatistics } from "../modules/user";
-import config from "../utils/config";
+import i18n from "@/client/i18n";
+import { Event } from "@/interfaces";
+import { InformationEmbed } from "@/modules/messages/embeds";
+import { getUser, updateUserStatistics } from "@/modules/user";
+import config from "@/utils/config";
 
 export const interactionCreate: Event = {
     name: "interactionCreate",
     run: async (client, interaction) => {
         i18n.setLocale(interaction.locale);
-        const sourceInteraction = client.interactions.get(interaction.customId);
-
-        if (sourceInteraction?.permissions) {
-            if (!interaction.member.permissions.has(sourceInteraction.permissions)) {
-                return interaction.reply({
-                    embeds: [
-                        InformationEmbed()
-                            .setDescription(i18n.__("utils.noPermissions"))
-                    ], ephemeral: true
-                });
-            }
-        }
 
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);

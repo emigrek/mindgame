@@ -1,10 +1,10 @@
 import { GuildMember } from "discord.js";
-import ExtendedClient from "../client/ExtendedClient";
-import { Event } from "../interfaces";
-import { getLastVoiceActivity } from "../modules/activity";
-import { getFollowers } from "../modules/follow";
-import { getFollowMessagePayload } from "../modules/messages";
-import { getUser } from "../modules/user";
+import ExtendedClient from "@/client/ExtendedClient";
+import { Event } from "@/interfaces";
+import { getLastVoiceActivity } from "@/modules/activity";
+import { getFollowers } from "@/modules/follow";
+import { getFollowMessagePayload } from "@/modules/messages";
+import { getUser } from "@/modules/user";
 
 export const userBackFromLongVoiceBreak: Event = {
     name: "userBackFromLongVoiceBreak",

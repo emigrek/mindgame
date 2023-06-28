@@ -1,8 +1,8 @@
 import { TextChannel } from "discord.js";
-import { Event } from "../interfaces";
-import { getGuilds } from "../modules/guild";
-import { createMessage, getLevelUpMessagePayload } from "../modules/messages";
-import { assignUserLevelRole } from "../modules/roles";
+import { Event } from "@/interfaces";
+import { getGuilds } from "@/modules/guild";
+import { createMessage, getLevelUpMessagePayload } from "@/modules/messages";
+import { assignUserLevelRole } from "@/modules/roles";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",

@@ -1,4 +1,4 @@
-import Client from "../client/ExtendedClient";
+import Client from "@/client/ExtendedClient";
 
 interface Run {
     (client: Client, ...args: any[]): Promise<void>;

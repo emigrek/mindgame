@@ -1,4 +1,5 @@
-import { Module } from "../interfaces";
+import { Module } from "@/interfaces";
+
 import { activities } from "./activities";
 import { database } from "./database";
 import { presence } from "./presence";

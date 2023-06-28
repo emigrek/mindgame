@@ -1,7 +1,7 @@
-import { Event } from "../interfaces";
-import { getEphemeralChannel } from "../modules/ephemeral-channel";
-import { ephemeralChannelMessageCache } from "../modules/ephemeral-channel/cache";
-import { deleteMessage } from "../modules/messages"
+import { Event } from "@/interfaces";
+import { getEphemeralChannel } from "@/modules/ephemeral-channel";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
+import { deleteMessage } from "@/modules/messages"
 
 export const messageDeleteBulk: Event = {
     name: "messageDeleteBulk",

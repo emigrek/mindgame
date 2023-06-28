@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { endVoiceActivity, getGuildActiveVoiceActivities } from "../modules/activity";
+import { Event } from "@/interfaces";
+import { endVoiceActivity, getGuildActiveVoiceActivities } from "@/modules/activity";
 
 export const voiceChannelDeaf: Event = {
     name: "voiceChannelDeaf",

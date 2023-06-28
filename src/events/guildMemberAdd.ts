@@ -1,7 +1,7 @@
-import { Event } from "../interfaces";
-import { getGuild } from "../modules/guild";
-import { assignUserLevelRole } from "../modules/roles";
-import { createUser } from "../modules/user";
+import { Event } from "@/interfaces";
+import { getGuild } from "@/modules/guild";
+import { assignUserLevelRole } from "@/modules/roles";
+import { createUser } from "@/modules/user";
 
 export const guildMemberAdd: Event = {
     name: "guildMemberAdd",

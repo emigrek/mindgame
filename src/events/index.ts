@@ -1,4 +1,5 @@
-import { Event } from "../interfaces";
+import { Event } from "@/interfaces";
+
 import { ready } from "./ready";
 import { guildCreate } from "./guildCreate";
 import { interactionCreate } from "./interactionCreate";

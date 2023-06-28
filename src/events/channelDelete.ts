@@ -1,6 +1,6 @@
-import { Event } from "../interfaces";
-import { getEphemeralChannel } from "../modules/ephemeral-channel";
-import { ephemeralChannelMessageCache } from "../modules/ephemeral-channel/cache";
+import { Event } from "@/interfaces";
+import { getEphemeralChannel } from "@/modules/ephemeral-channel";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 
 export const channelDelete: Event = {
     name: "channelDelete",

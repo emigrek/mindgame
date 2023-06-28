@@ -1,5 +1,5 @@
 import { Schema, Document, SchemaTimestampsConfig } from 'mongoose';
-import { EphemeralChannel } from '../../interfaces/EphemeralChannel';
+import { EphemeralChannel } from '@/interfaces';
 
 export type EphemeralChannelDocument = EphemeralChannel & Document & SchemaTimestampsConfig;
 

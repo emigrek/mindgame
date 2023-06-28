@@ -1,8 +1,8 @@
 import { Guild, TextChannel, User } from "discord.js";
-import ExtendedClient from "../client/ExtendedClient";
-import { Event } from "../interfaces";
-import { getGuild } from "../modules/guild";
-import { createMessage, getDailyRewardMessagePayload } from "../modules/messages";
+import ExtendedClient from "@/client/ExtendedClient";
+import { Event } from "@/interfaces";
+import { getGuild } from "@/modules/guild";
+import { createMessage, getDailyRewardMessagePayload } from "@/modules/messages";
 
 
 export const userRecievedDailyReward: Event = {

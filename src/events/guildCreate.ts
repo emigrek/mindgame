@@ -1,11 +1,11 @@
 import { BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel } from "discord.js";
-import { Event } from "../interfaces";
-import { createGuild } from "../modules/guild/";
-import { updatePresence } from "../modules/presence/";
-import { assignLevelRolesInGuild } from "../modules/roles/";
-import { setDefaultChannelId } from "../modules/guild";
-import i18n from "../client/i18n";
-import { InformationEmbed } from "../modules/messages/embeds";
+import { Event } from "@/interfaces";
+import { createGuild } from "@/modules/guild/";
+import { updatePresence } from "@/modules/presence/";
+import { assignLevelRolesInGuild } from "@/modules/roles/";
+import { setDefaultChannelId } from "@/modules/guild";
+import i18n from "@/client/i18n";
+import { InformationEmbed } from "@/modules/messages/embeds";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);

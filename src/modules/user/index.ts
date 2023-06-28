@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { User, Guild } from "discord.js";
-import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "../../interfaces";
-import userSchema, { UserDocument } from "../schemas/User";
-import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "../../interfaces/User";
-import ExtendedClient from "../../client/ExtendedClient";
+import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "@/interfaces";
+import userSchema, { UserDocument } from "@/modules/schemas/User";
+import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "@/interfaces/User";
+import ExtendedClient from "@/client/ExtendedClient";
 
 const UserModel = mongoose.model("User", userSchema);
 

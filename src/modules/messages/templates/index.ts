@@ -1,14 +1,14 @@
 import { BaseChannel, ChannelType, GuildMember, ImageURLOptions } from "discord.js";
-import { ImageHexColors } from "..";
-import ExtendedClient from "../../../client/ExtendedClient";
-import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getActivePeaks } from "../../activity/index";
-import { getLevelRoleTreshold } from "../../roles";
-import { getUserRank, levelToExp } from "../../user";
+import { ImageHexColors } from "@/modules/messages/index";
+import ExtendedClient from "@/client/ExtendedClient";
+import { ActivityPeakDay, ActivityPeakHour, getPresenceActivityBetween, getPresenceActivityColor, getShortWeekDays, getUserPresenceActivity, getUserVoiceActivity, getVoiceActivityBetween, getActivePeaks } from "@/modules/activity/index";
+import { getLevelRoleTreshold } from "@/modules/roles";
+import { getUserRank, levelToExp } from "@/modules/user";
 import moment from "moment";
 import chroma from "chroma-js";
-import { UserDocument } from "../../schemas/User";
-import { GuildDocument } from "../../schemas/Guild";
-import i18n from "../../../client/i18n";
+import { UserDocument } from "@/modules/schemas/User";
+import { GuildDocument } from "@/modules/schemas/Guild";
+import i18n from "@/client/i18n";
 
 const embedSpacer = () => {
     return `

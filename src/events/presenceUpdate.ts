@@ -1,6 +1,6 @@
 import { Presence } from "discord.js";
-import { Event } from "../interfaces";
-import { endPresenceActivity, startPresenceActivity } from "../modules/activity";
+import { Event } from "@/interfaces";
+import { endPresenceActivity, startPresenceActivity } from "@/modules/activity";
 
 export const presenceUpdate: Event = {
     name: "presenceUpdate",

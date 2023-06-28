@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import followSchema, { FollowDocument } from "../schemas/Follow";
+import followSchema, { FollowDocument } from "@/modules/schemas/Follow";
 
 const FollowModel = mongoose.model("Follow", followSchema);
 

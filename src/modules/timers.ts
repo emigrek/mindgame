@@ -1,4 +1,4 @@
-import { Module } from "../interfaces";
+import { Module } from "@/interfaces";
 import * as cron from "node-cron";
 
 const minuteCron = "* * * * *";

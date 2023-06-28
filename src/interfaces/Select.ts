@@ -1,5 +1,5 @@
 import { AnySelectMenuInteraction } from "discord.js";
-import Client from "../client/ExtendedClient";
+import Client from "@/client/ExtendedClient";
 
 interface Run {
     (client: Client, interaction: AnySelectMenuInteraction, ...args: any[]): Promise<void>;

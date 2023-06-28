@@ -1,4 +1,4 @@
-import { Store } from ".";
+import { Store } from "@/stores";
 
 interface ProfileStoreInterface {
     targetUserId: string | null;

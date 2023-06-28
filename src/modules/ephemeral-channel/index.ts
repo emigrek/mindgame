@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import ephemeralChannelSchema, { EphemeralChannelDocument } from "../schemas/EphemeralChannel";
-import ExtendedClient from "../../client/ExtendedClient";
+import ephemeralChannelSchema, { EphemeralChannelDocument } from "@/modules/schemas/EphemeralChannel";
+import ExtendedClient from "@/client/ExtendedClient";
 import { Message, MessageReaction, TextChannel } from "discord.js";
 import moment from "moment";
 import { ephemeralChannelMessageCache } from "./cache";

@@ -1,4 +1,4 @@
-import ExtendedClient from "../client/ExtendedClient";
+import ExtendedClient from "@/client/ExtendedClient";
 import { ContextMenuCommandInteraction, UserContextMenuCommandInteraction, ContextMenuCommandBuilder } from "discord.js";
 
 interface Run {

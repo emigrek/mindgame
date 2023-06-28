@@ -1,5 +1,5 @@
 import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
-import i18n from "../../../client/i18n";
+import i18n from "@/client/i18n";
 
 const getRankingSettingsModal = (page: number, pagesCount: number, perPage: number) => {
     const modal = new ModalBuilder()

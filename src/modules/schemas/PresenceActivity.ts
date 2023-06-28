@@ -1,5 +1,5 @@
 import { Schema, SchemaTimestampsConfig, Document } from 'mongoose';
-import { PresenceActivity } from '../../interfaces';
+import { PresenceActivity } from '@/interfaces';
 
 export type PresenceActivityDocument = PresenceActivity & Document & SchemaTimestampsConfig;
 

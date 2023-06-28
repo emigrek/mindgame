@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { updateUser } from "../modules/user";
+import { Event } from "@/interfaces";
+import { updateUser } from "@/modules/user";
 
 export const userDiscriminatorUpdate: Event = {
     name: "userDiscriminatorUpdate",

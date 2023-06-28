@@ -1,5 +1,5 @@
-import { Module } from "../interfaces";
-import { validatePresenceActivities, validateVoiceActivities } from "./activity";
+import { Module } from "@/interfaces";
+import { validatePresenceActivities, validateVoiceActivities } from "@/modules/activity";
 
 export const activities: Module = {
     name: "activities",

@@ -1,9 +1,10 @@
 import { ActivitiesOptions, PresenceData } from "discord.js";
-import ExtendedClient from "../../client/ExtendedClient";
-import { getGuilds } from "../guild";
-import { getUsers } from "../user";
+import ExtendedClient from "@/client/ExtendedClient";
+import { getGuilds } from "@/modules/guild";
+import { getUsers } from "@/modules/user";
+import { getRandomAnimalEmoji } from "@/utils/emojis";
+
 import presencesData from "./presences.json";
-import { getRandomAnimalEmoji } from "../../utils/emojis";
 
 interface PlaceholdersData {
     guilds: number;

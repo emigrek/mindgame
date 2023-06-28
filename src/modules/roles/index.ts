@@ -1,11 +1,11 @@
 import { ButtonInteraction, Guild, GuildMember, Role, User } from "discord.js";
-import ExtendedClient from "../../client/ExtendedClient";
-import { getGuild, getGuilds, setLevelRolesHoist } from "../guild";
-import { getUser } from "../user";
+import ExtendedClient from "@/client/ExtendedClient";
+import { getGuild, getGuilds, setLevelRolesHoist } from "@/modules/guild";
+import { getUser } from "@/modules/user";
+import i18n from "@/client/i18n";
+
 import { LevelTreshold } from "./tresholds";
 import { levelTresholds } from "./tresholds";
-import i18n from "../../client/i18n";
-
 
 const getLevelRoleTreshold = (level: number) => {
     let result = levelTresholds[0];

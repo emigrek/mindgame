@@ -1,5 +1,5 @@
 import { Schema, Document } from 'mongoose';
-import { Message } from '../../interfaces';
+import { Message } from '@/interfaces';
 
 export type MessageDocument = Message & Document;
 

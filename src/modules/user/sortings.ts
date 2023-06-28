@@ -1,6 +1,6 @@
-import ExtendedClient from "../../client/ExtendedClient";
-import { Sorting } from "../../interfaces/Sorting";
-import { UserDocument } from "../schemas/User";
+import ExtendedClient from "@/client/ExtendedClient";
+import { Sorting } from "@/interfaces/Sorting";
+import { UserDocument } from "@/modules/schemas/User";
 
 export const getSortingByType = (type: string): Sorting => {
     return sortings.find(s => s.type === type) ?? sortings[0];

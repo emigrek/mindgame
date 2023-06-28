@@ -19,3 +19,4 @@ export { Message } from './Message';
 export { Sorting } from './Sorting';
 export { Follow } from './Follow';
 export { Modal } from './Modal';
+export { EphemeralChannel } from './EphemeralChannel';

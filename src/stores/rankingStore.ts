@@ -1,4 +1,4 @@
-import { Store } from ".";
+import { Store } from "@/stores";
 
 interface RankingStoreInterface {
     page: number;

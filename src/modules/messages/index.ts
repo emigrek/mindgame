@@ -1,29 +1,30 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, StringSelectMenuOptionBuilder, ModalSubmitInteraction } from "discord.js";
-import ExtendedClient from "../../client/ExtendedClient";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction } from "discord.js";
+import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
-import { getGuild } from "../guild";
-import { SelectMenuOption } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
-import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "./selects";
-import { getLastCommits } from "../../utils/commits";
-import { getSortingByType, runMask, sortings } from "../user/sortings";
+import { getGuild } from "@/modules/guild";
+import { SelectMenuOption } from "@/interfaces";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
+import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
+import { getLastCommits } from "@/utils/commits";
+import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
 import moment from "moment";
 import Vibrant = require('node-vibrant');
-import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
-import { getRanking, getUser } from "../user";
-import { getMemberColorRole } from "../roles";
-import messageSchema from "../schemas/Message";
+import { getRanking, getUser } from "@/modules/user";
+import { getMemberColorRole } from "@/modules/roles";
+import messageSchema from "@/modules/schemas/Message";
 import mongoose from "mongoose";
-import { UserDocument } from "../schemas/User";
-import { VoiceActivityDocument } from "../schemas/VoiceActivity";
+import { UserDocument } from "@/modules/schemas/User";
+import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
-import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "../ephemeral-channel";
-import clean from "../../utils/clean";
-import config from "../../utils/config";
-import i18n from "../../client/i18n";
+import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
+import clean from "@/utils/clean";
+import config from "@/utils/config";
+import i18n from "@/client/i18n";
 
-import { rankingStore } from "../../stores/rankingStore";
-import { profileStore } from "../../stores/profileStore";
+import { rankingStore } from "@/stores/rankingStore";
+import { profileStore } from "@/stores/profileStore";
+
+import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 
 interface ImageHexColors {
     Vibrant: string;

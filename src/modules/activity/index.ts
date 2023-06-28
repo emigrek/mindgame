@@ -1,15 +1,15 @@
 import { Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
-import ExtendedClient from "../../client/ExtendedClient";
+import ExtendedClient from "@/client/ExtendedClient";
 
-import voiceActivitySchema, { VoiceActivityDocument } from "../schemas/VoiceActivity";
-import presenceActivitySchema, { PresenceActivityDocument } from "../schemas/PresenceActivity";
+import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
+import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
 
 import mongoose, { Document } from "mongoose";
 import moment from "moment";
-import { updateUserStatistics } from "../user";
-import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "../../interfaces";
-import { getGuild } from "../guild";
-import config from "../../utils/config";
+import { updateUserStatistics } from "@/modules/user";
+import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "@/interfaces";
+import { getGuild } from "@/modules/guild";
+import config from "@/utils/config";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);

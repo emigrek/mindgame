@@ -1,5 +1,5 @@
 import { Schema, Document, SchemaTimestampsConfig } from 'mongoose';
-import { VoiceActivity } from '../../interfaces';
+import { VoiceActivity } from '@/interfaces';
 
 export type VoiceActivityDocument = VoiceActivity & Document & SchemaTimestampsConfig;
 

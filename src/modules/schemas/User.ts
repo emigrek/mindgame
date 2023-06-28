@@ -1,5 +1,5 @@
 import { Schema, SchemaTimestampsConfig, Document } from 'mongoose';
-import { User } from '../../interfaces';
+import { User } from '@/interfaces';
 
 export type UserDocument = User & Document & SchemaTimestampsConfig;
 

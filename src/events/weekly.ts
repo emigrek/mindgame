@@ -1,5 +1,5 @@
-import { Event } from "../interfaces";
-import { clearTemporaryStatistics } from "../modules/user";
+import { Event } from "@/interfaces";
+import { clearTemporaryStatistics } from "@/modules/user";
 
 export const weekly: Event = {
     name: "weekly",

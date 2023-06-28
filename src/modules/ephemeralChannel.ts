@@ -1,5 +1,5 @@
-import { Module } from "../interfaces";
-import { syncEphemeralChannelMessages } from "./ephemeral-channel";
+import { Module } from "@/interfaces";
+import { syncEphemeralChannelMessages } from "@/modules/ephemeral-channel";
 
 export const ephemeralChannel: Module = {
     name: "ephemeralChannel",
