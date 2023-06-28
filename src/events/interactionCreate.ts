@@ -67,6 +67,9 @@ export const interactionCreate: Event = {
                     });
                 })
         }
+        if (interaction.isModalSubmit()) {
+            client.modals.get(interaction.customId)?.run(client, interaction);
+        }
         if (interaction.isAnySelectMenu()) {
             client.selects.get(interaction.customId)?.run(client, interaction);
         }

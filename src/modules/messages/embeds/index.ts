@@ -15,4 +15,11 @@ const ErrorEmbed = () => {
     return embed;
 };
 
-export { InformationEmbed, ErrorEmbed };
+const WarningEmbed = () => {
+    const embed = new EmbedBuilder()
+        .setColor(Colors.Yellow);
+
+    return embed;
+};
+
+export { InformationEmbed, ErrorEmbed, WarningEmbed };

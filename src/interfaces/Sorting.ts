@@ -8,4 +8,5 @@ export interface Sorting {
     range: 'total' | 'day' | 'week' | 'month';
     value: SortValues;
     mask: string;
+    emoji: string;
 }

@@ -162,7 +162,16 @@
 		"pageDownButtonLabel": "Next ➡️",
 		"guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
 		"allGuildsButtonLabel": "Global 🌎",
-		"selectUsersPlaceholder": "Compare users"
+		"settingsButtonLabel": "Settings ⚙️",
+		"selectUsersPlaceholder": "Compare users",
+		"settingsModal": {
+			"title": "Ranking settings ⚙️",
+			"perPageInput": {
+				"label": "Users per page",
+				"placeholder": "Must be a number between 1 and 25.",
+				"invalid": "Invalid number, must be a number between 1 and 25."
+			}
+		}
 	},
 	"rankingSortings": {
 		"label": {

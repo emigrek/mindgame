@@ -1,9 +1,9 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, StringSelectMenuOptionBuilder, ModalSubmitInteraction } from "discord.js";
 import ExtendedClient from "../../client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "../guild";
 import { SelectMenuOption } from "../../interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "./buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "./selects";
 import { getLastCommits } from "../../utils/commits";
 import { getSortingByType, runMask, sortings } from "../user/sortings";
@@ -16,7 +16,7 @@ import messageSchema from "../schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "../schemas/User";
 import { VoiceActivityDocument } from "../schemas/VoiceActivity";
-import { ErrorEmbed, InformationEmbed } from "./embeds";
+import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "../ephemeral-channel";
 import clean from "../../utils/clean";
 import config from "../../utils/config";
@@ -85,7 +85,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
-        await owner?.send({ content: i18n.__("config.noValidChannels") });
+        await owner?.send({ embeds: [
+            WarningEmbed()
+                .setDescription(i18n.__("config.noValidChannels"))
+        ]});
         return getErrorMessagePayload();
     }
 
@@ -131,7 +134,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     if (!targetUser) {
         return {
             embeds: [
-                InformationEmbed()
+                WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
             ]
         };
@@ -305,35 +308,27 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     if (!sourceUser) {
         return {
             embeds: [
-                InformationEmbed()
+                WarningEmbed()
                     .setDescription(i18n.__("utils.userOnly"))
             ]
         }
     }
 
     const user = await client.users.fetch(sourceUser.userId);
+    const roleColor = getMemberColorRole(interaction.member as GuildMember);
+
     if (!user.hexAccentColor) {
         return {
             embeds: [
-                ErrorEmbed()
-                    .setDescription("error.description")
-            ]
-        }
-    }
-
-    const color = getColorInt(user.hexAccentColor);
-    const roleColor = getMemberColorRole(interaction.member as GuildMember);
-
-    if (!color) {
-        return {
-            embeds: [
-                InformationEmbed()
+                WarningEmbed()
                     .setTitle(i18n.__("color.title"))
                     .setDescription(i18n.__("color.noColor"))
                     .setThumbnail(sourceUser.avatarUrl)
             ]
         }
     }
+
+    const color = getColorInt(user.hexAccentColor);
 
     const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
     const roleColorUpdateButton = await getRoleColorUpdateButton();
@@ -356,21 +351,22 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     };
 };
 
-const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction) => {
-    const { guildOnly, page, userIds, sorting } = rankingStore.get(interaction.user.id);
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction) => {
+    const { guildOnly, page, userIds, sorting, perPage } = rankingStore.get(interaction.user.id);
     const guild = (guildOnly && interaction.guild) ? interaction.guild : undefined;
 
-    const selectOptions = sortings.map((sorting) => ({
+    const selectOptions: SelectMenuOption[] = sortings.map((sorting) => ({
         label: i18n.__(`rankingSortings.label.${sorting.label}`),
         description: i18n.__(`rankingSortings.range.${sorting.range}`),
-        value: sorting.type
+        value: sorting.type,
+        emoji: sorting.emoji
     }));
 
     const sortingType = getSortingByType(sorting);
-    const { onPage, pagesCount } = await getRanking(sortingType, page, guild, userIds);
+    const { onPage, pagesCount } = await getRanking(sortingType, page, perPage, guild, userIds);
 
     const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
-        const relativeIndex = index + 1 + ((page - 1) * 12);
+        const relativeIndex = index + 1 + ((page - 1) * perPage);
         const indexString = () => {
             switch(relativeIndex) {
                 case 1:
@@ -396,6 +392,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
     const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
     const guildOnlyButton = await getRankingGuildOnlyButton(guild ? true : false);
+    const settingsButton = await getRankingSettingsButton();
 
     const sortRow = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(sortSelectMenu);
@@ -407,6 +404,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     if (interaction.guild && !userIds.length) {
         paginationRow.addComponents(guildOnlyButton);
     }
+
+    paginationRow.addComponents(settingsButton);
 
     return {
         embeds: [
@@ -475,7 +474,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
     if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
         return {
             embeds: [
-                InformationEmbed()
+                WarningEmbed()
                     .setDescription(i18n.__("utils.textChannelOnly"))
             ]
         };
@@ -488,7 +487,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
         if (exists) {
             return {
                 embeds: [
-                    InformationEmbed()
+                    WarningEmbed()
                         .setDescription(i18n.__("ephemeralChannel.alreadyExists"))
                 ]
             }
@@ -499,7 +498,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
         if (guildExisting.length >= 2) {
             return {
                 embeds: [
-                    InformationEmbed()
+                    WarningEmbed()
                         .setDescription(i18n.__("ephemeralChannel.limitReached"))
                 ]
             }
@@ -524,7 +523,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
         if (!ephemeralChannel) {
             return {
                 embeds: [
-                    InformationEmbed()
+                    WarningEmbed()
                         .setDescription(i18n.__("ephemeralChannel.notFound"))
                 ]
             }
@@ -542,12 +541,19 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
     } else if (subcommand === 'delete') {
         const result = await deleteEphemeralChannel(channel.id);
 
+        if(!result) {
+            return {
+                embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__("ephemeralChannel.notFound"))
+                ]
+            }
+        }
+
         return {
             embeds: [
                 InformationEmbed()
-                    .setDescription(
-                        result ? i18n.__mf("ephemeralChannel.deleted", { channelId: channel.id }) : i18n.__("ephemeralChannel.notFound")
-                    )
+                    .setDescription(i18n.__mf("ephemeralChannel.deleted", { channelId: channel.id }))
             ]
         }
     } else {

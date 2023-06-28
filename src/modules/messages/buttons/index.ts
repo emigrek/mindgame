@@ -169,6 +169,15 @@ const getRankingGuildOnlyButton = async (newStatus: boolean) => {
     return rankingGuildOnlyButton;
 }
 
+const getRankingSettingsButton = async () => {
+    const rankingSettingsButton = new ButtonBuilder()
+        .setCustomId("rankingSettings")
+        .setLabel(i18n.__("ranking.settingsButtonLabel"))
+        .setStyle(ButtonStyle.Secondary);
+
+    return rankingSettingsButton;
+};
+
 const getCommitsButton = async () => {
     const commitsButton = new ButtonBuilder()
         .setCustomId("commits")
@@ -216,4 +225,4 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }
 
-export { getRepoButton, getRankingGuildOnlyButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };
+export { getRepoButton, getRankingGuildOnlyButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };

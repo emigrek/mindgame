@@ -195,7 +195,7 @@ const clearExperience = async () => {
     await UserModel.updateMany({}, { $set: { "stats.exp": 0, "stats.level": 0 } });
 }
 
-const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: string[]) => {
+const getRanking = async (type: Sorting, page: number, perPage: number, guild?: Guild, userIds?: string[]) => {
     const usersFilter = new Set<string>();
 
     if (userIds?.length) {
@@ -217,9 +217,9 @@ const getRanking = async (type: Sorting, page: number, guild?: Guild, userIds?: 
 
     const pagesCount = Math.ceil((await UserModel.countDocuments(usersFilter.size ? {
         userId: { $in: Array.from(usersFilter) },
-    } : {})) / 13) || 1;
+    } : {})) / perPage) || 1;
 
-    const onPage = results.slice((page - 1) * 12, page * 12);
+    const onPage = results.slice((page - 1) * perPage, page * perPage);
 
     return {
         onPage,

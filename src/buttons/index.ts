@@ -16,6 +16,7 @@ import ranking from "./ranking";
 import rankingPageUp from "./rankingPageUp";
 import rankingPageDown from "./rankingPageDown";
 import rankingGuildOnly from "./rankingGuildOnly";
+import rankingSettings from "./rankingSettings";
 import help from "./help";
 import profileFollow from "./profileFollow";
 
@@ -37,6 +38,7 @@ const buttons: Button[] = [
     rankingPageUp,
     rankingPageDown,
     rankingGuildOnly,
+    rankingSettings,
     help
 ];
 

@@ -1,5 +1,5 @@
 import { Client, Collection, REST, Routes } from "discord.js";
-import { Event, Module, Interaction, Command, Button, Select, ContextMenu } from "../interfaces";
+import { Event, Module, Interaction, Command, Button, Select, ContextMenu, Modal } from "../interfaces";
 
 import events from "../events";
 import modules from "../modules";
@@ -8,6 +8,7 @@ import commands from "../commands";
 import buttons from "../buttons";
 import selects from "../selects";
 import contexts from "../contexts";
+import modals from "../modals";
 
 import config from "../utils/config";
 import moment from "moment";
@@ -23,6 +24,7 @@ class ExtendedClient extends Client {
     public buttons: Collection<string, Button> = new Collection();
     public selects: Collection<string, Select> = new Collection();
     public contexts: Collection<string, ContextMenu> = new Collection();
+    public modals: Collection<string, Modal> = new Collection();
 
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -35,6 +37,7 @@ class ExtendedClient extends Client {
         this.loadInteractions();
         this.loadEvents();
         this.loadSlashCommands();
+        this.loadModals();
 
         this.login(config.token).catch((err) => {
             console.error("[Login] Error", err)
@@ -83,6 +86,12 @@ class ExtendedClient extends Client {
     public async loadContexts() {
         for (const context of contexts) {
             this.contexts.set(context.data.name, context);
+        }
+    }
+
+    public async loadModals() {
+        for (const modal of modals) {
+            this.modals.set(modal.customId, modal);
         }
     }
 

@@ -33,28 +33,32 @@ export const sortings: Sorting[] = [
         label: "experience",
         range: "total",
         value: { "stats.exp": -1 },
-        mask: "{stats.level} LVL ({stats.exp} EXP)"
+        mask: "{stats.level} LVL ({stats.exp} EXP)",
+        emoji: "✨"
     },
     {
         type: "day exp",
         label: "experience",
         range: "day",
         value: { "day.exp": -1 },
-        mask: "{day.exp} EXP"
+        mask: "{day.exp} EXP",
+        emoji: "✨"
     },
     {
         type: "week exp",
         label: "experience",
         range: "week",
         value: { "week.exp": -1 },
-        mask: "{week.exp} EXP"
+        mask: "{week.exp} EXP",
+        emoji: "✨"
     },
     {
         type: "month exp",
         label: "experience",
         range: "month",
         value: { "month.exp": -1 },
-        mask: "{month.exp} EXP"
+        mask: "{month.exp} EXP",
+        emoji: "✨"
     },
     // {
     //     type: "skill",
@@ -82,7 +86,8 @@ export const sortings: Sorting[] = [
         label: "voice time",
         range: "day",
         value: { "day.time.voice": -1 },
-        mask: "{day.time.voice}H"
+        mask: "{day.time.voice}H",
+        emoji: "⌛"
     },
     // {
     //     type: "day skill",
@@ -104,7 +109,8 @@ export const sortings: Sorting[] = [
         label: "voice time",
         range: "week",
         value: { "week.time.voice": -1 },
-        mask: "{week.time.voice}H"
+        mask: "{week.time.voice}H",
+        emoji: "⌛"
     },
     // {
     //     type: "week skill",
@@ -126,7 +132,8 @@ export const sortings: Sorting[] = [
         label: "voice time",
         range: "month",
         value: { "month.time.voice": -1 },
-        mask: "{month.time.voice}H"
+        mask: "{month.time.voice}H",
+        emoji: "⌛"
     },
     // {
     //     type: "month skill",

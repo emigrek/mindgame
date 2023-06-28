@@ -9,7 +9,7 @@ const levelRoles: Button = {
         await interaction.deferUpdate();
 
         if(!interaction.guild) {
-            await interaction.followUp(getErrorMessagePayload());
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
             return;
         }
 

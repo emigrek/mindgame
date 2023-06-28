@@ -162,7 +162,16 @@
 		"pageDownButtonLabel": "Następna ➡️",
 		"guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
 		"allGuildsButtonLabel": "Globalny 🌎",
-		"selectUsersPlaceholder": "Porównaj użytkowników"
+		"settingsButtonLabel": "Ustawienia ⚙️",
+		"selectUsersPlaceholder": "Porównaj użytkowników",
+		"settingsModal": {
+			"title": "Ustawienia rankingu ⚙️",
+			"perPageInput": {
+				"label": "Wyniki na stronę",
+				"placeholder": "Liczba od 1 do 25",
+				"invalid": "Nieprawidłowa liczba, musi być od 1 do 25."
+			}
+		}
 	},
 	"rankingSortings": {
 		"label": {
