@@ -1,19 +1,32 @@
-import emojis from "@/utils/emojisData.json";
+import { lib } from "winmojilib";
+
+const emojis = Object.assign([], Object.values(lib));
+
+enum Groups {
+  AnimalsAndNature = "animals-nature",
+  SmileysAndEmotion = "smileys-emotion",
+  FoodAndDrink = "food-drink",
+  TravelAndPlaces = "travel-places",
+  Activities = "activities",
+  Objects = "objects",
+  Symbols = "symbols",
+  Flags = "flags",
+}
+
+type Group = Groups.AnimalsAndNature | Groups.SmileysAndEmotion | Groups.FoodAndDrink | Groups.TravelAndPlaces | Groups.Activities | Groups.Objects | Groups.Symbols | Groups.Flags;
 
 type Emoji = {
-  codes: string;
   char: string;
+  keywords: string[];
   name: string;
-  category: string;
-  group: string;
+  group: Group;
   subgroup: string;
+  hexcode: string;
 };
-
-type Group = "Animals & Nature" | "Smileys & Emotion" | "Food & Drink" | "Travel & Places" | "Activities" | "Objects" | "Symbols" | "Flags";
 
 const getRandomEmojiFromGroup = (group: Group): Emoji => {
   const filtered = emojis.filter((emoji: Emoji) => emoji.group === group);
   return filtered[Math.floor(Math.random() * filtered.length)];
 }
 
-export { getRandomEmojiFromGroup };
+export { getRandomEmojiFromGroup, Groups };
