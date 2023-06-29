@@ -147,7 +147,7 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     if (!sourceUser || !sourceTargetUser) {
         return {
             embeds: [
-                InformationEmbed()
+                WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
             ]
         };

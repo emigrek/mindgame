@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { getMessage } from "@/modules/messages";
-import { getRandomAnimalEmoji } from "@/utils/emojis";
+import { getRandomEmojiFromGroup } from "@/utils/emojis";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import { UserDocument } from "@/modules/schemas/User";
 import { getFollow } from "@/modules/follow";
@@ -190,7 +190,7 @@ const getCommitsButton = async () => {
 const getHelpButton = async () => {
     const helpButton = new ButtonBuilder()
         .setCustomId("help")
-        .setLabel(`${i18n.__("quickButton.helpLabel")} ${getRandomAnimalEmoji()}`)
+        .setLabel(`${i18n.__("quickButton.helpLabel")} ${getRandomEmojiFromGroup("Animals & Nature").char}`)
         .setStyle(ButtonStyle.Success);
 
     return helpButton;

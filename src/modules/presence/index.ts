@@ -2,7 +2,7 @@ import { ActivitiesOptions, PresenceData } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuilds } from "@/modules/guild";
 import { getUsers } from "@/modules/user";
-import { getRandomAnimalEmoji } from "@/utils/emojis";
+import { getRandomEmojiFromGroup } from "@/utils/emojis";
 
 import presencesData from "./presences.json";
 
@@ -27,7 +27,7 @@ const replacePlaceholders = (activity: ActivitiesOptions, data: PlaceholdersData
     activity.name = activity.name!
         .replace(/{guilds}/g, guilds.toString())
         .replace(/{users}/g, users.toString())
-        .replace(/{animal}/g, getRandomAnimalEmoji())
+        .replace(/{animal}/g, getRandomEmojiFromGroup("Animals & Nature").char)
 
     return activity;
 };
