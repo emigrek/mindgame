@@ -83,10 +83,10 @@ const updateUser = async (user: User) => {
         exists = await createUser(user);
     }
 
-    await UserModel.updateOne({ userId: user.id }, {
-        username: user.username,
-        avatarUrl: user.displayAvatarURL({ extension: "png" })
-    });
+    exists.username = user.username;
+    exists.avatarUrl = user.displayAvatarURL({ extension: "png" });
+
+    await exists.save();
 
     return exists;
 }
@@ -97,10 +97,10 @@ const migrateUsername = async (user: User) => {
         exists = await createUser(user);
     }
 
-    await UserModel.updateOne({ userId: user.id }, {
-        username: user.username,
-        $unset: { tag: 1 }
-    });
+    exists.username = user.username;
+    exists.set("tag", undefined, { strict: false });
+
+    await exists.save();
 
     return exists;
 }
