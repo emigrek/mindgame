@@ -11,7 +11,7 @@ interface RankingStoreInterface {
 
 const initial: RankingStoreInterface = {
     page: 1,
-    perPage: 6,
+    perPage: 9,
     pagesCount: 1,
     sorting: "exp",
     userIds: [],
