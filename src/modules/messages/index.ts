@@ -384,7 +384,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         }
  
         return {
-            name: `${indexString()} ${user.tag.split('#').shift()} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            name: `${indexString()} ${user.username} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
             inline: true
         };

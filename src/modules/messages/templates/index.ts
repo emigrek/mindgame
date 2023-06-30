@@ -258,7 +258,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                     <span class="bottom-1 right-2 absolute w-6 h-6 bg-[${presenceActivityColor}] rounded-full"></span>
                 </div> 
                 <div class="flex flex-col">
-                    <div class="text-2xl text-white font-medium">${user.tag.split('#').shift()}</div>
+                    <div class="text-2xl text-white font-medium">${user.username}</div>
                     ${ voiceActivityGuild ? 
                         `
                         <div class="flex items-center mt-2">

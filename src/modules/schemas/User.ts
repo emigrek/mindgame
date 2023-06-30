@@ -28,7 +28,7 @@ const ExtendedStatistics = {
 
 const userSchema = new Schema<User>({
   userId: reqString,
-  tag: reqString,
+  username: reqString,
   avatarUrl: reqString,
   stats: ExtendedStatistics,
   day: Statistics,

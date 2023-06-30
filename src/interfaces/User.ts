@@ -37,7 +37,7 @@ export interface ExtendedStatisticsPayload {
 
 export interface User {
   userId: string;
-  tag: string;
+  username: string;
   avatarUrl: string;
   stats: ExtendedStatistics;
   day: Statistics,

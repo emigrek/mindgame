@@ -32,7 +32,7 @@ const createUser = async (user: User) => {
 
     const newUser = new UserModel({
         userId: user.id,
-        tag: user.tag,
+        username: user.username,
         avatarUrl: user.displayAvatarURL({ extension: "png" })
     });
 
@@ -84,7 +84,7 @@ const updateUser = async (user: User) => {
     }
 
     await UserModel.updateOne({ userId: user.id }, {
-        tag: user.tag,
+        username: user.username,
         avatarUrl: user.displayAvatarURL({ extension: "png" })
     });
 

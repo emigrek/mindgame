@@ -15,6 +15,7 @@ import moment from "moment";
 
 import localeList from "./localeList";
 import i18n from "./i18n";
+import { getUsers, updateUser } from "@/modules/user";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -128,6 +129,19 @@ class ExtendedClient extends Client {
                 body: data
             },
         );
+    }
+
+    public async usernameUpdateMigration() {
+        const users = await getUsers();
+
+        const updatePromises = users.map(async (userDocument) => {
+            const user = await this.users.fetch(userDocument.userId);
+            await updateUser(user);
+        });
+
+        await Promise.all(updatePromises)
+            .then(() => console.log("[usernameUpdateMigration] Done"))
+            .catch((err) => console.error("[usernameUpdateMigration] Error: ", err));
     }
 }
 
