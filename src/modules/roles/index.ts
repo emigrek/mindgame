@@ -106,10 +106,12 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
 
     const currentMemberTresholdRole = await getMemberTresholdRole(member);
     const treshold = getLevelRoleTreshold(sourceUser.stats.level);
-    const guildTresholdRole = await getGuildTresholdRole(guild, treshold);
+    const guildTresholdRole = getGuildTresholdRole(guild, treshold);
+
+    if (!guildTresholdRole) return null;
 
     if (currentMemberTresholdRole) {
-        if (currentMemberTresholdRole.equals(guildTresholdRole!)) return null;
+        if (currentMemberTresholdRole.equals(guildTresholdRole)) return null;
 
         try {
             await member.roles.remove(currentMemberTresholdRole);
@@ -117,8 +119,6 @@ const assignUserLevelRole = async (client: ExtendedClient, user: User, guild: Gu
             return null;
         }
     }
-
-    if (!guildTresholdRole) return null;
 
     try {
         await member.roles.add(guildTresholdRole);
@@ -161,30 +161,37 @@ const getMemberColorRole = (member: GuildMember) => {
 
 const switchColorRole = async (client: ExtendedClient, member: GuildMember) => {
     let colorRole = getMemberColorRole(member);
+
     const user = await member.user.fetch(true);
-    const color = user.hexAccentColor!;
-    const clientRole = member.guild.members.cache.get(client.user!.id)!.roles.highest;
-
-    if (!colorRole) {
+    const color = user.hexAccentColor;
+    
+    if (colorRole) {
         try {
-            colorRole = await member.guild.roles.create({
-                name: "🎨",
-                color: color,
-                hoist: false,
-                position: clientRole.position
-            });
-
-            await member.roles.add(colorRole);
-            return colorRole;
-        } catch (error) {
+            await colorRole.delete();
+            return true;
+        } catch (e) {
             return false;
         }
     }
 
+    if(!client.user) return false;
+    const clientMember = member.guild.members.cache.get(client.user.id);
+    if (!clientMember) return false;
+    const clientRole = clientMember.roles.highest;
+
+    if (!color || color == "#000000") return false;
+
     try {
-        colorRole?.delete();
-        return true;
-    } catch (e) {
+        colorRole = await member.guild.roles.create({
+            name: "🎨",
+            color: color,
+            hoist: false,
+            position: clientRole.position
+        });
+
+        await member.roles.add(colorRole);
+        return colorRole;
+    } catch (error) {
         return false;
     }
 };
@@ -192,9 +199,9 @@ const switchColorRole = async (client: ExtendedClient, member: GuildMember) => {
 const updateColorRole = async (client: ExtendedClient, member: GuildMember) => {
     const colorRole = getMemberColorRole(member);
     const user = await member.user.fetch(true);
-    const color = user.hexAccentColor!;
+    const color = user.hexAccentColor;
 
-    if (!colorRole) {
+    if (!colorRole || !color || color == "#000000") {
         return false;
     }
 

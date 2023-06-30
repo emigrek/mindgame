@@ -7,13 +7,18 @@ const roleColorSwitch: Button = {
     customId: `roleColorSwitch`,
     run: async (client, interaction) => {
         await interaction.deferUpdate();
-        
-        if(!interaction.guild) {
+
+        if (!interaction.guild) {
             await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
             return;
         }
 
-        await switchColorRole(client, interaction.member as GuildMember);
+        const success = await switchColorRole(client, interaction.member as GuildMember);
+        if (!success) {
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            return;
+        }
+
         const colorMessagePayload = await getColorMessagePayload(client, interaction);
         await interaction.editReply(colorMessagePayload);
     }

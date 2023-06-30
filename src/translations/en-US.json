@@ -96,8 +96,8 @@
 	"color": {
 		"title": "Custom color",
 		"description": "Equip yourself with a custom color role.\nSet desired banner color in profile and enable ",
-		"roleColorOnButtonLabel": "Enabled ✅",
-		"roleColorOffButtonLabel": "Disabled ❌",
+		"roleColorOnButtonLabel": "Enable ✅",
+		"roleColorOffButtonLabel": "Disable ❌",
 		"roleColorUpdateButtonLabel": "Update 🔄",
 		"noColor": "Please set your banner color first."
 	},

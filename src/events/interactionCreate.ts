@@ -1,6 +1,6 @@
 import i18n from "@/client/i18n";
 import { Event } from "@/interfaces";
-import { InformationEmbed } from "@/modules/messages/embeds";
+import { WarningEmbed } from "@/modules/messages/embeds";
 import { getUser, updateUserStatistics } from "@/modules/user";
 import config from "@/utils/config";
 
@@ -18,7 +18,7 @@ export const interactionCreate: Event = {
                 if (config.ownerId !== interaction.user.id) {
                     return interaction.reply({
                         embeds: [
-                            InformationEmbed()
+                            WarningEmbed()
                                 .setDescription(i18n.__("utils.ownerOnly"))
                         ], ephemeral: true
                     });
@@ -30,7 +30,7 @@ export const interactionCreate: Event = {
                 if (!user) {
                     return interaction.reply({
                         embeds: [
-                            InformationEmbed()
+                            WarningEmbed()
                                 .setDescription(i18n.__("utils.userNotFound"))
                         ], ephemeral: true
                     });
@@ -39,7 +39,7 @@ export const interactionCreate: Event = {
                 if (user.stats.level < command.options.level) {
                     return interaction.reply({
                         embeds: [
-                            InformationEmbed()
+                            WarningEmbed()
                                 .setDescription(i18n.__mf("utils.levelRequirement", {
                                     level: command.options.level
                                 }))

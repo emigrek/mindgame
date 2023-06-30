@@ -30,7 +30,9 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
         return true;
     }
 
-    const last = userLastVoiceActivity.to!.getTime();
+    if(!userLastVoiceActivity.to) return false;
+
+    const last = userLastVoiceActivity.to.getTime();
     const now = new Date().getTime();
     const diff = Math.abs(now - last);
     const diffDays = diff / (1000 * 60 * 60 * 24);
@@ -55,7 +57,9 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
         return true;
     }
 
-    const last = activity.to!.getTime();
+    if(!activity.to) return false;
+
+    const last = activity.to.getTime();
     const now = new Date().getTime();
     const diff = Math.abs(now - last);
     const diffHours = diff / (1000 * 60 * 60);
@@ -71,7 +75,7 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel): Promise<VoiceActivityDocument | null> => {
     if (
         member.user.bot ||
-        channel.equals(member.guild.afkChannel!)
+        member.guild.afkChannel && channel.equals(member.guild.afkChannel)
     ) return null;
 
     const exists = await getVoiceActivity(member);
@@ -151,12 +155,14 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember): Pr
     );
 
     const sourceGuild = await getGuild(member.guild);
+    if(!sourceGuild) return exists;
+
     await updateUserStatistics(client, member.user, {
         exp: income,
         time: {
             voice: seconds
         }
-    }, sourceGuild!);
+    }, sourceGuild);
 
     return exists;
 }

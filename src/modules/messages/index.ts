@@ -315,10 +315,10 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         }
     }
 
-    const user = await client.users.fetch(sourceUser.userId);
+    const user = await client.users.fetch(sourceUser.userId, { force: true });
     const roleColor = getMemberColorRole(interaction.member as GuildMember);
 
-    if (!user.hexAccentColor) {
+    if (!user.hexAccentColor || user.hexAccentColor === "#000000") {
         return {
             embeds: [
                 WarningEmbed()
@@ -328,7 +328,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
             ]
         }
     }
-
+    
     const color = getColorInt(user.hexAccentColor);
 
     const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);

@@ -13,7 +13,11 @@ const roleColorUpdate: Button = {
             return;
         }
 
-        await updateColorRole(client, interaction.member as GuildMember);
+        const success = await updateColorRole(client, interaction.member as GuildMember);
+        if (!success) {
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            return;
+        }
 
         const colorMessagePayload = await getColorMessagePayload(client, interaction);
         await interaction.editReply(colorMessagePayload);
