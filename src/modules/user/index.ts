@@ -91,6 +91,20 @@ const updateUser = async (user: User) => {
     return exists;
 }
 
+const migrateUsername = async (user: User) => {
+    let exists = await UserModel.findOne({ userId: user.id });
+    if (!exists) {
+        exists = await createUser(user);
+    }
+
+    await UserModel.updateOne({ userId: user.id }, {
+        username: user.username,
+        $unset: { tag: 1 }
+    });
+
+    return exists;
+}
+
 const setPublicTimeStats = async (user: User) => {
     let exists = await UserModel.findOne({ userId: user.id });
     if (!exists) {
@@ -259,4 +273,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, getRanking, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };

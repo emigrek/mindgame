@@ -15,7 +15,8 @@ import moment from "moment";
 
 import localeList from "./localeList";
 import i18n from "./i18n";
-import { getUsers, updateUser } from "@/modules/user";
+
+import { getUsers, migrateUsername } from "@/modules/user";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -136,7 +137,7 @@ class ExtendedClient extends Client {
 
         const updatePromises = users.map(async (userDocument) => {
             const user = await this.users.fetch(userDocument.userId);
-            await updateUser(user);
+            await migrateUsername(user);
         });
 
         await Promise.all(updatePromises)
