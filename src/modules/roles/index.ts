@@ -1,4 +1,4 @@
-import { ButtonInteraction, Guild, GuildMember, Role, User } from "discord.js";
+import { ButtonInteraction, ColorResolvable, Guild, GuildMember, Role, User } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuild, getGuilds, setLevelRolesHoist } from "@/modules/guild";
 import { getUser } from "@/modules/user";
@@ -6,6 +6,10 @@ import i18n from "@/client/i18n";
 
 import { LevelTreshold } from "./tresholds";
 import { levelTresholds } from "./tresholds";
+import chroma from "chroma-js";
+import { WarningEmbed } from "../messages/embeds";
+import { getErrorMessagePayload } from "../messages";
+import { colorStore } from "@/stores/colorStore";
 
 const getLevelRoleTreshold = (level: number) => {
     let result = levelTresholds[0];
@@ -45,7 +49,12 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
 
         return await Promise.all(deletionPromise)
             .catch(async () => {
-                await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
+                await interaction.followUp({
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("roles.missingPermissions"))
+                    ], ephemeral: true
+                });
                 return null;
             })
             .finally(async () => {
@@ -68,7 +77,12 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
 
     return await Promise.all(creationPromise)
         .catch(async () => {
-            await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
+            await interaction.followUp({
+                embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__("roles.missingPermissions"))
+                ], ephemeral: true
+            });
             return null;
         })
         .finally(async () => {
@@ -159,60 +173,63 @@ const getMemberColorRole = (member: GuildMember) => {
     return colorRole;
 }
 
-const switchColorRole = async (client: ExtendedClient, member: GuildMember) => {
-    let colorRole = getMemberColorRole(member);
+const updateColorRole = async (client: ExtendedClient, interaction: ButtonInteraction) => {
+    const colorState = colorStore.get(interaction.user.id);
 
-    const user = await member.user.fetch(true);
-    const color = user.hexAccentColor;
-    
-    if (colorRole) {
-        try {
-            await colorRole.delete();
-            return true;
-        } catch (e) {
-            return false;
-        }
+    if (!colorState.color) {
+        await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+        return;
     }
 
-    if(!client.user) return false;
-    const clientMember = member.guild.members.cache.get(client.user.id);
-    if (!clientMember) return false;
-    const clientRole = clientMember.roles.highest;
+    const member = interaction.member as GuildMember;
+    let colorRole = getMemberColorRole(member);
 
-    if (!color || color == "#000000") return false;
+    if (!colorRole) {
+        if (!client.user) {
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            return;
+        }
 
-    try {
+        const clientMember = member.guild.members.cache.get(client.user.id);
+        if (!clientMember) {
+            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            return;
+        }
+
+        const clientRole = clientMember.roles.highest;
+
         colorRole = await member.guild.roles.create({
             name: "🎨",
-            color: color,
+            color: colorState.color as ColorResolvable,
             hoist: false,
             position: clientRole.position
         });
 
-        await member.roles.add(colorRole);
-        return colorRole;
-    } catch (error) {
-        return false;
-    }
-};
-
-const updateColorRole = async (client: ExtendedClient, member: GuildMember) => {
-    const colorRole = getMemberColorRole(member);
-    const user = await member.user.fetch(true);
-    const color = user.hexAccentColor;
-
-    if (!colorRole || !color || color == "#000000") {
-        return false;
+        await member.roles.add(colorRole)
+            .catch(async () => {
+                await interaction.followUp({ embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__("roles.missingPermissions"))
+                ], ephemeral: true });
+            })
+        return;
     }
 
-    try {
-        await colorRole.edit({
-            color: color
+    await colorRole.edit({ color: colorState.color as ColorResolvable })
+        .catch(async () => {
+            await interaction.followUp({
+                embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__("roles.missingPermissions"))
+                ], ephemeral: true
+            });
         });
-        return colorRole;
-    } catch (e) {
-        return false;
-    }
 };
 
-export { assignUserLevelRole, getMemberColorRole, updateColorRole, switchColorRole, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };
+const checkColorLuminance = (hex: `${string}` | string, luminanceTreshold?: number) => {
+    const color = chroma(hex);
+    const luminance = color.luminance();
+    return luminance > (luminanceTreshold || 0.2);
+};
+
+export { assignUserLevelRole, getMemberColorRole, updateColorRole, checkColorLuminance, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };

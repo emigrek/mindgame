@@ -95,11 +95,28 @@
 	},
 	"color": {
 		"title": "Custom color",
-		"description": "Equip yourself with a custom color role.\nSet desired banner color in profile and enable ",
-		"roleColorOnButtonLabel": "Enable ✅",
-		"roleColorOffButtonLabel": "Disable ❌",
+		"description": "Equip yourself with a custom color role.\nSelect desired color using button below.",
+		"current": "Selected: {hex} ({name})",
+		"roleColorPickButtonLabel": "Pick 🎨",
 		"roleColorUpdateButtonLabel": "Update 🔄",
-		"noColor": "Please set your banner color first."
+		"roleColorDisableButtonLabel": "Disable ❌",
+		"noColor": "Please set your banner color first.",
+		"tooDark": "This color is too dark for a custom role color.\nPlease select something brighter.",
+		"pickerModal": {
+			"title": "Pick a color",
+			"colorInput": {
+				"label": "Desired color",
+				"placeholder": "It could be color name or hex format",
+				"invalid": "Invalid color format, it could be color name or it's hex format."
+			}
+		}
+	},
+	"newFeatures": {
+		"title": "Congratulations",
+		"description": "You've unlocked new features!",
+		"commands": "Commands",
+		"global": "Global",
+		"guildOnly": "Guild-only"
 	},
 	"evaluation": {
 		"title": "Evaluation",

@@ -95,11 +95,28 @@
 	},
 	"color": {
 		"title": "Niestandardowy kolor",
-		"description": "Wyposaż rolę o wybranym kolorze.\nUstaw kolor baneru w profilu i włącz kolor.",
-		"roleColorOnButtonLabel": "Włącz ✅",
-		"roleColorOffButtonLabel": "Wyłącz ❌",
+		"description": "Wyposaż rolę o wybranym kolorze.\nWybierz kolor używając przycisku poniżej.",
+		"current": "Wybrany: {hex} ({name})",
+		"roleColorPickButtonLabel": "Wybierz 🎨",
 		"roleColorUpdateButtonLabel": "Zaaktualizuj 🔄",
-		"noColor": "Nie wybrano koloru."
+		"roleColorDisableButtonLabel": "Wyłącz ❌",
+		"noColor": "Nie wybrano koloru.",
+		"tooDark": "Ten kolor jest zbyt ciemny na niestandardowy kolor.\nWybierz coś jaśniejszego.",
+		"pickerModal": {
+			"title": "Wybierz kolor",
+			"colorInput": {
+				"label": "Kolor",
+				"placeholder": "To może być nazwa koloru lub jego format hex",
+				"invalid": "Nieprawidłowy format koloru, to może być nazwa koloru lub jego format hex."
+			}
+		}
+	},
+	"newFeatures": {
+		"title": "Gratulacje",
+		"description": "Odblokowałeś nowe możliwości!",
+		"commands": "Polecenia",
+		"global": "Globalne",
+		"guildOnly": "Tylko na serwerach"
 	},
 	"evaluation": {
 		"title": "Wywołanie",

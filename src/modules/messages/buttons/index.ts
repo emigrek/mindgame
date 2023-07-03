@@ -73,22 +73,31 @@ const getProfileFollowButton = async (client: ExtendedClient, sourceUser: UserDo
     return followButton;
 }
 
-const getRoleColorSwitchButton = async (client: ExtendedClient, current: boolean) => {
-    const roleColorSwitchButton = new ButtonBuilder()
-        .setCustomId("roleColorSwitch")
-        .setLabel(!current ? i18n.__("color.roleColorOnButtonLabel") : i18n.__("color.roleColorOffButtonLabel"))
-        .setStyle(current ? ButtonStyle.Success : ButtonStyle.Secondary);
+const getRoleColorPickButton = () => {
+    const roleColorPickButton = new ButtonBuilder()
+        .setCustomId("roleColorPick")
+        .setLabel(i18n.__("color.roleColorPickButtonLabel"))
+        .setStyle(ButtonStyle.Secondary);
 
-    return roleColorSwitchButton;
+    return roleColorPickButton;
 }
 
 const getRoleColorUpdateButton = async () => {
     const roleColorUpdateButton = new ButtonBuilder()
         .setCustomId("roleColorUpdate")
         .setLabel(i18n.__("color.roleColorUpdateButtonLabel"))
-        .setStyle(ButtonStyle.Primary);
+        .setStyle(ButtonStyle.Secondary);
 
     return roleColorUpdateButton;
+}
+
+const getRoleColorDisableButton = () => {
+    const roleColorDisableButton = new ButtonBuilder()
+        .setCustomId("roleColorDisable")
+        .setLabel(i18n.__("color.roleColorDisableButtonLabel"))
+        .setStyle(ButtonStyle.Danger);
+    
+    return roleColorDisableButton
 }
 
 const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResolvable) => {
@@ -225,4 +234,4 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }
 
-export { getRepoButton, getRankingGuildOnlyButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorSwitchButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };
+export { getRepoButton, getRankingGuildOnlyButton, getRoleColorDisableButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorPickButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };

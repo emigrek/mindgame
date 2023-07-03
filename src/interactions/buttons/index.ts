@@ -10,8 +10,9 @@ import guildStatistics from "./guildStatistics";
 import profile from "./profile";
 import autoSweeping from "./autoSweeping";
 import commits from "./commits";
-import roleColorSwitch from "./roleColorSwitch";
+import roleColorPick from "./roleColorPick";
 import roleColorUpdate from "./roleColorUpdate";
+import roleColorDisable from "./roleColorDisable";
 import ranking from "./ranking";
 import rankingPageUp from "./rankingPageUp";
 import rankingPageDown from "./rankingPageDown";
@@ -32,8 +33,9 @@ const buttons: Button[] = [
     autoSweeping,
     statisticsNotification,
     commits,
-    roleColorSwitch,
+    roleColorPick,
     roleColorUpdate,
+    roleColorDisable,
     ranking,
     rankingPageUp,
     rankingPageDown,

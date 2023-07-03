@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
 import { User, Guild } from "discord.js";
-import { User as DatabaseUser, Guild as DatabaseGuild, Sorting } from "@/interfaces";
+import { User as DatabaseUser, Guild as DatabaseGuild, Sorting, Command } from "@/interfaces";
 import userSchema, { UserDocument } from "@/modules/schemas/User";
 import { ExtendedStatistics, ExtendedStatisticsPayload, Statistics } from "@/interfaces/User";
 import ExtendedClient from "@/client/ExtendedClient";
+import { InformationEmbed } from "@/modules/messages/embeds";
+import { getColorInt, useImageHex } from "@/modules/messages";
+import { GuildDocument } from "@/modules/schemas/Guild";
+import i18n from "@/client/i18n";
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -198,6 +202,52 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
     return userSource;
 };
 
+const getNewFeatures = async (client: ExtendedClient, user: User) => {
+    const userDocument = await getUser(user);
+
+    const newCommands = client.commands.filter(
+        (command) => command.options?.level && command.options.level == userDocument?.stats.level
+    );
+
+    return {
+        commands: newCommands
+    }
+};
+
+const commandFeature = (client: ExtendedClient, command: Command) => {
+    const cmd = client.application?.commands.cache.find((c) => c.name === command.data.name);
+
+    return `</${cmd?.name}:${cmd?.id}> (${cmd?.dmPermission ? i18n.__("newFeatures.global") : i18n.__("newFeatures.guildOnly") })`;
+}
+
+const sendNewFeaturesMessage = async (client: ExtendedClient, user: User, sourceGuild: GuildDocument) => {
+    if(sourceGuild) {
+        const guild = client.guilds.cache.get(sourceGuild.guildId);
+        i18n.setLocale(guild?.preferredLocale || "en-US");
+    }
+
+    await client.application?.commands.fetch();
+    const newFeatures = await getNewFeatures(client, user);
+    if (!newFeatures.commands.size) return;
+
+    const colors = await useImageHex(user.avatarURL({ extension: "png" }));
+
+    const embed = InformationEmbed()
+        .setTitle(i18n.__("newFeatures.title"))
+        .setColor(getColorInt(colors.Vibrant))
+        .setDescription(i18n.__("newFeatures.description"))
+        .setFields([
+            {
+                name: i18n.__("newFeatures.commands"),
+                value: newFeatures.commands.map((command) => commandFeature(client, command)).join("\n"),
+                inline: true
+            }
+        ])
+        .setThumbnail("https://i.imgur.com/cSTkdFG.png");
+
+    await user.send({ embeds: [embed] });
+};
+
 const everyUser = async (client: ExtendedClient, callback: (user: UserDocument) => void) => {
     const users = await getUsers();
     for await (const user of users) {
@@ -273,4 +323,4 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
     });
 };
 
-export { setPublicTimeStats, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };

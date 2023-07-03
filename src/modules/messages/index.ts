@@ -3,12 +3,13 @@ import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorSwitchButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
 import moment from "moment";
 import Vibrant = require('node-vibrant');
+import { GetColorName } from 'hex-color-to-color-name';
 import { getRanking, getUser } from "@/modules/user";
 import { getMemberColorRole } from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
@@ -23,6 +24,7 @@ import i18n from "@/client/i18n";
 
 import { rankingStore } from "@/stores/rankingStore";
 import { profileStore } from "@/stores/profileStore";
+import { colorStore } from "@/stores/colorStore";
 
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 
@@ -86,10 +88,12 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     const currentDefault = textChannels.find((channel) => channel.id == sourceGuild.channelId);
 
     if (!textChannels.size) {
-        await owner?.send({ embeds: [
-            WarningEmbed()
-                .setDescription(i18n.__("config.noValidChannels"))
-        ]});
+        await owner?.send({
+            embeds: [
+                WarningEmbed()
+                    .setDescription(i18n.__("config.noValidChannels"))
+            ]
+        });
         return getErrorMessagePayload();
     }
 
@@ -301,50 +305,44 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
     }
 }
 
-const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction) => {
+const getColorMessagePayload = async (client: ExtendedClient, interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction) => {
+    const colorState = colorStore.get(interaction.user.id);
+
     if (!interaction.guild)
         return getErrorMessagePayload();
 
-    const sourceUser = await getUser(interaction.user);
-    if (!sourceUser) {
-        return {
-            embeds: [
-                WarningEmbed()
-                    .setDescription(i18n.__("utils.userOnly"))
-            ]
-        }
-    }
-
-    const user = await client.users.fetch(sourceUser.userId, { force: true });
     const roleColor = getMemberColorRole(interaction.member as GuildMember);
+    const defaultColor = await useImageHex(interaction.user.avatarURL({ extension: "png" }))
+        .then(color => color.Vibrant);
 
-    if (!user.hexAccentColor || user.hexAccentColor === "#000000") {
-        return {
-            embeds: [
-                WarningEmbed()
-                    .setTitle(i18n.__("color.title"))
-                    .setDescription(i18n.__("color.noColor"))
-                    .setThumbnail(sourceUser.avatarUrl)
-            ]
-        }
+    if (!colorState.color) {
+        colorState.color = roleColor ? roleColor.hexColor : defaultColor;
     }
-    
-    const color = getColorInt(user.hexAccentColor);
 
-    const roleColorSwitchButton = await getRoleColorSwitchButton(client, roleColor ? true : false);
     const roleColorUpdateButton = await getRoleColorUpdateButton();
+    const roleColorPickButton = getRoleColorPickButton();
     const row = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(roleColorSwitchButton);
+        .setComponents(roleColorPickButton, roleColorUpdateButton);
 
     if (roleColor) {
-        row.addComponents(roleColorUpdateButton);
+        const roleColorDisableButton = getRoleColorDisableButton();
+        row.addComponents(roleColorDisableButton);
     }
 
+    const colorImageUrl = `https://singlecolorimage.com/get/${(colorState.color).split("#").at(-1)}/400x400`;
+
     const embed = InformationEmbed()
-        .setColor(color)
+        .setColor(getColorInt(colorState.color))
         .setTitle(i18n.__("color.title"))
         .setDescription(i18n.__("color.description"))
-        .setThumbnail(sourceUser.avatarUrl);
+        .setThumbnail(colorImageUrl)
+        .setFooter({
+            iconURL: colorImageUrl,
+            text: i18n.__mf("color.current", {
+                hex: colorState.color,
+                name: GetColorName(colorState.color)
+            })
+        });
 
     return {
         embeds: [embed],
@@ -365,13 +363,13 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const sortingType = getSortingByType(sorting);
     const { onPage, pagesCount } = await getRanking(sortingType, page, perPage, guild, userIds);
-    
+
     rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
     const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);
         const indexString = () => {
-            switch(relativeIndex) {
+            switch (relativeIndex) {
                 case 1:
                     return "`🥇.`";
                 case 2:
@@ -382,7 +380,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     return `\`${relativeIndex}.\``;
             }
         }
- 
+
         return {
             name: `${indexString()} ${user.username} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
@@ -544,7 +542,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
     } else if (subcommand === 'delete') {
         const result = await deleteEphemeralChannel(channel.id);
 
-        if(!result) {
+        if (!result) {
             return {
                 embeds: [
                     WarningEmbed()
@@ -570,6 +568,7 @@ const getEvalMessagePayload = async (client: ExtendedClient, interaction: ChatIn
 
     const embed = new EmbedBuilder();
     try {
+        const updateUserStatistics = (await import("../user/index")).updateUserStatistics;
         const evaled = await eval(code ?? '');
         const output = await clean(evaled, depth ?? 0);
 

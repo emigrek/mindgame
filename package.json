@@ -41,6 +41,7 @@
     "discord-logs": "^2.2.1",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
+    "hex-color-to-color-name": "^1.0.2",
     "i18n": "^0.15.1",
     "module-alias": "^2.2.3",
     "moment": "^2.29.4",

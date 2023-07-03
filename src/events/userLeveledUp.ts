@@ -3,11 +3,15 @@ import { Event } from "@/interfaces";
 import { getGuilds } from "@/modules/guild";
 import { createMessage, getLevelUpMessagePayload } from "@/modules/messages";
 import { assignUserLevelRole } from "@/modules/roles";
+import { sendNewFeaturesMessage } from "@/modules/user";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
     run: async (client, user, sourceGuild) => {
         const sourceGuilds = await getGuilds();
+
+        await sendNewFeaturesMessage(client, user, sourceGuild)
+            .catch(err => console.log("Error while sending new features message: ", err));
 
         for await (const sG of sourceGuilds) {
             const guild = client.guilds.cache.get(sG.guildId);

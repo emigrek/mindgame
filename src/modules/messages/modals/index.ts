@@ -35,4 +35,24 @@ const getRankingSettingsModal = (page: number, pagesCount: number, perPage: numb
     return modal;
 };
 
-export { getRankingSettingsModal };
+const getColorPickerModal = (color: string) => {
+    const modal = new ModalBuilder()
+        .setCustomId("colorPickerModal")
+        .setTitle(i18n.__("color.pickerModal.title"));
+
+    const colorInput = new TextInputBuilder()
+        .setCustomId("colorInput")
+        .setLabel(i18n.__("color.pickerModal.colorInput.label"))
+        .setPlaceholder(i18n.__("color.pickerModal.colorInput.placeholder"))
+        .setValue(color)
+        .setStyle(TextInputStyle.Short);
+    
+    modal.addComponents(
+        new ActionRowBuilder<TextInputBuilder>()
+            .addComponents(colorInput)
+    );
+
+    return modal;
+};
+
+export { getRankingSettingsModal, getColorPickerModal };

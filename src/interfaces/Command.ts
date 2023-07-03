@@ -5,7 +5,7 @@ interface Run {
     (client: Client, interaction: ChatInputCommandInteraction, ...args: any[]): Promise<void>;
 }
 
-interface Options {
+export interface Options {
     ownerOnly?: boolean;
     level?: number;
 }
