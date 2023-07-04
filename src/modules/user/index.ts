@@ -248,11 +248,10 @@ const sendNewFeaturesMessage = async (client: ExtendedClient, user: User, source
     await user.send({ embeds: [embed] });
 };
 
-const everyUser = async (client: ExtendedClient, callback: (user: UserDocument) => void) => {
+const everyUser = async (callback: (user: UserDocument) => Promise<void>) => {
     const users = await getUsers();
-    for await (const user of users) {
-        await callback(user);
-    }
+    const promises = users.map(async (user) => await callback(user));
+    await Promise.all(promises);
 }
 
 const clearExperience = async () => {
@@ -273,15 +272,13 @@ const getRanking = async (type: Sorting, page: number, perPage: number, guild?: 
         });
     }
 
-    const results = await UserModel.find(
-        usersFilter.size ? {
-            userId: { $in: Array.from(usersFilter) },
-        } : {}
-    ).sort(type.value);
-
-    const pagesCount = Math.ceil((await UserModel.countDocuments(usersFilter.size ? {
+    const query = usersFilter.size ? {
         userId: { $in: Array.from(usersFilter) },
-    } : {})) / perPage) || 1;
+    } : {};
+
+    const results = await UserModel.find(query).sort(type.sort);
+
+    const pagesCount = Math.ceil((await UserModel.countDocuments(query)) / perPage) || 1;
 
     const onPage = results.slice((page - 1) * perPage, page * perPage);
 
@@ -291,7 +288,7 @@ const getRanking = async (type: Sorting, page: number, perPage: number, guild?: 
     }
 };
 
-const clearTemporaryStatistics = async (client: ExtendedClient, type: string) => {
+const clearTemporaryStatistics = async (type: string) => {
     const blankTemporaryStatistic = {
         exp: 0,
         time: {
@@ -307,7 +304,7 @@ const clearTemporaryStatistics = async (client: ExtendedClient, type: string) =>
         }
     };
 
-    everyUser(client, async (sourceUser) => {
+    everyUser(async (sourceUser) => {
         switch (type) {
             case "day":
                 sourceUser.day = blankTemporaryStatistic;

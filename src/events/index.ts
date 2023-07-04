@@ -32,6 +32,7 @@ import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
 import { guildVoiceEmpty } from "./guildVoiceEmpty";
 import { minute } from "./minute";
 import { channelDelete } from "./channelDelete";
+import { roleUpdate } from "./roleUpdate";
 
 const events: Event[] = [
     ready,
@@ -65,7 +66,8 @@ const events: Event[] = [
     quarter,
     guildVoiceEmpty,
     minute,
-    channelDelete
+    channelDelete,
+    roleUpdate
 ];
 
 export default events;

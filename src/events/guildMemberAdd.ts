@@ -9,7 +9,7 @@ export const guildMemberAdd: Event = {
         await createUser(member.user);
         const sourceGuild = await getGuild(member.guild);
         if(sourceGuild?.levelRoles) {
-            await assignUserLevelRole(client, member.user, member.guild);
+            await assignUserLevelRole(member.user, member.guild);
         } 
     }
 }

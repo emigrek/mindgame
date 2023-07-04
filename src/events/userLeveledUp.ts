@@ -20,7 +20,7 @@ export const userLeveledUp: Event = {
             if (!guild) continue;
 
             if (levelRoles)
-                await assignUserLevelRole(client, user, guild);
+                await assignUserLevelRole(user, guild);
 
             if (!notifications || !channelId) continue;
 

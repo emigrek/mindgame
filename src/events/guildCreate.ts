@@ -40,7 +40,7 @@ export const guildCreate: Event = {
         await updatePresence(client);
 
         if(sourceGuild.levelRoles)
-            await assignLevelRolesInGuild(client, guild);
+            await assignLevelRolesInGuild(guild);
 
         const textChannels = guild.channels.cache.filter((channel: BaseChannel) => channel.type === ChannelType.GuildText);
 

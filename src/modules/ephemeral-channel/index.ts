@@ -85,7 +85,7 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
         const channel = await client.channels.fetch(ephemeralChannel.channelId) as TextChannel;
         if (!channel) return null;
 
-        const messages = await channel.messages.fetch({ limit: 100 });
+        const messages = await channel.messages.fetch({ limit: 50 });
         const valid = messages
             .filter((message: Message) => moment(message.createdAt).isAfter(moment(ephemeralChannel.createdAt as string)));
         

@@ -32,7 +32,7 @@ export const sortings: Sorting[] = [
         type: "exp",
         label: "experience",
         range: "total",
-        value: { "stats.exp": -1 },
+        sort: { "stats.exp": -1 },
         mask: "{stats.level} LVL ({stats.exp} EXP)",
         emoji: "✨"
     },
@@ -40,7 +40,7 @@ export const sortings: Sorting[] = [
         type: "day exp",
         label: "experience",
         range: "day",
-        value: { "day.exp": -1 },
+        sort: { "day.exp": -1 },
         mask: "{day.exp} EXP",
         emoji: "✨"
     },
@@ -48,7 +48,7 @@ export const sortings: Sorting[] = [
         type: "week exp",
         label: "experience",
         range: "week",
-        value: { "week.exp": -1 },
+        sort: { "week.exp": -1 },
         mask: "{week.exp} EXP",
         emoji: "✨"
     },
@@ -56,7 +56,7 @@ export const sortings: Sorting[] = [
         type: "month exp",
         label: "experience",
         range: "month",
-        value: { "month.exp": -1 },
+        sort: { "month.exp": -1 },
         mask: "{month.exp} EXP",
         emoji: "✨"
     },
@@ -64,28 +64,28 @@ export const sortings: Sorting[] = [
     //     type: "skill",
     //     label: "Skill games won",
     //     range: "total",
-    //     value: { "stats.games.won.skill": -1 },
+    //     sort: { "stats.games.won.skill": -1 },
     //     mask: "{stats.games.won.skill}"
     // },
     // {
     //     type: "skin",
     //     label: "Skin games won",
     //     range: "total",
-    //     value: { "stats.games.won.skin": -1 },
+    //     sort: { "stats.games.won.skin": -1 },
     //     mask: "{stats.games.won.skin}"
     // },
     // {
     //     type: "commands",
     //     label: "Commands used",
     //     range: "total",
-    //     value: { "stats.commands": -1 },
+    //     sort: { "stats.commands": -1 },
     //     mask: "{stats.commands} executed"
     // },
     {
         type: "day voice",
         label: "voice time",
         range: "day",
-        value: { "day.time.voice": -1 },
+        sort: { "day.time.voice": -1 },
         mask: "{day.time.voice}H",
         emoji: "⌛"
     },
@@ -93,14 +93,14 @@ export const sortings: Sorting[] = [
     //     type: "day skill",
     //     label: "Skill games won",
     //     range: "day",
-    //     value: { "day.games.won.skill": -1 },
+    //     sort: { "day.games.won.skill": -1 },
     //     mask: "{day.games.won.skill}"
     // },
     // {
     //     type: "day skin",
     //     label: "Skin games won",
     //     range: "day",
-    //     value: { "day.games.won.skin": -1 },
+    //     sort: { "day.games.won.skin": -1 },
     //     mask: "{day.games.won.skin}"
     // },
     
@@ -108,7 +108,7 @@ export const sortings: Sorting[] = [
         type: "week voice",
         label: "voice time",
         range: "week",
-        value: { "week.time.voice": -1 },
+        sort: { "week.time.voice": -1 },
         mask: "{week.time.voice}H",
         emoji: "⌛"
     },
@@ -116,37 +116,36 @@ export const sortings: Sorting[] = [
     //     type: "week skill",
     //     label: "Skill games won",
     //     range: "week",
-    //     value: { "day.games.won.skill": -1 },
+    //     sort: { "day.games.won.skill": -1 },
     //     mask: "{day.games.won.skill}"
     // },
     // {
     //     type: "week skin",
     //     label: "Skin games won",
     //     range: "week",
-    //     value: { "week.games.won.skin": -1 },
+    //     sort: { "week.games.won.skin": -1 },
     //     mask: "{week.games.won.skin}"
     // },
-    
     {
         type: "month voice",
         label: "voice time",
         range: "month",
-        value: { "month.time.voice": -1 },
+        sort: { "month.time.voice": -1 },
         mask: "{month.time.voice}H",
         emoji: "⌛"
-    },
+    }
     // {
     //     type: "month skill",
     //     label: "Skill games won",
     //     range: "month",
-    //     value: { "month.games.won.skill": -1 },
+    //     sort: { "month.games.won.skill": -1 },
     //     mask: "{month.games.won.skill}"
     // },
     // {
     //     type: "month skin",
     //     label: "Skin games won",
     //     range: "month",
-    //     value: { "month.games.won.skin": -1 },
+    //     sort: { "month.games.won.skin": -1 },
     //     mask: "{month.games.won.skin}"
     // }
 ];

@@ -568,7 +568,6 @@ const getEvalMessagePayload = async (client: ExtendedClient, interaction: ChatIn
 
     const embed = new EmbedBuilder();
     try {
-        const updateUserStatistics = (await import("../user/index")).updateUserStatistics;
         const evaled = await eval(code ?? '');
         const output = await clean(evaled, depth ?? 0);
 

@@ -6,7 +6,7 @@ export interface Sorting {
     type: string;
     label: string;
     range: 'total' | 'day' | 'week' | 'month';
-    value: SortValues;
+    sort: SortValues;
     mask: string;
     emoji: string;
 }

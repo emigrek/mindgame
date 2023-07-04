@@ -7,7 +7,7 @@ import { getStatisticsMessagePayload } from "@/modules/messages";
 export const daily: Event = {
     name: "daily",
     run: async (client) => {
-        await clearTemporaryStatistics(client, 'day');
+        await clearTemporaryStatistics('day');
         const sourceGuilds = await getGuilds();
 
         for await (const sourceGuild of sourceGuilds) {
