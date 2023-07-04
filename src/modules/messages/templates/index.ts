@@ -321,13 +321,13 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             <div class="text-5xl font-bold text-[${userTreshold.color}]">
                                 ${user.stats.level}
                             </div>  
-                            <div class="relative w-full h-3 mx-6 bottom-0 flex rounded-lg bg-black/80">
+                            <div class="relative w-11/12 h-3 bottom-0 flex rounded-lg bg-black/80 overflow-hidden">
                                 <div class="absolute w-full h-full flex items-center justify-center">
                                      <div class="relative w-7 h-full rounded-full bg-black/30 flex items-center justify-center">
                                         <div class="text-[0.6rem] text-white text-center font-bold">${expProcentage}%</div>
                                     </div>
                                 </div>
-                                <div style="width: ${expProcentage}%" class="h-full flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg"></div> 
+                                <div style="width: ${expProcentage}%;border-radius: 9999px;" class="h-full flex items-center justify-center bg-[${userTreshold.color}] overflow-hidden shadow-lg"></div> 
                             </div>
                         </div>
                     </div>
