@@ -147,11 +147,14 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember): Pr
     const seconds = moment(exists.to).diff(moment(exists.from), "seconds");
     const hours = moment(exists.to).diff(moment(exists.from), "hours", true);
 
+    const intersecting = await getChannelIntersectingVoiceActivities(exists)
+        .then((activities) => activities.length);
+
     const base = seconds * 0.16;
     const boost = hours < 1 ? 1 : hours ** 2;
 
     const income = Math.round(
-        base * boost
+        base * boost * (intersecting+1)
     );
 
     const sourceGuild = await getGuild(member.guild);
@@ -316,6 +319,25 @@ const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date,
     return activities;
 }
 
+const getChannelIntersectingVoiceActivities = async (activity: VoiceActivityDocument): Promise<VoiceActivityDocument[]> => {
+    const activities = await voiceActivityModel.find({
+        guildId: activity.guildId,
+        channelId: activity.channelId,
+        userId: {
+            $ne: activity.userId
+        },
+        from: {
+            $lte: activity.to
+        },
+        $or: [
+            { to: null },
+            { to: { $gte: activity.from }}
+        ]
+    });
+
+    return activities;
+};
+
 const getVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
@@ -372,4 +394,4 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     return '#68717e';
 }
 
-export { getLastVoiceActivity, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
