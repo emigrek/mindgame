@@ -9,6 +9,7 @@ import chroma from "chroma-js";
 import { UserDocument } from "@/modules/schemas/User";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import i18n from "@/client/i18n";
+import { getFollowers } from "@/modules/follow";
 
 const embedSpacer = () => {
     return `
@@ -244,6 +245,8 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
     const presenceActivity = await getUserPresenceActivity(user);
     const presenceActivityColor = getPresenceActivityColor(presenceActivity);
 
+    const followers = await getFollowers(user.userId).then(followers => followers.length);
+
     return `
         <div class="flex flex-col items-center space-y-3">
             <div class="mx-auto w-[400px] flex items-center justify-center align-middle space-x-10 mb-7">
@@ -289,9 +292,9 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
             </div>
             <div class="w-full h-[125px] flex items-center text-white">
                 <div class="flex w-full text-lg flex-row items-center justify-center align-middle text-white space-x-3">
-                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${i18n.__("profile.rank")}</div>
+                            <div class="text-white/80 text-base">${i18n.__("profile.rank")}</div>
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
                                     <path d="M21.721 12.752a9.711 9.711 0 00-.945-5.003 12.754 12.754 0 01-4.339 2.708 18.991 18.991 0 01-.214 4.772 17.165 17.165 0 005.498-2.477zM14.634 15.55a17.324 17.324 0 00.332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 00.332 4.647 17.385 17.385 0 005.268 0zM9.772 17.119a18.963 18.963 0 004.456 0A17.182 17.182 0 0112 21.724a17.18 17.18 0 01-2.228-4.605zM7.777 15.23a18.87 18.87 0 01-.214-4.774 12.753 12.753 0 01-4.34-2.708 9.711 9.711 0 00-.944 5.004 17.165 17.165 0 005.498 2.477zM21.356 14.752a9.765 9.765 0 01-7.478 6.817 18.64 18.64 0 001.988-4.718 18.627 18.627 0 005.49-2.098zM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 001.988 4.718 9.765 9.765 0 01-7.478-6.816zM13.878 2.43a9.755 9.755 0 016.116 3.986 11.267 11.267 0 01-3.746 2.504 18.63 18.63 0 00-2.37-6.49zM12 2.276a17.152 17.152 0 012.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0112 2.276zM10.122 2.43a18.629 18.629 0 00-2.37 6.49 11.266 11.266 0 01-3.746-2.504 9.754 9.754 0 016.116-3.985z" />
@@ -305,9 +308,9 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             <div class="text-4xl">#${userRank}</div>
                         </div>
                     </div>
-                    <div class="relative flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
+                    <div class="relative flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
                         <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${i18n.__("profile.level")}</div>
+                            <div class="text-white/80 text-base">${i18n.__("profile.level")}</div>
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
                                     <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clip-rule="evenodd" />
@@ -320,25 +323,26 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             </div>  
                             ${ expProcentage ? `
                                 <div class="relative w-full h-3 bottom-0 flex rounded-lg bg-black/80">
-                                    <div style="width: ${expProcentage}%" class="h-full flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg">
-                                        <div class="text-[0.7rem] text-[#202225] rounded text-center font-bold">
-                                            ${expProcentage}%
+                                    <div class="absolute w-full h-full flex items-center justify-center">
+                                        <div class="relative w-7 h-full rounded-full bg-black/30 flex items-center justify-center">
+                                            <div class="text-[0.6rem] text-white text-center font-bold">${expProcentage}%</div>
                                         </div>
-                                    </div> 
+                                    </div>
+                                    <div style="width: ${expProcentage}%" class="h-full flex items-center justify-center bg-[${userTreshold.color}] shadow-lg rounded-lg"></div> 
                                 </div>` : ''
                             }
                         </div>
                     </div>
-                    <div class="flex flex-col flex-grow items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
-                            <div class="text-white/80">${i18n.__("profile.wins")}</div>
+                            <div class="text-white/80 text-base">${i18n.__("profile.followers")}</div>
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
-                                    <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-4xl">${user.stats.games.won.skill + user.stats.games.won.skin}</div>
+                        <div class="text-4xl">${followers}</div>
                     </div>
                 </div>
             </div>
@@ -347,7 +351,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                                 <div class="flex flex-row flex-grow space-x-6 items-center justify-center">
                                     <div class="flex flex-col items-center p-2 justify-center">
                                         <div class="flex space-x-2 items-center">
-                                            <div class="text-white/80">${i18n.__("profile.voice")}</div>
+                                            <div class="text-white/80 text-base">${i18n.__("profile.voice")}</div>
                                             <div>
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
                                                     <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
@@ -359,7 +363,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                                     </div>
                                     <div class="flex flex-col items-center p-2 justify-center">
                                         <div class="flex space-x-2 items-center">
-                                            <div class="text-lg text-white/80">${i18n.__("profile.overall")}</div>
+                                            <div class="text-white/80 text-base">${i18n.__("profile.overall")}</div>
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
                                                 <path fill-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z" clip-rule="evenodd" />
                                             </svg>
