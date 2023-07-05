@@ -198,8 +198,8 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
 
         if (!member.voice.channel.equals(channel)) {
             outOfSync.push(activity.userId);
-            await endVoiceActivity(client, member);
-            await startVoiceActivity(client, member, member.voice.channel);
+            activity.channelId = member.voice.channel.id;
+            await activity.save();
             continue;
         }
     }
@@ -229,8 +229,8 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 
         if (presence.status !== activity.status) {
             outOfSync.push(activity.userId);
-            await endPresenceActivity(client, member);
-            await startPresenceActivity(client, member, presence);
+            activity.status = presence.status;
+            await activity.save();
             continue;
         }
     }

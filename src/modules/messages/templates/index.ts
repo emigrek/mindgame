@@ -292,7 +292,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
             </div>
             <div class="w-full h-[125px] flex items-center text-white">
                 <div class="flex w-full text-lg flex-row items-center justify-center align-middle text-white space-x-3">
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="w-full flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80 text-base">${i18n.__("profile.rank")}</div>
                             <div>
@@ -308,7 +308,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             <div class="text-4xl">#${userRank}</div>
                         </div>
                     </div>
-                    <div class="relative flex-grow flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
+                    <div class="w-full relative flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-xl">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80 text-lg">${i18n.__("profile.level")}</div>
                             <div>
@@ -321,7 +321,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             <div class="text-5xl font-bold text-[${userTreshold.color}]">
                                 ${user.stats.level}
                             </div>  
-                            <div class="relative w-11/12 h-3 bottom-0 flex rounded-lg bg-black/80 overflow-hidden">
+                            <div class="relative w-full mx-8 h-3 bottom-0 flex rounded-lg bg-black/80 overflow-hidden">
                                 <div class="absolute w-full h-full flex items-center justify-center">
                                      <div class="relative w-7 h-full rounded-full bg-black/30 flex items-center justify-center">
                                         <div class="text-[0.6rem] text-white text-center font-bold">${expProcentage}%</div>
@@ -331,7 +331,7 @@ const userProfile = async (client: ExtendedClient, user: UserDocument, colors: I
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
+                    <div class="w-full flex flex-col items-center px-4 py-3 rounded-xl bg-[#202225] shadow-md">
                         <div class="flex space-x-2 items-center">
                             <div class="text-white/80 text-base">${i18n.__("profile.followers")}</div>
                             <div>

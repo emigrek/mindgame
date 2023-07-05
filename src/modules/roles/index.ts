@@ -39,18 +39,15 @@ const getMemberTresholdRole = (member: GuildMember) => {
     return levelRole;
 }
 
-const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonInteraction, guild: Guild) => {
+const syncGuildLevelRoles = async (interaction: ButtonInteraction) => {
+    const { guild } = interaction;
+    if(!guild) return null;
+
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild) return null;
 
-    const levelRoles = guild.roles.cache.filter(role => levelRoleRegExp.test(role.name));
-
-    if (levelRoles.size) {
-        const deletionPromise = levelRoles.map(async (role: Role) => {
-            return await role.delete();
-        });
-
-        return await Promise.all(deletionPromise)
+    if(sourceGuild.levelRoles) {
+        return await deleteLevelRoles(guild)
             .catch(async () => {
                 await interaction.followUp({
                     embeds: [
@@ -68,17 +65,7 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
             });
     }
 
-    const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
-        const role = await guild.roles.create({
-            name: `Level ${treshold.level}`,
-            color: treshold.color,
-            hoist: sourceGuild.levelRolesHoist,
-            position: 0
-        });
-        return role;
-    });
-
-    return await Promise.all(creationPromise)
+    return await createLevelRoles(guild, sourceGuild.levelRolesHoist)
         .catch(async () => {
             await interaction.followUp({
                 embeds: [
@@ -94,9 +81,13 @@ const syncGuildLevelRoles = async (client: ExtendedClient, interaction: ButtonIn
         });
 }
 
-const syncGuildLevelRolesHoisting = async (client: ExtendedClient, interaction: ButtonInteraction, guild: Guild) => {
+const syncGuildLevelRolesHoisting = async (interaction: ButtonInteraction) => {
+    const { guild } = interaction;
+    if(!guild) return null;
+
     const sourceGuild = await getGuild(guild);
     if (!sourceGuild) return null;
+
     const levelRoles = guild.roles.cache.filter(role => levelRoleRegExp.test(role.name));
     if (!levelRoles.size) return null;
 
@@ -127,18 +118,18 @@ const assignUserLevelRole = async (user: User, guild: Guild) => {
 
     if (!guildTresholdRole) {
         const sourceGuild = await getGuild(guild);
-        if(!sourceGuild) return null;
+        if (!sourceGuild) return null;
 
         const tresholdIndex = levelTresholds.findIndex(t => t.level === treshold.level);
         const priorTreshold = levelTresholds[tresholdIndex + 1];
         const priorGuildTresholdRole = priorTreshold ? getGuildTresholdRole(guild, priorTreshold) : null;
-        
+
         try {
             guildTresholdRole = await guild.roles.create({
                 name: `Level ${treshold.level}`,
                 color: treshold.color,
                 hoist: sourceGuild.levelRolesHoist,
-                position: priorGuildTresholdRole ? priorGuildTresholdRole.position+1 : 0
+                position: priorGuildTresholdRole ? priorGuildTresholdRole.position + 1 : 0
             });
         } catch (error) {
             return null;
@@ -160,6 +151,32 @@ const assignUserLevelRole = async (user: User, guild: Guild) => {
     } catch (error) {
         return null;
     }
+}
+
+const createLevelRoles = async (guild: Guild, hoist?: boolean) => {
+    const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
+        const role = await guild.roles.create({
+            name: `Level ${treshold.level}`,
+            color: treshold.color,
+            hoist: hoist || false,
+            position: 0
+        });
+        return role;
+    });
+
+    return await Promise.all(creationPromise);
+}
+
+const deleteLevelRoles = async (guild: Guild) => {
+    const levelRoles = guild.roles.cache.filter(role => levelRoleRegExp.test(role.name));
+
+    if (!levelRoles.size) return;
+
+    const deletionPromise = levelRoles.map(async (role: Role) => {
+        return await role.delete();
+    });
+
+    return await Promise.all(deletionPromise);
 }
 
 const assignLevelRolesInGuild = async (guild: Guild) => {
@@ -228,10 +245,12 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
 
         await member.roles.add(colorRole)
             .catch(async () => {
-                await interaction.followUp({ embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("roles.missingPermissions"))
-                ], ephemeral: true });
+                await interaction.followUp({
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("roles.missingPermissions"))
+                    ], ephemeral: true
+                });
             })
         return;
     }
@@ -253,4 +272,4 @@ const checkColorLuminance = (hex: `${string}` | string, luminanceTreshold?: numb
     return luminance > (luminanceTreshold || 0.2);
 };
 
-export { assignUserLevelRole, levelRoleRegExp, getMemberColorRole, updateColorRole, checkColorLuminance, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };
+export { assignUserLevelRole, deleteLevelRoles, levelRoleRegExp, getMemberColorRole, updateColorRole, checkColorLuminance, assignLevelRolesInAllGuilds, syncGuildLevelRolesHoisting, assignLevelRolesInGuild, syncGuildLevelRoles, getLevelRoleTreshold };

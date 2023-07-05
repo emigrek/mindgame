@@ -33,6 +33,7 @@ import { guildVoiceEmpty } from "./guildVoiceEmpty";
 import { minute } from "./minute";
 import { channelDelete } from "./channelDelete";
 import { roleUpdate } from "./roleUpdate";
+import { guildMemberRemove } from "./guildMemberRemove";
 
 const events: Event[] = [
     ready,
@@ -43,6 +44,7 @@ const events: Event[] = [
     userDiscriminatorUpdate,
     userLeveledUp,
     guildMemberAdd,
+    guildMemberRemove,
     daily,
     weekly,
     monthly,
