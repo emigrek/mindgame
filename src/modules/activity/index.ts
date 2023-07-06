@@ -30,7 +30,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
         return true;
     }
 
-    if(!userLastVoiceActivity.to) return false;
+    if (!userLastVoiceActivity.to) return false;
 
     const last = userLastVoiceActivity.to.getTime();
     const now = new Date().getTime();
@@ -57,7 +57,7 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
         return true;
     }
 
-    if(!activity.to) return false;
+    if (!activity.to) return false;
 
     const last = activity.to.getTime();
     const now = new Date().getTime();
@@ -154,11 +154,11 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember): Pr
     const boost = hours < 1 ? 1 : hours ** 2;
 
     const income = Math.round(
-        base * boost * (intersecting+1)
+        base * boost * (intersecting + 1)
     );
 
     const sourceGuild = await getGuild(member.guild);
-    if(!sourceGuild) return exists;
+    if (!sourceGuild) return exists;
 
     await updateUserStatistics(client, member.user, {
         exp: income,
@@ -202,6 +202,12 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
             await activity.save();
             continue;
         }
+
+        if (member.voice.channelId == member.guild.afkChannelId) {
+            outOfSync.push(activity.userId);
+            await endVoiceActivity(client, member);
+            continue;
+        }
     }
 
     return outOfSync;
@@ -211,7 +217,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
     const activities = await presenceActivityModel.find({
         to: null
     });
-    
+
     const outOfSync: string[] = [];
     for await (const activity of activities) {
         const guild = client.guilds.cache.get(activity.guildId);
@@ -331,7 +337,7 @@ const getChannelIntersectingVoiceActivities = async (activity: VoiceActivityDocu
         },
         $or: [
             { to: null },
-            { to: { $gte: activity.from }}
+            { to: { $gte: activity.from } }
         ]
     });
 
