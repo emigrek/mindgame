@@ -72,6 +72,13 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
     return true;
 };
 
+const checkGuildVoiceEmpty = async (client: ExtendedClient, guild: Guild, channel: VoiceBasedChannel) => {
+    const activeVoiceActivities = await getGuildActiveVoiceActivities(guild);
+    if(activeVoiceActivities.length) return;
+
+    client.emit("guildVoiceEmpty", guild, channel);
+};
+
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel): Promise<VoiceActivityDocument | null> => {
     if (
         member.user.bot ||
@@ -400,4 +407,4 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     return '#68717e';
 }
 
-export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

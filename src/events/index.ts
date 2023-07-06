@@ -23,7 +23,6 @@ import { presenceUpdate } from "./presenceUpdate";
 import { messageCreate } from "./messageCreate";
 import { userRecievedDailyReward } from "./userRecievedDailyReward";
 import { yearly } from "./yearly";
-import { error } from "./error";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
 import { messageReactionAdd } from "./messageReactionAdd";
@@ -59,7 +58,6 @@ const events: Event[] = [
     messageCreate,
     userRecievedDailyReward,
     yearly,
-    error,
     messageDelete,
     messageDeleteBulk,
     userBackFromLongVoiceBreak,

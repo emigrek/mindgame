@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
@@ -623,7 +623,7 @@ const getErrorMessagePayload = () => {
     };
 }
 
-const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) => {
+const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
     const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
     const messages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {
@@ -649,7 +649,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel) =>
     return count;
 };
 
-const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel) => {
+const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
     i18n.setLocale(channel.guild.preferredLocale);
 
     const lastMessages = await channel.messages.fetch({ limit: 50 })

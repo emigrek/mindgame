@@ -3,10 +3,11 @@ import { getEphemeralChannel } from "@/modules/ephemeral-channel";
 import { isMessageCacheable } from "@/modules/ephemeral-channel";
 import { MessageReaction } from "discord.js";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
+import ExtendedClient from "@/client/ExtendedClient";
 
 export const messageReactionRemove: Event = {
     name: "messageReactionRemove",
-    run: async (client, messageReaction: MessageReaction) => {
+    run: async (client: ExtendedClient, messageReaction: MessageReaction) => {
         const { message } = messageReaction;
         const { channel } = message;
 

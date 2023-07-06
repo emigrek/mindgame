@@ -6,6 +6,7 @@ import { assignLevelRolesInGuild } from "@/modules/roles/";
 import { setDefaultChannelId } from "@/modules/guild";
 import i18n from "@/client/i18n";
 import { InformationEmbed } from "@/modules/messages/embeds";
+import ExtendedClient from "@/client/ExtendedClient";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);
@@ -21,7 +22,7 @@ const checkClientMissingPermissions = (guild: Guild): string[] | false => {
 
 export const guildCreate: Event = {
     name: "guildCreate",
-    run: async (client, guild) => {
+    run: async (client: ExtendedClient, guild: Guild) => {
         const owner = await client.users.fetch(guild.ownerId);
 
         const missingPermissions = checkClientMissingPermissions(guild);

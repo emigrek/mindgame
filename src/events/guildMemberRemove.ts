@@ -1,9 +1,11 @@
+import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { getMemberColorRole } from "@/modules/roles";
+import { GuildMember } from "discord.js";
 
 export const guildMemberRemove: Event = {
     name: "guildMemberRemove",
-    run: async (client, member) => {
+    run: async (client: ExtendedClient, member: GuildMember) => {
         const colorRole = getMemberColorRole(member);
 
         if (colorRole) {

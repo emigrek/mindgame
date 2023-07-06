@@ -1,13 +1,15 @@
-import { TextChannel } from "discord.js";
+import { TextChannel, User } from "discord.js";
 import { Event } from "@/interfaces";
 import { getGuilds } from "@/modules/guild";
 import { createMessage, getLevelUpMessagePayload } from "@/modules/messages";
 import { assignUserLevelRole } from "@/modules/roles";
 import { sendNewFeaturesMessage } from "@/modules/user";
+import ExtendedClient from "@/client/ExtendedClient";
+import { GuildDocument } from "@/modules/schemas/Guild";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
-    run: async (client, user, sourceGuild) => {
+    run: async (client: ExtendedClient, user: User, sourceGuild: GuildDocument) => {
         const sourceGuilds = await getGuilds();
 
         await sendNewFeaturesMessage(client, user, sourceGuild)
@@ -24,7 +26,7 @@ export const userLeveledUp: Event = {
 
             if (!notifications || !channelId) continue;
 
-            if (sourceGuild && (sG.guildId === sourceGuild.guildId)) {
+            if (sourceGuild && sourceGuild.channelId && (sG.guildId === sourceGuild.guildId)) {
                 const channel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
                 if (!channel) continue;
 

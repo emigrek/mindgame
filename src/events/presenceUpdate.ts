@@ -1,10 +1,11 @@
 import { Presence } from "discord.js";
 import { Event } from "@/interfaces";
 import { endPresenceActivity, startPresenceActivity } from "@/modules/activity";
+import ExtendedClient from "@/client/ExtendedClient";
 
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
-    run: async (client, oldPresence: Presence, newPresence: Presence) => {
+    run: async (client: ExtendedClient, oldPresence: Presence, newPresence: Presence) => {
         const { member } = newPresence;
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence.status;

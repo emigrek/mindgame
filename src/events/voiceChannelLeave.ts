@@ -1,13 +1,12 @@
+import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
-import { endVoiceActivity, getGuildActiveVoiceActivities } from "@/modules/activity";
+import { checkGuildVoiceEmpty, endVoiceActivity } from "@/modules/activity";
+import { GuildMember, VoiceChannel } from "discord.js";
 
 export const voiceChannelLeave: Event = {
     name: "voiceChannelLeave",
-    run: async (client, member, channel) => {
+    run: async (client: ExtendedClient, member: GuildMember, channel: VoiceChannel) => {
         await endVoiceActivity(client, member);
-
-        const activeVoiceActivities = await getGuildActiveVoiceActivities(member.guild);
-        if(!activeVoiceActivities.length) 
-            client.emit("guildVoiceEmpty", member.guild, channel);
+        await checkGuildVoiceEmpty(client, member.guild, channel);
     }
 }

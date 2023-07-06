@@ -1,12 +1,13 @@
 import { TextChannel } from "discord.js";
 import { Event } from "@/interfaces";
 import { getGuilds } from "@/modules/guild";
+import ExtendedClient from "@/client/ExtendedClient";
 import { clearTemporaryStatistics } from "@/modules/user";
 import { getStatisticsMessagePayload } from "@/modules/messages";
 
 export const daily: Event = {
     name: "daily",
-    run: async (client) => {
+    run: async (client: ExtendedClient) => {
         await clearTemporaryStatistics('day');
         const sourceGuilds = await getGuilds();
 

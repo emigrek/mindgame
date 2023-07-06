@@ -1,3 +1,4 @@
+import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
 import { levelRoleRegExp } from "@/modules/roles";
@@ -5,7 +6,7 @@ import { Role } from "discord.js";
 
 export const roleUpdate: Event = {
     name: "roleUpdate",
-    run: async (client, oldRole: Role, newRole: Role) => {
+    run: async (client: ExtendedClient, oldRole: Role, newRole: Role) => {
         const { guild } = oldRole;
         const sourceGuild = await getGuild(guild);
         if (!sourceGuild || !sourceGuild.levelRoles) return;
