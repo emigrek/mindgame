@@ -1,4 +1,4 @@
-import { Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 
 import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
@@ -104,26 +104,24 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     return newVoiceActivity;
 }
 
-const startPresenceActivity = async (client: ExtendedClient, member: GuildMember, presence: Presence): Promise<PresenceActivityDocument | null> => {
-    if (member.user.bot) return null;
-
-    const exists = await getPresenceActivity(member);
-    if (exists) return null;
+const startPresenceActivity = async (client: ExtendedClient, userId: string, guildId: string, presence: Presence): Promise<PresenceActivityDocument> => {
+    const exists = await getPresenceActivity(userId, guildId);
+    if (exists) return exists;
 
     const newPresenceActivity = new presenceActivityModel({
-        userId: member.id,
-        guildId: member.guild.id,
+        userId: userId,
+        guildId: guildId,
         from: moment().toDate(),
         status: presence.status,
-        clientStatus: presence.clientStatus
+        client: getPresenceClientStatus(presence.clientStatus)
     });
 
     await newPresenceActivity.save();
     return newPresenceActivity;
 };
 
-const endPresenceActivity = async (client: ExtendedClient, member: GuildMember): Promise<PresenceActivityDocument | null> => {
-    const exists = await getPresenceActivity(member);
+const endPresenceActivity = async (client: ExtendedClient, userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
+    const exists = await getPresenceActivity(userId, guildId);
     if (!exists) return null;
 
     exists.to = moment().toDate();
@@ -134,7 +132,9 @@ const endPresenceActivity = async (client: ExtendedClient, member: GuildMember):
         duration * 0.0063817
     );
 
-    await updateUserStatistics(client, member.user, {
+    const user = await client.users.fetch(userId);
+
+    await updateUserStatistics(client, user, {
         exp: expGained,
         time: {
             presence: duration
@@ -227,22 +227,34 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 
     const outOfSync: string[] = [];
     for await (const activity of activities) {
-        const guild = client.guilds.cache.get(activity.guildId);
+        const { userId, guildId } = activity;
+
+        const guild = await client.guilds.fetch(guildId);
         if (!guild) continue;
 
-        const member = guild.members.cache.get(activity.userId);
+        const member = await guild.members.fetch(userId);
         if (!member) continue;
 
         const presence = member.presence;
         if (!presence) {
-            outOfSync.push(activity.userId);
-            await endPresenceActivity(client, member);
+            outOfSync.push(userId);
+            await endPresenceActivity(client, userId, guildId);
             continue;
         }
 
         if (presence.status !== activity.status) {
-            outOfSync.push(activity.userId);
+            outOfSync.push(userId);
             activity.status = presence.status;
+            await activity.save();
+            continue;
+        }
+
+        const oldClient = activity.client;
+        const newClient = getPresenceClientStatus(presence.clientStatus);
+
+        if (oldClient !== newClient) {
+            outOfSync.push(userId);
+            activity.client = newClient;
             await activity.save();
             continue;
         }
@@ -351,6 +363,19 @@ const getChannelIntersectingVoiceActivities = async (activity: VoiceActivityDocu
     return activities;
 };
 
+const getPresenceClientStatus = (clientStatus: ClientPresenceStatusData | null): string => {
+    if (!clientStatus)
+        return 'unknown';
+    else if (clientStatus.desktop)
+        return 'desktop';
+    else if (clientStatus.mobile)
+        return 'mobile';
+    else if (clientStatus.web)
+        return 'web';
+    else
+        return 'unknown';
+}
+ 
 const getVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
@@ -366,8 +391,8 @@ const getUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDo
     return exists;
 }
 
-const getPresenceActivity = async (member: GuildMember): Promise<PresenceActivityDocument | null> => {
-    const exists = await presenceActivityModel.findOne({ userId: member.id, guildId: member.guild.id, to: null });
+const getPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
+    const exists = await presenceActivityModel.findOne({ userId: userId, guildId: guildId, to: null });
     return exists;
 }
 
@@ -407,4 +432,4 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     return '#68717e';
 }
 
-export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

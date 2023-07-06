@@ -9,11 +9,7 @@ const presenceActivitySchema = new Schema<PresenceActivity>({
     from: { type: Date, required: true },
     to: { type: Date, required: false, default: null },
     status: { type: String },
-    clientStatus: {
-        desktop: { type: String, required: false },
-        mobile: { type: String, required: false },
-        web: { type: String, required: false },
-    }
+    client: { type: String }
 }, {
     timestamps: true
 });

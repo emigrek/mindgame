@@ -4,9 +4,5 @@ export interface PresenceActivity {
     from: Date;
     to: Date | null;
     status: string;
-    clientStatus: {
-        desktop: string | null;
-        mobile: string | null;
-        web: string | null;
-    }
+    client: string;
 }
