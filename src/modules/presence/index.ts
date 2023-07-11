@@ -2,7 +2,7 @@ import { ActivitiesOptions, PresenceData } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuilds } from "@/modules/guild";
 import { getUsers } from "@/modules/user";
-import { Groups, getRandomEmojiFromGroup } from "@/utils/emojis";
+import { getRandomEmojiFromGroup, Groups } from "winemoji";
 
 import presencesData from "./presences.json";
 
