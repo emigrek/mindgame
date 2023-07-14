@@ -74,7 +74,7 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
 
 const checkGuildVoiceEmpty = async (client: ExtendedClient, guild: Guild, channel: VoiceBasedChannel) => {
     const activeVoiceActivities = await getGuildActiveVoiceActivities(guild);
-    if(activeVoiceActivities.length) return;
+    if (activeVoiceActivities.length) return;
 
     client.emit("guildVoiceEmpty", guild, channel);
 };
@@ -184,34 +184,37 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
 
     const outOfSync: string[] = [];
     for await (const activity of activities) {
-        const guild = client.guilds.cache.get(activity.guildId);
+        const { userId, guildId, channelId } = activity;
+        const guild = await client.guilds.fetch(guildId)
+            .catch(() => null);
         if (!guild) continue;
 
-        const member = guild.members.cache.get(activity.userId);
+        const member = await guild.members.fetch(userId)
+            .catch(() => null);
         if (!member) continue;
-
-        const channel = client.channels.cache.get(activity.channelId) as VoiceBasedChannel;
+        
+        const channel = client.channels.cache.get(channelId) as VoiceBasedChannel;
         if (!channel) {
-            outOfSync.push(activity.userId);
+            outOfSync.push(userId);
             await endVoiceActivity(client, member);
             continue;
         }
 
         if (!member.voice?.channelId || !member.voice?.channel) {
-            outOfSync.push(activity.userId);
+            outOfSync.push(userId);
             await endVoiceActivity(client, member);
             continue;
         }
 
         if (!member.voice.channel.equals(channel)) {
-            outOfSync.push(activity.userId);
+            outOfSync.push(userId);
             activity.channelId = member.voice.channel.id;
             await activity.save();
             continue;
         }
 
         if (member.voice.channelId == member.guild.afkChannelId) {
-            outOfSync.push(activity.userId);
+            outOfSync.push(userId);
             await endVoiceActivity(client, member);
             continue;
         }
@@ -229,10 +232,12 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
     for await (const activity of activities) {
         const { userId, guildId } = activity;
 
-        const guild = await client.guilds.fetch(guildId);
+        const guild = await client.guilds.fetch(guildId)
+            .catch(() => null);
         if (!guild) continue;
 
-        const member = await guild.members.fetch(userId);
+        const member = await guild.members.fetch(userId)
+            .catch(() => null);
         if (!member) continue;
 
         const presence = member.presence;
@@ -375,7 +380,7 @@ const getPresenceClientStatus = (clientStatus: ClientPresenceStatusData | null):
     else
         return 'unknown';
 }
- 
+
 const getVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await voiceActivityModel.findOne({ userId: member.user.id, guildId: member.guild.id, to: null });
     return exists;
