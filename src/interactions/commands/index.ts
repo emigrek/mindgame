@@ -7,6 +7,7 @@ import { ranking } from "./ranking";
 import { help } from "./help";
 import { ephemeralChannel } from "./ephemeralChannel";
 import { evalCommand } from "./eval";
+import { select } from "./select";
 
 const commands: Command[] = [
     config,
@@ -15,7 +16,8 @@ const commands: Command[] = [
     ranking,
     help,
     ephemeralChannel,
-    evalCommand
+    evalCommand,
+    select
 ];
 
 export default commands;

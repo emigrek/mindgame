@@ -54,6 +54,16 @@
 				}
 			}
 		},
+		"select": {
+			"name": "select",
+			"description": "Let me split universe and select one of the options.",
+			"subcommand": {
+				"options": {
+					"name": "options",
+					"description": "Options to select from, seperated with space or comma."
+				}
+			}
+		},
 		"help": {
 			"name": "help",
 			"description": "Get more info about Mindgame."
@@ -218,6 +228,11 @@
 		"faqAnswer3": "```Experience points are calculated based on your activity on the server. Most of the points are awarded for voice activity. The more you talk, the more points you get. You can also get points for daily reward, which is awarded for the first voice activity of the day on every server.```",
 		"footer": "Use quick buttons to navigate even faster.",
 		"repoButtonLabel": "Source code"
+	},
+	"select": {
+		"title": "🎯 {selected}",
+		"description": "Options: {options}",
+		"messageDeleteButtonLabel": "Delete message 🗑️"
 	},
 	"ephemeralChannel": {
 		"alreadyExists": "This channel is already an ephemeral channel.\nUse </ephemeral-channel edit:1116832272021192784> to change message dissapearing timeout.",

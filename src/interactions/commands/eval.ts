@@ -9,13 +9,13 @@ export const evalCommand: Command = {
         .setDescription(i18n.__("commandLocalizations.eval.description"))
         .addStringOption(option =>
             option
-                .setName("code")
+                .setName(i18n.__("commandLocalizations.eval.subcommand.code.name"))
                 .setDescription(i18n.__("commandLocalizations.eval.subcommand.code.description"))
                 .setRequired(true)
         )
         .addIntegerOption(option =>
             option
-                .setName("depth")
+                .setName(i18n.__("commandLocalizations.eval.subcommand.depth.name"))
                 .setDescription(i18n.__("commandLocalizations.eval.subcommand.depth.description"))
                 .setRequired(false)
                 .setMinValue(0)

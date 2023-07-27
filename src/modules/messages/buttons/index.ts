@@ -234,4 +234,13 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }
 
-export { getRepoButton, getRankingGuildOnlyButton, getRoleColorDisableButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorPickButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };
+const getSelectMessageDeleteButton = async () => {
+    const messageDeleteButton = new ButtonBuilder()
+        .setCustomId("selectMessageDelete")
+        .setLabel(i18n.__("select.messageDeleteButtonLabel"))
+        .setStyle(ButtonStyle.Danger);
+
+    return messageDeleteButton;
+}
+
+export { getRepoButton, getRankingGuildOnlyButton, getSelectMessageDeleteButton, getRoleColorDisableButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorPickButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };

@@ -20,6 +20,7 @@ import rankingGuildOnly from "./rankingGuildOnly";
 import rankingSettings from "./rankingSettings";
 import help from "./help";
 import profileFollow from "./profileFollow";
+import selectMessageDelete from "./selectMessageDelete";
 
 const buttons: Button[] = [
     notifications,
@@ -41,7 +42,8 @@ const buttons: Button[] = [
     rankingPageDown,
     rankingGuildOnly,
     rankingSettings,
-    help
+    help,
+    selectMessageDelete
 ];
 
 export default buttons;

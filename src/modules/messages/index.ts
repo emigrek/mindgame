@@ -3,7 +3,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
@@ -459,6 +459,29 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     };
 };
 
+const getSelectMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
+    const rawOptions = interaction.options.getString('options');
+
+    if (!rawOptions)
+        return getErrorMessagePayload();
+
+    const options = rawOptions.includes(',') ? rawOptions.split(',') : rawOptions.split(' ');
+    const selected = options[Math.floor(Math.random() * options.length)];
+
+    const embed = InformationEmbed()
+        .setTitle(i18n.__mf("select.title", { selected: selected }))
+        .setDescription(i18n.__mf("select.description", { options: options.map((option: string) => `\`${option}\``).join(', ') } ));
+
+    const selectMessageDeleteButton = await getSelectMessageDeleteButton();
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(selectMessageDeleteButton);
+
+    return {
+        embeds: [embed],
+        components: [row]
+    };
+}
+
 const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
     if (!interaction.guild)
         return getErrorMessagePayload();
@@ -658,7 +681,7 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel |
             return new Collection<string, Message>();
         });
 
-    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user?.id) as Collection<string, Message>;
+    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user?.id && !m.interaction) as Collection<string, Message>;
     const lastMessage = clientLastMessages.first();
     if (!lastMessage) return;
 
@@ -710,4 +733,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { createMessage, getSelectMessagePayload, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

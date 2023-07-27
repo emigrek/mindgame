@@ -54,6 +54,16 @@
 				}
 			}
 		},
+		"select": {
+			"name": "wybierz",
+			"description": "Pozwól mi rozdzielić wszechświat i wybrać za Ciebie jedną z opcji.",
+			"subcommand": {
+				"options": {
+					"name": "opcje",
+					"description": "Opcje do wyboru, oddzielone spacją lub przecinkiem."
+				}
+			}
+		},
 		"help": {
 			"name": "pomoc",
 			"description": "Zdobądź więcej informacji o Mindgame."
@@ -218,6 +228,11 @@
 		"faqAnswer3": "```Punkty doświadczenia są obliczane na podstawie aktywności na serwerze. Większość punktów przyznawana jest za aktywność głosową. Im więcej mówisz, tym więcej punktów otrzymujesz. Dodatkowo możesz otrzymać punkty za codzienną nagrodę, która jest przyznawana za pierwszą aktywność głosową dnia na każdym serwerze.```",
 		"footer": "Użyj szybkich przycisków do jeszcze szybszej nawigacji.",
 		"repoButtonLabel": "Repozytorium"
+	},
+	"select": {
+		"title": "🎯 {selected}",
+		"description": "Opcje: {options}",
+		"messageDeleteButtonLabel": "Usuń wiadomość 🗑️"
 	},
 	"ephemeralChannel": {
 		"alreadyExists": "Ten kanał jest już kanałem efemerycznym.\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",
