@@ -3,6 +3,7 @@ import { Modal } from "@/interfaces";
 import { getSelectMessagePayload } from "@/modules/messages";
 import { WarningEmbed } from "@/modules/messages/embeds";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
+import { getRandomNumber } from "@/utils/random";
 
 const selectOptionsModal: Modal = {
     customId: "selectOptionsModal",
@@ -24,6 +25,7 @@ const selectOptionsModal: Modal = {
         }
 
         selectOptionsState.options = options;
+        selectOptionsState.reroll = 0;
 
         const selectMessagePayload = await getSelectMessagePayload(client, interaction, false);
         const reply = await interaction.reply(selectMessagePayload);
@@ -31,7 +33,7 @@ const selectOptionsModal: Modal = {
         setTimeout(async () => {
             const selectMessagePayload = await getSelectMessagePayload(client, interaction, true);
             await reply.edit(selectMessagePayload);
-        }, 2000);
+        }, getRandomNumber(2000, 5000));
     }
 }
 

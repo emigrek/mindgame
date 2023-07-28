@@ -233,7 +233,7 @@
 			"title": "Wybierz",
 			"optionsInput": {
 				"label": "Opcje",
-				"placeholder": "Opcje oddziel enterem, np:\n1\n2\n3",
+				"placeholder": "Opcje oddziel enterem, np:\nTak\nNie",
 				"invalid": "Nieprawidłowy format opcji, oddziel opcje klawiszem enter."
 			}
 		}

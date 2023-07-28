@@ -239,7 +239,7 @@
 			"title": "Select",
 			"optionsInput": {
 				"label": "Options",
-				"placeholder": "Split your options using enter, eg:\n1\n2\n3",
+				"placeholder": "Split your options using enter, eg:\nYes\nNo",
 				"invalid": "Invalid options format, split your options using enter key."
 			}
 		}
