@@ -56,13 +56,7 @@
 		},
 		"select": {
 			"name": "select",
-			"description": "Let me split universe and select one of the options.",
-			"subcommand": {
-				"options": {
-					"name": "options",
-					"description": "Options to select from, seperated with space or comma."
-				}
-			}
+			"description": "Let me split universe and select one of the options."
 		},
 		"help": {
 			"name": "help",
@@ -118,6 +112,12 @@
 				"label": "Desired color",
 				"placeholder": "It could be color name or hex format",
 				"invalid": "Invalid color format, it could be color name or it's hex format."
+			}
+		},
+		"selectModal": {
+			"optionsInput": {
+				"label": "color.selectModal.optionsInput.label",
+				"placeholder": "color.selectModal.optionsInput.placeholder"
 			}
 		}
 	},
@@ -230,9 +230,19 @@
 		"repoButtonLabel": "Source code"
 	},
 	"select": {
-		"title": "🎯 {selected}",
+		"selecting": "Splitting the universe...",
 		"description": "Options: {options}",
-		"messageDeleteButtonLabel": "Delete message 🗑️"
+		"footer": "Rerolled {reroll} time(s)",
+		"messageDeleteButtonLabel": "Delete 🗑️",
+		"rerollButtonLabel": "Reroll 🔁",
+		"selectOptionsModal": {
+			"title": "Select",
+			"optionsInput": {
+				"label": "Options",
+				"placeholder": "Split your options using enter, eg:\n1\n2\n3",
+				"invalid": "Invalid options format, split your options using enter key."
+			}
+		}
 	},
 	"ephemeralChannel": {
 		"alreadyExists": "This channel is already an ephemeral channel.\nUse </ephemeral-channel edit:1116832272021192784> to change message dissapearing timeout.",

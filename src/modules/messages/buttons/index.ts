@@ -234,13 +234,24 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     return [row, row2];
 }
 
-const getSelectMessageDeleteButton = async () => {
+const getSelectMessageDeleteButton = async (disabled: boolean) => {
     const messageDeleteButton = new ButtonBuilder()
         .setCustomId("selectMessageDelete")
         .setLabel(i18n.__("select.messageDeleteButtonLabel"))
-        .setStyle(ButtonStyle.Danger);
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(disabled);
 
     return messageDeleteButton;
 }
 
-export { getRepoButton, getRankingGuildOnlyButton, getSelectMessageDeleteButton, getRoleColorDisableButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorPickButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };
+const getSelectRerollButton = async (disabled: boolean) => {
+    const rerollButton = new ButtonBuilder()
+        .setCustomId("selectReroll")
+        .setLabel(i18n.__("select.rerollButtonLabel"))
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(disabled);
+    
+    return rerollButton;
+}
+
+export { getRepoButton, getSelectRerollButton, getRankingGuildOnlyButton, getSelectMessageDeleteButton, getRoleColorDisableButton, getRankingSettingsButton, getHelpButton, getRankingPageUpButton, getRankingPageDownButton, getAutoSweepingButton, getRoleColorUpdateButton, getRoleColorPickButton, getQuickButtonsRows, getNotificationsButton, getStatisticsNotificationButton, getLevelRolesButton, getLevelRolesHoistButton, getProfileTimePublicButton, getProfileFollowButton };

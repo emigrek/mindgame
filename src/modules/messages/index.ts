@@ -3,7 +3,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
@@ -25,6 +25,7 @@ import i18n from "@/client/i18n";
 import { rankingStore } from "@/stores/rankingStore";
 import { profileStore } from "@/stores/profileStore";
 import { colorStore } from "@/stores/colorStore";
+import { selectOptionsStore } from "@/stores/selectOptionsStore";
 
 import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 
@@ -459,22 +460,25 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     };
 };
 
-const getSelectMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction) => {
-    const rawOptions = interaction.options.getString('options');
+const getSelectMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | ModalSubmitInteraction, reveal?: boolean) => {
+    const { options, reroll } = selectOptionsStore.get(interaction.user.id);
 
-    if (!rawOptions)
-        return getErrorMessagePayload();
-
-    const options = rawOptions.includes(',') ? rawOptions.split(',') : rawOptions.split(' ');
     const selected = options[Math.floor(Math.random() * options.length)];
 
     const embed = InformationEmbed()
-        .setTitle(i18n.__mf("select.title", { selected: selected }))
-        .setDescription(i18n.__mf("select.description", { options: options.map((option: string) => `\`${option}\``).join(', ') } ));
+        .setTitle(reveal ? `🎯 ${selected}` : `✨ ${i18n.__("select.selecting")}`)
+        .setDescription(i18n.__mf("select.description", { options: options.map((option: string) => `\`${option}\``).join(', ') } ))
 
-    const selectMessageDeleteButton = await getSelectMessageDeleteButton();
+    if (reroll > 0) {
+        embed.setFooter({
+            text: i18n.__mf("select.footer", {reroll})
+        });
+    }
+
+    const selectMessageDeleteButton = await getSelectMessageDeleteButton(!reveal);
+    const selectRerollButton = await getSelectRerollButton(!reveal);
     const row = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(selectMessageDeleteButton);
+        .addComponents(selectRerollButton, selectMessageDeleteButton);
 
     return {
         embeds: [embed],

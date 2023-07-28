@@ -56,13 +56,7 @@
 		},
 		"select": {
 			"name": "wybierz",
-			"description": "Pozwól mi rozdzielić wszechświat i wybrać za Ciebie jedną z opcji.",
-			"subcommand": {
-				"options": {
-					"name": "opcje",
-					"description": "Opcje do wyboru, oddzielone spacją lub przecinkiem."
-				}
-			}
+			"description": "Pozwól mi rozdzielić wszechświat i wybrać za Ciebie jedną z opcji."
 		},
 		"help": {
 			"name": "pomoc",
@@ -230,9 +224,19 @@
 		"repoButtonLabel": "Repozytorium"
 	},
 	"select": {
-		"title": "🎯 {selected}",
+		"selecting": "Rozdzielanie wszechświata...",
 		"description": "Opcje: {options}",
-		"messageDeleteButtonLabel": "Usuń wiadomość 🗑️"
+		"footer": "Losowano {reroll} raz(y)",
+		"messageDeleteButtonLabel": "Usuń 🗑️",
+		"rerollButtonLabel": "Losuj 🔁",
+		"selectOptionsModal": {
+			"title": "Wybierz",
+			"optionsInput": {
+				"label": "Opcje",
+				"placeholder": "Opcje oddziel enterem, np:\n1\n2\n3",
+				"invalid": "Nieprawidłowy format opcji, oddziel opcje klawiszem enter."
+			}
+		}
 	},
 	"ephemeralChannel": {
 		"alreadyExists": "Ten kanał jest już kanałem efemerycznym.\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",

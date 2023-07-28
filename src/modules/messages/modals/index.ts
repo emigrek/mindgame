@@ -55,4 +55,23 @@ const getColorPickerModal = (color: string) => {
     return modal;
 };
 
-export { getRankingSettingsModal, getColorPickerModal };
+const getSelectOptionsModal = () => {
+    const modal = new ModalBuilder()
+        .setCustomId("selectOptionsModal")
+        .setTitle(i18n.__("select.selectOptionsModal.title"));
+    
+    const optionsInput = new TextInputBuilder()
+        .setCustomId("optionsInput")
+        .setLabel(i18n.__("select.selectOptionsModal.optionsInput.label"))
+        .setPlaceholder(i18n.__("select.selectOptionsModal.optionsInput.placeholder"))
+        .setStyle(TextInputStyle.Paragraph);
+    
+    modal.addComponents(
+        new ActionRowBuilder<TextInputBuilder>()
+            .addComponents(optionsInput)
+    );
+
+    return modal;
+}
+
+export { getRankingSettingsModal, getColorPickerModal, getSelectOptionsModal };
