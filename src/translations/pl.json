@@ -224,9 +224,8 @@
 		"repoButtonLabel": "Repozytorium"
 	},
 	"select": {
-		"selecting": "Rozdzielanie wszechświata...",
-		"description": "Opcje: {options}",
-		"footer": "Losowano {reroll} raz(y)",
+		"selecting": "Losowanie...",
+		"description": "Opcje",
 		"messageDeleteButtonLabel": "Usuń 🗑️",
 		"rerollButtonLabel": "Losuj 🔁",
 		"selectOptionsModal": {

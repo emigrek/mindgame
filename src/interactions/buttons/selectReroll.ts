@@ -7,7 +7,7 @@ const selectReroll: Button = {
     customId: "selectReroll",
     run: async (client, interaction) => {
         await interaction.deferUpdate();
-        
+
         const isInteractionAuthor = interaction.message.interaction?.user.id === interaction.user.id;
         if (!isInteractionAuthor) {
             return;
@@ -18,9 +18,6 @@ const selectReroll: Button = {
             await message.delete();
             return;
         }
-
-        const selectOptionsState = selectOptionsStore.get(interaction.user.id);
-        selectOptionsState.reroll = selectOptionsState.reroll + 1;
 
         const selectMessagePayload = await getSelectMessagePayload(client, interaction, false);
         const reply = await interaction.editReply(selectMessagePayload);

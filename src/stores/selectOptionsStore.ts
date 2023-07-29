@@ -1,13 +1,13 @@
 import { Store } from "@/stores";
 
 interface SelectOptionsStoreInterface {
-    options: string[],
-    reroll: number
+    options: string[]
+    results: string[]
 }
 
 const initial: SelectOptionsStoreInterface = {
     options: [],
-    reroll: 0
+    results: []
 }
 
 export const selectOptionsStore = new Store<SelectOptionsStoreInterface>(initial);

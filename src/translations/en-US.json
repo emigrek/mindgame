@@ -230,9 +230,8 @@
 		"repoButtonLabel": "Source code"
 	},
 	"select": {
-		"selecting": "Splitting the universe...",
-		"description": "Options: {options}",
-		"footer": "Rerolled {reroll} time(s)",
+		"selecting": "Rolling...",
+		"description": "Options",
 		"messageDeleteButtonLabel": "Delete 🗑️",
 		"rerollButtonLabel": "Reroll 🔁",
 		"selectOptionsModal": {

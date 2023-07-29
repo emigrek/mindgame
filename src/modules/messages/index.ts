@@ -461,19 +461,35 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 };
 
 const getSelectMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | ModalSubmitInteraction, reveal?: boolean) => {
-    const { options, reroll } = selectOptionsStore.get(interaction.user.id);
+    const selectOptionsState = selectOptionsStore.get(interaction.user.id);
 
-    const selected = options[Math.floor(Math.random() * options.length)];
+    const selected = reveal ? selectOptionsState.options[Math.floor(Math.random() * selectOptionsState.options.length)] : '';
+    if (reveal) {
+        selectOptionsState.results = [...selectOptionsState.results, selected];
+    }
+
+    // TODO
+    // Do this more efficiently
+    const optionsSorted = selectOptionsState.options.sort((a: string, b: string) => {
+        const aCount = selectOptionsState.results.filter((result: string) => result === a).length;
+        const bCount = selectOptionsState.results.filter((result: string) => result === b).length;
+
+        return bCount - aCount;
+    });
 
     const embed = InformationEmbed()
-        .setTitle(reveal ? `🎯 ${selected}` : `✨ ${i18n.__("select.selecting")}`)
-        .setDescription(i18n.__mf("select.description", { options: options.map((option: string) => `\`${option}\``).join(', ') } ))
-
-    if (reroll > 0) {
-        embed.setFooter({
-            text: i18n.__mf("select.footer", {reroll})
-        });
-    }
+        .setTitle(reveal ? `🎯  ${selected}` : `✨  ${i18n.__("select.selecting")}`)
+        .setDescription(i18n.__("select.description"))
+        .setFields(
+            optionsSorted.map((option: string, index) => {
+                const count = selectOptionsState.results.filter((result: string) => result === option).length;
+                return {
+                    name: `${index + 1}. ${option}`,
+                    value: count ? `\`\`\`${count}\`\`\`` : `\`\`\`\u200b\`\`\``,
+                    inline: true
+                }
+            })
+        )
 
     const selectMessageDeleteButton = await getSelectMessageDeleteButton(!reveal);
     const selectRerollButton = await getSelectRerollButton(!reveal);

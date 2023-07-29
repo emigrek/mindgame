@@ -25,7 +25,6 @@ const selectOptionsModal: Modal = {
         }
 
         selectOptionsState.options = options;
-        selectOptionsState.reroll = 0;
 
         const selectMessagePayload = await getSelectMessagePayload(client, interaction, false);
         const reply = await interaction.reply(selectMessagePayload);
