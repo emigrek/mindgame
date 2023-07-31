@@ -187,26 +187,26 @@ const updateUserStatistics = async (client: ExtendedClient, user: User, extended
     userSource.week = week;
     userSource.month = month;
 
-    let userLeveledUpDuringUpdate = false; // Flag
+    let userLeveledUpDuringUpdate = false;
 
-    if (userSource.stats.exp >= levelToExp(userSource.stats.level + 1)) // When exceed exp needed to level up
-        userLeveledUpDuringUpdate = true; // Mark flag to emit event
+    if (userSource.stats.exp >= levelToExp(userSource.stats.level + 1))
+        userLeveledUpDuringUpdate = true;
 
-    userSource.stats.level = expToLevel(userSource.stats.exp); // Update level
+    const oldLevel = userSource.stats.level;
+    const newLevel = expToLevel(userSource.stats.exp);
+    userSource.stats.level = newLevel;
 
     await userSource.save();
 
     if (userLeveledUpDuringUpdate)
-        client.emit("userLeveledUp", user, sourceGuild); // Emiting event
+        client.emit("userLeveledUp", user, sourceGuild, oldLevel, newLevel);
 
     return userSource;
 };
 
-const getNewFeatures = async (client: ExtendedClient, user: User) => {
-    const userDocument = await getUser(user);
-
+const getNewFeatures = async (client: ExtendedClient, oldLevel: number, newLevel: number) => {
     const newCommands = client.commands.filter(
-        (command) => command.options?.level && command.options.level == userDocument?.stats.level
+        (command) => command.options?.level && (command.options.level > oldLevel && command.options.level <= newLevel)
     );
 
     return {
@@ -220,14 +220,14 @@ const commandFeature = (client: ExtendedClient, command: Command) => {
     return `</${cmd?.name}:${cmd?.id}> (${cmd?.dmPermission ? i18n.__("newFeatures.global") : i18n.__("newFeatures.guildOnly") })`;
 }
 
-const sendNewFeaturesMessage = async (client: ExtendedClient, user: User, sourceGuild: GuildDocument) => {
+const sendNewFeaturesMessage = async (client: ExtendedClient, user: User, sourceGuild: GuildDocument, oldLevel: number, newLevel: number) => {
     if(sourceGuild) {
         const guild = client.guilds.cache.get(sourceGuild.guildId);
         i18n.setLocale(guild?.preferredLocale || "en-US");
     }
 
     await client.application?.commands.fetch();
-    const newFeatures = await getNewFeatures(client, user);
+    const newFeatures = await getNewFeatures(client, oldLevel, newLevel);
     if (!newFeatures.commands.size) return;
 
     const colors = await useImageHex(user.avatarURL({ extension: "png" }));

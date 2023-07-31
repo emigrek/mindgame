@@ -9,10 +9,10 @@ import { GuildDocument } from "@/modules/schemas/Guild";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
-    run: async (client: ExtendedClient, user: User, sourceGuild: GuildDocument) => {
+    run: async (client: ExtendedClient, user: User, sourceGuild: GuildDocument, oldLevel: number, newLevel: number) => {
         const sourceGuilds = await getGuilds();
 
-        await sendNewFeaturesMessage(client, user, sourceGuild)
+        await sendNewFeaturesMessage(client, user, sourceGuild, oldLevel, newLevel)
             .catch(err => console.log("Error while sending new features message: ", err));
 
         for await (const sG of sourceGuilds) {
