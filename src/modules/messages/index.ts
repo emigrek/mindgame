@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel } from "discord.js";
+import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ActionRow, ButtonStyle } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
@@ -639,20 +639,30 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
 
     const activityEndMoment = lastActivity ? lastActivity.to ? moment(lastActivity.to) : moment() : moment()
     const unix = activityEndMoment.unix();
+    const channelUrl = `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`;
 
     const embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({
             name: member.guild.name,
             iconURL: member.guild.iconURL({ extension: "png", size: 256 }) || undefined,
-            url: `https://discord.com/channels/${member.guild.id}/${member.voice.channelId}`
+            url: channelUrl
         })
         .setTitle(member.user.username)
         .setDescription(i18n.__mf("follow.followNotificationDescription", { time: unix }))
         .setThumbnail(avatar);
 
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(
+            new ButtonBuilder()
+                .setStyle(ButtonStyle.Link)
+                .setURL(channelUrl)
+                .setLabel(i18n.__("follow.join"))
+        );
+
     return {
-        embeds: [embed]
+        embeds: [embed],
+        components: [row]
     }
 };
 

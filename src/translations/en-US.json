@@ -150,7 +150,8 @@
 		"followed": "Successfully followed {tag}!\nYou'll now receive notifications every time he/she comes back from an ≥8 hour break.",
 		"alreadyFollowing": "You are already following {tag}.",
 		"unfollowed": "Successfully unfollowed {tag}.",
-		"followNotificationDescription": "just joined voice channel.\n\nLast <t:{time}:d>."
+		"followNotificationDescription": "just joined voice channel.\n\nLast <t:{time}:d>.",
+		"join": "Join voice channel"
 	},
 	"statistics": {
 		"voiceHeader": "Voice activity in week",

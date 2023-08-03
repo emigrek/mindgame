@@ -144,7 +144,8 @@
 		"followed": "Pomyślnie obserwujesz {tag}!\nOd teraz będziesz otrzymywać powiadomienia za każdym razem gdy dołączy(a) na kanał głosowy po ≥8 godzinnej przerwie.",
 		"alreadyFollowing": "Obserwujesz już {tag}.",
 		"unfollowed": "Przestałeś obserwować {tag}.",
-		"followNotificationDescription": "dołączył(a) na kanał głosowy.\n\nOstatnio <t:{time}:d>."
+		"followNotificationDescription": "dołączył(a) na kanał głosowy.\n\nOstatnio <t:{time}:d>.",
+		"join": "Dołącz na kanał głosowy"
 	},
 	"statistics": {
 		"voiceHeader": "Aktywność głosowa w tygodniu",
