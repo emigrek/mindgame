@@ -1,4 +1,5 @@
 import { Collection } from "discord.js";
+import { cloneDeep } from "lodash";
 
 export class Store<StoreType> {
     private store: Collection<string, StoreType>;
@@ -6,12 +7,12 @@ export class Store<StoreType> {
 
     constructor(initial: StoreType) {
         this.store = new Collection<string, StoreType>();
-
+        
         this.initial = initial;
     }
 
     public init(key: string): this {
-        this.store.set(key, this.initial);
+        this.store.set(key, cloneDeep(this.initial));
         return this;
     }
 
@@ -24,8 +25,9 @@ export class Store<StoreType> {
         const value = this.store.get(key);
 
         if (!value) {
-            this.init(key);
-            return this.initial;
+            const copy = cloneDeep(this.initial);
+            this.store.set(key, copy);
+            return copy;
         }
 
         return value;

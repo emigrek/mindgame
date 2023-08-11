@@ -13,7 +13,7 @@ const initial: RankingStoreInterface = {
     page: 1,
     perPage: 9,
     pagesCount: 1,
-    sorting: "exp",
+    sorting: "day exp",
     userIds: [],
     guildOnly: false
 }
