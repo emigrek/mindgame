@@ -196,13 +196,13 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         const channel = client.channels.cache.get(channelId) as VoiceBasedChannel;
         if (!channel) {
             outOfSync.push(userId);
-            await endVoiceActivity(client, member);
+            activity.delete();
             continue;
         }
 
         if (!member.voice?.channelId || !member.voice?.channel) {
             outOfSync.push(userId);
-            await endVoiceActivity(client, member);
+            activity.delete();
             continue;
         }
 
@@ -215,7 +215,7 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
 
         if (member.voice.channelId == member.guild.afkChannelId) {
             outOfSync.push(userId);
-            await endVoiceActivity(client, member);
+            activity.delete();
             continue;
         }
     }
@@ -243,7 +243,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
         const presence = member.presence;
         if (!presence) {
             outOfSync.push(userId);
-            await endPresenceActivity(client, userId, guildId);
+            activity.delete();
             continue;
         }
 
