@@ -61,16 +61,17 @@ const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
         html: html,
         quality: 100,
-        type: "png",
+        waitUntil: "load",
+        type: "jpeg",
         puppeteerArgs: {
-            args: ['--no-sandbox'],
+            args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--no-first-run', '--no-zygote'] 
         },
         encoding: "base64"
     });
 
     const buffer = Buffer.from(image as string, "base64");
     const attachment = new AttachmentBuilder(buffer)
-        .setName("image.png");
+        .setName("image.jpg");
 
     return attachment;
 }
