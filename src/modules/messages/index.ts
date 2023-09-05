@@ -60,11 +60,10 @@ const getColorInt = (color: string) => {
 const useHtmlFile = async (html: string) => {
     const image = await nodeHtmlToImage({
         html: html,
-        quality: 100,
-        waitUntil: "load",
-        type: "jpeg",
+        waitUntil: "domcontentloaded",
+        type: "png",
         puppeteerArgs: {
-            args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--no-first-run', '--no-zygote'] 
+            args: ['--disable-gpu', '--headless', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--no-first-run', '--no-zygote'] 
         },
         encoding: "base64"
     });
