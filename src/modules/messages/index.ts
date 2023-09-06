@@ -63,8 +63,7 @@ const useHtmlFile = async (html: string) => {
         waitUntil: "domcontentloaded",
         type: "png",
         puppeteerArgs: {
-            args: ['--no-sandbox'],
-            headless: 'new'
+            args: ['--no-sandbox']
         },
         encoding: "base64"
     });
