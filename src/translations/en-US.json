@@ -68,7 +68,6 @@
 		}
 	},
 	"contextLocalizations": {
-		"statistics": "Statistics",
 		"profile": "Show profile",
 		"sweep": "Sweep messages"
 	},
@@ -140,11 +139,13 @@
 		"followers": "Followers",
 		"voice": "Voice time",
 		"overall": "Overall",
+		"statistics": "Statistics",
+		"timeStatistics": "Time statistics",
 		"favoriteGuild": "Favorite guild",
 		"followButtonLabel": "Follow 💗",
 		"unfollowButtonLabel": "Unfollow 💔",
 		"timePublicButtonLabel": "Public time statistics 👀",
-		"visibilityNotification": "Only you can see this."
+		"visibilityNotification": "Only you can see this"
 	},
 	"follow": {
 		"followed": "Successfully followed {tag}!\nYou'll now receive notifications every time he/she comes back from an ≥8 hour break.",
@@ -152,10 +153,6 @@
 		"unfollowed": "Successfully unfollowed {tag}.",
 		"followNotificationDescription": "just joined voice channel.\n\nLast <t:{time}:d>.",
 		"join": "Join voice channel"
-	},
-	"statistics": {
-		"voiceHeader": "Voice activity in week",
-		"presenceHeader": "Overall activity in week"
 	},
 	"notifications": {
 		"levelUpTitle": "Level up!",
@@ -266,6 +263,7 @@
 		"description": "Something went wrong. Please try again later."
 	},
 	"roles": {
-		"roles": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles."
+		"roles": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
+		"missingPermissions": "roles.missingPermissions"
 	}
 }

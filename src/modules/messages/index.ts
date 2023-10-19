@@ -1,9 +1,8 @@
-import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, ImageURLOptions, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
-import nodeHtmlToImage from "node-html-to-image";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton, getStatisticsNotificationButton } from "@/modules/messages/buttons";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
@@ -16,7 +15,7 @@ import messageSchema from "@/modules/schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
+import { ErrorEmbed, InformationEmbed, ProfileEmbed, WarningEmbed } from "./embeds";
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import clean from "@/utils/clean";
 import config from "@/utils/config";
@@ -26,8 +25,6 @@ import { rankingStore } from "@/stores/rankingStore";
 import { profileStore } from "@/stores/profileStore";
 import { colorStore } from "@/stores/colorStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
-
-import { guildConfig, guildStatistics, layoutLarge, layoutMedium, layoutXLarge, userProfile } from "./templates";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -55,24 +52,6 @@ const useImageHex = async (image: string | null) => {
 
 const getColorInt = (color: string) => {
     return parseInt(color.slice(1), 16);
-}
-
-const useHtmlFile = async (html: string) => {
-    const image = await nodeHtmlToImage({
-        html: html,
-        waitUntil: "domcontentloaded",
-        type: "png",
-        puppeteerArgs: {
-            args: ['--no-sandbox']
-        },
-        encoding: "base64"
-    });
-
-    const buffer = Buffer.from(image as string, "base64");
-    const attachment = new AttachmentBuilder(buffer)
-        .setName("image.jpg");
-
-    return attachment;
 }
 
 const getConfigMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | AnySelectMenuInteraction) => {
@@ -109,7 +88,6 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     });
 
     const notificationsButton = await getNotificationsButton(client, sourceGuild);
-    const statisticsNotificationButton = await getStatisticsNotificationButton(client, sourceGuild);
     const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
     const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
     const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
@@ -120,16 +98,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     const row2 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(levelRolesButton, levelRolesHoistButton);
     const row3 = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(notificationsButton, autoSweepingButton, statisticsNotificationButton);
-
-    const guildIcon = guild.iconURL({ extension: "png" });
-    const colors: ImageHexColors = await useImageHex(guildIcon);
-    const guildConfigHtml = await guildConfig(client, sourceGuild, colors);
-    const file = await useHtmlFile(layoutMedium(guildConfigHtml, colors));
+        .setComponents(notificationsButton, autoSweepingButton);
 
     return {
         components: [row, row2, row3],
-        files: [file]
     };
 }
 
@@ -162,39 +134,20 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
     const colors = await useImageHex(renderedUser.avatarUrl);
-    const userProfileHtml = await userProfile(client, renderedUser, colors, selfCall);
-
-    const file = await useHtmlFile(layoutLarge(userProfileHtml, colors));
-
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
     const followButton = await getProfileFollowButton(client, sourceUser, sourceTargetUser);
 
     const row = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(selfCall ? profileTimePublic : followButton);
 
+    const embed = await ProfileEmbed(client, renderedUser, colors, selfCall);
+
     return {
+        embeds: [embed],
         components: [row],
-        files: [file],
         ephemeral: true
     };
 }
-
-const getStatisticsMessagePayload = async (client: ExtendedClient, guild: Guild) => {
-    i18n.setLocale(guild.preferredLocale);
-
-    const sourceGuild = await getGuild(guild);
-    if (!sourceGuild)
-        return getErrorMessagePayload();
-
-    const guildIcon = guild.iconURL({ dynamic: false, extension: "png", forceStatic: true } as ImageURLOptions);
-    const colors: ImageHexColors = await useImageHex(guildIcon);
-    const guildStatisticsHtml = await guildStatistics(client, sourceGuild, colors);
-    const file = await useHtmlFile(layoutXLarge(guildStatisticsHtml, colors));
-
-    return {
-        files: [file]
-    };
-};
 
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
     i18n.setLocale(guild.preferredLocale);
@@ -763,4 +716,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getSelectMessagePayload, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getStatisticsMessagePayload, getUserMessagePayload, useHtmlFile, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { createMessage, getSelectMessagePayload, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

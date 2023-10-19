@@ -8,6 +8,8 @@ import { InformationEmbed } from "@/modules/messages/embeds";
 import { getColorInt, useImageHex } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import i18n from "@/client/i18n";
+import {AsciiTable3, AlignmentEnum} from "ascii-table3";
+import { getFollowers } from "../follow";
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -320,4 +322,36 @@ const clearTemporaryStatistics = async (type: string) => {
     });
 };
 
-export { setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+const getExperienceProcentage = async (user: UserDocument) => {
+    const expToCurrentLevel = levelToExp(user.stats.level);
+    const expToLevelUp = levelToExp(user.stats.level+1);
+    const expProcentage = (((user.stats.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed();
+
+    return expProcentage;
+};
+
+const getStatisticsTable = async (user: UserDocument) => {
+    const rank = await getUserRank(user);
+    const experienceProcentage = await getExperienceProcentage(user);
+    const followers = await getFollowers(user.userId).then(followers => followers.length);
+
+    const table = new AsciiTable3()
+        .setHeading(i18n.__("profile.rank"), i18n.__("profile.level"), i18n.__("profile.followers"))
+        .setAligns([AlignmentEnum.CENTER, AlignmentEnum.CENTER, AlignmentEnum.CENTER])
+        .setStyle('compact')
+        .addRow(`#${rank} ${rank === 1 ? '👑' : ''}`, `${user.stats.level} (${experienceProcentage}%)`, `${followers} 💗`);
+
+    return table.toString();
+}
+
+const getTimeStatisticsTable = async (user: UserDocument) => {
+    const table = new AsciiTable3()
+        .setHeading(i18n.__("profile.voice"), i18n.__("profile.overall"))
+        .setAligns([AlignmentEnum.CENTER, AlignmentEnum.CENTER, AlignmentEnum.CENTER])
+        .setStyle('compact')
+        .addRow(`${Math.round(user.stats.time.voice/3600)}H`, `${Math.round(user.stats.time.presence/3600)}H`);
+
+    return table.toString();
+};
+
+export { getExperienceProcentage, getStatisticsTable, getTimeStatisticsTable, setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
