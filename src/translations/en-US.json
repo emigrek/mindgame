@@ -141,6 +141,7 @@
 		"overall": "Overall",
 		"statistics": "Statistics",
 		"timeStatistics": "Time statistics",
+		"temporaryVoiceTimeStatistics": "Temporary voice time statistics",
 		"favoriteGuild": "Favorite guild",
 		"followButtonLabel": "Follow 💗",
 		"unfollowButtonLabel": "Unfollow 💔",
@@ -163,7 +164,8 @@
 		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!\nNext daily reward <t:{time}:R>.",
 		"dailyRewardField": "Reward",
 		"todayVoiceTimeField": "Today",
-		"weekVoiceTimeField": "Weekly voice time"
+		"weekVoiceTimeField": "Weekly",
+		"monthVoiceTimeField": "Monthly"
 	},
 	"quickButton": {
 		"profileLabel": "Profile 👤",

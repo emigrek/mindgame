@@ -131,10 +131,11 @@
 		"rank": "Ranking",
 		"level": "Poziom",
 		"followers": "Obserwujący",
-		"voice": "Czas",
+		"voice": "Czas głosowy",
 		"overall": "Ogółem",
 		"statistics": "Statystyki",
 		"timeStatistics": "Statystytki spędzonego czasu",
+		"temporaryVoiceTimeStatistics": "Tymczasowe statystyki głosowe",
 		"favoriteGuild": "Ulubiony serwer",
 		"timePublicButtonLabel": "Widoczność spędzonego czasu 👀",
 		"followButtonLabel": "Obserwuj 💗",
@@ -157,7 +158,8 @@
 		"dailyRewardDescription": "<@{userId}> odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
 		"dailyRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",
-		"weekVoiceTimeField": "W tym tygodniu"
+		"weekVoiceTimeField": "W tym tygodniu",
+		"monthVoiceTimeField": "W tym miesiącu"
 	},
 	"quickButton": {
 		"profileLabel": "Profil 👤",

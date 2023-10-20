@@ -325,9 +325,8 @@ const clearTemporaryStatistics = async (type: string) => {
 const getExperienceProcentage = async (user: UserDocument) => {
     const expToCurrentLevel = levelToExp(user.stats.level);
     const expToLevelUp = levelToExp(user.stats.level+1);
-    const expProcentage = (((user.stats.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed();
 
-    return expProcentage;
+    return (((user.stats.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed(2);
 };
 
 const getStatisticsTable = async (user: UserDocument) => {
@@ -338,7 +337,7 @@ const getStatisticsTable = async (user: UserDocument) => {
     const table = new AsciiTable3()
         .setHeading(i18n.__("profile.rank"), i18n.__("profile.level"), i18n.__("profile.followers"))
         .setAligns([AlignmentEnum.CENTER, AlignmentEnum.CENTER, AlignmentEnum.CENTER])
-        .setStyle('compact')
+        .setStyle('none')
         .addRow(`#${rank} ${rank === 1 ? '👑' : ''}`, `${user.stats.level} (${experienceProcentage}%)`, `${followers} 💗`);
 
     return table.toString();
@@ -348,10 +347,20 @@ const getTimeStatisticsTable = async (user: UserDocument) => {
     const table = new AsciiTable3()
         .setHeading(i18n.__("profile.voice"), i18n.__("profile.overall"))
         .setAligns([AlignmentEnum.CENTER, AlignmentEnum.CENTER, AlignmentEnum.CENTER])
-        .setStyle('compact')
+        .setStyle('none')
         .addRow(`${Math.round(user.stats.time.voice/3600)}H`, `${Math.round(user.stats.time.presence/3600)}H`);
 
     return table.toString();
 };
 
-export { getExperienceProcentage, getStatisticsTable, getTimeStatisticsTable, setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+const getTemporaryVoiceTimeStatisticsTable = async (user: UserDocument) => {
+    const table = new AsciiTable3()
+        .setHeading(i18n.__("notifications.todayVoiceTimeField"), i18n.__("notifications.weekVoiceTimeField"), i18n.__("notifications.monthVoiceTimeField"))
+        .setAligns([AlignmentEnum.CENTER, AlignmentEnum.CENTER, AlignmentEnum.CENTER])
+        .setStyle('none')
+        .addRow(`${Math.round(user.day.time.voice/3600)}H`, `${Math.round(user.week.time.voice/3600)}H`, `${Math.round(user.month.time.voice/3600)}H`);
+
+    return table.toString();
+}
+
+export { getTemporaryVoiceTimeStatisticsTable, getExperienceProcentage, getStatisticsTable, getTimeStatisticsTable, setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
