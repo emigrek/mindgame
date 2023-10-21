@@ -20,12 +20,9 @@ This application is fully translated (including slash commands, context menus, e
 | i18n  | internationalization-framework  |
 | Dotenv  | environment variables  |
 | Nodemon  | development  |
-| node-html-to-image  | messages with html & css  |
-| Tailwind CSS  | css framework  |
 | discord-logs | extended discord events |
 | moment | time formatting |
 | node-vibrant | cool looking embed colors |
-| canvas | image processing |
 | node-cron | scheduling |
 | @octokit/rest | github commits |
 

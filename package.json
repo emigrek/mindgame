@@ -36,9 +36,7 @@
   "dependencies": {
     "@octokit/rest": "^19.0.5",
     "@types/module-alias": "^2.0.1",
-    "ascii-table3": "^0.9.0",
     "axios": "^1.2.1",
-    "canvas": "^2.10.2",
     "chroma-js": "^2.4.2",
     "discord-logs": "^2.2.1",
     "discord.js": "^14.11.0",

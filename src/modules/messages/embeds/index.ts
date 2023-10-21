@@ -3,40 +3,96 @@ import { UserDocument } from "@/modules/schemas/User";
 import Colors from "@/utils/colors";
 import { EmbedBuilder } from "discord.js";
 import { ImageHexColors, getColorInt } from "..";
-import { getStatisticsTable, getTemporaryVoiceTimeStatisticsTable, getTimeStatisticsTable } from "@/modules/user";
+import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import i18n from "@/client/i18n";
+import { getFollowers } from "@/modules/follow";
 
 const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const statisticsTable = await getStatisticsTable(user);
-    const timeStatisticsTable = await getTimeStatisticsTable(user);
-    const temporaryVoiceTimeStatisticsTable = await getTemporaryVoiceTimeStatisticsTable(user);
-
-    const statisticsSection = `**${i18n.__("profile.statistics")}**` + `\n` +
-            `\`\`\`${statisticsTable}\`\`\`` + `\n`;
-
-    const timeStatisticsSection = ((selfCall || user.stats.time.public) ? (
-            `**${i18n.__("profile.timeStatistics")}** ` + ((selfCall && !user.stats.time.public) ? 
-                `\n(*${i18n.__("profile.visibilityNotification")}*)` 
-            : 
-                ``
-            ) 
-            + `\n` + `\`\`\`${timeStatisticsTable}\`\`\`` + `\n`
-        ) : 
-            ``
-        );
-
-    const temporaryVoiceTimeStatisticsSection = `**${i18n.__("profile.temporaryVoiceTimeStatistics")}**` + `\n` +
-            `\`\`\`${temporaryVoiceTimeStatisticsTable}\`\`\``;
+    const rank = await getUserRank(user);
+    const experienceProcentage = await getExperienceProcentage(user);
+    const followers = await getFollowers(user.userId).then(followers => followers.length);
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(user.username)
-        .setThumbnail(user.avatarUrl)
-        .setDescription(
-            statisticsSection +
-            timeStatisticsSection + 
-            temporaryVoiceTimeStatisticsSection
-        );
+        .setThumbnail(user.avatarUrl);
+
+    embed.addFields([
+            {
+                name: `📊  **${i18n.__("profile.statistics")}**`,
+                value: `** **`,
+                inline: false,
+            },
+            {
+                name: i18n.__("profile.rank"),
+                value: `\`\`\`#${rank} ${rank === 1 ? '👑' : ''}\`\`\``,
+                inline: true,
+            },
+            {
+                name: i18n.__("profile.level"),
+                value: `\`\`\`${user.stats.level} (${experienceProcentage}%)\`\`\``,
+                inline: true,
+            },
+            {
+                name: i18n.__("profile.followers"),
+                value: `\`\`\`${followers}\`\`\``,
+                inline: true,
+            },
+            {
+                name: `** **`,
+                value: `** **`,
+                inline: false,
+            },
+        ]);
+
+    if (selfCall || user.stats.time.public) {
+        embed.addFields([
+            {
+                name: `⏳  **${i18n.__("profile.timeStatistics")}**`,
+                value: (selfCall && !user.stats.time.public) ?  `(*${i18n.__("profile.visibilityNotification")}*)` : `** **`,
+                inline: false,
+            },
+            {
+                name: i18n.__("profile.voice"),
+                value: `\`\`\`${Math.round(user.stats.time.voice/3600)}H\`\`\``,
+                inline: true,
+            },
+            {
+                name: i18n.__("profile.overall"),
+                value: `\`\`\`${Math.round(user.stats.time.presence/3600)}H\`\`\``,
+                inline: true,
+            },
+            {
+                name: `** **`,
+                value: `** **`,
+                inline: false,
+            },
+        ]);
+    }
+
+
+    embed.addFields([
+        {
+            name: `📅  **${i18n.__("profile.temporaryVoiceTimeStatistics")}**`,
+            value: `** **`,
+            inline: false,
+        },
+        {
+            name: i18n.__("notifications.todayVoiceTimeField"),
+            value: `\`\`\`${Math.round(user.day.time.voice/3600)}H\`\`\``,
+            inline: true,
+        },
+        {
+            name: i18n.__("notifications.weekVoiceTimeField"),
+            value: `\`\`\`${Math.round(user.week.time.voice/3600)}H\`\`\``,
+            inline: true,
+        },
+        {
+            name: i18n.__("notifications.monthVoiceTimeField"),
+            value: `\`\`\`${Math.round(user.month.time.voice/3600)}H\`\`\``,
+            inline: true,
+        },
+    ]);
 
     return embed;
 };
