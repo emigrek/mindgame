@@ -213,14 +213,13 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     const row2 = new ActionRowBuilder<ButtonBuilder>();
 
     const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
-    const guildStatisticsButton = await getGuildStatisticsButton();
     const sweepButton = await getSweepButton();
     const rankingButton = await getRankingButton();
     const commitsButton = await getCommitsButton();
     const helpButton = await getHelpButton();
 
     row.setComponents(sweepButton, profileButton, rankingButton);
-    row2.setComponents(guildStatisticsButton, commitsButton, helpButton);
+    row2.setComponents(commitsButton, helpButton);
 
     return [row, row2];
 }
