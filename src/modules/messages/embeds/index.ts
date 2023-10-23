@@ -38,11 +38,6 @@ const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: 
                 value: `\`\`\`${followers}\`\`\``,
                 inline: true,
             },
-            {
-                name: `** **`,
-                value: `** **`,
-                inline: false,
-            },
         ]);
 
     if (selfCall || user.stats.time.public) {
@@ -61,11 +56,6 @@ const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: 
                 name: i18n.__("profile.overall"),
                 value: `\`\`\`${Math.round(user.stats.time.presence/3600)}H\`\`\``,
                 inline: true,
-            },
-            {
-                name: `** **`,
-                value: `** **`,
-                inline: false,
             },
         ]);
     }
