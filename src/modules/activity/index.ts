@@ -442,13 +442,14 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     const lastPresenceActivityGuild = lastPresenceActivity ? await client.guilds.fetch(lastPresenceActivity.guildId) : null;
 
     const voice = lastVoiceActivity ? {
-        timestamp: moment(lastVoiceActivity.to || lastVoiceActivity.from).unix(),
+        timestamp: moment(lastVoiceActivity.to ? lastVoiceActivity.to : moment()).unix(),
         guildName: lastVoiceActivityGuild ? lastVoiceActivityGuild.name : null,
     } : null;
 
     const presence = lastPresenceActivity ? {
-        timestamp: moment(lastPresenceActivity.to || lastPresenceActivity.from).unix(),
+        timestamp: moment(lastPresenceActivity.to ? lastPresenceActivity.to : moment()).unix(),
         guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
+        client: lastPresenceActivity.client
     } : null;
 
     return {

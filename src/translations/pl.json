@@ -137,7 +137,7 @@
 		"timeStatistics": "Statystytki spędzonego czasu",
 		"temporaryVoiceTimeStatistics": "Tymczasowe statystyki głosowe",
 		"lastVoiceActivity": "Ostatnio słyszany(a) {time} {guild}",
-		"lastPresenceActivity": "Ostatnio widziany(a) {time} {guild}",
+		"lastPresenceActivity": "Ostatnio widziany(a) {time} {guild} [{client}]",
 		"favoriteGuild": "Ulubiony serwer",
 		"timePublicButtonLabel": "Widoczność spędzonego czasu 👀",
 		"followButtonLabel": "Obserwuj 💗",
