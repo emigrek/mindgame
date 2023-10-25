@@ -16,12 +16,13 @@ const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: 
 
     const lastHeared = userLastActivityDetails.voice ? i18n.__mf("profile.lastVoiceActivity", {
         time: `<t:${userLastActivityDetails.voice.timestamp}:R>`,
-        guild: `(${userLastActivityDetails.voice.guildName})`,
+        guild: `${userLastActivityDetails.voice.guildName}`,
     }) : '';
 
     const lastSeen = userLastActivityDetails.presence ? i18n.__mf("profile.lastPresenceActivity", {
         time: `<t:${userLastActivityDetails.presence.timestamp}:R>`,
-        guild: `(${userLastActivityDetails.presence.guildName})`,
+        guild: `${userLastActivityDetails.presence.guildName}`,
+        client: userLastActivityDetails.presence.client,
     }) : '';
 
     const embed = new EmbedBuilder()

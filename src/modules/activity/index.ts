@@ -431,6 +431,7 @@ interface UserLastActivityDetails {
     presence: {
         timestamp: number;
         guildName: string | null;
+        client: string;
     } | null;
 }
 
