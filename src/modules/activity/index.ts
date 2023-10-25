@@ -399,8 +399,31 @@ const getUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDo
 }
 
 const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDocument | null> => {
-    const last = await voiceActivityModel.find({ userId: user.userId }).sort({ to: -1 }).limit(1);
-    return last[0];
+    const entries = await voiceActivityModel.aggregate([
+        {
+            $match: {
+                userId: user.userId
+            }
+        },
+        {
+            $project: {
+                guildId: 1,
+                to: {
+                    $ifNull: ["$to", new Date()]
+                }
+            },
+        },
+        {
+            $sort: {
+                to: -1
+            }
+        },
+        {
+            $limit: 1
+        }
+    ]);
+    
+    return entries[0];
 };
 
 const getPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
@@ -414,8 +437,32 @@ const getUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActi
 }
 
 const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActivityDocument | null> => {
-    const last = await presenceActivityModel.find({ userId: user.userId }).sort({ to: -1 }).limit(1);
-    return last[0];
+    const entries = await presenceActivityModel.aggregate([
+        {
+            $match: {
+                userId: user.userId
+            }
+        },
+        {
+            $project: {
+                guildId: 1,
+                client: 1,
+                to: {
+                    $ifNull: ["$to", new Date()]
+                }
+            },
+        },
+        {
+            $sort: {
+                to: -1
+            }
+        },
+        {
+            $limit: 1
+        }
+    ]);
+    
+    return entries[0];
 };
 
 const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivityDocument[]> => {
@@ -443,12 +490,12 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     const lastPresenceActivityGuild = lastPresenceActivity ? await client.guilds.fetch(lastPresenceActivity.guildId) : null;
 
     const voice = lastVoiceActivity ? {
-        timestamp: lastVoiceActivity.to ? moment(lastVoiceActivity.to).unix() : moment().unix(),
+        timestamp: moment(lastVoiceActivity.to).unix(),
         guildName: lastVoiceActivityGuild ? lastVoiceActivityGuild.name : null,
     } : null;
 
     const presence = lastPresenceActivity ? {
-        timestamp: lastPresenceActivity.to ? moment(lastPresenceActivity.to).unix() : moment().unix(),
+        timestamp: moment(lastPresenceActivity.to).unix(),
         guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
         client: lastPresenceActivity.client
     } : null;
