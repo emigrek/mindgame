@@ -10,6 +10,7 @@ import { updateUserStatistics } from "@/modules/user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
 import config from "@/utils/config";
+import { UserDocument } from "../schemas/User";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -319,6 +320,7 @@ const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (Presen
     return data;
 };
 
+
 const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date): Promise<VoiceActivityDocument[]> => {
     const activities = await voiceActivityModel.find({
         guildId: guild.guildId,
@@ -396,6 +398,11 @@ const getUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDo
     return exists;
 }
 
+const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDocument | null> => {
+    const last = await voiceActivityModel.findOne({ userId: user.userId }).sort({ to: -1 });
+    return last;
+};
+
 const getPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
     const exists = await presenceActivityModel.findOne({ userId: userId, guildId: guildId, to: null });
     return exists;
@@ -406,10 +413,50 @@ const getUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActi
     return exists;
 }
 
+const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActivityDocument | null> => {
+    const last = await presenceActivityModel.findOne({ userId: user.userId }).sort({ to: -1 });
+    return last;
+};
+
 const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivityDocument[]> => {
     const activities = await voiceActivityModel.find({ guildId: guild.id, to: null });
     return activities;
 };
+
+interface UserLastActivityDetails {
+    voice: {
+        timestamp: number;
+        guildName: string | null;
+    } | null;
+    presence: {
+        timestamp: number;
+        guildName: string | null;
+    } | null;
+}
+
+const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocument): Promise<UserLastActivityDetails> => {
+    const lastVoiceActivity = await getLastUserVoiceActivity(user);
+    const lastPresenceActivity = await getLastUserPresenceActivity(user);
+
+    const lastVoiceActivityGuild = lastVoiceActivity ? await client.guilds.fetch(lastVoiceActivity.guildId) : null;
+    const lastPresenceActivityGuild = lastPresenceActivity ? await client.guilds.fetch(lastPresenceActivity.guildId) : null;
+
+    const voice = lastVoiceActivity ? {
+        timestamp: moment(lastVoiceActivity.to || lastVoiceActivity.from).unix(),
+        guildName: lastVoiceActivityGuild ? lastVoiceActivityGuild.name : null,
+    } : null;
+
+    const presence = lastPresenceActivity ? {
+        timestamp: moment(lastPresenceActivity.to || lastPresenceActivity.from).unix(),
+        guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
+    } : null;
+
+    return {
+        voice,
+        presence
+    };
+};
+
 
 const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     const colors = [
@@ -437,4 +484,4 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     return '#68717e';
 }
 
-export { getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

@@ -6,16 +6,29 @@ import { ImageHexColors, getColorInt } from "..";
 import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import i18n from "@/client/i18n";
 import { getFollowers } from "@/modules/follow";
+import { getUserLastActivityDetails } from "@/modules/activity";
 
 const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
     const rank = await getUserRank(user);
     const experienceProcentage = await getExperienceProcentage(user);
     const followers = await getFollowers(user.userId).then(followers => followers.length);
+    const userLastActivityDetails = await getUserLastActivityDetails(client, user);
+
+    const lastHeared = userLastActivityDetails.voice ? i18n.__mf("profile.lastVoiceActivity", {
+        time: `<t:${userLastActivityDetails.voice.timestamp}:R>`,
+        guild: `(${userLastActivityDetails.voice.guildName})`,
+    }) : '';
+
+    const lastSeen = userLastActivityDetails.presence ? i18n.__mf("profile.lastPresenceActivity", {
+        time: `<t:${userLastActivityDetails.presence.timestamp}:R>`,
+        guild: `(${userLastActivityDetails.presence.guildName})`,
+    }) : '';
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(user.username)
-        .setThumbnail(user.avatarUrl);
+        .setThumbnail(user.avatarUrl)
+        .setDescription(lastHeared + '\n' + lastSeen);
 
     embed.addFields([
             {

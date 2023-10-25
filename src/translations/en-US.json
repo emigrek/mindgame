@@ -140,6 +140,8 @@
 		"voice": "Voice time",
 		"overall": "Overall",
 		"statistics": "Statistics",
+		"lastVoiceActivity": "Last heared {time} {guild}",
+		"lastPresenceActivity": "Last seen {time} {guild}",
 		"timeStatistics": "Time statistics",
 		"temporaryVoiceTimeStatistics": "Temporary voice time statistics",
 		"favoriteGuild": "Favorite guild",
