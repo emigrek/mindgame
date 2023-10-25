@@ -113,15 +113,6 @@ const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResol
     return profileButton;
 }
 
-const getGuildStatisticsButton = async () => {
-    const statisticsButton = new ButtonBuilder()
-        .setCustomId("guildStatistics")
-        .setLabel(i18n.__("quickButton.guildStatisticsLabel"))
-        .setStyle(ButtonStyle.Secondary);
-
-    return statisticsButton;
-}
-
 const getSweepButton = async () => {
     const sweepButton = new ButtonBuilder()
         .setCustomId("sweep")
@@ -210,18 +201,15 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
     const sourceMessage = await getMessage(message.id);
 
     const row = new ActionRowBuilder<ButtonBuilder>();
-    const row2 = new ActionRowBuilder<ButtonBuilder>();
 
     const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
     const sweepButton = await getSweepButton();
     const rankingButton = await getRankingButton();
-    const commitsButton = await getCommitsButton();
     const helpButton = await getHelpButton();
 
-    row.setComponents(sweepButton, profileButton, rankingButton);
-    row2.setComponents(commitsButton, helpButton);
+    row.setComponents(sweepButton, profileButton, rankingButton, helpButton);
 
-    return [row, row2];
+    return [row];
 }
 
 const getSelectMessageDeleteButton = async (disabled: boolean) => {

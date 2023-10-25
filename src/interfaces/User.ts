@@ -18,23 +18,6 @@ export interface ExtendedStatistics extends Statistics {
   commands: number;
 }
 
-export interface ExtendedStatisticsPayload {
-  level?: number;
-  commands?: number;
-  exp?: number;
-  time?: {
-    public?: boolean;
-    voice?: number;
-    presence?: number;
-  };
-  games?: {
-    won?: {
-      skill?: number;
-      skin?: number;
-    }
-  }
-}
-
 export interface User {
   userId: string;
   username: string;
