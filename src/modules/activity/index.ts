@@ -399,8 +399,8 @@ const getUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDo
 }
 
 const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivityDocument | null> => {
-    const last = await voiceActivityModel.findOne({ userId: user.userId }).sort({ to: -1 });
-    return last;
+    const last = await voiceActivityModel.find({ userId: user.userId }).sort({ to: -1 }).limit(1);
+    return last[0];
 };
 
 const getPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
@@ -414,8 +414,8 @@ const getUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActi
 }
 
 const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<PresenceActivityDocument | null> => {
-    const last = await presenceActivityModel.findOne({ userId: user.userId }).sort({ to: -1 });
-    return last;
+    const last = await presenceActivityModel.find({ userId: user.userId }).sort({ to: -1 }).limit(1);
+    return last[0];
 };
 
 const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivityDocument[]> => {
