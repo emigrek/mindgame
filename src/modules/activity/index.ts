@@ -497,7 +497,7 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     const presence = lastPresenceActivity ? {
         timestamp: moment(lastPresenceActivity.to).unix(),
         guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
-        client: lastPresenceActivity.client
+        client: clientStatusToEmoji(lastPresenceActivity.client)
     } : null;
 
     return {
@@ -533,4 +533,17 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     return '#68717e';
 }
 
-export { getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+const clientStatusToEmoji = (client: string) => {
+    switch (client) {
+        case 'desktop':
+            return '💻';
+        case 'mobile':
+            return '📱';
+        case 'web':
+            return '🌐';
+        default:
+            return '❔';
+    }
+}
+
+export { clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
