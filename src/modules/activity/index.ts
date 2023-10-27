@@ -408,6 +408,7 @@ const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivi
         {
             $project: {
                 guildId: 1,
+                channelId: 1,
                 to: {
                     $ifNull: ["$to", new Date()]
                 }
