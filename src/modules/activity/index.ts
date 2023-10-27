@@ -474,10 +474,13 @@ interface UserLastActivityDetails {
     voice: {
         timestamp: number;
         guildName: string | null;
+        guildId: string;
+        channelId: string;
     } | null;
     presence: {
         timestamp: number;
         guildName: string | null;
+        guildId: string;
         client: string;
     } | null;
 }
@@ -492,11 +495,14 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     const voice = lastVoiceActivity ? {
         timestamp: moment(lastVoiceActivity.to).unix(),
         guildName: lastVoiceActivityGuild ? lastVoiceActivityGuild.name : null,
+        guildId: lastVoiceActivity.guildId,
+        channelId: lastVoiceActivity.channelId
     } : null;
 
     const presence = lastPresenceActivity ? {
         timestamp: moment(lastPresenceActivity.to).unix(),
         guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
+        guildId: lastPresenceActivity.guildId,
         client: clientStatusToEmoji(lastPresenceActivity.client)
     } : null;
 
