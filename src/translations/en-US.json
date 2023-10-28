@@ -142,12 +142,12 @@
 		"statistics": "Statistics",
 		"lastVoiceActivity": "Last heard {time} in **{guild}**",
 		"lastPresenceActivity": "Last seen {time} in **{guild}** {client}",
-		"timeStatistics": "Time statistics",
-		"temporaryVoiceTimeStatistics": "Temporary voice time statistics",
+		"timeStatistics": "Time spent",
+		"temporaryVoiceTimeStatistics": "Voice activity",
 		"favoriteGuild": "Favorite guild",
 		"followButtonLabel": "Follow 💗",
 		"unfollowButtonLabel": "Unfollow 💔",
-		"timePublicButtonLabel": "Public time statistics 👀",
+		"timePublicButtonLabel": "Public time spent 👀",
 		"visibilityNotification": "Only you can see this"
 	},
 	"follow": {
