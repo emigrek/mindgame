@@ -11,6 +11,7 @@ import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceAc
 import { getGuild } from "@/modules/guild";
 import config from "@/utils/config";
 import { UserDocument } from "../schemas/User";
+import i18n from "@/client/i18n";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -448,9 +449,8 @@ const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<Presence
             $project: {
                 guildId: 1,
                 client: 1,
-                to: {
-                    $ifNull: ["$to", new Date()]
-                }
+                to: 1,
+                from: 1
             },
         },
         {
@@ -473,13 +473,13 @@ const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivit
 
 interface UserLastActivityDetails {
     voice: {
-        timestamp: number;
+        activity: VoiceActivityDocument;
         guildName: string | null;
         guildId: string;
         channelId: string;
     } | null;
     presence: {
-        timestamp: number;
+        activity: PresenceActivityDocument;
         guildName: string | null;
         guildId: string;
         client: string;
@@ -494,14 +494,14 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     const lastPresenceActivityGuild = lastPresenceActivity ? await client.guilds.fetch(lastPresenceActivity.guildId) : null;
 
     const voice = lastVoiceActivity ? {
-        timestamp: moment(lastVoiceActivity.to).unix(),
+        activity: lastVoiceActivity,
         guildName: lastVoiceActivityGuild ? lastVoiceActivityGuild.name : null,
         guildId: lastVoiceActivity.guildId,
         channelId: lastVoiceActivity.channelId
     } : null;
 
     const presence = lastPresenceActivity ? {
-        timestamp: moment(lastPresenceActivity.to).unix(),
+        activity: lastPresenceActivity,
         guildName: lastPresenceActivityGuild ? lastPresenceActivityGuild.name : null,
         guildId: lastPresenceActivity.guildId,
         client: clientStatusToEmoji(lastPresenceActivity.client)
@@ -513,6 +513,41 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
     };
 };
 
+const formatLastActivityDetails = (details: UserLastActivityDetails) => {
+    let voice, presence;
+
+    if (!details.voice) {
+        voice = ""
+    } else if (details.voice.activity.to) {
+        voice = i18n.__mf("profile.lastVoiceActivity", {
+            time: `<t:${moment(details.voice.activity.to).unix()}:R>`,
+            guild: `[${details.voice.guildName}](https://discord.com/channels/${details.voice.guildId}/${details.voice.channelId})`,
+        });
+    } else {
+        voice = i18n.__mf("profile.currentVoiceActivity", {
+            time: `<t:${moment(details.voice.activity.from).unix()}:R>`,
+            guild: `[${details.voice.guildName}](https://discord.com/channels/${details.voice.guildId}/${details.voice.channelId})`,
+        });
+    }
+
+    if (!details.presence) {
+        presence = "";
+    } else if (details.presence.activity.to) {
+        presence = i18n.__mf("profile.lastPresenceActivity", {
+            time: `<t:${moment(details.presence.activity.to).unix()}:R>`,
+            guild: `[${details.presence.guildName}](https://discord.com/channels/${details.presence.guildId})`,
+            client: details.presence.client
+        });
+    } else {
+        presence = i18n.__mf("profile.currentPresenceActivity", {
+            time: `<t:${moment(details.presence.activity.from).unix()}:R>`,
+            guild: `[${details.presence.guildName}](https://discord.com/channels/${details.presence.guildId})`,
+            client: details.presence.client
+        });
+    }
+
+    return `${voice}\n${presence}`;
+};
 
 const getPresenceActivityColor = (activity: PresenceActivity | null) => {
     const colors = [
@@ -553,4 +588,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
