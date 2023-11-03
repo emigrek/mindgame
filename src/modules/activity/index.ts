@@ -412,6 +412,7 @@ const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivi
                 channelId: 1,
                 to: 1,
                 from: 1,
+                createdAt: 1,
             },
         },
         {
@@ -449,7 +450,8 @@ const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<Presence
                 guildId: 1,
                 client: 1,
                 to: 1,
-                from: 1
+                from: 1,
+                createdAt: 1,
             },
         },
         {
@@ -514,6 +516,8 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
 
 const formatLastActivityDetails = (details: UserLastActivityDetails) => {
     let voice, presence;
+
+    console.log(details);
 
     if (!details.voice) {
         voice = ""
