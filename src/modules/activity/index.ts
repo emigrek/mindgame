@@ -410,14 +410,13 @@ const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivi
             $project: {
                 guildId: 1,
                 channelId: 1,
-                to: {
-                    $ifNull: ["$to", new Date()]
-                }
+                to: 1,
+                from: 1,
             },
         },
         {
             $sort: {
-                to: -1
+                createdAt: -1,
             }
         },
         {
@@ -455,7 +454,7 @@ const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<Presence
         },
         {
             $sort: {
-                to: -1
+                createdAt: -1
             }
         },
         {
@@ -518,21 +517,21 @@ const formatLastActivityDetails = (details: UserLastActivityDetails) => {
 
     if (!details.voice) {
         voice = ""
-    } else if (details.voice.activity.to) {
+    } else if (details.voice.activity.to !== null) {
         voice = i18n.__mf("profile.lastVoiceActivity", {
             time: `<t:${moment(details.voice.activity.to).unix()}:R>`,
             guild: `[${details.voice.guildName}](https://discord.com/channels/${details.voice.guildId}/${details.voice.channelId})`,
         });
     } else {
         voice = i18n.__mf("profile.currentVoiceActivity", {
-            time: `<t:${moment(details.voice.activity.from).unix()}:R>`,
+            time: `<t:${moment(details.voice.activity.from).unix()}:t>`,
             guild: `[${details.voice.guildName}](https://discord.com/channels/${details.voice.guildId}/${details.voice.channelId})`,
         });
     }
 
     if (!details.presence) {
         presence = "";
-    } else if (details.presence.activity.to) {
+    } else if (details.presence.activity.to !== null) {
         presence = i18n.__mf("profile.lastPresenceActivity", {
             time: `<t:${moment(details.presence.activity.to).unix()}:R>`,
             guild: `[${details.presence.guildName}](https://discord.com/channels/${details.presence.guildId})`,
@@ -540,7 +539,7 @@ const formatLastActivityDetails = (details: UserLastActivityDetails) => {
         });
     } else {
         presence = i18n.__mf("profile.currentPresenceActivity", {
-            time: `<t:${moment(details.presence.activity.from).unix()}:R>`,
+            time: `<t:${moment(details.presence.activity.from).unix()}:t>`,
             guild: `[${details.presence.guildName}](https://discord.com/channels/${details.presence.guildId})`,
             client: details.presence.client
         });
