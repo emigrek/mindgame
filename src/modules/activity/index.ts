@@ -517,8 +517,6 @@ const getUserLastActivityDetails = async (client: ExtendedClient, user: UserDocu
 const formatLastActivityDetails = (details: UserLastActivityDetails) => {
     let voice, presence;
 
-    console.log(details);
-
     if (!details.voice) {
         voice = ""
     } else if (details.voice.activity.to !== null) {
@@ -581,7 +579,7 @@ const getPresenceActivityColor = (activity: PresenceActivity | null) => {
 const clientStatusToEmoji = (client: string) => {
     switch (client) {
         case 'desktop':
-            return '💻';
+            return '🖥'
         case 'mobile':
             return '📱';
         case 'web':
