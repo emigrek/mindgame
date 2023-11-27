@@ -6,9 +6,10 @@ import { GuildMember } from "discord.js";
 export const voiceChannelDeaf: Event = {
     name: "voiceChannelDeaf",
     run: async (client: ExtendedClient, member: GuildMember) => {
-        if(!member.voice.channel) return;
-        
         await endVoiceActivity(client, member);
-        await checkGuildVoiceEmpty(client, member.guild, member.voice.channel);
+
+        if (member.voice.channel) {
+            await checkGuildVoiceEmpty(client, member.guild, member.voice.channel);
+        }
     }
 }
