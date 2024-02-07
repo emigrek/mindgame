@@ -182,7 +182,8 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
         .setThumbnail("https://i.imgur.com/cSTkdFG.png");
 
     return {
-        embeds: [embed]
+        embeds: [embed],
+        flags: [4096]
     };
 };
 
@@ -409,7 +410,8 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         ]);
 
     return {
-        embeds: [embed]
+        embeds: [embed],
+        flags: [4096]
     };
 };
 
