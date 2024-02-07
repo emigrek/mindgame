@@ -24,7 +24,9 @@ const getPlaceholdersData = async (): Promise<PlaceholdersData> => {
 const replacePlaceholders = (activity: ActivitiesOptions, data: PlaceholdersData) => {
     const { guilds, users } = data;
 
-    activity.name = activity.name!
+    if (!activity.name) return activity;
+
+    activity.name = activity.name
         .replace(/{guilds}/g, guilds.toString())
         .replace(/{users}/g, users.toString())
         .replace(

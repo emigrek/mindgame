@@ -169,15 +169,6 @@ const getRankingSettingsButton = async () => {
     return rankingSettingsButton;
 };
 
-const getCommitsButton = async () => {
-    const commitsButton = new ButtonBuilder()
-        .setCustomId("commits")
-        .setLabel(i18n.__("quickButton.commitsLabel"))
-        .setStyle(ButtonStyle.Secondary);
-
-    return commitsButton;
-};
-
 const getHelpButton = async () => {
     const helpButton = new ButtonBuilder()
         .setCustomId("help")

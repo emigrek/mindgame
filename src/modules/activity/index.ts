@@ -4,10 +4,10 @@ import ExtendedClient from "@/client/ExtendedClient";
 import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
 
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "@/modules/user";
-import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser, VoiceActivity } from "@/interfaces";
+import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
 import config from "@/utils/config";
 import { UserDocument } from "../schemas/User";
@@ -34,12 +34,8 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
 
     if (!userLastVoiceActivity.to) return false;
 
-    const last = userLastVoiceActivity.to.getTime();
-    const now = new Date().getTime();
-    const diff = Math.abs(now - last);
-    const diffDays = diff / (1000 * 60 * 60 * 24);
-
-    if (diffDays < 1) {
+    const daysSinceLastActivity = moment().diff(moment(userLastVoiceActivity.to), "days");
+    if (daysSinceLastActivity < 1) {
         return false;
     }
 
@@ -61,12 +57,8 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
 
     if (!activity.to) return false;
 
-    const last = activity.to.getTime();
-    const now = new Date().getTime();
-    const diff = Math.abs(now - last);
-    const diffHours = diff / (1000 * 60 * 60);
-
-    if (diffHours < 8) {
+    const hoursSinceLastActivity = moment().diff(moment(activity.to), "hours");
+    if (hoursSinceLastActivity < 8) {
         return false;
     }
 
@@ -269,58 +261,6 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 
     return outOfSync;
 };
-
-interface ActivityPeakHour {
-    hour: number;
-    activePeak: number;
-}
-
-interface ActivityPeakDay {
-    day: number;
-    activePeak: number;
-    hours: ActivityPeakHour[];
-}
-
-const getShortWeekDays = (locale: string, capitalize = true) => {
-    moment.locale(locale);
-    const days = moment.weekdaysShort();
-    moment.locale('pl-PL');
-
-    if (capitalize)
-        return days.map(d => d.toUpperCase());
-    else
-        return days;
-}
-
-const mockDays = (): ActivityPeakDay[] => {
-    const data = new Array(7).fill(null).map((_, i) => ({ day: i, activePeak: 0, hours: new Array(24).fill(null).map((_, j) => ({ hour: j, activePeak: 0 })) }));
-    return data;
-};
-
-const getActivePeaks = async (activities: (VoiceActivity & Document)[] | (PresenceActivity & Document)[]) => {
-    const data = mockDays();
-
-    data.forEach((d: ActivityPeakDay) => {
-        d.hours.forEach((h: ActivityPeakHour) => {
-            const active = [...activities].filter(a => {
-                const from = moment(a.from);
-                const to = a.to ? moment(a.to) : moment();
-                const hourCondition = from.hour() <= h.hour && to.hour() >= h.hour;
-                const dayCondition = from.day() <= d.day && to.day() >= d.day;
-                const minutesCondition = to.diff(from, "minutes") >= 10;
-                return hourCondition && dayCondition && minutesCondition;
-            }).length;
-
-            if (active > h.activePeak)
-                h.activePeak = active;
-            if (active > d.activePeak)
-                d.activePeak = active;
-        });
-    });
-
-    return data;
-};
-
 
 const getVoiceActivityBetween = async (guild: DatabaseGuild, startDate: Date, endDate: Date): Promise<VoiceActivityDocument[]> => {
     const activities = await voiceActivityModel.find({
@@ -599,4 +539,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getActivePeaks, getShortWeekDays, ActivityPeakDay, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, ActivityPeakHour, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, pruneActivities, clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
