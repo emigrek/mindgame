@@ -131,7 +131,7 @@ const endPresenceActivity = async (client: ExtendedClient, userId: string, guild
 
     const duration = moment(exists.to).diff(moment(exists.from), "seconds");
     const expGained = Math.round(
-        duration * 0.0063817
+        duration * 0.08
     );
 
     const user = await client.users.fetch(userId);
