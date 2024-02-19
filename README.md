@@ -1,10 +1,7 @@
 ![Mindgame](https://raw.githubusercontent.com/emigrek/mindgame/main/media/repo-banner.png)
 
-# 🌌 Mindgame [(invite)](https://discord.com/api/oauth2/authorize?client_id=1049355872389832714&permissions=8&scope=bot%20applications.commands)
+# 🌌 Mindgame
 Advanced discord application with **leveling** and **activity tracking** utilities.
-
-## 👀 Preview
-![Feature preview](https://i.imgur.com/VTAoGN6.png)
 
 ## 🌍 Locales
 This application is fully translated (including slash commands, context menus, etc.) in:
