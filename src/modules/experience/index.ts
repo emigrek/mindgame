@@ -128,7 +128,15 @@ class ExpCalculator {
     }
 
     private getRandomInt(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+        return Math.floor(this.randomGaussian() * (max - min + 1)) + min;
+    }
+
+    private randomGaussian(): number {
+        let u = 0,
+            v = 0;
+        while (u === 0) u = Math.random();
+        while (v === 0) v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     }
 }
 
