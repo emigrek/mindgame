@@ -25,22 +25,23 @@ class ExpUpdater {
     async update() {
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
+
+        if(this.log)
+            console.time("[ExpUpdater] Updating experience")
         
-        Promise.all([
+        const users = await Promise.all([
             ...presenceActivities.flatMap(({ activities }) =>
                 activities.map(activity => this.presence(activities, activity))
             ),
             ...voiceActivities.flatMap(({ activities }) =>
                 activities.map(activity => this.voice(activities, activity))
             )
-        ]).then((users) => {
-            if (this.log) {
-                console.log(`[ExpUpdater] Updated ${users.length} users.`);
-            }
-        })
-        .catch(e => {
-            console.log("There was an error while updating experience: ", e);
-        });
+        ]);
+
+        if (this.log) {
+            console.timeEnd(`[ExpUpdater] Updating experience`);
+            console.log(`[ExpUpdater] Updated experience for ${users.length} users.`);
+        }
     }
 
     async presence(guildActivities: PresenceActivityDocumentWithSeconds[], activity: PresenceActivityDocumentWithSeconds) {
