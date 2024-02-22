@@ -25,9 +25,9 @@ class ExpUpdater {
     async update() {
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
-
-        if(this.log)
-            console.time("[ExpUpdater] Updating experience")
+        if(this.log) {
+            console.time("\n[ExpUpdater] Updating experience")
+        }
         
         const users = await Promise.all([
             ...presenceActivities.flatMap(({ activities }) =>
@@ -36,10 +36,13 @@ class ExpUpdater {
             ...voiceActivities.flatMap(({ activities }) =>
                 activities.map(activity => this.voice(activities, activity))
             )
-        ]);
+        ]).catch(e => {
+            console.error(`[ExpUpdater] Error updating experience: ${e} <- THIS IS BAD, PROLLY NO CONNECTION TO MONGO DB OR SMTH LIKE THAT.`);
+            return [];
+        });
 
         if (this.log) {
-            console.timeEnd(`[ExpUpdater] Updating experience`);
+            console.timeEnd(`\n[ExpUpdater] Updating experience`);
             console.log(`[ExpUpdater] Updated experience for ${users.length} users.`);
         }
     }
@@ -47,6 +50,7 @@ class ExpUpdater {
     async presence(guildActivities: PresenceActivityDocumentWithSeconds[], activity: PresenceActivityDocumentWithSeconds) {
         const exp = this.expCalculator.getPresence(activity.seconds);
         const user = await this.client.users.fetch(activity.userId);
+        if (this.log) console.log(`[ExpUpdater] Presence for ${user.username}. Exp: ${exp}`);
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -59,7 +63,7 @@ class ExpUpdater {
         const exp = this.expCalculator.getVoice(activity.seconds, channelActivities.length);
         const user = await this.client.users.fetch(activity.userId);
         const guild = this.client.guilds.cache.get(activity.guildId);
-        
+        if (this.log) console.log(`[ExpUpdater] Voice for ${user.username}. Exp: ${exp}`);
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
