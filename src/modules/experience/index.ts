@@ -60,6 +60,8 @@ class ExpUpdater {
             topVoiceExp && console.log(`[ExpUpdater] Top voice: ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
             topPresenceExp && console.log(`[ExpUpdater] Top presence: ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
         }
+
+        this.logs = [];
     }
 
     async presence(guildActivities: PresenceActivityDocumentWithSeconds[], activity: PresenceActivityDocumentWithSeconds) {
