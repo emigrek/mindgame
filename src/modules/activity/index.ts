@@ -8,7 +8,6 @@ import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "@/modules/user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser } from "@/interfaces";
-import { getGuild } from "@/modules/guild";
 import config from "@/utils/config";
 import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";
@@ -121,20 +120,6 @@ const endPresenceActivity = async (client: ExtendedClient, userId: string, guild
     exists.to = moment().toDate();
     await exists.save();
 
-    const duration = moment(exists.to).diff(moment(exists.from), "seconds");
-    const expGained = Math.round(
-        duration * 0.04
-    );
-
-    const user = await client.users.fetch(userId);
-
-    await updateUserStatistics(client, user, {
-        exp: expGained,
-        time: {
-            presence: duration
-        }
-    });
-
     return exists;
 }
 
@@ -144,29 +129,6 @@ const endVoiceActivity = async (client: ExtendedClient, member: GuildMember): Pr
 
     exists.to = moment().toDate();
     await exists.save();
-
-    const seconds = moment(exists.to).diff(moment(exists.from), "seconds");
-    const hours = moment(exists.to).diff(moment(exists.from), "hours", true);
-
-    const intersecting = await getChannelIntersectingVoiceActivities(exists)
-        .then((activities) => activities.length);
-
-    const base = seconds * 0.16;
-    const boost = hours < 1 ? 1 : hours ** 2;
-
-    const income = Math.round(
-        base * boost * (intersecting + 1)
-    );
-
-    const sourceGuild = await getGuild(member.guild);
-    if (!sourceGuild) return exists;
-
-    await updateUserStatistics(client, member.user, {
-        exp: income,
-        time: {
-            voice: seconds
-        }
-    }, sourceGuild);
 
     return exists;
 }
@@ -412,6 +374,95 @@ const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivit
     return activities;
 };
 
+interface ActivitiesByChannelId<T> {
+    _id: string;
+    activities: T[];
+}
+
+interface VoiceActivityDocumentWithSeconds extends VoiceActivityDocument {
+    seconds: number;
+}
+
+interface PresenceActivityDocumentWithSeconds extends PresenceActivityDocument {
+    seconds: number;
+}
+
+const getVoiceActivitiesByChannelId = async (): Promise<ActivitiesByChannelId<VoiceActivityDocumentWithSeconds>[]> => {
+    const voiceActivities = await voiceActivityModel.aggregate([
+        {
+            $match: {
+                to: null
+            }
+        },
+        {
+            $project: {
+                channelId: 1,
+                userId: 1,
+                voiceStateId: 1,
+                streaming: 1,
+                to: 1,
+                from: 1,
+                seconds: {
+                    $round: [
+                        {
+                            $divide: [
+                                { $subtract: [new Date(), "$from"] },
+                                1000
+                            ]
+                        },
+                        0
+                    ]
+                }
+            },
+        },
+        {
+            $group: {
+                _id: "$channelId",
+                activities: { $push: "$$ROOT" }
+            }
+        }
+    ]);
+    return voiceActivities;
+}
+
+const getPresenceActivitiesByGuildId = async (): Promise<ActivitiesByChannelId<PresenceActivityDocumentWithSeconds>[]> => {
+    const presenceActivities = await presenceActivityModel.aggregate([
+        {
+            $match: {
+                to: null
+            }
+        },
+        {
+            $project: {
+                userId: 1,
+                guildId: 1,
+                from: 1,
+                to: 1,
+                status: 1,
+                client: 1,
+                seconds: {
+                    $round: [
+                        {
+                            $divide: [
+                                { $subtract: [new Date(), "$from"] },
+                                1000
+                            ]
+                        },
+                        0
+                    ]
+                }
+            },
+        },
+        {
+            $group: {
+                _id: "$guildId",
+                activities: { $push: "$$ROOT" }
+            }
+        }
+    ]);
+    return presenceActivities;
+}
+
 const pruneActivities = async () => {
     try {
         const twoMonthsAgo = moment().subtract(2, "months").toDate();
@@ -539,4 +590,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, clientStatusToEmoji, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, ActivitiesByChannelId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
