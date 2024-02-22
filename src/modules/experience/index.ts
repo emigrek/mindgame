@@ -4,6 +4,7 @@ import { updateUserStatistics } from "@/modules/user";
 import ExtendedClient from "@/client/ExtendedClient";
 
 import {expCalculatorConfig as config} from './expCalculatorConfig';
+import moment from "moment";
 
 type ExpUpdaterProps = {
     client: ExtendedClient;
@@ -21,26 +22,27 @@ type ExpUpdaterLog = {
 
 class ExpUpdater {
     private client: ExtendedClient;
+
     private expCalculator: ExpCalculator;
     private log: boolean;
     private logs: ExpUpdaterLog[];
+
+    public updateTime: number;
 
     constructor({ client, log, expCalculatorConfig }: ExpUpdaterProps) {
         this.client = client;
         this.expCalculator = new ExpCalculator(expCalculatorConfig || config);
         this.log = log || true;
         this.logs = [];
+        this.updateTime = 0;
     }
 
     async update() {
         const numberFormat = this.client.numberFormat;
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
-        if(this.log) {
-            console.log(" ");
-            console.time("[ExpUpdater] Database latency")
-        }
-        
+
+        const start = moment();
         await Promise.all([
             ...presenceActivities.flatMap(({ activities }) =>
                 activities.map(activity => this.presence(activities, activity))
@@ -51,13 +53,16 @@ class ExpUpdater {
         ]).catch(e => {
             console.error(`[ExpUpdater] Error updating experience: ${e} <- THIS IS BAD, PROLLY NO CONNECTION TO MONGO DB OR SMTH LIKE THAT.`);
         });
+        const end = moment();
+
+        this.updateTime = end.diff(start, 'milliseconds', true);
 
         if (this.log) {
             const uniqueUsers = new Set(this.logs.map(log => log.activity.userId));
             const topVoiceExp = this.logs.filter(log => log.type === 'voice').sort((a, b) => b.exp - a.exp).at(0);
             const topPresenceExp = this.logs.filter(log => log.type === 'presence').sort((a, b) => b.exp - a.exp).at(0);
 
-            console.timeEnd(`[ExpUpdater] Database latency`);
+            console.log(`[ExpUpdater] Database update took ${this.updateTime}ms.`);
             console.log(`[ExpUpdater] Updated ${uniqueUsers.size} users. (${new Date().toLocaleString()})`);
             topVoiceExp && console.log(`[ExpUpdater] Top voice: ${topVoiceExp.username} - ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
             topPresenceExp && console.log(`[ExpUpdater] Top presence: ${topPresenceExp.username} - ${numberFormat.format(topPresenceExp.exp).toString()} exp`);

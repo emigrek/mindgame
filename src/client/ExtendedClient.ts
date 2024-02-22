@@ -17,6 +17,7 @@ import localeList from "./localeList";
 import i18n from "./i18n";
 
 import { getUsers, migrateUsername } from "@/modules/user";
+import { ExpUpdater } from "@/modules/experience";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -28,6 +29,8 @@ class ExtendedClient extends Client {
     public modals: Collection<string, Modal> = new Collection();
 
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
+
+    public expUpdater = new ExpUpdater({ client: this, log: true });
 
     public async init() {
         moment.locale("pl-PL");

@@ -21,7 +21,7 @@ const getPlaceholdersData = async (): Promise<PlaceholdersData> => {
     };
 };
 
-const replacePlaceholders = (activity: ActivitiesOptions, data: PlaceholdersData) => {
+const replacePlaceholders = (client: ExtendedClient, activity: ActivitiesOptions, data: PlaceholdersData) => {
     const { guilds, users } = data;
 
     if (!activity.name) return activity;
@@ -32,6 +32,7 @@ const replacePlaceholders = (activity: ActivitiesOptions, data: PlaceholdersData
         .replace(
             /{animal}/g, getRandomEmojiFromGroup(Groups.AnimalsAndNature).char
         )
+        .replace(/{updateTime}/g, client.expUpdater.updateTime.toString());
 
     return activity;
 };
@@ -43,7 +44,7 @@ const updatePresence = async (client: ExtendedClient) => {
     const placeholders = await getPlaceholdersData();
 
     random.activities = random.activities?.map((activity: ActivitiesOptions) =>
-        replacePlaceholders(activity, placeholders)
+        replacePlaceholders(client, activity, placeholders)
     );
 
     client.user?.setPresence(random);
