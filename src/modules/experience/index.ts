@@ -11,25 +11,35 @@ type ExpUpdaterProps = {
     log?: boolean;
 }
 
+type ExpUpdaterLog = {
+    activity: VoiceActivityDocumentWithSeconds | PresenceActivityDocumentWithSeconds;
+    exp: number;
+    timestamp: number;
+    type: 'voice' | 'presence';
+}
+
 class ExpUpdater {
-    client: ExtendedClient;
-    expCalculator: ExpCalculator;
-    log: boolean;
+    private client: ExtendedClient;
+    private expCalculator: ExpCalculator;
+    private log: boolean;
+    private logs: ExpUpdaterLog[];
 
     constructor({ client, log, expCalculatorConfig }: ExpUpdaterProps) {
         this.client = client;
         this.expCalculator = new ExpCalculator(expCalculatorConfig || config);
         this.log = log || true;
+        this.logs = [];
     }
 
     async update() {
+        const numberFormat = this.client.numberFormat;
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
         if(this.log) {
             console.time("\n[ExpUpdater] Updating experience")
         }
         
-        const users = await Promise.all([
+        await Promise.all([
             ...presenceActivities.flatMap(({ activities }) =>
                 activities.map(activity => this.presence(activities, activity))
             ),
@@ -38,12 +48,17 @@ class ExpUpdater {
             )
         ]).catch(e => {
             console.error(`[ExpUpdater] Error updating experience: ${e} <- THIS IS BAD, PROLLY NO CONNECTION TO MONGO DB OR SMTH LIKE THAT.`);
-            return [];
         });
 
         if (this.log) {
+            const uniqueUsers = new Set(this.logs.map(log => log.activity.userId));
+            const topVoiceExp = this.logs.filter(log => log.type === 'voice').sort((a, b) => b.exp - a.exp).at(0);
+            const topPresenceExp = this.logs.filter(log => log.type === 'presence').sort((a, b) => b.exp - a.exp).at(0);
+
             console.timeEnd(`\n[ExpUpdater] Updating experience`);
-            console.log(`[ExpUpdater] Updated experience for ${users.length} users.`);
+            console.log(`[ExpUpdater] Updated experience for ${uniqueUsers.size} users.`);
+            topVoiceExp && console.log(`[ExpUpdater] Top voice: ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
+            topPresenceExp && console.log(`[ExpUpdater] Top presence: ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
         }
     }
 
@@ -53,7 +68,7 @@ class ExpUpdater {
 
         const user = await this.client.users.fetch(activity.userId);
 
-        if (this.log) console.log(`[ExpUpdater] Presence for ${user.username}. Exp: ${exp}`);
+        if (this.log) this.logs.push({ activity, exp, timestamp: Date.now(), type: 'presence' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -68,8 +83,8 @@ class ExpUpdater {
 
         const user = await this.client.users.fetch(activity.userId);
         const guild = this.client.guilds.cache.get(activity.guildId);
-        
-        if (this.log) console.log(`[ExpUpdater] Voice for ${user.username}. Exp: ${exp}`);
+
+        if (this.log) this.logs.push({ activity, exp, timestamp: Date.now(), type: 'voice' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -94,13 +109,19 @@ class ExpCalculator {
     }
 
     public getPresence(seconds: number): number {
-        return Math.round(seconds * this.base);
+        const maxExp = Math.round(seconds * this.base);
+        return this.getRandomInt(0, maxExp);
     }
 
     public getVoice(seconds: number, inVoice: number): number {
         const hours = seconds / 3600;
         const boost = hours < 1 ? 1 : hours ** 2;
-        return Math.round(seconds * this.voiceBase * boost * (inVoice + 1));
+        const maxExp = Math.round(seconds * this.voiceBase * boost * (inVoice + 1));
+        return this.getRandomInt(0, maxExp);
+    }
+
+    private getRandomInt(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
 
