@@ -49,6 +49,7 @@ class ExpUpdater {
 
     async presence(guildActivities: PresenceActivityDocumentWithSeconds[], activity: PresenceActivityDocumentWithSeconds) {
         const exp = this.expCalculator.getPresence(activity.seconds);
+        if (!exp) return;
         const user = await this.client.users.fetch(activity.userId);
         if (this.log) console.log(`[ExpUpdater] Presence for ${user.username}. Exp: ${exp}`);
         return updateUserStatistics(this.client, user, {
@@ -61,6 +62,7 @@ class ExpUpdater {
 
     async voice(channelActivities: VoiceActivityDocumentWithSeconds[], activity: VoiceActivityDocumentWithSeconds) {
         const exp = this.expCalculator.getVoice(activity.seconds, channelActivities.length);
+        if (!exp) return;
         const user = await this.client.users.fetch(activity.userId);
         const guild = this.client.guilds.cache.get(activity.guildId);
         if (this.log) console.log(`[ExpUpdater] Voice for ${user.username}. Exp: ${exp}`);
