@@ -54,7 +54,7 @@ class ExpUpdater {
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
-                presence: activity.seconds
+                presence: 60
             }
         });
     }
@@ -67,7 +67,7 @@ class ExpUpdater {
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
-                voice: activity.seconds
+                voice: 60
             }
         }, guild ? await getGuild(guild) || undefined : undefined);
     }
