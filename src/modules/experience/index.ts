@@ -36,7 +36,7 @@ class ExpUpdater {
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
         if(this.log) {
-            console.time("\n[ExpUpdater] Updating experience")
+            console.time("\n\n[ExpUpdater] Updating experience latency")
         }
         
         await Promise.all([
@@ -55,11 +55,12 @@ class ExpUpdater {
             const topVoiceExp = this.logs.filter(log => log.type === 'voice').sort((a, b) => b.exp - a.exp).at(0);
             const topPresenceExp = this.logs.filter(log => log.type === 'presence').sort((a, b) => b.exp - a.exp).at(0);
 
-            console.timeEnd(`\n[ExpUpdater] Updating experience`);
-            console.log(`[ExpUpdater] Updated experience for ${uniqueUsers.size} users.`);
+            console.timeEnd(`\n\n[ExpUpdater] Updating experience latency`);
+            console.log(`[ExpUpdater] Updated experience for ${uniqueUsers.size} users`);
+            console.log(`[ExpUpdater] Updated at ${new Date().toLocaleString()}`);
             topVoiceExp && console.log(`[ExpUpdater] Top voice: ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
             topPresenceExp && console.log(`[ExpUpdater] Top presence: ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
-            console.log(`\n`);
+            console.log(`\n\n`);
         }
 
         this.logs = [];
@@ -112,7 +113,9 @@ class ExpCalculator {
     }
 
     public getPresence(seconds: number): number {
-        const maxExp = Math.round(seconds * this.base);
+        const hours = seconds / 3600;
+        const cap = hours < 1 ? 1 : 0.5;
+        const maxExp = Math.round(seconds * this.base * cap);
         return this.getRandomInt(0, maxExp);
     }
 
