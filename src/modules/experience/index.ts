@@ -13,6 +13,7 @@ type ExpUpdaterProps = {
 
 type ExpUpdaterLog = {
     activity: VoiceActivityDocumentWithSeconds | PresenceActivityDocumentWithSeconds;
+    username: string;
     exp: number;
     timestamp: number;
     type: 'voice' | 'presence';
@@ -36,7 +37,8 @@ class ExpUpdater {
         const voiceActivities = await getVoiceActivitiesByChannelId();
         const presenceActivities = await getPresenceActivitiesByGuildId();
         if(this.log) {
-            console.time("\n\n[ExpUpdater] Updating experience latency")
+            console.log(" ");
+            console.time("[ExpUpdater] Database latency")
         }
         
         await Promise.all([
@@ -55,12 +57,11 @@ class ExpUpdater {
             const topVoiceExp = this.logs.filter(log => log.type === 'voice').sort((a, b) => b.exp - a.exp).at(0);
             const topPresenceExp = this.logs.filter(log => log.type === 'presence').sort((a, b) => b.exp - a.exp).at(0);
 
-            console.timeEnd(`\n\n[ExpUpdater] Updating experience latency`);
-            console.log(`[ExpUpdater] Updated experience for ${uniqueUsers.size} users`);
-            console.log(`[ExpUpdater] Updated at ${new Date().toLocaleString()}`);
-            topVoiceExp && console.log(`[ExpUpdater] Top voice: ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
-            topPresenceExp && console.log(`[ExpUpdater] Top presence: ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
-            console.log(`\n\n`);
+            console.timeEnd(`[ExpUpdater] Database latency`);
+            console.log(`[ExpUpdater] Updated ${uniqueUsers.size} users. (${new Date().toLocaleString()})`);
+            topVoiceExp && console.log(`[ExpUpdater] Top voice: ${topVoiceExp.username} - ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
+            topPresenceExp && console.log(`[ExpUpdater] Top presence: ${topPresenceExp.username} - ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
+            console.log(" ");
         }
 
         this.logs = [];
@@ -72,7 +73,7 @@ class ExpUpdater {
 
         const user = await this.client.users.fetch(activity.userId);
 
-        if (this.log) this.logs.push({ activity, exp, timestamp: Date.now(), type: 'presence' });
+        if (this.log) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'presence' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -88,7 +89,7 @@ class ExpUpdater {
         const user = await this.client.users.fetch(activity.userId);
         const guild = this.client.guilds.cache.get(activity.guildId);
 
-        if (this.log) this.logs.push({ activity, exp, timestamp: Date.now(), type: 'voice' });
+        if (this.log) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'voice' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
