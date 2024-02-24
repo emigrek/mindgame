@@ -33,15 +33,54 @@ cd mindgame
 npm install
 ```
 
-Set up your .env file with bot token, application id and MongoDB connection string. You can find example in .env.example file.
+Set up your .env file
+<details>
+<summary>Example .env file</summary>
 
 ``` .env
 DISCORD_TOKEN="Discord bot token"
 DISCORD_CLIENT_ID="Discord application client ID"
 MONGO_URI="MongoDB connection string (with collection name at the end)"
-DAILY_REWARD="Amount of experience for daily reward"
 OWNER_ID="Your Discord ID"
 ```
+</details>
+
+Change application config file to your needs (can be found in ```src/config/config.ts```)
+<details>
+<summary>Default config</summary>
+
+``` typescript
+import { Config } from "@/interfaces";
+
+export const config: Config = {
+    /** 
+     * This constant directly affects the scaling between experience points and levels. 
+     * A lower experienceConstant means that each level requires more experience points, making the progression slower. 
+     * Conversely, a higher experienceConstant would make levels require fewer experience points, accelerating progression.
+     */
+    experienceConstant: 0.3829,
+
+    // Used to calculate experience gain, those values are per second of activity
+    experienceCalculatorConfig: {
+        presenceMultiplier: 0.0002,
+        voiceMultiplier: 0.0007
+    },
+
+    // Experience reward for daily voice activity
+    dailyRewardExperience: 5000,
+
+    // Hours of inactivity before a user is considered to be on a long break
+    userLongBreakHours: 8,
+
+    // Timeout after which text channel's bots messages are sweeped
+    emptyGuildSweepTimeoutMs: 10_000,
+
+    // List of bot prefixes based on which messages are considered as bot messages and are sweeped when guild voice channels are empty
+    // Besides that list, all messages from bot users are considered as bot messages
+    emptyGuildSweepBotPrefixesList: ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'],
+}
+```
+</details>
 
 Run development server
 
