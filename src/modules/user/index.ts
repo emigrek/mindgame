@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import { User, Guild } from "discord.js";
 import { User as DatabaseUser, Guild as DatabaseGuild, Sorting, Command, DeepPartial } from "@/interfaces";
 import userSchema, { UserDocument } from "@/modules/schemas/User";
-import { ExtendedStatistics, Statistics } from "@/interfaces/User";
+import { ExtendedStatistics } from "@/interfaces/User";
 import ExtendedClient from "@/client/ExtendedClient";
 import { InformationEmbed } from "@/modules/messages/embeds";
 import { getColorInt, useImageHex } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import i18n from "@/client/i18n";
+import { merge } from "@/utils/merge";
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -123,69 +124,11 @@ const setPublicTimeStats = async (user: User) => {
 
 const updateUserStatistics = async (client: ExtendedClient, user: User, statisticsPayload: DeepPartial<ExtendedStatistics>, sourceGuild?: DatabaseGuild) => {
     const userSource = await updateUser(user) as UserDocument;
-    const newExtendedStatistics: ExtendedStatistics = {
-        level: userSource.stats.level + (statisticsPayload.level || 0),
-        exp: userSource.stats.exp + (statisticsPayload.exp || 0),
-        time: {
-            public: userSource.stats.time.public || (statisticsPayload.time?.public || false),
-            voice: userSource.stats.time.voice + (statisticsPayload.time?.voice || 0),
-            presence: userSource.stats.time.presence + (statisticsPayload.time?.presence || 0)
-        },
-        commands: userSource.stats.commands + (statisticsPayload.commands || 0),
-        games: {
-            won: {
-                skill: userSource.stats.games.won.skill + (statisticsPayload.games?.won?.skill || 0),
-                skin: userSource.stats.games.won.skin + (statisticsPayload.games?.won?.skin || 0)
-            }
-        }
-    };
-    const day: Statistics = {
-        exp: userSource.day.exp + (statisticsPayload.exp || 0),
-        time: {
-            public: userSource.stats.time.public || (statisticsPayload.time?.public || false),
-            voice: userSource.day.time.voice + (statisticsPayload.time?.voice || 0),
-            presence: userSource.day.time.presence + (statisticsPayload.time?.presence || 0)
-        },
-        games: {
-            won: {
-                skill: userSource.day.games.won.skill + (statisticsPayload.games?.won?.skill || 0),
-                skin: userSource.day.games.won.skin + (statisticsPayload.games?.won?.skin || 0)
-            }
-        }
-    }
-    const week: Statistics = {
-        exp: userSource.week.exp + (statisticsPayload.exp || 0),
-        time: {
-            public: userSource.stats.time.public || (statisticsPayload.time?.public || false),
-            voice: userSource.week.time.voice + (statisticsPayload.time?.voice || 0),
-            presence: userSource.week.time.presence + (statisticsPayload.time?.presence || 0)
-        },
-        games: {
-            won: {
-                skill: userSource.week.games.won.skill + (statisticsPayload.games?.won?.skill || 0),
-                skin: userSource.week.games.won.skin + (statisticsPayload.games?.won?.skin || 0)
-            }
-        }
-    }
-    const month: Statistics = {
-        exp: userSource.month.exp + (statisticsPayload.exp || 0),
-        time: {
-            public: userSource.stats.time.public || (statisticsPayload.time?.public || false),
-            voice: userSource.month.time.voice + (statisticsPayload.time?.voice || 0),
-            presence: userSource.month.time.presence + (statisticsPayload.time?.presence || 0)
-        },
-        games: {
-            won: {
-                skill: userSource.month.games.won.skill + (statisticsPayload.games?.won?.skill || 0),
-                skin: userSource.month.games.won.skin + (statisticsPayload.games?.won?.skin || 0)
-            }
-        }
-    }
 
-    userSource.stats = newExtendedStatistics;
-    userSource.day = day;
-    userSource.week = week;
-    userSource.month = month;
+    userSource.stats = merge(userSource.stats, statisticsPayload);
+    userSource.day = merge(userSource.day, statisticsPayload);
+    userSource.week = merge(userSource.week, statisticsPayload);
+    userSource.month = merge(userSource.month, statisticsPayload);
 
     let userLeveledUpDuringUpdate = false;
 

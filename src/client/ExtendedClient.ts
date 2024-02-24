@@ -30,7 +30,7 @@ class ExtendedClient extends Client {
 
     public numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
 
-    public expUpdater = new ExpUpdater({ client: this, log: true });
+    public expUpdater = new ExpUpdater({ client: this, logging: true });
 
     public async init() {
         moment.locale("pl-PL");

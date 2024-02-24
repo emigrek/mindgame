@@ -395,13 +395,7 @@ const getVoiceActivitiesByChannelId = async (): Promise<ActivitiesByChannelId<Vo
             }
         },
         {
-            $project: {
-                channelId: 1,
-                userId: 1,
-                voiceStateId: 1,
-                streaming: 1,
-                to: 1,
-                from: 1,
+            $addFields: {
                 seconds: {
                     $round: [
                         {
@@ -433,13 +427,7 @@ const getPresenceActivitiesByGuildId = async (): Promise<ActivitiesByChannelId<P
             }
         },
         {
-            $project: {
-                userId: 1,
-                guildId: 1,
-                from: 1,
-                to: 1,
-                status: 1,
-                client: 1,
+            $addFields: {
                 seconds: {
                     $round: [
                         {
@@ -451,7 +439,7 @@ const getPresenceActivitiesByGuildId = async (): Promise<ActivitiesByChannelId<P
                         0
                     ]
                 }
-            },
+            }
         },
         {
             $group: {

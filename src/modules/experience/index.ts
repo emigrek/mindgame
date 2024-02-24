@@ -9,7 +9,7 @@ import moment from "moment";
 type ExpUpdaterProps = {
     client: ExtendedClient;
     expCalculatorConfig?: ExpCalculatorConfig;
-    log?: boolean;
+    logging?: boolean;
 }
 
 type ExpUpdaterLog = {
@@ -24,23 +24,30 @@ class ExpUpdater {
     private client: ExtendedClient;
 
     private expCalculator: ExpCalculator;
-    private log: boolean;
+    private logging: boolean;
     private logs: ExpUpdaterLog[];
 
     public updateTime: number;
 
-    constructor({ client, log, expCalculatorConfig }: ExpUpdaterProps) {
+    constructor({ client, logging, expCalculatorConfig }: ExpUpdaterProps) {
         this.client = client;
         this.expCalculator = new ExpCalculator(expCalculatorConfig || config);
-        this.log = log || true;
+        this.logging = logging || true;
         this.logs = [];
         this.updateTime = 0;
     }
 
     async update() {
-        const numberFormat = this.client.numberFormat;
-        const voiceActivities = await getVoiceActivitiesByChannelId();
-        const presenceActivities = await getPresenceActivitiesByGuildId();
+        const voiceActivities = await getVoiceActivitiesByChannelId()
+            .catch(e => { 
+                console.log('[ExpUpdater] Error while fetching voice activities: ', e); 
+                return []; 
+            });
+        const presenceActivities = await getPresenceActivitiesByGuildId()
+            .catch(e => { 
+                console.log('[ExpUpdater] Error while fetching presence activities: ', e); 
+                return []; 
+            });
 
         const start = moment();
         await Promise.all([
@@ -51,21 +58,15 @@ class ExpUpdater {
                 activities.map(activity => this.voice(activities, activity))
             )
         ]).catch(e => {
-            console.error(`[ExpUpdater] Error updating experience: ${e} <- THIS IS BAD, PROLLY NO CONNECTION TO MONGO DB OR SMTH LIKE THAT.`);
+            console.error(`[ExpUpdater] Error updating experience: `, e);
         });
-        const end = moment();
+        this.updateTime = moment().diff(start, 'milliseconds', true);
 
-        this.updateTime = end.diff(start, 'milliseconds', true);
-
-        if (this.log) {
+        if (this.logging) {
             const uniqueUsers = new Set(this.logs.map(log => log.activity.userId));
-            const topVoiceExp = this.logs.filter(log => log.type === 'voice').sort((a, b) => b.exp - a.exp).at(0);
-            const topPresenceExp = this.logs.filter(log => log.type === 'presence').sort((a, b) => b.exp - a.exp).at(0);
+            const time = new Date(new Date().getTime() - this.updateTime).toLocaleString();
 
-            console.log(`[ExpUpdater] Database update took ${this.updateTime}ms.`);
-            console.log(`[ExpUpdater] Updated ${uniqueUsers.size} users. (${new Date().toLocaleString()})`);
-            topVoiceExp && console.log(`[ExpUpdater] Top voice: ${topVoiceExp.username} - ${numberFormat.format(topVoiceExp.exp).toString()} exp`);
-            topPresenceExp && console.log(`[ExpUpdater] Top presence: ${topPresenceExp.username} - ${numberFormat.format(topPresenceExp.exp).toString()} exp`);
+            console.log(`[${time}][ExpUpdater] Updated ${uniqueUsers.size} user(s). (${this.updateTime}ms)`);
             console.log(" ");
         }
 
@@ -78,7 +79,7 @@ class ExpUpdater {
 
         const user = await this.client.users.fetch(activity.userId);
 
-        if (this.log) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'presence' });
+        if (this.logging) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'presence' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -94,7 +95,7 @@ class ExpUpdater {
         const user = await this.client.users.fetch(activity.userId);
         const guild = this.client.guilds.cache.get(activity.guildId);
 
-        if (this.log) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'voice' });
+        if (this.logging) this.logs.push({ username: user.username, activity, exp, timestamp: Date.now(), type: 'voice' });
         return updateUserStatistics(this.client, user, {
             exp: exp,
             time: {
@@ -122,14 +123,14 @@ class ExpCalculator {
         const hours = seconds / 3600;
         const cap = hours < 1 ? 1 : 0.5;
         const maxExp = Math.round(seconds * this.base * cap);
-        return this.getRandomInt(0, maxExp);
+        return this.getRandomInt(1, maxExp);
     }
 
     public getVoice(seconds: number, inVoice: number): number {
         const hours = seconds / 3600;
         const boost = hours < 1 ? 1 : hours ** 2;
         const maxExp = Math.round(seconds * this.voiceBase * boost * (inVoice + 1));
-        return this.getRandomInt(0, maxExp);
+        return this.getRandomInt(1, maxExp);
     }
 
     private getRandomInt(min: number, max: number): number {
