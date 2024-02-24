@@ -3,7 +3,7 @@ import i18n from "@/client/i18n";
 import { Event } from "@/interfaces";
 import { WarningEmbed } from "@/modules/messages/embeds";
 import { getUser, updateUserStatistics } from "@/modules/user";
-import config from "@/utils/config";
+import { keys } from "@/config";
 import { BaseInteraction } from "discord.js";
 
 export const interactionCreate: Event = {
@@ -17,7 +17,7 @@ export const interactionCreate: Event = {
                 return;
 
             if (command.options?.ownerOnly) {
-                if (config.ownerId !== interaction.user.id) {
+                if (keys.ownerId !== interaction.user.id) {
                     await interaction.reply({
                         embeds: [
                             WarningEmbed()

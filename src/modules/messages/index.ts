@@ -18,7 +18,7 @@ import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { ErrorEmbed, InformationEmbed, ProfileEmbed, WarningEmbed } from "./embeds";
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import clean from "@/utils/clean";
-import config from "@/utils/config";
+import { config } from "@/config";
 import i18n from "@/client/i18n";
 
 import { rankingStore } from "@/stores/rankingStore";
@@ -384,7 +384,6 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     if (!sourceUser) return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
-    const reward = parseInt(config.dailyReward);
 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
@@ -394,7 +393,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
-                value: `\`\`\`${client.numberFormat.format(reward)} EXP\`\`\``,
+                value: `\`\`\`${client.numberFormat.format(config.dailyRewardExperience)} EXP\`\`\``,
                 inline: true
             },
             {
@@ -632,7 +631,6 @@ const getErrorMessagePayload = () => {
 }
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
-    const popularPrefixes = ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'];
     const messages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
@@ -640,7 +638,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         });
 
     const messagesToDelete = messages.filter((message: Message) => {
-        return popularPrefixes.some(prefix => message.content.startsWith(prefix)) ||
+        return config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix)) ||
             (message.author.bot && message.attachments && message.attachments.size == 0) ||
             (message.author.bot && message.embeds.length);
     });

@@ -1,7 +1,12 @@
+import { ExperienceCalculatorConfig } from "./ExperienceCalculatorConfig";
+
 export interface Config {
-    token: string,
-    mongoUri: string,
-    clientId: string,
-    ownerId: string,
-    dailyReward: string,
+    experienceConstant: number;
+    experienceCalculatorConfig: ExperienceCalculatorConfig;
+    dailyRewardExperience: number;
+
+    userLongBreakHours: number;
+
+    emptyGuildSweepTimeoutMs: number;
+    emptyGuildSweepBotPrefixesList: string[];
 }

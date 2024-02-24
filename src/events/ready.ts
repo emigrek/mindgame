@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 
 export const ready: Event = {
-    name: "ready",
+    name: 'ready',
     run: async (client: ExtendedClient) => {
         await client.loadModules();
         

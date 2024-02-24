@@ -9,11 +9,9 @@ import { getColorInt, useImageHex } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import i18n from "@/client/i18n";
 import { merge } from "@/utils/merge";
+import { config } from "@/config";
 
 const UserModel = mongoose.model("User", userSchema);
-
-const expConstant = 0.3829;
-const expInflationRate = 1;
 
 const root = (x: number, n: number) => {
     return Math.pow(Math.E, Math.log(x) / n);
@@ -21,13 +19,13 @@ const root = (x: number, n: number) => {
 
 const expToLevel = (exp: number) => {
     return Math.floor(
-        root(exp / expInflationRate, 3) * expConstant
+        root(exp, 3) * config.experienceConstant
     );
 };
 
 const levelToExp = (level: number) => {
     return Math.floor(
-        Math.pow(level / expConstant, 3) * expInflationRate
+        Math.pow(level / config.experienceConstant, 3)
     );
 };
 

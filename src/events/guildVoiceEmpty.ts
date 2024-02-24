@@ -4,6 +4,7 @@ import { getGuild } from "@/modules/guild";
 import { sweepTextChannel } from "@/modules/messages";
 import { Guild, VoiceChannel } from "discord.js";
 import { delay } from '@/utils/delay';
+import { config } from "@/config";
 
 export const guildVoiceEmpty: Event = {
     name: "guildVoiceEmpty",
@@ -11,7 +12,7 @@ export const guildVoiceEmpty: Event = {
         const sourceGuild = await getGuild(guild);
         if (!sourceGuild || !sourceGuild.autoSweeping) return;
 
-        await delay(10 * 1000);
+        await delay(config.emptyGuildSweepTimeoutMs);
         
         await sweepTextChannel(client, lastChannel);
 

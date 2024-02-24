@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "@/modules/user";
 import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser } from "@/interfaces";
-import config from "@/utils/config";
+import { config } from "@/config";
 import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";
 
@@ -24,7 +24,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
 
     if (!userLastVoiceActivity) {
         await updateUserStatistics(client, member.user, {
-            exp: parseInt(config.dailyReward)
+            exp: config.dailyRewardExperience
         });
 
         client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
@@ -39,7 +39,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
     }
 
     await updateUserStatistics(client, member.user, {
-        exp: parseInt(config.dailyReward)
+        exp: config.dailyRewardExperience
     });
 
     client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
@@ -57,7 +57,7 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
     if (!activity.to) return false;
 
     const hoursSinceLastActivity = moment().diff(moment(activity.to), "hours");
-    if (hoursSinceLastActivity < 8) {
+    if (hoursSinceLastActivity < config.userLongBreakHours) {
         return false;
     }
 
@@ -254,25 +254,6 @@ const getPresenceActivityBetween = async (guild: DatabaseGuild, startDate: Date,
     return activities;
 }
 
-const getChannelIntersectingVoiceActivities = async (activity: VoiceActivityDocument): Promise<VoiceActivityDocument[]> => {
-    const activities = await voiceActivityModel.find({
-        guildId: activity.guildId,
-        channelId: activity.channelId,
-        userId: {
-            $ne: activity.userId
-        },
-        from: {
-            $lte: activity.to
-        },
-        $or: [
-            { to: null },
-            { to: { $gte: activity.from } }
-        ]
-    });
-
-    return activities;
-};
-
 const getPresenceClientStatus = (clientStatus: ClientPresenceStatusData | null): string => {
     if (!clientStatus)
         return 'unknown';
@@ -309,15 +290,6 @@ const getLastUserVoiceActivity = async (user: DatabaseUser): Promise<VoiceActivi
             }
         },
         {
-            $project: {
-                guildId: 1,
-                channelId: 1,
-                to: 1,
-                from: 1,
-                createdAt: 1,
-            },
-        },
-        {
             $sort: {
                 createdAt: -1,
             }
@@ -346,15 +318,6 @@ const getLastUserPresenceActivity = async (user: DatabaseUser): Promise<Presence
             $match: {
                 userId: user.userId
             }
-        },
-        {
-            $project: {
-                guildId: 1,
-                client: 1,
-                to: 1,
-                from: 1,
-                createdAt: 1,
-            },
         },
         {
             $sort: {
@@ -578,4 +541,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, ActivitiesByChannelId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getChannelIntersectingVoiceActivities, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, ActivitiesByChannelId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

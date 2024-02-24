@@ -5,7 +5,7 @@ import i18n from "@/client/i18n";
 const getChannelSelect = async (currentDefault: TextChannel, options: SelectMenuOption[]) => {
     const channelSelect = new StringSelectMenuBuilder()
         .setCustomId("defaultChannelSelect")
-        .setPlaceholder(currentDefault ? i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault!.name }) : i18n.__("config.selectChannelPlaceholderNoDefault"))
+        .setPlaceholder(currentDefault ? i18n.__mf("config.selectChannelPlaceholder", { channel: currentDefault?.name || '?' }) : i18n.__("config.selectChannelPlaceholderNoDefault"))
         .setMinValues(1)
         .setMaxValues(1)
         .addOptions(options);

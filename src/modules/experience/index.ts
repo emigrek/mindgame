@@ -2,13 +2,14 @@ import { PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, 
 import { getGuild } from "@/modules/guild";
 import { updateUserStatistics } from "@/modules/user";
 import ExtendedClient from "@/client/ExtendedClient";
-
-import {expCalculatorConfig as config} from './expCalculatorConfig';
 import moment from "moment";
+import { ExperienceCalculatorConfig } from "@/interfaces";
+
+import { config } from '@/config';
 
 type ExpUpdaterProps = {
     client: ExtendedClient;
-    expCalculatorConfig?: ExpCalculatorConfig;
+    expCalculatorConfig?: ExperienceCalculatorConfig;
     logging?: boolean;
 }
 
@@ -31,7 +32,7 @@ class ExpUpdater {
 
     constructor({ client, logging, expCalculatorConfig }: ExpUpdaterProps) {
         this.client = client;
-        this.expCalculator = new ExpCalculator(expCalculatorConfig || config);
+        this.expCalculator = new ExpCalculator(expCalculatorConfig || config.experienceCalculatorConfig);
         this.logging = logging || true;
         this.logs = [];
         this.updateTime = 0;
@@ -105,31 +106,26 @@ class ExpUpdater {
     }
 }
 
-interface ExpCalculatorConfig {
-    base: number;
-    voiceBase: number;
-}
-
 class ExpCalculator {
-    base: number;
-    voiceBase: number;
+    private presenceMultiplier: number;
+    private voiceMultiplier: number;
 
-    constructor({ base, voiceBase }: ExpCalculatorConfig) {
-        this.base = base;
-        this.voiceBase = voiceBase;
+    constructor(config: ExperienceCalculatorConfig) {
+        this.presenceMultiplier = config.presenceMultiplier;
+        this.voiceMultiplier = config.voiceMultiplier;
     }
 
     public getPresence(seconds: number): number {
         const hours = seconds / 3600;
         const cap = hours < 1 ? 1 : 0.5;
-        const maxExp = Math.round(seconds * this.base * cap);
+        const maxExp = Math.round(seconds * this.presenceMultiplier * cap);
         return this.getRandomInt(1, maxExp);
     }
 
     public getVoice(seconds: number, inVoice: number): number {
         const hours = seconds / 3600;
         const boost = hours < 1 ? 1 : hours ** 2;
-        const maxExp = Math.round(seconds * this.voiceBase * boost * (inVoice + 1));
+        const maxExp = Math.round(seconds * this.voiceMultiplier * boost * (inVoice + 1));
         return this.getRandomInt(1, maxExp);
     }
 
@@ -149,4 +145,4 @@ class ExpCalculator {
     }
 }
 
-export { ExpUpdater, ExpCalculator, ExpCalculatorConfig }
+export { ExpUpdater, ExpCalculator }

@@ -10,7 +10,7 @@ import selects from "@/interactions/selects";
 import contexts from "@/interactions/contexts";
 import modals from "@/interactions/modals";
 
-import config from "@/utils/config";
+import { keys } from "@/config";
 import moment from "moment";
 
 import localeList from "./localeList";
@@ -42,7 +42,7 @@ class ExtendedClient extends Client {
         this.loadSlashCommands();
         this.loadModals();
 
-        this.login(config.token).catch((err) => {
+        this.login(keys.token).catch((err) => {
             console.error("[Login] Error", err)
             process.exit(1);
         });
@@ -122,13 +122,13 @@ class ExtendedClient extends Client {
     public async putSlashCommands() {
         this.loadLocalizations();
 
-        const rest = new REST({ version: '10' }).setToken(config.token);
+        const rest = new REST({ version: '10' }).setToken(keys.token);
         const commandsData = this.commands.map(command => command.data.toJSON());
         const contextsData = this.contexts.map(context => context.data.toJSON());
         const data = commandsData.concat(contextsData);
 
         return await rest.put(
-            Routes.applicationCommands(config.clientId),
+            Routes.applicationCommands(keys.clientId),
             {
                 body: data
             },
