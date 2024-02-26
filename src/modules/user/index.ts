@@ -122,7 +122,7 @@ const setPublicTimeStats = async (user: User) => {
 
 const updateUserStatistics = async (client: ExtendedClient, user: User, statisticsPayload: DeepPartial<ExtendedStatistics>, sourceGuild?: DatabaseGuild) => {
     const userSource = await updateUser(user) as UserDocument;
-
+    
     userSource.stats = merge(userSource.stats, statisticsPayload);
     userSource.day = merge(userSource.day, statisticsPayload);
     userSource.week = merge(userSource.week, statisticsPayload);
