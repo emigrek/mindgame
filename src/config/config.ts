@@ -17,10 +17,10 @@ export const config: Config = {
     // Experience reward for daily voice activity
     dailyRewardExperience: 5000,
 
-    // Hours of inactivity before a user is considered to be on a long break
+    // Hours of inactivity before a user is considered to be on a long break. When user join a voice channel after a long break, his followers are notified about it.
     userLongBreakHours: 8,
 
-    // Timeout after which text channel's bots messages are sweeped
+    // Timeout after which text channel's bots messages are sweeped before the guild is considered as empty
     emptyGuildSweepTimeoutMs: 10_000,
 
     // List of bot prefixes based on which messages are considered as bot messages and are sweeped when guild voice channels are empty

@@ -3,6 +3,18 @@
 # 🌌 Mindgame
 Advanced discord application with **leveling** and **activity tracking** utilities.
 
+## 📚 Features
+1. **Experience** - Gain experience for being active by presence or voice activity. Get a reward for a daily voice activity.
+    * **Profiles** - View your own or other user's profiles with detailed information about their activity.
+    * **Ranking** - Check out the global and guild ranking to see who's the most active in the community.
+    * **Roles** - Automatically assign roles based on user's level.
+    * **Color role** - Custom role unlocked at a certain level enabling you to set your own nickname color.
+2. **Utility** - Various utilities to make your Discord experience more enjoyable.
+    * **Automatic text channel sweeping** - Automatically sweep bot messages from text channels when voice channels are empty.
+    * **Ephemeral channels** - Tired of your text channels being cluttered with unimportant messages? Create an ephemeral channel that will automatically delete all messages after a configurable time. Messages with reactions are preserved.
+    * **User follow** - Follow your friends to get notified when they join voice channel. (note: works only on guilds where bot is present)
+    * **Select** - Have u ever hesitated to choose between games to play? Use the select command to let the Math.random() decide for you.
+
 ## 🌍 Locales
 This application is fully translated (including slash commands, context menus, etc.) in:
 - English (en-US)
@@ -26,6 +38,8 @@ This application is fully translated (including slash commands, context menus, e
 ## 🚀 Running
 Get running MongoDB instance for storing data. Make sure you create collection, name it whatever you want and put it at the end of your MongoDB connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for free MongoDB instance. 
 
+Create root collection for application data (e.g. `mindgame`).
+
 Clone repository and install dependencies
 ``` bash
 git clone https://github.com/emigrek/mindgame
@@ -40,7 +54,7 @@ Set up your .env file
 ``` .env
 DISCORD_TOKEN="Discord bot token"
 DISCORD_CLIENT_ID="Discord application client ID"
-MONGO_URI="MongoDB connection string (with collection name at the end)"
+MONGO_URI="MongoDB connection string (IMPORTANT: put root collection name at the end of the connection string)"
 OWNER_ID="Your Discord ID"
 ```
 </details>
@@ -69,10 +83,10 @@ export const config: Config = {
     // Experience reward for daily voice activity
     dailyRewardExperience: 5000,
 
-    // Hours of inactivity before a user is considered to be on a long break
+    // Hours of inactivity before a user is considered to be on a long break. When user join a voice channel after a long break, his followers are notified about it.
     userLongBreakHours: 8,
 
-    // Timeout after which text channel's bots messages are sweeped
+    // Timeout after which text channel's bots messages are sweeped before the guild is considered as empty
     emptyGuildSweepTimeoutMs: 10_000,
 
     // List of bot prefixes based on which messages are considered as bot messages and are sweeped when guild voice channels are empty
