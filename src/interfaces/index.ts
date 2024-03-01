@@ -13,7 +13,6 @@ export { SelectMenuOption } from "./SelectMenuOption";
 export { ExtendedStatistics } from "./User";
 export { Statistics } from "./User";
 export { ContextMenu } from "./ContextMenu";
-export { UserGuildActivityDetails } from './UserGuildActivityDetails';
 export { Message } from './Message';
 export { Sorting } from './Sorting';
 export { Follow } from './Follow';
