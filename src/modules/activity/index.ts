@@ -337,11 +337,6 @@ const getGuildActiveVoiceActivities = async (guild: Guild): Promise<VoiceActivit
     return activities;
 };
 
-interface ActivitiesByChannelId<T> {
-    _id: string;
-    activities: T[];
-}
-
 interface VoiceActivityDocumentWithSeconds extends VoiceActivityDocument {
     seconds: number;
 }
@@ -350,7 +345,17 @@ interface PresenceActivityDocumentWithSeconds extends PresenceActivityDocument {
     seconds: number;
 }
 
-const getVoiceActivitiesByChannelId = async (): Promise<ActivitiesByChannelId<VoiceActivityDocumentWithSeconds>[]> => {
+interface VoiceActivitiesByChannelId {
+    _id: string;
+    activities: VoiceActivityDocumentWithSeconds[];
+}
+
+interface PresenceActivitiesByGuildId {
+    _id: string;
+    activities: PresenceActivityDocumentWithSeconds[];
+}
+
+const getVoiceActivitiesByChannelId = async (): Promise<VoiceActivitiesByChannelId[]> => {
     const voiceActivities = await voiceActivityModel.aggregate([
         {
             $match: {
@@ -382,7 +387,7 @@ const getVoiceActivitiesByChannelId = async (): Promise<ActivitiesByChannelId<Vo
     return voiceActivities;
 }
 
-const getPresenceActivitiesByGuildId = async (): Promise<ActivitiesByChannelId<PresenceActivityDocumentWithSeconds>[]> => {
+const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGuildId[]> => {
     const presenceActivities = await presenceActivityModel.aggregate([
         {
             $match: {
@@ -541,4 +546,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, ActivitiesByChannelId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };

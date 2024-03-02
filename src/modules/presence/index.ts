@@ -32,7 +32,7 @@ const replacePlaceholders = (client: ExtendedClient, activity: ActivitiesOptions
         .replace(
             /{animal}/g, getRandomEmojiFromGroup(Groups.AnimalsAndNature).char
         )
-        .replace(/{updateTime}/g, client.expUpdater.updateTime.toString());
+        .replace(/{lastExperienceUpdateTime}/g, client.experienceUpdater.lastUpdateTimeInMs.toString());
 
     return activity;
 };
