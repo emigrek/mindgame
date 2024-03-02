@@ -6,6 +6,6 @@ export const minute: Event = {
     name: "minute",
     run: async (client: ExtendedClient) => {
         await deleteCachedMessages();
-        await client.expUpdater.update();
+        await client.experienceUpdater.update();
     }
 }
