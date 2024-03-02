@@ -27,7 +27,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
             exp: config.dailyRewardExperience
         });
 
-        client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
+        client.emit("userRecievedDailyReward", member.user, member.guild);
         return true;
     }
 
