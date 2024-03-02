@@ -165,7 +165,7 @@
 		"levelField": "Level",
 		"winsField": "Wins",
 		"dailyRewardTitle": "Daily reward",
-		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!\nNext daily reward <t:{time}:R>.",
+		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!",
 		"dailyRewardField": "Reward",
 		"todayVoiceTimeField": "Today",
 		"weekVoiceTimeField": "Weekly",

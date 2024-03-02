@@ -32,9 +32,11 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
     }
 
     if (!userLastVoiceActivity.to) return false;
+    
+    const lastActivityDay = moment(userLastVoiceActivity.to).startOf("day");
+    const today = moment().startOf("day");
 
-    const daysSinceLastActivity = moment().diff(moment(userLastVoiceActivity.to), "days");
-    if (daysSinceLastActivity < 1) {
+    if (!lastActivityDay.isBefore(today) || lastActivityDay.isSame(today)) {
         return false;
     }
 
@@ -42,7 +44,7 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
         exp: config.dailyRewardExperience
     });
 
-    client.emit("userRecievedDailyReward", member.user, member.guild, moment().add(1, "days").unix());
+    client.emit("userRecievedDailyReward", member.user, member.guild);
 
     return true;
 };

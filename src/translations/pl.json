@@ -159,7 +159,7 @@
 		"levelField": "Poziom",
 		"winsField": "Wygrane",
 		"dailyRewardTitle": "Codzienna nagroda",
-		"dailyRewardDescription": "<@{userId}> odebrał(a) **codzienną nagrodę**!\nNastępna nagroda będzie dostępna <t:{time}:R>.",
+		"dailyRewardDescription": "<@{userId}> odebrał(a) **codzienną nagrodę**!",
 		"dailyRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",
 		"weekVoiceTimeField": "W tym tygodniu",

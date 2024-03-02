@@ -377,7 +377,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
-const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, next: number) => {
+const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
@@ -388,7 +388,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.dailyRewardTitle"))
-        .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId, time: next }))
+        .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId }))
         .setThumbnail("https://em-content.zobj.net/thumbs/60/microsoft/74/birthday-cake_1f382.png")
         .setFields([
             {
@@ -397,15 +397,15 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
                 inline: true
             },
             {
-                name: i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
-                inline: true
-            },
-            {
                 name: i18n.__("notifications.weekVoiceTimeField"),
                 value: `\`\`\`${(Math.round(sourceUser.week.time.voice / 3600))}H\`\`\``,
                 inline: true
-            }
+            },
+            {
+                name: i18n.__("notifications.monthVoiceTimeField"),
+                value: `\`\`\`${(Math.round(sourceUser.month.time.voice / 3600))}H\`\`\``,
+                inline: true
+            },
         ]);
 
     return {
