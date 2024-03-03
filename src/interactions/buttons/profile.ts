@@ -8,7 +8,9 @@ const profile: Button = {
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
-        const sourceMessage = await getMessage(interaction.message.id);
+        const sourceMessage = await getMessage({
+            messageId: interaction.message.id,
+        });
         const profileState = profileStore.get(interaction.user.id);
 
         profileState.targetUserId = (sourceMessage && sourceMessage.targetUserId) ? sourceMessage.targetUserId : interaction.user.id;

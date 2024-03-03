@@ -11,7 +11,7 @@ export const config: Config = {
     // Used to calculate experience gain, those values are per second of activity
     experienceCalculatorConfig: {
         presenceMultiplier: 0.0002,
-        voiceMultiplier: 0.0007
+        voiceMultiplier: 0.0007,
     },
 
     // Experience reward for daily voice activity

@@ -11,6 +11,7 @@ import Vibrant = require('node-vibrant');
 import { GetColorName } from 'hex-color-to-color-name';
 import { getRanking, getUser } from "@/modules/user";
 import { getMemberColorRole } from "@/modules/roles";
+import { Message as MessageType } from '@/interfaces/Message';
 import messageSchema from "@/modules/schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
@@ -688,7 +689,9 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel |
 };
 
 const createMessage = async (message: Message, targetUserId: string | null, name: string | null) => {
-    const exists = await getMessage(message.id);
+    const exists = await getMessage({
+        messageId: message.id,
+    });
     if (exists) return exists;
 
     const newMessage = new messageModel({
@@ -702,11 +705,15 @@ const createMessage = async (message: Message, targetUserId: string | null, name
     return newMessage;
 };
 
-const getMessage = async (messageId: string) => {
-    const message = await messageModel.findOne({ messageId: messageId });
-    if (!message) return null;
-    return message;
-};
+const getMessage = async (message: Partial<MessageType>) => {
+    const response = await messageModel
+        .find(message)
+        .sort({ createdAt: -1 }) // if there are multiple messages, get the latest one
+        .limit(1)
+        .exec();
+    
+    return response[0];
+}
 
 const deleteMessage = async (messageId: string) => {
     await messageModel.deleteOne({
@@ -716,4 +723,4 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getSelectMessagePayload, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, getMessage, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { createMessage, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

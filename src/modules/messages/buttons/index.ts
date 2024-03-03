@@ -189,7 +189,9 @@ const getRepoButton = async () => {
 }
 
 const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => {
-    const sourceMessage = await getMessage(message.id);
+    const sourceMessage = await getMessage({
+        messageId: message.id,
+    });
 
     const row = new ActionRowBuilder<ButtonBuilder>();
 
