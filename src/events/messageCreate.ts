@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { Event } from "@/interfaces";
 import { attachQuickButtons } from "@/modules/messages"
-import { getEphemeralChannel } from "@/modules/ephemeral-channel";
+import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import ExtendedClient from "@/client/ExtendedClient";
 
@@ -13,7 +13,8 @@ export const messageCreate: Event = {
 
         const ephemeralChannel = await getEphemeralChannel(message.channel.id);
         if(ephemeralChannel) {
-            ephemeralChannelMessageCache.add(message.channel.id, message);
+            const cachable = await isMessageCacheable(message);
+            cachable && ephemeralChannelMessageCache.add(message.channel.id, message);
         }
     }
 }

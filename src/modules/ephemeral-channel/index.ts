@@ -106,8 +106,35 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
 
 const isMessageCacheable = async (message: Message): Promise<boolean> => {
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
-    return !reactionUsers.length && !message.pinned;
+    const referenceMessage = await fetchReferenceMessage(message);
+
+    if (reactionUsers.length || message.pinned) {
+        return false;
+    }
+
+    if (!referenceMessage) {
+        return true;
+    }
+
+    const referenceMessageCachable = await isMessageCacheable(referenceMessage);
+
+    const conditions = referenceMessageCachable || 
+                       (!referenceMessageCachable && message.author.id === referenceMessage.author.id);
+
+    return conditions;
 }
+
+const fetchReferenceMessage = async (message: Message): Promise<Message | null> => {
+    const reference = message.reference;
+    if (!reference || !reference.messageId) return null;
+    try {
+        const referenceMessage = await message.channel.messages.fetch(reference.messageId);
+        return referenceMessage;
+    } catch (error) {
+        console.log("Error fetching reference message: ", error);
+        return null;
+    }
+};
 
 const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[]> => {
     const reactions = message.reactions.cache;
@@ -133,4 +160,4 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
     );
 }
 
-export { createEphemeralChannel, editEphemeralChannel, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncEphemeralChannelMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
+export { createEphemeralChannel, fetchReferenceMessage, editEphemeralChannel, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncEphemeralChannelMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
