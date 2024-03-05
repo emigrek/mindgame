@@ -11,29 +11,30 @@ import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser } from "
 import { config } from "@/config";
 import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";
+import { getGuild } from "@/modules/guild";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
 const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) => {
-    const userLastVoiceActivity = await voiceActivityModel.findOne({
+    const query = await voiceActivityModel.find({
         userId: member.id,
         guildId: member.guild.id,
         to: { $ne: null }
     }).sort({ to: -1 }).limit(1);
+    const userLastVoiceActivity = query[0];
+    const sourceGuild = await getGuild(member.guild) ?? undefined;
 
     if (!userLastVoiceActivity) {
         await updateUserStatistics(client, member.user, {
             exp: config.dailyRewardExperience
-        });
+        }, sourceGuild);
 
         client.emit("userRecievedDailyReward", member.user, member.guild);
         return true;
     }
-
-    if (!userLastVoiceActivity.to) return false;
     
-    const lastActivityDay = moment(userLastVoiceActivity.to).startOf("day");
+    const lastActivityDay = moment(userLastVoiceActivity.from).startOf("day");
     const today = moment().startOf("day");
 
     if (!lastActivityDay.isBefore(today) || lastActivityDay.isSame(today)) {
@@ -42,10 +43,9 @@ const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) 
 
     await updateUserStatistics(client, member.user, {
         exp: config.dailyRewardExperience
-    });
+    }, sourceGuild);
 
     client.emit("userRecievedDailyReward", member.user, member.guild);
-
     return true;
 };
 
