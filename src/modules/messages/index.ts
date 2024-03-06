@@ -465,23 +465,11 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
     const channel = interaction.options.getChannel('channel');
     const timeout = interaction.options.getInteger('timeout');
 
-    if (!channel)
-        return getErrorMessagePayload();
-
-    const exists = await getEphemeralChannel(channel.id);
-
-    if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
-        return {
-            embeds: [
-                WarningEmbed()
-                    .setDescription(i18n.__("utils.textChannelOnly"))
-            ]
-        };
-    }
-
     if (subcommand === 'create') {
-        if (!timeout)
+        if (!timeout || !channel)
             return getErrorMessagePayload();
+
+        const exists = await getEphemeralChannel(channel.id);
 
         if (exists) {
             return {
@@ -490,6 +478,15 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                         .setDescription(i18n.__("ephemeralChannel.alreadyExists"))
                 ]
             }
+        }
+
+        if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
+            return {
+                embeds: [
+                    WarningEmbed()
+                        .setDescription(i18n.__("utils.textChannelOnly"))
+                ]
+            };
         }
 
         const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
@@ -514,7 +511,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
             ]
         }
     } else if (subcommand === 'edit') {
-        if (!timeout)
+        if (!timeout || !channel)
             return getErrorMessagePayload();
 
         const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
@@ -537,7 +534,28 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                     }))
             ]
         }
+    } else if (subcommand === 'list') {
+        const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
+        const fields = guildExisting.map((ephemeralChannel) => {
+            const channel = interaction.guild?.channels.cache.get(ephemeralChannel.channelId);
+            return {
+                name: channel?.name || 'Unknown',
+                value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\``
+            }
+        });
+
+        return {
+            embeds: [
+                InformationEmbed()
+                    .setTitle(i18n.__("ephemeralChannel.listTitle"))
+                    .setFields(fields)
+            ]
+        }
     } else if (subcommand === 'delete') {
+        if (!channel) {
+            return getErrorMessagePayload();
+        }
+        
         const result = await deleteEphemeralChannel(channel.id);
 
         if (!result) {

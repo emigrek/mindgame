@@ -55,6 +55,11 @@ export const ephemeralChannel: Command = {
                         .setRequired(true)
                 )
         )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName(i18n.__("commandLocalizations.ephemeral-channel.subcommand.list.name"))
+                .setDescription(i18n.__("commandLocalizations.ephemeral-channel.subcommand.list.description"))
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false),
     execute: async (client, interaction) => {

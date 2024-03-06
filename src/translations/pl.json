@@ -20,6 +20,10 @@
 					"name": "stwórz",
 					"description": "Stwórz kanał efemeryczny (wiadomości na tym kanalę znikają po jakimś czasie)."
 				},
+				"list": {
+					"name": "lista",
+					"description": "Zobacz listę kanałów efemerycznych."
+				},
 				"edit": {
 					"name": "edytuj",
 					"description": "Edytuj kanał efemeryczny."
@@ -247,7 +251,9 @@
 		"edited": "Czas znikania wiadomości na kanalę <#{channelId}> został zmieniony na {timeout} minut(y).",
 		"deleted": "<#{channelId}> nie jest już kanałem efemerycznym.",
 		"notFound": "Ten kanał nie jest kanałem efemerycznym.",
-		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze.\nUsuń jeden z nich aby utworzyć nowy."
+		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze.\nUsuń jeden z nich aby utworzyć nowy.",
+		"listTitle": "Kanały efemeryczne",
+		"timeout": "Opóźnienie"
 	},
 	"utils": {
 		"userOnly": "Ta funkcja może zostać użyta tylko przez użytkowników z profilem.",

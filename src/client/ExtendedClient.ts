@@ -42,6 +42,8 @@ class ExtendedClient extends Client {
         this.loadSlashCommands();
         this.loadModals();
 
+        this.putSlashCommands();
+
         this.login(keys.token).catch((err) => {
             console.error("[Login] Error", err)
             process.exit(1);

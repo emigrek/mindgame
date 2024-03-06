@@ -20,6 +20,10 @@
 					"name": "create",
 					"description": "Create ephemeral channel (messages in this channel will be deleted after time)."
 				},
+				"list": {
+					"name": "list",
+					"description": "List all ephemeral channels."
+				},
 				"edit": {
 					"name": "edit",
 					"description": "Edit ephemeral channel."
@@ -253,7 +257,9 @@
 		"edited": "<#{channelId}> timeout has been changed to {timeout} minute(s).",
 		"deleted": "<#{channelId}> is no longer an ephemeral channel.",
 		"notFound": "This channel is not ephemeral channel.",
-		"limitReached": "You have reached the limit of ephemeral channels.\nPlease delete some of them in order to create new."
+		"limitReached": "You have reached the limit of ephemeral channels.\nPlease delete some of them in order to create new.",
+		"listTitle": "Ephemeral channels list",
+		"timeout": "Timeout"
 	},
 	"utils": {
 		"userOnly": "This feature can only be used by users with profile.",
