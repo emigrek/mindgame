@@ -509,32 +509,6 @@ const formatLastActivityDetails = (details: UserLastActivityDetails) => {
     return `${voice}\n${presence}`;
 };
 
-const getPresenceActivityColor = (activity: PresenceActivity | null) => {
-    const colors = [
-        {
-            name: 'online',
-            color: '#3ba55d'
-        },
-        {
-            name: 'idle',
-            color: '#faa81a'
-        },
-        {
-            name: 'dnd',
-            color: '#faa81a'
-        },
-        {
-            name: 'offline',
-            color: '#68717e'
-        }
-    ];
-
-    if (!activity) return '#68717e';
-    const color = colors.find(c => c.name === activity.status);
-    if (color) return color.color;
-    return '#68717e';
-}
-
 const clientStatusToEmoji = (client: string) => {
     switch (client) {
         case 'desktop':
@@ -548,4 +522,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getPresenceActivityColor, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
