@@ -259,7 +259,8 @@
 		"notFound": "This channel is not ephemeral channel.",
 		"limitReached": "You have reached the limit of ephemeral channels.\nPlease delete some of them in order to create new.",
 		"listTitle": "Ephemeral channels list",
-		"timeout": "Timeout"
+		"timeout": "Timeout",
+		"empty": "No ephemeral channels found."
 	},
 	"utils": {
 		"userOnly": "This feature can only be used by users with profile.",

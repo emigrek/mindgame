@@ -253,7 +253,8 @@
 		"notFound": "Ten kanał nie jest kanałem efemerycznym.",
 		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze.\nUsuń jeden z nich aby utworzyć nowy.",
 		"listTitle": "Kanały efemeryczne",
-		"timeout": "Opóźnienie"
+		"timeout": "Opóźnienie",
+		"empty": "Brak kanałów efemerycznych."
 	},
 	"utils": {
 		"userOnly": "Ta funkcja może zostać użyta tylko przez użytkowników z profilem.",

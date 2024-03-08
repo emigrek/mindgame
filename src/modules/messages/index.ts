@@ -543,13 +543,16 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                 value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\``
             }
         });
+        const embed = InformationEmbed()
+            .setTitle(i18n.__("ephemeralChannel.listTitle"))
+            .setFields(fields);
+
+        if (!fields.length) {
+            embed.setDescription(i18n.__("ephemeralChannel.empty"));
+        }
 
         return {
-            embeds: [
-                InformationEmbed()
-                    .setTitle(i18n.__("ephemeralChannel.listTitle"))
-                    .setFields(fields)
-            ]
+            embeds: [embed]
         }
     } else if (subcommand === 'delete') {
         if (!channel) {
@@ -665,8 +668,8 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     let count = 0;
     const promises = messagesToDelete.map(async (message: Message) => {
         if (!message.deletable) return;
-        await message.delete();
         count++;
+        return message.delete();
     });
 
     await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
@@ -689,9 +692,9 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel |
 
     const quickButtonsRows = await getQuickButtonsRows(client, lastMessage);
 
-    const clearComponentsPromises = clientLastMessages.map(async (message: Message) => {
-        if (message.components.length > 0 && message.id != lastMessage.id) {
-            await message.edit({ components: [] });
+    const clearComponentsPromises = clientLastMessages.map((message: Message) => {
+        if (message.components.length > 0 && message.id !== lastMessage.id) {
+            return message.edit({ components: [] });
         }
     });
 
@@ -741,4 +744,21 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-export { createMessage, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
+    const startOf = moment().startOf(type);
+    const endOf = moment().endOf(type);
+
+    if (type === 'day') {
+        return `(${startOf.format('DD/MM')})`;
+    }
+
+    if (type === 'week') {
+        return startOf.month() === endOf.month() ?
+        `(${startOf.format('DD')}-${endOf.format('DD/MM')})` :
+        `(${startOf.format('DD/MM')}-${endOf.format('DD/MM')})`;
+    }
+
+    return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
+}
+
+export { createMessage, getLocalizedDateRange, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

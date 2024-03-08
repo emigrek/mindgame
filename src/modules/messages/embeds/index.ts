@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import { UserDocument } from "@/modules/schemas/User";
 import Colors from "@/utils/colors";
 import { EmbedBuilder } from "discord.js";
-import { ImageHexColors, getColorInt } from "..";
+import { ImageHexColors, getColorInt, getLocalizedDateRange } from "..";
 import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import i18n from "@/client/i18n";
 import { getFollowers } from "@/modules/follow";
@@ -72,17 +72,17 @@ const ProfileEmbed = async (client: ExtendedClient, user: UserDocument, colors: 
         },
         {
             name: i18n.__("notifications.todayVoiceTimeField"),
-            value: `\`\`\`${Math.round(user.day.time.voice/3600)}H\`\`\``,
+            value: `${getLocalizedDateRange('day')}\n\`\`\`${Math.round(user.day.time.voice/3600)}H\`\`\``,
             inline: true,
         },
         {
             name: i18n.__("notifications.weekVoiceTimeField"),
-            value: `\`\`\`${Math.round(user.week.time.voice/3600)}H\`\`\``,
+            value: `${getLocalizedDateRange('week')}\n\`\`\`${Math.round(user.week.time.voice/3600)}H\`\`\``,
             inline: true,
         },
         {
             name: i18n.__("notifications.monthVoiceTimeField"),
-            value: `\`\`\`${Math.round(user.month.time.voice/3600)}H\`\`\``,
+            value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(user.month.time.voice/3600)}H\`\`\``,
             inline: true,
         },
     ]);
