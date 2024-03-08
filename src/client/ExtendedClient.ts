@@ -10,7 +10,7 @@ import selects from "@/interactions/selects";
 import contexts from "@/interactions/contexts";
 import modals from "@/interactions/modals";
 
-import { keys } from "@/config";
+import { keys, config } from "@/config";
 import moment from "moment";
 
 import localeList from "./localeList";
@@ -42,7 +42,7 @@ class ExtendedClient extends Client {
         this.loadSlashCommands();
         this.loadModals();
 
-        this.putSlashCommands();
+        config.autoPutSlashCommands && await this.putSlashCommands();
 
         this.login(keys.token).catch((err) => {
             console.error("[Login] Error", err)

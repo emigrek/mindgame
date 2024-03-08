@@ -9,4 +9,6 @@ export interface Config {
 
     emptyGuildSweepTimeoutMs: number;
     emptyGuildSweepBotPrefixesList: string[];
+
+    autoPutSlashCommands: boolean;
 }
