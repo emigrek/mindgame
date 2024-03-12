@@ -1,41 +1,25 @@
 import { ExperienceCalculatorConfig } from "@/interfaces";
+import { getRandomGaussian } from "@/utils/random";
 
 class ExperienceCalculator {
-    private presenceMultiplier: number;
-    private voiceMultiplier: number;
+    private config: ExperienceCalculatorConfig;
 
     constructor(config: ExperienceCalculatorConfig) {
-        this.presenceMultiplier = config.presenceMultiplier;
-        this.voiceMultiplier = config.voiceMultiplier;
+        this.config = config;
+    }
+    
+    public getVoice(seconds: number, inVoice: number): number {
+        const maxExp = Math.round(seconds * this.config.voiceMultiplier * this.config.voiceModificator(seconds, inVoice));
+        return this.random(1, maxExp || 1);
     }
 
     public getPresence(seconds: number): number {
-        const hours = seconds / 3600;
-        const cap = hours < 1 ? 1 : 0.5;
-        const maxExp = Math.round(seconds * this.presenceMultiplier * cap);
-        return this.getRandomInt(1, maxExp);
+        const maxExp = Math.round(seconds * this.config.presenceMultiplier * this.config.presenceModificator(seconds));
+        return this.random(1, maxExp || 1);
     }
-
-    public getVoice(seconds: number, inVoice: number): number {
-        const hours = seconds / 3600;
-        const boost = hours < 1 ? 1 : hours ** 2;
-        const maxExp = Math.round(seconds * this.voiceMultiplier * boost * (inVoice + 1));
-        return this.getRandomInt(1, maxExp);
-    }
-
-    private getRandomInt(min: number, max: number): number {
-        return Math.floor(this.randomGaussian() * (max - min + 1)) + min;
-    }
-
-    private randomGaussian(): number {
-        let u = 0,
-            v = 0;
-        while (u === 0) u = Math.random();
-        while (v === 0) v = Math.random();
-        let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-        num = num / 10.0 + 0.5;
-        if (num > 1 || num < 0) return this.randomGaussian();
-        return num;
+    
+    private random(min: number, max: number): number {
+        return Math.floor(getRandomGaussian() * (max - min + 1)) + min;
     }
 }
 

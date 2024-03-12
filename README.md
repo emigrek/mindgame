@@ -74,10 +74,23 @@ export const config: Config = {
      */
     experienceConstant: 0.3829,
 
-    // Used to calculate experience gain, those values are per second of activity
+    // Used to calculate experience gain
+    // The final experience is calculated as a random gaussian number between 1 and modificator times multiplier.
     experienceCalculatorConfig: {
-        presenceMultiplier: 0.0002,
-        voiceMultiplier: 0.0007
+        voiceMultiplier: 0.007,
+        // inVoice is the number of users in the voice channel the user is in
+        // can be used to give a bonus to users in voice channels with more people or the opposite depending on the use case
+        voiceModificator: (seconds: number, inVoice: number) => {
+            const hours = seconds / 3600;
+            const boost = 1 + Math.sqrt(Math.max(hours, 1));
+            return boost * (inVoice + 1);
+        },
+
+        presenceMultiplier: 0.0007,
+        presenceModificator: (seconds: number) => {
+            const hours = seconds / 3600;
+            return hours < 12 ? 1 : 0.5;
+        },
     },
 
     // Experience reward for daily voice activity

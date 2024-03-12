@@ -18,7 +18,7 @@ export { Sorting } from './Sorting';
 export { Follow } from './Follow';
 export { Modal } from './Modal';
 export { EphemeralChannel } from './EphemeralChannel';
-export { ExperienceCalculatorConfig } from './ExperienceCalculatorConfig';
+export { ExperienceCalculatorConfig, VoiceModificator, PresenceModificator } from './ExperienceCalculatorConfig';
 export { Config } from './Config';
 
 export type DeepPartial<T> = {
