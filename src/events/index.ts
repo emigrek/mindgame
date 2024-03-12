@@ -3,9 +3,7 @@ import { Event } from "@/interfaces";
 import { ready } from "./ready";
 import { guildCreate } from "./guildCreate";
 import { interactionCreate } from "./interactionCreate";
-import { userAvatarUpdate } from "./userAvatarUpdate";
-import { userUsernameUpdate } from "./userUsernameUpdate";
-import { userDiscriminatorUpdate } from "./userDiscriminatorUpdate";
+import { userUpdate } from "./userUpdate";
 import { guildMemberAdd } from "./guildMemberAdd";
 import { userLeveledUp } from "./userLeveledUp";
 import { quarter } from './quarter';
@@ -38,9 +36,7 @@ const events: Event[] = [
     ready,
     guildCreate,
     interactionCreate,
-    userAvatarUpdate,
-    userUsernameUpdate,
-    userDiscriminatorUpdate,
+    userUpdate,
     userLeveledUp,
     guildMemberAdd,
     guildMemberRemove,
