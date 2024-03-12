@@ -7,7 +7,7 @@ import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/sche
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "@/modules/user";
-import { Guild as DatabaseGuild, PresenceActivity, User as DatabaseUser } from "@/interfaces";
+import { Guild as DatabaseGuild, User as DatabaseUser } from "@/interfaces";
 import { config } from "@/config";
 import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";

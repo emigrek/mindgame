@@ -653,7 +653,7 @@ const getErrorMessagePayload = () => {
 }
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
-    const messages = await channel.messages.fetch({ limit: 50 })
+    const messages = await channel.messages.fetch()
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
@@ -673,7 +673,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     });
 
     await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
-    await attachQuickButtons(client, channel);
+    attachQuickButtons(client, channel);
     return count;
 };
 
@@ -686,24 +686,21 @@ const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel |
             return new Collection<string, Message>();
         });
 
-    const clientLastMessages = lastMessages.filter(m => m.author.id == client.user?.id && !m.interaction) as Collection<string, Message>;
-    const lastMessage = clientLastMessages.first();
+    const clientMessages = lastMessages.filter(m => m.author.id === client.user?.id && !m.interaction);
+    const lastMessage = clientMessages.first();
     if (!lastMessage) return;
 
-    const quickButtonsRows = await getQuickButtonsRows(client, lastMessage);
-
-    const clearComponentsPromises = clientLastMessages.map((message: Message) => {
-        if (message.components.length > 0 && message.id !== lastMessage.id) {
-            return message.edit({ components: [] });
-        }
-    });
-
-    await Promise.all(clearComponentsPromises)
+    await Promise.all(
+        clientMessages.map((message: Message) => {
+            if (message.components.length > 0) 
+                return message.edit({ components: [] });
+        })
+    )
         .catch(e => {
             console.log(`There was an error when clearing components: ${e}`);
         });
 
-    await lastMessage.edit({ components: quickButtonsRows })
+    await lastMessage.edit({ components: await getQuickButtonsRows(client, lastMessage) })
         .catch(e => {
             console.log(`There was an error when editing the message: ${e}`);
         });
