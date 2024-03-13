@@ -38,7 +38,7 @@ export const config: Config = {
 
     // List of bot prefixes based on which messages are considered as bot messages and are sweeped when guild voice channels are empty
     // Besides that list, all messages from bot users are considered as bot messages
-    emptyGuildSweepBotPrefixesList: ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'],
+    emptyGuildSweepBotPrefixesList: ['!', '$', '%', '^', '&', '(', ')', '/'],
 
     // Whether to automatically put slash commands on client login
     autoPutSlashCommands: true,
