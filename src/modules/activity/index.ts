@@ -74,6 +74,13 @@ const checkGuildVoiceEmpty = async (client: ExtendedClient, guild: Guild, channe
     client.emit("guildVoiceEmpty", guild, channel);
 };
 
+const checkSignificantVoiceActivityStreak = async (client: ExtendedClient, member: GuildMember) => {
+    const streak = await getUserVoiceActivityStreak(member.id, member.guild.id, new Date());
+    if (!config.significantActivityStreakFormula(streak)) return;
+
+    client.emit("userSignificantVoiceActivityStreak", member, streak);
+};
+
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel): Promise<VoiceActivityDocument | null> => {
     if (
         member.user.bot ||
@@ -96,6 +103,9 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     });
 
     await newVoiceActivity.save();
+
+    await checkSignificantVoiceActivityStreak(client, member);
+
     return newVoiceActivity;
 }
 
@@ -421,6 +431,40 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
     return presenceActivities;
 }
 
+const getUserVoiceActivityStreak = async (userId: string, guildId: string, day: Date): Promise<number> => {
+    const targetDay = moment(day).startOf("day");
+    const activities = await voiceActivityModel.find({
+        userId,
+        guildId,
+        from: {
+            $lte: targetDay.toDate()
+        }
+    }).sort({ from: -1 });
+
+    let streak = 0;
+    let lastActivity = null;
+
+    for (const activity of activities) {
+        const activityStartDay = moment(activity.from).startOf("day");
+
+        if (lastActivity === null) {
+            lastActivity = activityStartDay;
+            streak = 1;
+        } else if (activityStartDay.isSame(moment(lastActivity).subtract(1, 'days'), "day")) {
+            lastActivity = activityStartDay;
+            streak++;
+        } else if (!lastActivity.isSame(activityStartDay, "day")) {
+            break;
+        }
+
+        if (activityStartDay.isSame(lastActivity, "day")) {
+            continue;
+        }
+    }
+
+    return streak + 1;
+};
+
 const pruneActivities = async () => {
     try {
         const twoMonthsAgo = moment().subtract(2, "months").toDate();
@@ -522,4 +566,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities };
+export { checkSignificantVoiceActivityStreak, formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities, getUserVoiceActivityStreak };

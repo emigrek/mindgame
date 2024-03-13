@@ -11,4 +11,6 @@ export interface Config {
     emptyGuildSweepBotPrefixesList: string[];
 
     autoPutSlashCommands: boolean;
+
+    significantActivityStreakFormula: (streak: number) => boolean;
 }

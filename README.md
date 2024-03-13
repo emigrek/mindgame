@@ -108,6 +108,12 @@ export const config: Config = {
 
     // Whether to automatically put slash commands on client login
     autoPutSlashCommands: true,
+
+    // A function that determines whether a streak is significant enough to be notified about
+    // The default formula is that a streak is significant if it's 3 or a multiple of 5 after 3
+    significantActivityStreakFormula: (streak: number) => {
+        return streak === 3 || (streak >= 5 && (streak - 3) % 5 === 0);
+    }.
 }
 ```
 </details>
