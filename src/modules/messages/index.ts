@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle, AttachmentBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
@@ -158,7 +158,6 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
         return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
-    const thumbnailAttachment = new AttachmentBuilder("./media/sparkles.png");
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
@@ -181,11 +180,10 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
                 inline: true
             }
         )
-        .setThumbnail("attachment://sparkles.png");
+        .setThumbnail("https://i.imgur.com/Ch9DTJB.png");
 
     return {
         embeds: [embed],
-        files: [thumbnailAttachment],
         flags: [4096]
     };
 };
@@ -304,7 +302,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 
     return {
         embeds: [embed],
-        components: [row]
+        components: [row],
     };
 };
 
@@ -387,13 +385,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     if (!sourceUser) return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
-    const thumbnailAttachment = new AttachmentBuilder("./media/birthday-cake.png");
 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.dailyRewardTitle"))
         .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId }))
-        .setThumbnail("attachment://birthday-cake.png")
+        .setThumbnail("https://i.imgur.com/nBqVt6y.png")
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
@@ -409,7 +406,6 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 
     return {
         embeds: [embed],
-        files: [thumbnailAttachment],
         flags: [4096]
     };
 };
@@ -647,7 +643,6 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
     const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
     const imageHex = await useImageHex(avatar);
     const color = getColorInt(imageHex.Vibrant);
-    const thumbnailAttachment = new AttachmentBuilder("./media/fire.png");
     
     const embed = new EmbedBuilder()
         .setColor(color)
@@ -655,7 +650,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         .setDescription(i18n.__mf("notifications.voiceStreakDescription", {
             userId: member.id
         }))
-        .setThumbnail("attachment://fire.png")
+        .setThumbnail("https://i.imgur.com/2tLc43u.png")
         
     if (config.voiceSignificantActivityStreakReward > 0) {
         embed.addFields([
@@ -675,7 +670,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     return {
         embeds: [embed],
-        files: [thumbnailAttachment]
+        flags: [4096]
     }
 }
 
