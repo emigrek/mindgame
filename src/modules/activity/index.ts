@@ -27,7 +27,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
         await updateUserStatistics(client, member.user, {
             exp: config.dailyRewardExperience
         }, sourceGuild);
-        client.emit("userRecievedDailyReward", member.user, member.guild);
+        client.emit("userRecievedDailyReward", member.user, member.guild, streak);
         return;
     }
 
@@ -42,7 +42,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
         exp: config.dailyRewardExperience + (isStreakSignificant ? config.voiceSignificantActivityStreakReward : 0)
     }, sourceGuild);
 
-    client.emit("userRecievedDailyReward", member.user, member.guild);
+    client.emit("userRecievedDailyReward", member.user, member.guild, streak);
     if (isStreakSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 

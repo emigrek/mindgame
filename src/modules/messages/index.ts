@@ -380,7 +380,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
-const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
+const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: number) => {
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
@@ -401,13 +401,8 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
                 inline: true
             },
             {
-                name: i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.week.time.voice / 3600))}H\`\`\``,
-                inline: true
-            },
-            {
-                name: i18n.__("notifications.monthVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.month.time.voice / 3600))}H\`\`\``,
+                name: i18n.__("notifications.voiceStreakField"),
+                value: `\`\`\`${streak}\`\`\``,
                 inline: true
             },
         ]);
