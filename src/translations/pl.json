@@ -165,6 +165,10 @@
 		"dailyRewardTitle": "Codzienna nagroda",
 		"dailyRewardDescription": "<@{userId}> odebrał(a) **codzienną nagrodę**!",
 		"dailyRewardField": "Nagroda",
+		"voiceStreakTitle": "Seria głosowa",
+		"voiceStreakDescription": "<@{userId}> osiągnął(a) nową istotną serię głosową!",
+		"voiceStreakField": "Seria",
+		"voiceStreakRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",
 		"weekVoiceTimeField": "W tym tygodniu",
 		"monthVoiceTimeField": "W tym miesiącu"

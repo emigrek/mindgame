@@ -12,5 +12,6 @@ export interface Config {
 
     autoPutSlashCommands: boolean;
 
-    significantActivityStreakFormula: (streak: number) => boolean;
+    voiceSignificantActivityStreakReward: number;
+    voiceSignificantActivityStreakFormula: (streak: number) => boolean;
 }

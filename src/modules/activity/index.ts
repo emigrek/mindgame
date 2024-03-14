@@ -16,37 +16,34 @@ import { getGuild } from "@/modules/guild";
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
-const checkForDailyReward = async (client: ExtendedClient, member: GuildMember) => {
-    const query = await voiceActivityModel.find({
-        userId: member.id,
-        guildId: member.guild.id,
-        to: { $ne: null }
-    }).sort({ from: -1 }).limit(1);
-    const userLastVoiceActivity = query.at(0);
+const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMember) => {
+    const activity = await getUserLastGuildVoiceActivity(member.user.id, member.guild.id);
+    const streak = await getUserVoiceActivityStreak(member.user.id, member.guild.id, new Date());
+    const isStreakSignificant = config.voiceSignificantActivityStreakFormula(streak);
     const sourceGuild = await getGuild(member.guild) ?? undefined;
 
-    if (!userLastVoiceActivity) {
+    // If user has no previous voice activity, this activity is definitely not a part of a streak so don't check for it.
+    if (!activity) {
         await updateUserStatistics(client, member.user, {
             exp: config.dailyRewardExperience
         }, sourceGuild);
-
         client.emit("userRecievedDailyReward", member.user, member.guild);
-        return true;
+        return;
     }
-    
-    const lastActivityDay = moment(userLastVoiceActivity.from).startOf("day");
+
+    const activityDay = moment(activity.from).startOf("day");
     const today = moment().startOf("day");
 
-    if (!lastActivityDay.isBefore(today) || lastActivityDay.isSame(today)) {
-        return false;
+    if (!activityDay.isBefore(today) || activityDay.isSame(today)) {
+        return;
     }
 
     await updateUserStatistics(client, member.user, {
-        exp: config.dailyRewardExperience
+        exp: config.dailyRewardExperience + (isStreakSignificant ? config.voiceSignificantActivityStreakReward : 0)
     }, sourceGuild);
 
     client.emit("userRecievedDailyReward", member.user, member.guild);
-    return true;
+    if (isStreakSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 
 const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) => {
@@ -74,13 +71,6 @@ const checkGuildVoiceEmpty = async (client: ExtendedClient, guild: Guild, channe
     client.emit("guildVoiceEmpty", guild, channel);
 };
 
-const checkSignificantVoiceActivityStreak = async (client: ExtendedClient, member: GuildMember) => {
-    const streak = await getUserVoiceActivityStreak(member.id, member.guild.id, new Date());
-    if (!config.significantActivityStreakFormula(streak)) return;
-
-    client.emit("userSignificantVoiceActivityStreak", member, streak);
-};
-
 const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, channel: VoiceBasedChannel): Promise<VoiceActivityDocument | null> => {
     if (
         member.user.bot ||
@@ -90,7 +80,7 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     const exists = await getVoiceActivity(member);
     if (exists) return null;
 
-    await checkForDailyReward(client, member);
+    await checkVoiceActivityRewards(client, member);
     await checkLongVoiceBreak(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
@@ -103,9 +93,6 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     });
 
     await newVoiceActivity.save();
-
-    await checkSignificantVoiceActivityStreak(client, member);
-
     return newVoiceActivity;
 }
 
@@ -475,6 +462,15 @@ const pruneActivities = async () => {
     }
 };
 
+const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): Promise<VoiceActivityDocument | undefined> => {
+    const query = await voiceActivityModel.find({
+        userId,
+        guildId,
+        to: { $ne: null }
+    }).sort({ from: -1 }).limit(1);
+    return query.at(0);
+};
+
 interface UserLastActivityDetails {
     voice: {
         activity: VoiceActivityDocument;
@@ -566,4 +562,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { checkSignificantVoiceActivityStreak, formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities, getUserVoiceActivityStreak };
+export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities, getUserVoiceActivityStreak };

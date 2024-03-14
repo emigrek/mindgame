@@ -171,6 +171,10 @@
 		"dailyRewardTitle": "Daily reward",
 		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!",
 		"dailyRewardField": "Reward",
+		"voiceStreakTitle": "Voice streak",
+		"voiceStreakDescription": "<@{userId}> has reached new significant voice streak!",
+		"voiceStreakField": "Streak",
+		"voiceStreakRewardField": "Reward",
 		"todayVoiceTimeField": "Today",
 		"weekVoiceTimeField": "Weekly",
 		"monthVoiceTimeField": "Monthly"

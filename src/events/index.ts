@@ -26,6 +26,7 @@ import { messageDeleteBulk } from "./messageDeleteBulk";
 import { messageReactionAdd } from "./messageReactionAdd";
 import { messageReactionRemove } from "./messageReactionRemove";
 import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
+import { userSignificantVoiceActivityStreak } from "./userSignificantVoiceActivityStreak";
 import { guildVoiceEmpty } from "./guildVoiceEmpty";
 import { minute } from "./minute";
 import { channelDelete } from "./channelDelete";
@@ -57,6 +58,7 @@ const events: Event[] = [
     messageDelete,
     messageDeleteBulk,
     userBackFromLongVoiceBreak,
+    userSignificantVoiceActivityStreak,
     messageReactionAdd,
     messageReactionRemove,
     quarter,

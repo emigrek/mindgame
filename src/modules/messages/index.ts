@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle, AttachmentBuilder } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption } from "@/interfaces";
@@ -158,6 +158,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
         return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
+    const thumbnailAttachment = new AttachmentBuilder("./media/sparkles.png");
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
@@ -180,10 +181,11 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
                 inline: true
             }
         )
-        .setThumbnail("https://i.imgur.com/cSTkdFG.png");
+        .setThumbnail("attachment://sparkles.png");
 
     return {
         embeds: [embed],
+        files: [thumbnailAttachment],
         flags: [4096]
     };
 };
@@ -385,12 +387,13 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     if (!sourceUser) return getErrorMessagePayload();
 
     const colors = await useImageHex(sourceUser.avatarUrl);
+    const thumbnailAttachment = new AttachmentBuilder("./media/birthday-cake.png");
 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.dailyRewardTitle"))
         .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId }))
-        .setThumbnail("https://em-content.zobj.net/thumbs/60/microsoft/74/birthday-cake_1f382.png")
+        .setThumbnail("attachment://birthday-cake.png")
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
@@ -411,6 +414,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 
     return {
         embeds: [embed],
+        files: [thumbnailAttachment],
         flags: [4096]
     };
 };
@@ -642,6 +646,44 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
     }
 };
 
+const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedClient, member: GuildMember, streak: number) => {
+    i18n.setLocale(member.guild.preferredLocale);
+
+    const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
+    const imageHex = await useImageHex(avatar);
+    const color = getColorInt(imageHex.Vibrant);
+    const thumbnailAttachment = new AttachmentBuilder("./media/fire.png");
+    
+    const embed = new EmbedBuilder()
+        .setColor(color)
+        .setTitle(i18n.__("notifications.voiceStreakTitle"))
+        .setDescription(i18n.__mf("notifications.voiceStreakDescription", {
+            userId: member.id
+        }))
+        .setThumbnail("attachment://fire.png")
+        
+    if (config.voiceSignificantActivityStreakReward > 0) {
+        embed.addFields([
+            {
+                name: i18n.__("notifications.voiceStreakRewardField"),
+                value: `\`\`\`${client.numberFormat.format(config.voiceSignificantActivityStreakReward)} EXP\`\`\``,
+                inline: true,
+            }
+        ]);
+    }
+
+    embed.addFields([{
+        name: i18n.__("notifications.voiceStreakField"),
+        value: `\`\`\`${streak}\`\`\``,
+        inline: true,
+    }]);
+
+    return {
+        embeds: [embed],
+        files: [thumbnailAttachment]
+    }
+}
+
 const getErrorMessagePayload = () => {
     const embed = ErrorEmbed()
         .setTitle(i18n.__("error.title"))
@@ -758,4 +800,4 @@ const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
     return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
 }
 
-export { createMessage, getLocalizedDateRange, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { getSignificantVoiceActivityStreakMessagePayload, createMessage, getLocalizedDateRange, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };

@@ -1,6 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { ButtonBuilder } from "@discordjs/builders";
-import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
+import { ActionRowBuilder, ButtonStyle, Guild, Message, UserResolvable } from "discord.js";
 import { getMessage } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
 import { UserDocument } from "@/modules/schemas/User";

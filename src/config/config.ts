@@ -43,9 +43,15 @@ export const config: Config = {
     // Whether to automatically put slash commands on client login
     autoPutSlashCommands: true,
 
+    // Experience reward for significant voice activity streak
+    // Setting this to 0 will disable the reward
+    voiceSignificantActivityStreakReward: 10000,
+
     // A function that determines whether a streak is significant enough to be notified about
-    // The default formula is that a streak is significant if it's 3 or a multiple of 5 after 3
-    significantActivityStreakFormula: (streak: number) => {
-        return streak === 3 || (streak >= 5 && (streak - 3) % 5 === 0);
+    // The default formula is that a streak is significant if it's 3 or 5 or a multiple of 10
+    voiceSignificantActivityStreakFormula: (streak: number) => {
+        if (streak === 0) return false;
+        if (streak === 3 || streak === 5) return true;
+        return streak % 10 === 0;
     }
 }
