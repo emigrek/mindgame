@@ -79,7 +79,6 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     const exists = await getVoiceActivity(member);
     if (exists) return null;
 
-    await checkVoiceActivityRewards(client, member);
     await checkLongVoiceBreak(client, member);
 
     const newVoiceActivity = new voiceActivityModel({
@@ -92,6 +91,8 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     });
 
     await newVoiceActivity.save();
+    await checkVoiceActivityRewards(client, member);
+
     return newVoiceActivity;
 }
 
@@ -417,13 +418,6 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
     return presenceActivities;
 }
 
-/*
-    Function calculate latest user activity streak.
-    Prop day is a moment when the newest activity is created, as it is not in database during the calculation.
-    Streak is incremented when activities occur in consecutive days (last activity day is different then current activity day)
-    Streak is set to 0 when there is more than one day break between activities.
-    Use moment for date time calculations.
-*/
 const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<VoiceActivityStreak> => {
     const activities = 
         await voiceActivityModel.find({
@@ -431,7 +425,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
             guildId,
         }).sort({ from: 1 });
     
-    const dates = [...activities.map(activity => moment(activity.from)), moment()];
+    const dates = activities.map(activity => moment(activity.from));
 
     let streak = 0;
     let last = null;
