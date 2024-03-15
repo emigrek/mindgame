@@ -18,7 +18,7 @@ const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivit
 
 const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMember) => {
     const activity = await getUserLastGuildVoiceActivity(member.user.id, member.guild.id);
-    const streak = await getUserVoiceActivityStreak(member.user.id, member.guild.id, new Date());
+    const streak = await getUserVoiceActivityStreak(member.user.id, member.guild.id);
     const sourceGuild = await getGuild(member.guild) ?? undefined;
 
     // If user has no previous voice activity, this activity is definitely not a part of a streak so don't check for it.
@@ -417,38 +417,48 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
     return presenceActivities;
 }
 
-const getUserVoiceActivityStreak = async (userId: string, guildId: string, day: Date): Promise<VoiceActivityStreak> => {
-    const targetDay = moment(day).startOf("day");
-    const activities = await voiceActivityModel.find({
-        userId,
-        guildId,
-        from: {
-            $lte: targetDay.toDate()
-        }
-    }).sort({ from: -1 });
+/*
+    Function calculate latest user activity streak.
+    Prop day is a moment when the newest activity is created, as it is not in database during the calculation.
+    Streak is incremented when activities occur in consecutive days (last activity day is different then current activity day)
+    Streak is set to 0 when there is more than one day break between activities.
+    Use moment for date time calculations.
+*/
+const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<VoiceActivityStreak> => {
+    const activities = 
+        await voiceActivityModel.find({
+            userId,
+            guildId,
+        }).sort({ from: 1 });
+    
+    const dates = [...activities.map(activity => moment(activity.from)), moment()];
 
     let streak = 0;
-    let lastActivity = null;
-
-    for (const activity of activities) {
-        const activityStartDay = moment(activity.from).startOf("day");
-
-        if (lastActivity === null) {
-            lastActivity = activityStartDay;
-            streak = 1;
-        } else if (activityStartDay.isSame(moment(lastActivity).subtract(1, 'days'), "day")) {
-            lastActivity = activityStartDay;
+    let last = null;
+    
+    for (const date of dates) {
+        if (last === null) {
             streak++;
-        } else if (!lastActivity.isSame(activityStartDay, "day")) {
-            break;
-        }
-
-        if (activityStartDay.isSame(lastActivity, "day")) {
+            last = date;
             continue;
         }
+
+        if (date.isSame(last, "day")) {
+            last = date;
+            continue;
+        }
+
+        if (date.diff(last, "hours", true) >= 48) {
+            streak = 0;
+            last = date;
+            continue;
+        }
+
+        streak++;
+        last = date;
     }
 
-    return config.voiceSignificantActivityStreakFormula(streak + 1);
+    return config.voiceSignificantActivityStreakFormula(streak);
 };
 
 const pruneActivities = async () => {
