@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { getGuild } from "@/modules/guild";
-import { SelectMenuOption } from "@/interfaces";
+import { SelectMenuOption, VoiceActivityStreak } from "@/interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
 import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
@@ -378,7 +378,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
-const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: number) => {
+const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: VoiceActivityStreak) => {
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
@@ -399,9 +399,14 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             {
                 name: i18n.__("notifications.voiceStreakField"),
-                value: `\`\`\`${streak}\`\`\``,
+                value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.streak })}\`\`\``,
                 inline: true
             },
+            {
+                name: i18n.__("notifications.nextVoiceStreakRewardField"),
+                value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.nextSignificant - streak.streak })}\`\`\``,
+                inline: true,
+            }
         ]);
 
     return {
@@ -637,7 +642,7 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
     }
 };
 
-const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedClient, member: GuildMember, streak: number) => {
+const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedClient, member: GuildMember, streak: VoiceActivityStreak) => {
     i18n.setLocale(member.guild.preferredLocale);
 
     const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
@@ -664,7 +669,11 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     embed.addFields([{
         name: i18n.__("notifications.voiceStreakField"),
-        value: `\`\`\`${streak}\`\`\``,
+        value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.streak })}\`\`\``,
+        inline: true,
+    }, {
+        name: i18n.__("notifications.nextVoiceStreakRewardField"),
+        value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.nextSignificant - streak.streak })}\`\`\``,
         inline: true,
     }]);
 

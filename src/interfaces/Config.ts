@@ -1,4 +1,5 @@
 import { ExperienceCalculatorConfig } from "./ExperienceCalculatorConfig";
+import { VoiceActivityStreak } from "./VoiceActivityStreak";
 
 export interface Config {
     experienceConstant: number;
@@ -13,5 +14,5 @@ export interface Config {
     autoPutSlashCommands: boolean;
 
     voiceSignificantActivityStreakReward: number;
-    voiceSignificantActivityStreakFormula: (streak: number) => boolean;
+    voiceSignificantActivityStreakFormula: (streak: number) => VoiceActivityStreak;
 }

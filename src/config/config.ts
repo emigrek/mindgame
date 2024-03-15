@@ -50,8 +50,18 @@ export const config: Config = {
     // A function that determines whether a streak is significant enough to be notified about
     // The default formula is that a streak is significant if it's 3 or 5 or a multiple of 10
     voiceSignificantActivityStreakFormula: (streak: number) => {
-        if (streak === 0) return false;
-        if (streak === 3 || streak === 5) return true;
-        return streak % 10 === 0;
+        const isSignificant = streak === 3 || streak === 5 || streak % 10 === 0;
+        const nextSignificant = (() => {
+            if (streak < 3) return 3;
+            if (streak < 5) return 5;
+            if (streak < 10) return 10;
+            else return Math.ceil((streak + 1) / 10) * 10;
+        })();
+
+        return {
+            streak,
+            isSignificant,
+            nextSignificant
+        };
     }
 }

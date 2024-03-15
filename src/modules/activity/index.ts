@@ -7,7 +7,7 @@ import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/sche
 import mongoose from "mongoose";
 import moment from "moment";
 import { updateUserStatistics } from "@/modules/user";
-import { Guild as DatabaseGuild, User as DatabaseUser } from "@/interfaces";
+import { Guild as DatabaseGuild, User as DatabaseUser, VoiceActivityStreak } from "@/interfaces";
 import { config } from "@/config";
 import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";
@@ -19,7 +19,6 @@ const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivit
 const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMember) => {
     const activity = await getUserLastGuildVoiceActivity(member.user.id, member.guild.id);
     const streak = await getUserVoiceActivityStreak(member.user.id, member.guild.id, new Date());
-    const isStreakSignificant = config.voiceSignificantActivityStreakFormula(streak);
     const sourceGuild = await getGuild(member.guild) ?? undefined;
 
     // If user has no previous voice activity, this activity is definitely not a part of a streak so don't check for it.
@@ -39,11 +38,11 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
     }
 
     await updateUserStatistics(client, member.user, {
-        exp: config.dailyRewardExperience + (isStreakSignificant ? config.voiceSignificantActivityStreakReward : 0)
+        exp: config.dailyRewardExperience + (streak.isSignificant ? config.voiceSignificantActivityStreakReward : 0)
     }, sourceGuild);
 
     client.emit("userRecievedDailyReward", member.user, member.guild, streak);
-    if (isStreakSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
+    if (streak.isSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 
 const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) => {
@@ -418,7 +417,7 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
     return presenceActivities;
 }
 
-const getUserVoiceActivityStreak = async (userId: string, guildId: string, day: Date): Promise<number> => {
+const getUserVoiceActivityStreak = async (userId: string, guildId: string, day: Date): Promise<VoiceActivityStreak> => {
     const targetDay = moment(day).startOf("day");
     const activities = await voiceActivityModel.find({
         userId,
@@ -449,7 +448,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string, day: 
         }
     }
 
-    return streak + 1;
+    return config.voiceSignificantActivityStreakFormula(streak + 1);
 };
 
 const pruneActivities = async () => {

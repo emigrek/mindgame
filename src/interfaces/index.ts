@@ -20,6 +20,7 @@ export { Modal } from './Modal';
 export { EphemeralChannel } from './EphemeralChannel';
 export { ExperienceCalculatorConfig, VoiceModificator, PresenceModificator } from './ExperienceCalculatorConfig';
 export { Config } from './Config';
+export { VoiceActivityStreak } from './VoiceActivityStreak';
 
 export type DeepPartial<T> = {
     [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
