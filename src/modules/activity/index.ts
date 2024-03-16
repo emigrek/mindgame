@@ -436,7 +436,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
             continue;
 
 
-        if (date.day() === (last.day() + 1)) 
+        if (date.dayOfYear() === last.dayOfYear() + 1)
             streak++;
         else 
             streak = 1;
