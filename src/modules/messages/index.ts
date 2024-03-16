@@ -17,7 +17,7 @@ import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { ErrorEmbed, InformationEmbed, ProfileEmbed, WarningEmbed } from "./embeds";
-import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
+import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels, isMessageCacheable } from "@/modules/ephemeral-channel";
 import clean from "@/utils/clean";
 import { config } from "@/config";
 import i18n from "@/client/i18n";
@@ -26,6 +26,7 @@ import { rankingStore } from "@/stores/rankingStore";
 import { profileStore } from "@/stores/profileStore";
 import { colorStore } from "@/stores/colorStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
+import { ephemeralChannelMessageCache } from "../ephemeral-channel/cache";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -694,6 +695,7 @@ const getErrorMessagePayload = () => {
 }
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
+    const isEphemeralChannel = await getEphemeralChannel(channel.id);
     const messages = await channel.messages.fetch()
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
@@ -703,7 +705,8 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     const messagesToDelete = messages.filter((message: Message) => {
         return config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix)) ||
             (message.author.bot && message.attachments && message.attachments.size == 0) ||
-            (message.author.bot && message.embeds.length);
+            (message.author.bot && message.embeds.length) ||
+            (isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) : false)
     });
 
     let count = 0;
