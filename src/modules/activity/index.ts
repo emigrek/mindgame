@@ -442,7 +442,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
             continue;
         }
 
-        if (date.diff(last, "hours", true) >= 48) {
+        if (date.diff(last, "hours", true) >= 24) {
             streak = 0;
             last = date;
             continue;
