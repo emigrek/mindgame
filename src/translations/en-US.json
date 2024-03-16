@@ -175,7 +175,10 @@
 		"voiceStreakDescription": "<@{userId}> is on a **daily voice activity in a row streak**!",
 		"voiceStreakField": "Streak",
 		"nextVoiceStreakRewardField": "Next streak reward in",
-		"voiceStreakFormat": "{streak} days",
+		"voiceStreakFormat": {
+			"one": "%s day",
+			"other": "%s days"
+		},
 		"voiceStreakRewardField": "Reward",
 		"todayVoiceTimeField": "Today",
 		"weekVoiceTimeField": "Weekly",

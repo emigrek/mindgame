@@ -423,32 +423,24 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
         await voiceActivityModel.find({
             userId,
             guildId,
-        }).sort({ from: 1 });
+        })
+        .sort({ from: 1 });
     
     const dates = activities.map(activity => moment(activity.from));
 
-    let streak = 0;
-    let last = null;
-    
+    let streak = 1;
+    let last = dates.at(0);
+
     for (const date of dates) {
-        if (last === null) {
+        if (!last || date.isSame(last, "day")) 
+            continue;
+
+
+        if (date.day() === (last.day() + 1)) 
             streak++;
-            last = date;
-            continue;
-        }
+        else 
+            streak = 1;
 
-        if (date.isSame(last, "day")) {
-            last = date;
-            continue;
-        }
-
-        if (date.diff(last, "hours", true) >= 24) {
-            streak = 0;
-            last = date;
-            continue;
-        }
-
-        streak++;
         last = date;
     }
 

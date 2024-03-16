@@ -168,7 +168,10 @@
 		"voiceStreakTitle": "Seria głosowa",
 		"voiceStreakDescription": "<@{userId}> osiąga **serię codziennej aktywności głosowej z rzędu**!",
 		"voiceStreakField": "Seria",
-		"voiceStreakFormat": "{streak} dni",
+		"voiceStreakFormat": {
+			"one": "%s dzień",
+			"other": "%s dni"
+		},
 		"nextVoiceStreakRewardField": "Następna nagroda serii za",
 		"voiceStreakRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",

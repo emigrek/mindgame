@@ -399,12 +399,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             {
                 name: i18n.__("notifications.voiceStreakField"),
-                value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.streak })}\`\`\``,
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
                 inline: true
             },
             {
                 name: i18n.__("notifications.nextVoiceStreakRewardField"),
-                value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.nextSignificant - streak.streak })}\`\`\``,
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
                 inline: true,
             }
         ]);
@@ -669,11 +669,11 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     embed.addFields([{
         name: i18n.__("notifications.voiceStreakField"),
-        value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.streak })}\`\`\``,
+        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
         inline: true,
     }, {
         name: i18n.__("notifications.nextVoiceStreakRewardField"),
-        value: `\`\`\`${i18n.__mf("notifications.voiceStreakFormat", { streak: streak.nextSignificant - streak.streak })}\`\`\``,
+        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
         inline: true,
     }]);
 
