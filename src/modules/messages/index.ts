@@ -17,7 +17,7 @@ import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { ErrorEmbed, InformationEmbed, ProfileEmbed, WarningEmbed } from "./embeds";
-import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels, isMessageCacheable } from "@/modules/ephemeral-channel";
+import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels, isMessageCacheable, syncEphemeralChannelMessages } from "@/modules/ephemeral-channel";
 import clean from "@/utils/clean";
 import { config } from "@/config";
 import i18n from "@/client/i18n";
@@ -703,10 +703,10 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         });
 
     const messagesToDelete = messages.filter((message: Message) => {
-        return config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix)) ||
-            (message.author.bot && message.attachments && message.attachments.size == 0) ||
-            (message.author.bot && message.embeds.length) ||
-            (isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) : false)
+        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
+        const isBot = message.author.bot;
+        const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) : false;
+        return startsWithConfigPrefix || (willBeDeletedByEphemeralChannel ? isBot : false);
     });
 
     let count = 0;
