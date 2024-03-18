@@ -5,7 +5,7 @@ module.exports = {
       script: "npm run start",
       cron_restart: "0 4 * * *",
       interpreter: 'node',
-      interpreterArgs: '--import tsx',
+      interpreter_args: '--import tsx',
       time: true
     }
   ]
