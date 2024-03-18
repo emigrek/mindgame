@@ -150,11 +150,19 @@
 		"currentPresenceActivity": "Now seen since {time} in **{guild}**. {client}",
 		"timeStatistics": "Time spent",
 		"temporaryVoiceTimeStatistics": "Voice activity",
+		"temporaryPresenceTimeStatistics": "Server activity",
 		"favoriteGuild": "Favorite guild",
 		"followButtonLabel": "Follow 💗",
 		"unfollowButtonLabel": "Unfollow 💔",
 		"timePublicButtonLabel": "Public time spent 👀",
-		"visibilityNotification": "Only you can see this"
+		"visibilityNotification": "🔒 Only you can see this",
+		"pages": {
+			"about": "About",
+			"statistics": "Statistics",
+			"timeSpent": "Time spent",
+			"voiceActivity": "Voice activity",
+			"presenceActivity": "Server activity"
+		}
 	},
 	"follow": {
 		"followed": "Successfully followed {tag}!\nYou'll now receive notifications every time he/she comes back from an ≥8 hour break.",
@@ -270,6 +278,14 @@
 		"listTitle": "Ephemeral channels list",
 		"timeout": "Timeout",
 		"empty": "No ephemeral channels found."
+	},
+	"achievements": {
+		"significant_voice_streak": {
+			"name": "Voice streak"
+		},
+		"message_reaction_unique_users": {
+			"name": "Popular"
+		}
 	},
 	"utils": {
 		"userOnly": "This feature can only be used by users with profile.",

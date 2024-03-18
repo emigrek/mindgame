@@ -3,7 +3,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import { getGuild } from "@/modules/guild";
 import { SelectMenuOption, VoiceActivityStreak } from "@/interfaces";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
-import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
+import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect } from "@/modules/messages/selects";
 import { getLastCommits } from "@/utils/commits";
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
 import moment from "moment";
@@ -16,14 +16,14 @@ import messageSchema from "@/modules/schemas/Message";
 import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-import { ErrorEmbed, InformationEmbed, ProfileEmbed, WarningEmbed } from "./embeds";
+import { ErrorEmbed, InformationEmbed, ProfileEmbeds, WarningEmbed } from "./embeds";
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels, isMessageCacheable, syncEphemeralChannelMessages } from "@/modules/ephemeral-channel";
 import clean from "@/utils/clean";
 import { config } from "@/config";
 import i18n from "@/client/i18n";
 
 import { rankingStore } from "@/stores/rankingStore";
-import { profileStore } from "@/stores/profileStore";
+import { ProfilePages, profileStore } from "@/stores/profileStore";
 import { colorStore } from "@/stores/colorStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
 import { ephemeralChannelMessageCache } from "../ephemeral-channel/cache";
@@ -107,8 +107,8 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     };
 }
 
-const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction) => {
-    const { targetUserId } = profileStore.get(interaction.user.id);
+const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction) => {
+    const { targetUserId, page } = profileStore.get(interaction.user.id);
 
     const targetUser = client.users.cache.get(targetUserId ? targetUserId : interaction.user.id);
     if (!targetUser) {
@@ -116,7 +116,8 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
             embeds: [
                 WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
-            ]
+            ],
+            ephemeral: true
         };
     }
 
@@ -128,7 +129,8 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
             embeds: [
                 WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
-            ]
+            ],
+            ephemeral: true
         };
     }
 
@@ -139,14 +141,42 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
     const followButton = await getProfileFollowButton(client, sourceUser, sourceTargetUser);
 
-    const row = new ActionRowBuilder<ButtonBuilder>()
-        .setComponents(selfCall ? profileTimePublic : followButton);
+    const profileEmbeds = await ProfileEmbeds(client, renderedUser, colors, selfCall);
+    const profilePage = profileEmbeds.find(({ type }: { type: ProfilePages }) => type === page);
+    const pageSelect = await getUserPageSelect(
+        profilePage ? `${profilePage.emoji} ${i18n.__(`profile.pages.${profilePage.type}`)}` : "🤔",
+        profileEmbeds.map(({ type, emoji }: { type: ProfilePages, emoji: string }) => ({
+            label: i18n.__(`profile.pages.${type}`),
+            value: type,
+            emoji: emoji
+        }))
+    );
 
-    const embed = await ProfileEmbed(client, renderedUser, colors, selfCall);
+    
+    const profileEmbed = profilePage?.embed || profileEmbeds[0].embed;
+
+    const row = new ActionRowBuilder<ButtonBuilder>();
+    
+    if (profilePage?.type === ProfilePages.About) {
+        row.addComponents(followButton);
+    }
+
+    if (profilePage?.type === ProfilePages.TimeSpent) {
+        row.addComponents(profileTimePublic);
+    }
+
+    const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .setComponents(pageSelect);
+
+    const components: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] = [row2];
+
+    if (profilePage?.type === ProfilePages.About || profilePage?.type === ProfilePages.TimeSpent) {
+        components.splice(0, 0, row);
+    }
 
     return {
-        embeds: [embed],
-        components: [row],
+        embeds: [profileEmbed],
+        components,
         ephemeral: true
     };
 }

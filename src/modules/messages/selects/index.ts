@@ -2,6 +2,16 @@ import { StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from "dis
 import { SelectMenuOption, Sorting } from "@/interfaces";
 import i18n from "@/client/i18n";
 
+const getUserPageSelect = async (placeholder: string, options: SelectMenuOption[]) => {
+    const userPageSelect = new StringSelectMenuBuilder()
+        .setCustomId("userEmbedSelect")
+        .setMinValues(1)
+        .addOptions(options)
+        .setPlaceholder(placeholder)
+
+    return userPageSelect;
+};
+
 const getChannelSelect = async (currentDefault: TextChannel, options: SelectMenuOption[]) => {
     const channelSelect = new StringSelectMenuBuilder()
         .setCustomId("defaultChannelSelect")
@@ -34,4 +44,4 @@ const getRankingUsersSelect = () => {
     return rankingUsersSelect;
 };
 
-export { getChannelSelect, getRankingSortSelect, getRankingUsersSelect };
+export { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect };
