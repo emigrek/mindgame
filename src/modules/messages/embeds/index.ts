@@ -27,7 +27,7 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/TwVsmhg.png');
+        .setImage('https://i.imgur.com/dCM19Au.png');
 
     const statisticsEmbed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
@@ -48,7 +48,7 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/TwVsmhg.png');
+        .setImage('https://i.imgur.com/dCM19Au.png');
 
     const timeStatisticsEmbed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
@@ -69,9 +69,10 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/TwVsmhg.png');
+        .setImage('https://i.imgur.com/dCM19Au.png');
     
     if (selfCall && !user.stats.time.public) {
+        timeStatisticsEmbed.setColor(getColorInt(colors.DarkVibrant));
         timeStatisticsEmbed.setFooter({
             text: i18n.__("profile.visibilityNotification")
         })
@@ -101,9 +102,10 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/TwVsmhg.png');
+        .setImage('https://i.imgur.com/dCM19Au.png');
 
     if (selfCall) {
+        temporaryPresenceTimeStatisticsEmbed.setColor(getColorInt(colors.DarkVibrant));
         temporaryPresenceTimeStatisticsEmbed.setFooter({
             text: i18n.__("profile.visibilityNotification")
         })
@@ -133,7 +135,7 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/TwVsmhg.png');
+        .setImage('https://i.imgur.com/dCM19Au.png');
 
     const embeds = [
         {
