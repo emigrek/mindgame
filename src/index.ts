@@ -1,7 +1,3 @@
-import "./paths";
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-config({ path: resolve(__dirname, '..', '.env') });
-
+import 'module-alias/register';
+import 'dotenv/config';
 import "@/client";
