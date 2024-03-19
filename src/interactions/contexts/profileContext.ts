@@ -1,7 +1,7 @@
-import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import { ContextMenu } from "@/interfaces";
 import { getUserMessagePayload } from "@/modules/messages";
 import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()

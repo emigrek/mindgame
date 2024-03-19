@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
-import { User, Guild } from "discord.js";
-import { User as DatabaseUser, Guild as DatabaseGuild, Sorting, Command, DeepPartial } from "@/interfaces";
-import userSchema, { UserDocument } from "@/modules/schemas/User";
-import { ExtendedStatistics } from "@/interfaces/User";
 import ExtendedClient from "@/client/ExtendedClient";
-import { InformationEmbed } from "@/modules/messages/embeds";
-import { getColorInt, useImageHex } from "@/modules/messages";
-import { GuildDocument } from "@/modules/schemas/Guild";
 import i18n from "@/client/i18n";
-import { merge } from "@/utils/merge";
 import { config } from "@/config";
+import { Command, Guild as DatabaseGuild, User as DatabaseUser, DeepPartial, Sorting } from "@/interfaces";
+import { ExtendedStatistics } from "@/interfaces/User";
+import { getColorInt, useImageHex } from "@/modules/messages";
+import { InformationEmbed } from "@/modules/messages/embeds";
+import { GuildDocument } from "@/modules/schemas/Guild";
+import userSchema, { UserDocument } from "@/modules/schemas/User";
+import { merge } from "@/utils/merge";
+import { Guild, User } from "discord.js";
+import mongoose from "mongoose";
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -66,13 +66,19 @@ const getUser = async (user: User) => {
 
 const getUserRank = async (user: DatabaseUser) => {
     const exists = await UserModel.findOne({ userId: user.userId });
-    if (!exists) return null;
+    if (!exists) return {
+        rank: 0,
+        total: 0,
+    };
 
     const users = await UserModel.find();
     const sorted = users.sort((a, b) => b.stats.exp - a.stats.exp);
     const rank = sorted.findIndex(u => u.userId === user.userId) + 1;
 
-    return rank;
+    return {
+        rank,
+        total: users.length,
+    };
 };
 
 const getUsers = async () => {
@@ -268,4 +274,5 @@ const getExperienceProcentage = async (user: UserDocument) => {
     return (((user.stats.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed(2);
 };
 
-export { getExperienceProcentage, setPublicTimeStats, sendNewFeaturesMessage, getRanking, migrateUsername, createUser, deleteUser, getUser, getUserRank, getUsers, updateUser, updateUserStatistics, expToLevel, levelToExp, everyUser, clearTemporaryStatistics, UserModel, clearExperience };
+export { UserModel, clearExperience, clearTemporaryStatistics, createUser, deleteUser, everyUser, expToLevel, getExperienceProcentage, getRanking, getUser, getUserRank, getUsers, levelToExp, migrateUsername, sendNewFeaturesMessage, setPublicTimeStats, updateUser, updateUserStatistics };
+

@@ -1,21 +1,18 @@
 import ExtendedClient from "@/client/ExtendedClient";
+import i18n from "@/client/i18n";
+import { formatLastActivityDetails, getUserLastActivityDetails } from "@/modules/activity";
+import { getFollowers } from "@/modules/follow";
+import { KnownLinks } from "@/modules/messages/knownLinks";
 import { UserDocument } from "@/modules/schemas/User";
+import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import Colors from "@/utils/colors";
 import { EmbedBuilder } from "discord.js";
 import { ImageHexColors, getColorInt, getLocalizedDateRange } from "..";
-import { getExperienceProcentage, getUserRank } from "@/modules/user";
-import i18n from "@/client/i18n";
-import { getFollowers } from "@/modules/follow";
-import { formatLastActivityDetails, getUserLastActivityDetails } from "@/modules/activity";
-import { ProfilePages } from "@/stores/profileStore";
 
-const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const rank = await getUserRank(user);
-    const experienceProcentage = await getExperienceProcentage(user);
-    const followers = await getFollowers(user.userId).then(followers => followers.length);
+const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
     const userLastActivityDetails = await getUserLastActivityDetails(client, user);
-
-    const about = new EmbedBuilder()
+    const followers = await getFollowers(user.userId).then(followers => followers.length);
+    const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(user.username)
         .setThumbnail(user.avatarUrl)
@@ -27,10 +24,19 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/dCM19Au.png');
+        .setImage(KnownLinks.EMBED_SPACER);
 
-    const statisticsEmbed = new EmbedBuilder()
+    return embed;
+};
+
+const ProfileStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors) => {
+    const { rank, total } = await getUserRank(user);
+    const experienceProcentage = await getExperienceProcentage(user);
+    const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
+        .setTitle(user.username)
+        .setDescription(`** **`)
+        .setThumbnail(user.avatarUrl)
         .addFields([
             {
                 name: `📊  **${i18n.__("profile.statistics")}**`,
@@ -39,7 +45,7 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
             },
             {
                 name: i18n.__("profile.rank"),
-                value: `\`\`\`#${rank} ${rank === 1 ? '👑' : ''}\`\`\``,
+                value: `\`\`\`#${rank} ${rank === 1 ? '👑 ' : ''}/ ${total}\`\`\``,
                 inline: true,
             },
             {
@@ -48,10 +54,17 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/dCM19Au.png');
+        .setImage(KnownLinks.EMBED_SPACER);
 
-    const timeStatisticsEmbed = new EmbedBuilder()
+    return embed;
+};
+
+const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
+    const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
+        .setTitle(user.username)
+        .setThumbnail(user.avatarUrl)
+        .setDescription(`** **`)
         .setFields([
             {
                 name: `⏳  **${i18n.__("profile.timeStatistics")}**`,
@@ -69,17 +82,24 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/dCM19Au.png');
-    
+        .setImage(KnownLinks.EMBED_SPACER)
+
     if (selfCall && !user.stats.time.public) {
-        timeStatisticsEmbed.setColor(getColorInt(colors.DarkVibrant));
-        timeStatisticsEmbed.setFooter({
+        embed.setColor(getColorInt(colors.DarkVibrant));
+        embed.setFooter({
             text: i18n.__("profile.visibilityNotification")
         })
     }
 
-    const temporaryPresenceTimeStatisticsEmbed = new EmbedBuilder()
+    return embed;
+};
+
+const ProfileTempPresenceTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
+    const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
+        .setTitle(user.username)
+        .setThumbnail(user.avatarUrl)
+        .setDescription(`** **`)
         .setFields([
             {
                 name: `📅  **${i18n.__("profile.temporaryPresenceTimeStatistics")}**`,
@@ -102,17 +122,24 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/dCM19Au.png');
+        .setImage(KnownLinks.EMBED_SPACER);
 
     if (selfCall) {
-        temporaryPresenceTimeStatisticsEmbed.setColor(getColorInt(colors.DarkVibrant));
-        temporaryPresenceTimeStatisticsEmbed.setFooter({
+        embed.setColor(getColorInt(colors.DarkVibrant));
+        embed.setFooter({
             text: i18n.__("profile.visibilityNotification")
         })
     }
-    
-    const temporaryVoiceTimeStatisticsEmbed = new EmbedBuilder()
+
+    return embed;
+};
+
+const ProfileTempVoiceTimeStatisticsEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
+    const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
+        .setTitle(user.username)
+        .setThumbnail(user.avatarUrl)
+        .setDescription(`** **`)
         .setFields([
             {
                 name: `🔊  **${i18n.__("profile.temporaryVoiceTimeStatistics")}**`,
@@ -135,41 +162,9 @@ const ProfileEmbeds = async (client: ExtendedClient, user: UserDocument, colors:
                 inline: true,
             },
         ])
-        .setImage('https://i.imgur.com/dCM19Au.png');
+        .setImage(KnownLinks.EMBED_SPACER);
 
-    const embeds = [
-        {
-            emoji: '📝',
-            type: ProfilePages.About,
-            embed: about,
-        },
-        {
-            emoji: '📊',
-            type: ProfilePages.Statistics,
-            embed: statisticsEmbed,
-        },
-    ];
-    if (selfCall || user.stats.time.public) {
-        embeds.push({
-            emoji: '⏳',
-            type: ProfilePages.TimeSpent,
-            embed: timeStatisticsEmbed,
-        });
-    }
-    if (selfCall) {
-        embeds.push({
-            emoji: '📅',
-            type: ProfilePages.PresenceActivity,
-            embed: temporaryPresenceTimeStatisticsEmbed,
-        });
-    }
-    embeds.push({
-        emoji: '🔊',
-        type: ProfilePages.VoiceActivity,
-        embed: temporaryVoiceTimeStatisticsEmbed,
-    });
-
-    return embeds;
+    return embed;
 };
 
 const InformationEmbed = () => {
@@ -193,4 +188,5 @@ const WarningEmbed = () => {
     return embed;
 };
 
-export { InformationEmbed, ErrorEmbed, WarningEmbed, ProfileEmbeds };
+export { ErrorEmbed, InformationEmbed, ProfileAboutEmbed, ProfileStatisticsEmbed, ProfileTempPresenceTimeStatisticsEmbed, ProfileTempVoiceTimeStatisticsEmbed, ProfileTimeStatisticsEmbed, WarningEmbed };
+

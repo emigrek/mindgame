@@ -1,32 +1,34 @@
-import { ActionRowBuilder, ButtonBuilder, ChannelType, Guild, StringSelectMenuBuilder, TextChannel, ThreadChannel, ButtonInteraction, CommandInteraction, UserContextMenuCommandInteraction, User, Message, Collection, EmbedField, GuildMember, StringSelectMenuInteraction, EmbedBuilder, ChatInputCommandInteraction, AnySelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, ModalSubmitInteraction, VoiceChannel, ButtonStyle } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
-import { getGuild } from "@/modules/guild";
+import i18n from "@/client/i18n";
+import { config } from "@/config";
 import { SelectMenuOption, VoiceActivityStreak } from "@/interfaces";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
-import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect } from "@/modules/messages/selects";
-import { getLastCommits } from "@/utils/commits";
-import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
-import moment from "moment";
-import Vibrant = require('node-vibrant');
-import { GetColorName } from 'hex-color-to-color-name';
-import { getRanking, getUser } from "@/modules/user";
-import { getMemberColorRole } from "@/modules/roles";
 import { Message as MessageType } from '@/interfaces/Message';
+import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
+import { getGuild } from "@/modules/guild";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
+import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect } from "@/modules/messages/selects";
+import { getMemberColorRole } from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
-import mongoose from "mongoose";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-import { ErrorEmbed, InformationEmbed, ProfileEmbeds, WarningEmbed } from "./embeds";
-import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels, isMessageCacheable, syncEphemeralChannelMessages } from "@/modules/ephemeral-channel";
+import { getRanking, getUser } from "@/modules/user";
+import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
 import clean from "@/utils/clean";
-import { config } from "@/config";
-import i18n from "@/client/i18n";
+import { getLastCommits } from "@/utils/commits";
+import { ActionRowBuilder, AnySelectMenuInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, CommandInteraction, EmbedBuilder, EmbedField, Guild, GuildMember, Message, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, ThreadChannel, User, UserContextMenuCommandInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, VoiceChannel } from "discord.js";
+import { GetColorName } from 'hex-color-to-color-name';
+import moment from "moment";
+import mongoose from "mongoose";
+import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
+import Vibrant = require('node-vibrant');
 
-import { rankingStore } from "@/stores/rankingStore";
-import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { colorStore } from "@/stores/colorStore";
+import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { rankingStore } from "@/stores/rankingStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
-import { ephemeralChannelMessageCache } from "../ephemeral-channel/cache";
+import { KnownLinks } from "./knownLinks";
+import ProfilePagesManager from "./profilePagesManager";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -138,47 +140,39 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
     const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
     const colors = await useImageHex(renderedUser.avatarUrl);
-    const profileTimePublic = await getProfileTimePublicButton(client, renderedUser);
-    const followButton = await getProfileFollowButton(client, sourceUser, sourceTargetUser);
-
-    const profileEmbeds = await ProfileEmbeds(client, renderedUser, colors, selfCall);
-    const profilePage = profileEmbeds.find(({ type }: { type: ProfilePages }) => type === page);
-    const pageSelect = await getUserPageSelect(
-        profilePage ? `${profilePage.emoji} ${i18n.__(`profile.pages.${profilePage.type}`)}` : "🤔",
-        profileEmbeds.map(({ type, emoji }: { type: ProfilePages, emoji: string }) => ({
-            label: i18n.__(`profile.pages.${type}`),
-            value: type,
-            emoji: emoji
-        }))
-    );
-
+    const manager = new ProfilePagesManager({
+        client,
+        colors,
+        renderedUser,
+        sourceUser,
+        targetUser: sourceTargetUser,
+        selfCall
+    })
     
-    const profileEmbed = profilePage?.embed || profileEmbeds[0].embed;
+    const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .addComponents(
+            await getUserPageSelect(
+                i18n.__(`profile.pages.${page}`),
+                manager
+                    .getVisiblePages()
+                    .map(({ type, emoji }) => ({
+                        label: i18n.__(`profile.pages.${type}`),
+                        emoji: emoji,
+                        value: type
+                    }))
+            )
+        );
 
-    const row = new ActionRowBuilder<ButtonBuilder>();
-    
-    if (profilePage?.type === ProfilePages.About) {
-        row.addComponents(followButton);
-    }
+    const payload = await manager
+        .getPageByType(page || ProfilePages.About)
+        .getPayload();
 
-    if (profilePage?.type === ProfilePages.TimeSpent) {
-        row.addComponents(profileTimePublic);
-    }
-
-    const row2 = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .setComponents(pageSelect);
-
-    const components: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] = [row2];
-
-    if (profilePage?.type === ProfilePages.About || profilePage?.type === ProfilePages.TimeSpent) {
-        components.splice(0, 0, row);
-    }
+    payload.components = [...(payload.components || []), selectRow];
 
     return {
-        embeds: [profileEmbed],
-        components,
-        ephemeral: true
-    };
+        ...payload,
+        ephemeral: true,
+    }
 }
 
 const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
@@ -202,16 +196,16 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
             },
             {
                 name: i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${(Math.round(sourceUser.day.time.voice / 3600))}H\`\`\``,
+                value: `\`\`\`${Math.round(sourceUser.day.time.voice / 3600)}H\`\`\``,
                 inline: true
             },
             {
                 name: i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${Math.round((sourceUser.week.time.voice / 3600))}H\`\`\``,
+                value: `\`\`\`${Math.round(sourceUser.week.time.voice / 3600)}H\`\`\``,
                 inline: true
             }
         )
-        .setThumbnail("https://i.imgur.com/Ch9DTJB.png");
+        .setThumbnail(KnownLinks.SPARKLES);
 
     return {
         embeds: [embed],
@@ -277,7 +271,7 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
             }
         ])
         .setThumbnail(clientUserAvatar)
-        .setImage("https://i.imgur.com/ncCPDum.png")
+        .setImage(KnownLinks.QUICK_BUTTONS)
         .setFooter({
             text: i18n.__("help.footer")
         });
@@ -421,7 +415,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.dailyRewardTitle"))
         .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId }))
-        .setThumbnail("https://i.imgur.com/nBqVt6y.png")
+        .setThumbnail(KnownLinks.BIRTHDAY_CAKE)
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
@@ -686,7 +680,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         .setDescription(i18n.__mf("notifications.voiceStreakDescription", {
             userId: member.id
         }))
-        .setThumbnail("https://i.imgur.com/2tLc43u.png")
+        .setThumbnail(KnownLinks.FIRE)
         
     if (config.voiceSignificantActivityStreakReward > 0) {
         embed.addFields([
@@ -832,4 +826,5 @@ const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
     return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
 }
 
-export { getSignificantVoiceActivityStreakMessagePayload, createMessage, getLocalizedDateRange, getSelectMessagePayload, getMessage, getHelpMessagePayload, getRankingMessagePayload, getEphemeralChannelMessagePayload, getEvalMessagePayload, deleteMessage, getDailyRewardMessagePayload, getColorMessagePayload, getConfigMessagePayload, attachQuickButtons, getCommitsMessagePayload, sweepTextChannel, getLevelUpMessagePayload, getUserMessagePayload, useImageHex, ImageHexColors, getColorInt, getErrorMessagePayload, getFollowMessagePayload };
+export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, getUserMessagePayload, sweepTextChannel, useImageHex };
+

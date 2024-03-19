@@ -1,7 +1,7 @@
-import { ButtonInteraction } from "discord.js";
 import { Button } from "@/interfaces";
 import { getMessage, getUserMessagePayload } from "@/modules/messages";
 import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { ButtonInteraction } from "discord.js";
 
 const profile: Button = {
     customId: `profile`,

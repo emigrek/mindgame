@@ -1,7 +1,7 @@
 import { Select } from "@/interfaces";
 import { getUserMessagePayload } from "@/modules/messages";
-import { StringSelectMenuInteraction } from "discord.js";
 import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { StringSelectMenuInteraction } from "discord.js";
 
 export const userEmbedSelect: Select = {
     customId: "userEmbedSelect",
