@@ -1,10 +1,13 @@
 import i18n from "@/client/i18n";
-import { ProfilePages } from "@/interfaces";
+import { ProfilePages, VoiceActivityStreak } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
+import { getUserVoiceActivityStreak } from "@/modules/activity";
 import { ProfileGuildVoiceActivityStreakEmbed } from "@/modules/messages/embeds";
 
 export class GuildVoiceActivityStreak extends BaseProfilePage {
+    voiceActivityStreak: VoiceActivityStreak | undefined = undefined;
+
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🔥",
@@ -15,6 +18,14 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             position: 4,
             params: params,
         });
+
+        this.init();
+    }
+
+    async init() {
+        const { guild, renderedUser } = this.params;
+        if (!guild) return;
+        this.voiceActivityStreak = await getUserVoiceActivityStreak(renderedUser.userId, guild.id);
     }
 
     async getPayload() {
@@ -31,6 +42,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
     }
 
     get visible() {
-        return this.params.guild !== undefined;
+        if (this.voiceActivityStreak === undefined) return false;
+
+        return this.voiceActivityStreak.streak !== undefined;
     }
 }
