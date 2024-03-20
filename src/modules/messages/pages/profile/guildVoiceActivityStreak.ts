@@ -22,11 +22,12 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
         if (!guild) {
             throw new Error("Guild is required for guild voice activity streak page");
         }
-        const embed = await ProfileGuildVoiceActivityStreakEmbed(renderedUser, guild, colors);
-        
-        return {
-            embeds: [embed],
-        };
+        const guildVoiceActivityStreakEmbed = await ProfileGuildVoiceActivityStreakEmbed({
+            user: renderedUser,
+            guild,
+            colors,
+        });
+        return {embeds: [guildVoiceActivityStreakEmbed]};
     }
 
     get visible() {

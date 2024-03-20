@@ -1,4 +1,4 @@
-import { Config } from "@/interfaces";
+import { Config, VoiceActivityStreak } from "@/interfaces";
 
 export const config: Config = {
     /** 
@@ -49,20 +49,31 @@ export const config: Config = {
 
     // A function that determines whether a streak is significant enough to be notified about
     // The default formula is that a streak is significant if it's 3 or 5 or a multiple of 10
-    voiceSignificantActivityStreakFormula: (streak: number, maxStreak: number) => {
-        const isSignificant = streak === 3 || streak === 5 || (streak > 0 && streak % 10 === 0);
+    voiceActivityStreakLogic: ({ streak, maxStreak }): VoiceActivityStreak => {
+        if (!streak || !maxStreak) {
+            return {
+                streak: undefined,
+                maxStreak: undefined,
+                isSignificant: false,
+                nextSignificant: 0,
+            }
+        }
+        
+        const { value: c } = streak;
+
+        const isSignificant = c === 3 || c === 5 || (c > 0 && c % 10 === 0);
         const nextSignificant = (() => {
-            if (streak < 3) return 3;
-            if (streak < 5) return 5;
-            if (streak < 10) return 10;
-            else return Math.ceil((streak + 1) / 10) * 10;
+            if (c < 3) return 3;
+            if (c < 5) return 5;
+            if (c < 10) return 10;
+            else return Math.ceil((c + 1) / 10) * 10;
         })();
 
         return {
             streak,
-            maxStreak,
+            maxStreak: maxStreak,
             isSignificant,
-            nextSignificant
-        };
+            nextSignificant,
+        }
     }
 }

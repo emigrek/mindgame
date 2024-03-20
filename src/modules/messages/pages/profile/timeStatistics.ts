@@ -19,7 +19,7 @@ export class TimeStatistics extends BaseProfilePage {
 
     async getPayload() {
         const { client, renderedUser, colors, selfCall } = this.params;
-        const embed = await ProfileTimeStatisticsEmbed(renderedUser, colors, selfCall);
+        const embed = await ProfileTimeStatisticsEmbed({ user: renderedUser, colors, selfCall });
         const button = await getProfileTimePublicButton(client, renderedUser);
         const buttons = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(button);

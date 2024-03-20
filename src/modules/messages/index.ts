@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { SelectMenuOption, VoiceActivityStreak } from "@/interfaces";
+import { SelectMenuOption, Streak, VoiceActivityStreak } from "@/interfaces";
 import { Message as MessageType } from '@/interfaces/Message';
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import { getGuild } from "@/modules/guild";
@@ -406,12 +406,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             {
                 name: i18n.__("notifications.voiceStreakField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak?.streak?.value || 0)}\`\`\``,
                 inline: true
             },
             {
                 name: i18n.__("notifications.nextVoiceStreakRewardField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - (streak?.streak?.value || 0))}\`\`\``,
                 inline: true,
             }
         ]);
@@ -676,11 +676,11 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     embed.addFields([{
         name: i18n.__("notifications.voiceStreakField"),
-        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
+        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak?.streak?.value || 0)}\`\`\``,
         inline: true,
     }, {
         name: i18n.__("notifications.nextVoiceStreakRewardField"),
-        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
+        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - (streak?.streak?.value || 0))}\`\`\``,
         inline: true,
     }]);
 
@@ -808,5 +808,16 @@ const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
     return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
 }
 
-export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+const formatStreakField = (streak?: Streak) => {
+    return streak ? 
+        `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.value || 0)}\`\`\`` 
+        : 
+        `\`\`\`${i18n.__("utils.lack")}\`\`\``;
+}
+
+const formatNextStreakField = (daysTillNext: number) => {
+    return `\`\`\`${i18n.__n("notifications.voiceStreakFormat", daysTillNext)}\`\`\``;
+};
+
+export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
 

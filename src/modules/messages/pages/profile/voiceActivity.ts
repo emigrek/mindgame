@@ -17,7 +17,7 @@ export class VoiceActivity extends BaseProfilePage {
 
     async getPayload() {
         const { renderedUser, colors } = this.params;
-        const embed = await ProfileVoiceActivityEmbed(renderedUser, colors);
+        const embed = await ProfileVoiceActivityEmbed({ user: renderedUser, colors });
         
         return {
             embeds: [embed],

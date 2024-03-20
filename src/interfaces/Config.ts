@@ -1,5 +1,10 @@
 import { ExperienceCalculatorConfig } from "./ExperienceCalculatorConfig";
-import { VoiceActivityStreak } from "./VoiceActivityStreak";
+import { Streak, VoiceActivityStreak } from "./VoiceActivityStreak";
+
+export interface VoiceActivityStreakLogicProps {
+    streak?: Streak;
+    maxStreak?: Streak;
+}
 
 export interface Config {
     experienceConstant: number;
@@ -14,5 +19,5 @@ export interface Config {
     autoPutSlashCommands: boolean;
 
     voiceSignificantActivityStreakReward: number;
-    voiceSignificantActivityStreakFormula: (streak: number, maxStreak: number) => VoiceActivityStreak;
+    voiceActivityStreakLogic: (props: VoiceActivityStreakLogicProps) => VoiceActivityStreak;
 }

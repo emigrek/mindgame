@@ -7,9 +7,14 @@ import { UserDocument } from "@/modules/schemas/User";
 import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import Colors from "@/utils/colors";
 import { EmbedBuilder, Guild } from "discord.js";
-import { ImageHexColors, getColorInt, getLocalizedDateRange } from "..";
+import { ImageHexColors, formatNextStreakField, formatStreakField, getColorInt, getLocalizedDateRange } from "..";
 
-const BaseProfileEmbed = (user: UserDocument, colors: ImageHexColors) => {
+interface BaseProfileProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+}
+
+const BaseProfileEmbed = ({ colors, user }: BaseProfileProps) => {
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(user.username)
@@ -20,10 +25,16 @@ const BaseProfileEmbed = (user: UserDocument, colors: ImageHexColors) => {
     return embed;
 };
 
-const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
+interface ProfileAboutProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+    client: ExtendedClient;
+}
+
+const ProfileAboutEmbed = async ({ user, colors, client }: ProfileAboutProps) => {
     const userLastActivityDetails = await getUserLastActivityDetails(client, user);
     const followers = await getFollowers(user.userId).then(followers => followers.length);
-    const embed = BaseProfileEmbed(user, colors)
+    const embed = BaseProfileEmbed({user, colors})
         .setDescription(formatLastActivityDetails(userLastActivityDetails))
         .setFields([
             {
@@ -37,13 +48,18 @@ const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, col
     return embed;
 };
 
-const ProfileStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors) => {
+interface ProfileStatisticsProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+}
+
+const ProfileStatisticsEmbed = async ({ user, colors }: ProfileStatisticsProps) => {
     const { rank, total } = await getUserRank(user);
     const experienceProcentage = await getExperienceProcentage(user);
-    const embed = BaseProfileEmbed(user, colors)
+    const embed = BaseProfileEmbed({user, colors})
         .addFields([
             {
-                name: `📊  **${i18n.__("profile.pages.statistics")}**`,
+                name: `**${i18n.__("profile.pages.statistics")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -62,11 +78,17 @@ const ProfileStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors
     return embed;
 };
 
-const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const embed = BaseProfileEmbed(user, colors)
+interface ProfileTimeStatisticsProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+    selfCall?: boolean;
+}
+
+const ProfileTimeStatisticsEmbed = async ({ user, colors, selfCall }: ProfileTimeStatisticsProps) => {
+    const embed = BaseProfileEmbed({user, colors})
         .setFields([
             {
-                name: `⏳  **${i18n.__("profile.pages.timeStatistics")}**`,
+                name: `**${i18n.__("profile.pages.timeStatistics")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -92,11 +114,17 @@ const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexCo
     return embed;
 };
 
-const ProfilePresenceActivityEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const embed = BaseProfileEmbed(user, colors)
+interface ProfilePresenceActivityProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+    selfCall?: boolean;
+}
+
+const ProfilePresenceActivityEmbed = async ({ user, colors, selfCall }: ProfilePresenceActivityProps) => {
+    const embed = BaseProfileEmbed({user, colors})
         .setFields([
             {
-                name: `🖥  **${i18n.__("profile.pages.presenceActivity")}**`,
+                name: `**${i18n.__("profile.pages.presenceActivity")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -127,11 +155,16 @@ const ProfilePresenceActivityEmbed = async (user: UserDocument, colors: ImageHex
     return embed;
 };
 
-const ProfileVoiceActivityEmbed = async (user: UserDocument, colors: ImageHexColors) => {
-    const embed = BaseProfileEmbed(user, colors)
+interface ProfileVoiceActivityProps {
+    user: UserDocument;
+    colors: ImageHexColors;
+}
+
+const ProfileVoiceActivityEmbed = async ({ user, colors }: ProfileVoiceActivityProps) => {
+    const embed = BaseProfileEmbed({user, colors})
         .setFields([
             {
-                name: `🔊  **${i18n.__("profile.pages.voiceActivity")}**`,
+                name: `**${i18n.__("profile.pages.voiceActivity")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -155,29 +188,35 @@ const ProfileVoiceActivityEmbed = async (user: UserDocument, colors: ImageHexCol
     return embed;
 };
 
-const ProfileGuildVoiceActivityStreakEmbed = async (user: UserDocument, guild: Guild, colors: ImageHexColors) => {
+interface ProfileGuildVoiceActivityStreakProps {
+    user: UserDocument;
+    guild: Guild;
+    colors: ImageHexColors;
+}
+
+const ProfileGuildVoiceActivityStreakEmbed = async ({ user, guild, colors }: ProfileGuildVoiceActivityStreakProps) => {
     const streak = await getUserVoiceActivityStreak(user.userId, guild.id);
 
-    const embed = BaseProfileEmbed(user, colors)
+    const embed = BaseProfileEmbed({user, colors})
         .setFields([
             {
-                name: `🔥  **${i18n.__mf("profile.pages.guildVoiceActivityStreak", { guild: guild.name })}**`,
+                name: `**${i18n.__mf("profile.pages.guildVoiceActivityStreak", { guild: guild.name })}**`,
                 value: `** **`,
                 inline: false,
             },
             {
                 name: i18n.__("notifications.voiceStreakField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
+                value: formatStreakField(streak.streak),
                 inline: true
             },
             {
                 name: i18n.__("notifications.nextVoiceStreakRewardField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
+                value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0)),
                 inline: true,
             },
             {
                 name: i18n.__("notifications.maxVoiceStreakField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.maxStreak)}\`\`\``,
+                value: formatStreakField(streak.maxStreak),
                 inline: true,
             }
         ]);

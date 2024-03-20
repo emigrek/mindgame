@@ -20,13 +20,13 @@ export class About extends BaseProfilePage {
     async getPayload(): Promise<MessageCreateOptions> {
         const { client, renderedUser, colors, targetUser, sourceUser } = this.params;
 
-        const embed = await ProfileAboutEmbed(client, renderedUser, colors);
+        const aboutEmbed = await ProfileAboutEmbed({ user: renderedUser, colors, client });
         const buttons = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(await getProfileFollowButton(client, sourceUser, targetUser));
-
+            
         return {
-            embeds: [embed],
-            components: [buttons],
+            embeds: [aboutEmbed], 
+            components: [buttons]
         };
     }
 

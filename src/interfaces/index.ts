@@ -20,7 +20,7 @@ export { SelectMenuOption } from "./SelectMenuOption";
 export { Sorting } from './Sorting';
 export { ExtendedStatistics, Statistics, User } from "./User";
 export { VoiceActivity } from "./VoiceActivity";
-export { VoiceActivityStreak } from './VoiceActivityStreak';
+export { Streak, VoiceActivityStreak } from './VoiceActivityStreak';
 
 export type DeepPartial<T> = {
     [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]

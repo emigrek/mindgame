@@ -290,6 +290,7 @@
 		}
 	},
 	"utils": {
+		"lack": "None",
 		"userOnly": "This feature can only be used by users with profile.",
 		"textChannelOnly": "This feature can only be used in text channels.",
 		"guildOnly": "This feature can only be used in guilds.",

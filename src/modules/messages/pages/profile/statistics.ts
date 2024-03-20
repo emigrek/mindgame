@@ -17,7 +17,7 @@ export class Statistics extends BaseProfilePage {
 
     async getPayload() {
         const { renderedUser, colors } = this.params;
-        const embed = await ProfileStatisticsEmbed(renderedUser, colors);
+        const embed = await ProfileStatisticsEmbed({ user: renderedUser, colors });
         return {
             embeds: [embed],
         };

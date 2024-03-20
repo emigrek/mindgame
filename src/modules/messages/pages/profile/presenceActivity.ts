@@ -16,7 +16,7 @@ export class PresenceActivity extends BaseProfilePage {
 
     async getPayload() {
         const { selfCall, renderedUser, colors } = this.params;
-        const embed = await ProfilePresenceActivityEmbed(renderedUser, colors, selfCall);
+        const embed = await ProfilePresenceActivityEmbed({ user: renderedUser, colors, selfCall });
         
         return {
             embeds: [embed],
