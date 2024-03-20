@@ -14,7 +14,7 @@ export { Message } from './Message';
 export { Modal } from './Modal';
 export { Module } from "./Module";
 export { PresenceActivity } from "./PresenceActivity";
-export { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps } from './ProfilePage';
+export { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages } from './ProfilePage';
 export { Select } from "./Select";
 export { SelectMenuOption } from "./SelectMenuOption";
 export { Sorting } from './Sorting';

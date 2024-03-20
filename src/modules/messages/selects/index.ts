@@ -1,10 +1,10 @@
-import { StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from "discord.js";
-import { SelectMenuOption, Sorting } from "@/interfaces";
 import i18n from "@/client/i18n";
+import { SelectMenuOption, Sorting } from "@/interfaces";
+import { StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from "discord.js";
 
 const getUserPageSelect = async (placeholder: string, options: SelectMenuOption[]) => {
     const userPageSelect = new StringSelectMenuBuilder()
-        .setCustomId("userEmbedSelect")
+        .setCustomId("profileEmbedSelect")
         .setMinValues(1)
         .addOptions(options)
         .setPlaceholder(placeholder)

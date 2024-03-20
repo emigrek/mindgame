@@ -1,6 +1,6 @@
-import { ContextMenu } from "@/interfaces";
-import { getUserMessagePayload } from "@/modules/messages";
-import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { ContextMenu, ProfilePages } from "@/interfaces";
+import { getProfileMessagePayload } from "@/modules/messages";
+import { profileStore } from "@/stores/profileStore";
 import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 
 const profileContext: ContextMenu = {
@@ -15,7 +15,7 @@ const profileContext: ContextMenu = {
         profileState.targetUserId = interaction.targetId;
         profileState.page = ProfilePages.About;
         
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as UserContextMenuCommandInteraction);
+        const profileMessagePayload = await getProfileMessagePayload(client, interaction as UserContextMenuCommandInteraction);
         await interaction.followUp(profileMessagePayload);
     }
 };

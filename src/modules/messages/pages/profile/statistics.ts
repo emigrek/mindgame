@@ -1,11 +1,18 @@
+import i18n from "@/client/i18n";
+import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { ProfileStatisticsEmbed } from "@/modules/messages/embeds";
-import { ProfilePages } from "@/stores/profileStore";
 
 export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
-        super(ProfilePages.Statistics, "📊", params);
+        super({
+            emoji: "📊",
+            name: i18n.__("profile.pages.statistics"),
+            type: ProfilePages.Statistics,
+            position: 1,
+            params,
+        })
     }
 
     async getPayload() {

@@ -1,6 +1,6 @@
-import { Button } from "@/interfaces";
-import { getMessage, getUserMessagePayload } from "@/modules/messages";
-import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { Button, ProfilePages } from "@/interfaces";
+import { getMessage, getProfileMessagePayload } from "@/modules/messages";
+import { profileStore } from "@/stores/profileStore";
 import { ButtonInteraction } from "discord.js";
 
 const profile: Button = {
@@ -16,7 +16,7 @@ const profile: Button = {
         profileState.targetUserId = (sourceMessage && sourceMessage.targetUserId) ? sourceMessage.targetUserId : interaction.user.id;
         profileState.page = ProfilePages.About;
         
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction);
+        const profileMessagePayload = await getProfileMessagePayload(client, interaction as ButtonInteraction);
         await interaction.followUp(profileMessagePayload);
     }
 }

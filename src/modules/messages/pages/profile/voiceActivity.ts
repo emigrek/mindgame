@@ -1,16 +1,23 @@
+import i18n from "@/client/i18n";
+import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { ProfileTempVoiceTimeStatisticsEmbed } from "@/modules/messages/embeds";
-import { ProfilePages } from "@/stores/profileStore";
+import { ProfileVoiceActivityEmbed } from "@/modules/messages/embeds";
 
 export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
-        super(ProfilePages.VoiceActivity, "🔊", params);
+        super({
+            emoji: "🔊",
+            name: i18n.__("profile.pages.voiceActivity"),
+            type: ProfilePages.VoiceActivity,
+            position: 3,
+            params: params,
+        });
     }
 
     async getPayload() {
-        const { client, renderedUser, colors } = this.params;
-        const embed = await ProfileTempVoiceTimeStatisticsEmbed(client, renderedUser, colors);
+        const { renderedUser, colors } = this.params;
+        const embed = await ProfileVoiceActivityEmbed(renderedUser, colors);
         
         return {
             embeds: [embed],

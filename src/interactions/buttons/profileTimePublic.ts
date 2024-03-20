@@ -1,8 +1,8 @@
-import { ButtonInteraction } from "discord.js";
 import { Button } from "@/interfaces";
-import { getUserMessagePayload } from "@/modules/messages";
+import { getProfileMessagePayload } from "@/modules/messages";
 import { setPublicTimeStats } from "@/modules/user";
 import { profileStore } from "@/stores/profileStore";
+import { ButtonInteraction } from "discord.js";
 
 const profileTimePublic: Button = {
     customId: `profileTimePublic`,
@@ -15,7 +15,7 @@ const profileTimePublic: Button = {
 
         profileState.targetUserId = interaction.user.id;
     
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction);
+        const profileMessagePayload = await getProfileMessagePayload(client, interaction as ButtonInteraction);
         await interaction.editReply(profileMessagePayload);
     }
 }

@@ -6,7 +6,7 @@ import { Message as MessageType } from '@/interfaces/Message';
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import { getGuild } from "@/modules/guild";
 import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
-import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect } from "@/modules/messages/selects";
+import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getMemberColorRole } from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
 import { UserDocument } from "@/modules/schemas/User";
@@ -22,9 +22,10 @@ import mongoose from "mongoose";
 import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
 import Vibrant = require('node-vibrant');
 
+import { ProfilePages } from "@/interfaces";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { colorStore } from "@/stores/colorStore";
-import { ProfilePages, profileStore } from "@/stores/profileStore";
+import { profileStore } from "@/stores/profileStore";
 import { rankingStore } from "@/stores/rankingStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
 import { KnownLinks } from "./knownLinks";
@@ -109,7 +110,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     };
 }
 
-const getUserMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction) => {
+const getProfileMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction) => {
     const { targetUserId, page } = profileStore.get(interaction.user.id);
 
     const targetUser = client.users.cache.get(targetUserId ? targetUserId : interaction.user.id);
@@ -146,31 +147,12 @@ const getUserMessagePayload = async (client: ExtendedClient, interaction: Button
         renderedUser,
         sourceUser,
         targetUser: sourceTargetUser,
+        guild: interaction.guild || undefined,
         selfCall
     })
-    
-    const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>()
-        .addComponents(
-            await getUserPageSelect(
-                i18n.__(`profile.pages.${page}`),
-                manager
-                    .getVisiblePages()
-                    .map(({ type, emoji }) => ({
-                        label: i18n.__(`profile.pages.${type}`),
-                        emoji: emoji,
-                        value: type
-                    }))
-            )
-        );
-
-    const payload = await manager
-        .getPageByType(page || ProfilePages.About)
-        .getPayload();
-
-    payload.components = [...(payload.components || []), selectRow];
 
     return {
-        ...payload,
+        ...await manager.getPagePayloadByType(page || ProfilePages.About),
         ephemeral: true,
     }
 }
@@ -826,5 +808,5 @@ const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
     return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
 }
 
-export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, getUserMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
 

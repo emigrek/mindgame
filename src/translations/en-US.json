@@ -159,9 +159,10 @@
 		"pages": {
 			"about": "About",
 			"statistics": "Statistics",
-			"timeSpent": "Time spent",
+			"timeStatistics": "Time statistics",
 			"voiceActivity": "Voice activity",
-			"presenceActivity": "Server activity"
+			"presenceActivity": "Overall activity",
+			"guildVoiceActivityStreak": "Voice activity streak in {guild}"
 		}
 	},
 	"follow": {

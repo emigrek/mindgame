@@ -1,10 +1,10 @@
-import { ButtonInteraction } from "discord.js";
+import i18n from "@/client/i18n";
 import { Button } from "@/interfaces";
 import { createFollow, deleteFollow, getFollow } from "@/modules/follow";
-import { getErrorMessagePayload, getUserMessagePayload } from "@/modules/messages";
+import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { InformationEmbed } from "@/modules/messages/embeds";
 import { profileStore } from "@/stores/profileStore";
-import i18n from "@/client/i18n";
+import { ButtonInteraction } from "discord.js";
 
 const profileFollow: Button = {
     customId: `profileFollow`,
@@ -58,7 +58,7 @@ const profileFollow: Button = {
             });
         }
 
-        const profileMessagePayload = await getUserMessagePayload(client, interaction as ButtonInteraction);
+        const profileMessagePayload = await getProfileMessagePayload(client, interaction as ButtonInteraction);
         await interaction.editReply(profileMessagePayload);
     }
 }

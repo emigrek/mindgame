@@ -1,13 +1,20 @@
+import i18n from "@/client/i18n";
+import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { getProfileFollowButton } from "@/modules/messages/buttons";
 import { ProfileAboutEmbed } from "@/modules/messages/embeds";
-import { ProfilePages } from "@/stores/profileStore";
 import { ActionRowBuilder, ButtonBuilder, MessageCreateOptions } from "discord.js";
 
 export class About extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
-        super(ProfilePages.About, "📝", params);
+        super({
+            emoji: "📝",
+            name: i18n.__("profile.pages.about"),
+            type: ProfilePages.About,
+            position: 0,
+            params,
+        });
     }
 
     async getPayload(): Promise<MessageCreateOptions> {

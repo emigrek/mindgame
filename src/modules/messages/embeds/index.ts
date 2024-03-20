@@ -1,21 +1,29 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import { formatLastActivityDetails, getUserLastActivityDetails } from "@/modules/activity";
+import { formatLastActivityDetails, getUserLastActivityDetails, getUserVoiceActivityStreak } from "@/modules/activity";
 import { getFollowers } from "@/modules/follow";
 import { KnownLinks } from "@/modules/messages/knownLinks";
 import { UserDocument } from "@/modules/schemas/User";
 import { getExperienceProcentage, getUserRank } from "@/modules/user";
 import Colors from "@/utils/colors";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, Guild } from "discord.js";
 import { ImageHexColors, getColorInt, getLocalizedDateRange } from "..";
 
-const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
-    const userLastActivityDetails = await getUserLastActivityDetails(client, user);
-    const followers = await getFollowers(user.userId).then(followers => followers.length);
+const BaseProfileEmbed = (user: UserDocument, colors: ImageHexColors) => {
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(user.username)
         .setThumbnail(user.avatarUrl)
+        .setDescription(`** **`)
+        .setImage(KnownLinks.EMBED_SPACER);
+
+    return embed;
+};
+
+const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
+    const userLastActivityDetails = await getUserLastActivityDetails(client, user);
+    const followers = await getFollowers(user.userId).then(followers => followers.length);
+    const embed = BaseProfileEmbed(user, colors)
         .setDescription(formatLastActivityDetails(userLastActivityDetails))
         .setFields([
             {
@@ -32,14 +40,10 @@ const ProfileAboutEmbed = async (client: ExtendedClient, user: UserDocument, col
 const ProfileStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors) => {
     const { rank, total } = await getUserRank(user);
     const experienceProcentage = await getExperienceProcentage(user);
-    const embed = new EmbedBuilder()
-        .setColor(getColorInt(colors.Vibrant))
-        .setTitle(user.username)
-        .setDescription(`** **`)
-        .setThumbnail(user.avatarUrl)
+    const embed = BaseProfileEmbed(user, colors)
         .addFields([
             {
-                name: `📊  **${i18n.__("profile.statistics")}**`,
+                name: `📊  **${i18n.__("profile.pages.statistics")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -53,21 +57,16 @@ const ProfileStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors
                 value: `\`\`\`${user.stats.level} (${experienceProcentage}%)\`\`\``,
                 inline: true,
             },
-        ])
-        .setImage(KnownLinks.EMBED_SPACER);
+        ]);
 
     return embed;
 };
 
 const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const embed = new EmbedBuilder()
-        .setColor(getColorInt(colors.Vibrant))
-        .setTitle(user.username)
-        .setThumbnail(user.avatarUrl)
-        .setDescription(`** **`)
+    const embed = BaseProfileEmbed(user, colors)
         .setFields([
             {
-                name: `⏳  **${i18n.__("profile.timeStatistics")}**`,
+                name: `⏳  **${i18n.__("profile.pages.timeStatistics")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -81,8 +80,7 @@ const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexCo
                 value: `\`\`\`${Math.round(user.stats.time.presence/3600)}H\`\`\``,
                 inline: true,
             },
-        ])
-        .setImage(KnownLinks.EMBED_SPACER)
+        ]);
 
     if (selfCall && !user.stats.time.public) {
         embed.setColor(getColorInt(colors.DarkVibrant));
@@ -94,15 +92,11 @@ const ProfileTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexCo
     return embed;
 };
 
-const ProfileTempPresenceTimeStatisticsEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
-    const embed = new EmbedBuilder()
-        .setColor(getColorInt(colors.Vibrant))
-        .setTitle(user.username)
-        .setThumbnail(user.avatarUrl)
-        .setDescription(`** **`)
+const ProfilePresenceActivityEmbed = async (user: UserDocument, colors: ImageHexColors, selfCall?: boolean) => {
+    const embed = BaseProfileEmbed(user, colors)
         .setFields([
             {
-                name: `📅  **${i18n.__("profile.temporaryPresenceTimeStatistics")}**`,
+                name: `🖥  **${i18n.__("profile.pages.presenceActivity")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -121,8 +115,7 @@ const ProfileTempPresenceTimeStatisticsEmbed = async (user: UserDocument, colors
                 value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(user.month.time.presence/3600)}H\`\`\``,
                 inline: true,
             },
-        ])
-        .setImage(KnownLinks.EMBED_SPACER);
+        ]);
 
     if (selfCall) {
         embed.setColor(getColorInt(colors.DarkVibrant));
@@ -134,15 +127,11 @@ const ProfileTempPresenceTimeStatisticsEmbed = async (user: UserDocument, colors
     return embed;
 };
 
-const ProfileTempVoiceTimeStatisticsEmbed = async (client: ExtendedClient, user: UserDocument, colors: ImageHexColors) => {
-    const embed = new EmbedBuilder()
-        .setColor(getColorInt(colors.Vibrant))
-        .setTitle(user.username)
-        .setThumbnail(user.avatarUrl)
-        .setDescription(`** **`)
+const ProfileVoiceActivityEmbed = async (user: UserDocument, colors: ImageHexColors) => {
+    const embed = BaseProfileEmbed(user, colors)
         .setFields([
             {
-                name: `🔊  **${i18n.__("profile.temporaryVoiceTimeStatistics")}**`,
+                name: `🔊  **${i18n.__("profile.pages.voiceActivity")}**`,
                 value: `** **`,
                 inline: false,
             },
@@ -161,8 +150,32 @@ const ProfileTempVoiceTimeStatisticsEmbed = async (client: ExtendedClient, user:
                 value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(user.month.time.voice/3600)}H\`\`\``,
                 inline: true,
             },
-        ])
-        .setImage(KnownLinks.EMBED_SPACER);
+        ]);
+
+    return embed;
+};
+
+const ProfileGuildVoiceActivityStreakEmbed = async (user: UserDocument, guild: Guild, colors: ImageHexColors) => {
+    const streak = await getUserVoiceActivityStreak(user.userId, guild.id);
+
+    const embed = BaseProfileEmbed(user, colors)
+        .setFields([
+            {
+                name: `🔥  **${i18n.__mf("profile.pages.guildVoiceActivityStreak", { guild: guild.name })}**`,
+                value: `** **`,
+                inline: false,
+            },
+            {
+                name: i18n.__("notifications.voiceStreakField"),
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.streak)}\`\`\``,
+                inline: true
+            },
+            {
+                name: i18n.__("notifications.nextVoiceStreakRewardField"),
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
+                inline: true,
+            },
+        ]);
 
     return embed;
 };
@@ -188,5 +201,5 @@ const WarningEmbed = () => {
     return embed;
 };
 
-export { ErrorEmbed, InformationEmbed, ProfileAboutEmbed, ProfileStatisticsEmbed, ProfileTempPresenceTimeStatisticsEmbed, ProfileTempVoiceTimeStatisticsEmbed, ProfileTimeStatisticsEmbed, WarningEmbed };
+export { ErrorEmbed, InformationEmbed, ProfileAboutEmbed, ProfileGuildVoiceActivityStreakEmbed, ProfilePresenceActivityEmbed, ProfileStatisticsEmbed, ProfileTimeStatisticsEmbed, ProfileVoiceActivityEmbed, WarningEmbed };
 

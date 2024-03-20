@@ -1,13 +1,20 @@
+import i18n from "@/client/i18n";
+import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { getProfileTimePublicButton } from "@/modules/messages/buttons";
 import { ProfileTimeStatisticsEmbed } from "@/modules/messages/embeds";
-import { ProfilePages } from "@/stores/profileStore";
 import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 
-export class TimeSpent extends BaseProfilePage {
+export class TimeStatistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
-        super(ProfilePages.TimeSpent, "⏳", params);
+        super({
+            emoji: "⏳",
+            name: i18n.__("profile.pages.timeStatistics"),
+            type: ProfilePages.TimeStatistics,
+            position: 2,
+            params,
+        });
     }
 
     async getPayload() {

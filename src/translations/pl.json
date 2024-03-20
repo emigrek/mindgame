@@ -137,10 +137,6 @@
 		"followers": "Obserwujący",
 		"voice": "Czas głosowy",
 		"overall": "Ogółem",
-		"statistics": "Statystyki",
-		"timeStatistics": "Spędzony czas",
-		"temporaryVoiceTimeStatistics": "Aktywność głosowa",
-		"temporaryPresenceTimeStatistics": "Aktywność na serwerach",
 		"lastVoiceActivity": "Ostatnio słyszany(a) {time} w **{guild}**.",
 		"currentVoiceActivity": "Obecnie słyszany(a) od {time} w **{guild}**.",
 		"lastPresenceActivity": "Ostatnio widziany(a) {time} w **{guild}**. {client}",
@@ -153,13 +149,14 @@
 		"pages": {
 			"about": "O mnie",
 			"statistics": "Statystyki",
-			"timeSpent": "Spędzony czas",
-			"presenceActivity": "Aktywność na serwerach",
-			"voiceActivity": "Aktywność głosowa"
+			"timeStatistics": "Statystyki głosowe",
+			"voiceActivity": "Aktywność głosowa",
+			"presenceActivity": "Aktywność ogólna",
+			"guildVoiceActivityStreak": "Seria aktywności głosowej na {guild}"
 		}
 	},
 	"follow": {
-		"followed": "Pomyślnie obserwujesz {tag}!\nOd teraz będziesz otrzymywać powiadomienia za każdym razem gdy dołączy(a) na kanał głosowy po ≥8 godzinnej przerwie.",
+		"followed": "Pomyślnie obserwujesz {tag}!\nOd teraz będziesz otrzymywać powiadomienia za każdym razem gdy dołączy na kanał głosowy po ≥8 godzinnej przerwie.",
 		"alreadyFollowing": "Obserwujesz już {tag}.",
 		"unfollowed": "Przestałeś obserwować {tag}.",
 		"followNotificationDescription": "dołączył(a) na kanał głosowy.\n\nOstatnio <t:{time}:d>.",
@@ -167,11 +164,11 @@
 	},
 	"notifications": {
 		"levelUpTitle": "Awans!",
-		"levelUpDescription": "<@{userId}> osiągnął(eła) **następny poziom**!",
+		"levelUpDescription": "<@{userId}> osiąga **następny poziom**!",
 		"levelField": "Poziom",
 		"winsField": "Wygrane",
 		"dailyRewardTitle": "Codzienna nagroda",
-		"dailyRewardDescription": "<@{userId}> odebrał(a) **codzienną nagrodę**!",
+		"dailyRewardDescription": "<@{userId}> odbiera **codzienną nagrodę**!",
 		"dailyRewardField": "Nagroda",
 		"voiceStreakTitle": "Seria głosowa",
 		"voiceStreakDescription": "<@{userId}> osiąga **serię codziennej aktywności głosowej z rzędu**!",

@@ -1,8 +1,16 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { ImageHexColors } from "@/modules/messages";
 import { UserDocument } from "@/modules/schemas/User";
-import { ProfilePages } from "@/stores/profileStore";
-import { MessageCreateOptions } from "discord.js";
+import { Guild, MessageCreateOptions } from "discord.js";
+
+export enum ProfilePages {
+    About = "about",
+    Statistics = "statistics",
+    TimeStatistics = "timeStatistics",
+    PresenceActivity = "presenceActivity",
+    VoiceActivity = "voiceActivity",
+    GuildVoiceActivityStreak = "guildVoiceActivityStreak",
+}
 
 export interface ProfilePagePayloadParams {
     client: ExtendedClient;
@@ -10,6 +18,7 @@ export interface ProfilePagePayloadParams {
     targetUser: UserDocument;
     renderedUser: UserDocument;
     colors: ImageHexColors;
+    guild?: Guild;
     selfCall?: boolean;
 }
 
@@ -21,6 +30,7 @@ export interface ProfilePagePayloadProps {
 export interface ProfilePage {
     emoji: string;
     type: ProfilePages;
+    position: number;
     params: ProfilePagePayloadParams;
     getPayload: () => Promise<ProfilePagePayloadProps>;
     visible: boolean;
