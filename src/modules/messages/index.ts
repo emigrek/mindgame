@@ -816,7 +816,7 @@ const formatStreakField = (streak?: Streak) => {
 }
 
 const formatNextStreakField = (daysTillNext: number) => {
-    return `\`\`\`${i18n.__n("notifications.voiceStreakFormat", daysTillNext)}\`\`\``;
+    return daysTillNext ? `\`\`\`${i18n.__n("notifications.voiceStreakFormat", daysTillNext)}\`\`\`` : `\`\`\`${i18n.__("utils.never")}\`\`\``;
 };
 
 export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
