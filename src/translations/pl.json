@@ -173,6 +173,7 @@
 		"voiceStreakTitle": "Seria głosowa",
 		"voiceStreakDescription": "<@{userId}> osiąga **serię codziennej aktywności głosowej z rzędu**!",
 		"voiceStreakField": "Seria",
+		"maxVoiceStreakField": "Największa seria",
 		"voiceStreakFormat": {
 			"one": "%s dzień",
 			"other": "%s dni"

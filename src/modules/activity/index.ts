@@ -1,17 +1,17 @@
-import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
+import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 
-import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
+import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 
-import mongoose from "mongoose";
-import moment from "moment";
-import { updateUserStatistics } from "@/modules/user";
-import { Guild as DatabaseGuild, User as DatabaseUser, VoiceActivityStreak } from "@/interfaces";
-import { config } from "@/config";
-import { UserDocument } from "../schemas/User";
 import i18n from "@/client/i18n";
+import { config } from "@/config";
+import { Guild as DatabaseGuild, User as DatabaseUser, VoiceActivityStreak } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
+import { updateUserStatistics } from "@/modules/user";
+import moment from "moment";
+import mongoose from "mongoose";
+import { UserDocument } from "../schemas/User";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -428,7 +428,11 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
     
     const dates = activities.map(activity => moment(activity.from));
 
+    if (!dates.length) 
+        return config.voiceSignificantActivityStreakFormula(0, 0);
+
     let streak = 1;
+    let maxStreak = 1;
     let last = dates.at(0);
 
     for (const date of dates) {
@@ -436,15 +440,17 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
             continue;
 
 
-        if (date.dayOfYear() === last.dayOfYear() + 1)
+        if (date.dayOfYear() === last.dayOfYear() + 1) {
             streak++;
-        else 
+            maxStreak = Math.max(streak, maxStreak);
+        } else {
             streak = 1;
+        }
 
         last = date;
     }
 
-    return config.voiceSignificantActivityStreakFormula(streak);
+    return config.voiceSignificantActivityStreakFormula(streak, maxStreak);
 };
 
 const pruneActivities = async () => {
@@ -557,4 +563,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { formatLastActivityDetails, pruneActivities, PresenceActivityDocumentWithSeconds, VoiceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, PresenceActivitiesByGuildId, clientStatusToEmoji, getVoiceActivitiesByChannelId, getPresenceActivitiesByGuildId, getUserLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceClientStatus, checkGuildVoiceEmpty, startVoiceActivity, getGuildActiveVoiceActivities, getUserPresenceActivity, getVoiceActivityBetween, getPresenceActivityBetween, getUserVoiceActivity, startPresenceActivity, endVoiceActivity, endPresenceActivity, getVoiceActivity, getPresenceActivity, voiceActivityModel, validateVoiceActivities, validatePresenceActivities, getUserVoiceActivityStreak };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getGuildActiveVoiceActivities, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceActivityBetween, getPresenceClientStatus, getUserLastActivityDetails, getUserPresenceActivity, getUserVoiceActivity, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, getVoiceActivityBetween, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+

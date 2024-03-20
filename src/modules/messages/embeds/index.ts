@@ -175,6 +175,11 @@ const ProfileGuildVoiceActivityStreakEmbed = async (user: UserDocument, guild: G
                 value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - streak.streak)}\`\`\``,
                 inline: true,
             },
+            {
+                name: i18n.__("notifications.maxVoiceStreakField"),
+                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.maxStreak)}\`\`\``,
+                inline: true,
+            }
         ]);
 
     return embed;
