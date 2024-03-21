@@ -1,22 +1,21 @@
+import { Button, Command, ContextMenu, Event, Modal, Module, Select } from "@/interfaces";
 import { Client, Collection, REST, Routes } from "discord.js";
-import { Event, Module, Command, Button, Select, ContextMenu, Modal } from "@/interfaces";
 
 import events from "@/events";
 import modules from "@/modules";
 
-import commands from "@/interactions/commands";
 import buttons from "@/interactions/buttons";
-import selects from "@/interactions/selects";
+import commands from "@/interactions/commands";
 import contexts from "@/interactions/contexts";
 import modals from "@/interactions/modals";
+import selects from "@/interactions/selects";
 
-import { keys, config } from "@/config";
+import { config, keys } from "@/config";
 import moment from "moment";
 
-import localeList from "./localeList";
 import i18n from "./i18n";
+import localeList from "./localeList";
 
-import { getUsers, migrateUsername } from "@/modules/user";
 import { ExperienceUpdater } from "@/modules/experience";
 
 class ExtendedClient extends Client {
@@ -135,19 +134,6 @@ class ExtendedClient extends Client {
                 body: data
             },
         );
-    }
-
-    public async usernameUpdateMigration() {
-        const users = await getUsers();
-
-        const updatePromises = users.map(async (userDocument) => {
-            const user = await this.users.fetch(userDocument.userId);
-            await migrateUsername(user);
-        });
-
-        await Promise.all(updatePromises)
-            .then(() => console.log("[usernameUpdateMigration] Done"))
-            .catch((err) => console.error("[usernameUpdateMigration] Error: ", err));
     }
 }
 
