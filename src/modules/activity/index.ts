@@ -597,7 +597,7 @@ const getUserClients = async (user: UserDocument): Promise<GetUserClientProps> =
 const clientStatusToEmoji = (client: string) => {
     switch (client) {
         case 'desktop':
-            return '🖥'
+            return '🖥️';
         case 'mobile':
             return '📱';
         case 'web':
