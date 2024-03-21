@@ -23,9 +23,21 @@ export abstract class BaseProfilePage implements ProfilePage {
         this.position = props.position;
     }
 
+    init(): Promise<void> {
+        return Promise.resolve();
+    }
+
     abstract getPayload(): Promise<ProfilePagePayloadProps>;
 
     get visible() {
         return true;
+    }
+
+    get embedTitleField() {
+        return {
+            name: `**${this.emoji}   ${this.name}**`,
+            value: `** **`,
+            inline: false,
+        }
     }
 }

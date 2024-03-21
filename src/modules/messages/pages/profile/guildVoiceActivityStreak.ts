@@ -3,7 +3,8 @@ import { ProfilePages, VoiceActivityStreak } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { getUserVoiceActivityStreak } from "@/modules/activity";
-import { ProfileGuildVoiceActivityStreakEmbed } from "@/modules/messages/embeds";
+import { formatNextStreakField, formatStreakField } from "@/modules/messages";
+import { BaseProfileEmbed } from "@/modules/messages/embeds";
 
 export class GuildVoiceActivityStreak extends BaseProfilePage {
     voiceActivityStreak: VoiceActivityStreak | undefined = undefined;
@@ -16,10 +17,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             }),
             type: ProfilePages.GuildVoiceActivityStreak,
             position: 4,
-            params: params,
+            params,
         });
-
-        this.init();
     }
 
     async init() {
@@ -29,21 +28,50 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
     }
 
     async getPayload() {
-        const { renderedUser, guild, colors } = this.params;
-        if (!guild) {
+        const { guild } = this.params;
+        
+        if (!guild) 
             throw new Error("Guild is required for guild voice activity streak page");
-        }
-        const guildVoiceActivityStreakEmbed = await ProfileGuildVoiceActivityStreakEmbed({
-            user: renderedUser,
-            guild,
-            colors,
-        });
-        return {embeds: [guildVoiceActivityStreakEmbed]};
+    
+        return {
+            embeds: [ await this.getGuildVoiceActivityStreakEmbed() ]
+        };
+    }
+
+    async getGuildVoiceActivityStreakEmbed() {
+        if (!this.voiceActivityStreak) 
+            throw new Error("Voice activity streak is not initialized");
+
+        const { renderedUser, colors, guild } = this.params;
+
+        if (!guild)
+            throw new Error("Guild is required for guild voice activity streak page");
+        
+        const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setFields([
+                this.embedTitleField,
+                {
+                    name: i18n.__("notifications.voiceStreakField"),
+                    value: formatStreakField(this.voiceActivityStreak.streak),
+                    inline: true
+                },
+                {
+                    name: i18n.__("notifications.nextVoiceStreakRewardField"),
+                    value: formatNextStreakField(this.voiceActivityStreak.nextSignificant - (this.voiceActivityStreak.streak?.value || 0)),
+                    inline: true,
+                },
+                {
+                    name: i18n.__("notifications.maxVoiceStreakField"),
+                    value: formatStreakField(this.voiceActivityStreak.maxStreak),
+                    inline: true,
+                }
+            ]);
+
+        return embed;
     }
 
     get visible() {
         if (this.voiceActivityStreak === undefined) return false;
-
         return this.voiceActivityStreak.streak !== undefined;
     }
 }

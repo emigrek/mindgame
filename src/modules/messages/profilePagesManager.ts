@@ -1,5 +1,5 @@
 import { BaseProfilePage, ProfilePages } from "@/interfaces";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
+import { ProfilePagePayloadParams, ProfilePagePayloadProps } from "@/interfaces/ProfilePage";
 import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
 import * as profilePages from './pages/profile';
 import { getUserPageSelect } from "./selects";
@@ -10,12 +10,25 @@ class ProfilePagesManager {
 
     constructor(params: ProfilePagePayloadParams) {
         this.params = params;
-        this.pages = Object
+        this.pages = this.renderPages(params);
+    }
+
+    renderPages(params: ProfilePagePayloadParams): BaseProfilePage[] {
+        this.params = params;
+        return Object
             .values(profilePages)
             .map((Page) => new Page(params));
     }
 
-    getVisiblePages(): BaseProfilePage[] {
+    async init() {
+        for await (const page of this.pages) {
+            await page.init();
+        }
+
+        return this;
+    }
+
+    async getVisiblePages(): Promise<BaseProfilePage[]> {
         return this.pages
             .filter((page) => page.visible)
             .sort((a, b) => a.position - b.position);
@@ -28,23 +41,24 @@ class ProfilePagesManager {
     async getPagePayloadByType(type: ProfilePages) {
         const page = this.getPageByType(type);
         const payload = await page.getPayload();
+        return await this.attachPageSelectRow(type, payload);
+    }
 
+    async attachPageSelectRow(type: ProfilePages, payload: ProfilePagePayloadProps) {
+        const page = this.getPageByType(type);
+        const pages = await this.getVisiblePages();
         const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
                 await getUserPageSelect(
-                    `${page.emoji} ${page.name}`,
-                    this
-                        .getVisiblePages()
-                        .map(({ name, type, emoji }) => ({
-                            label: name,
-                            emoji: emoji,
-                            value: type
-                        }))
+                    page.name,
+                    pages.map(({ name, type, emoji }) => ({
+                        label: name,
+                        emoji: emoji,
+                        value: type
+                    }))
                 )
             );
-
         payload.components = [...(payload.components || []), selectRow];
-
         return payload;
     }
 }

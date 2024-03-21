@@ -32,6 +32,7 @@ export interface ProfilePage {
     type: ProfilePages;
     position: number;
     params: ProfilePagePayloadParams;
+    init?: () => Promise<void>;
     getPayload: () => Promise<ProfilePagePayloadProps>;
     visible: boolean;
 }

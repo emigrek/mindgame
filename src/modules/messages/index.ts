@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { SelectMenuOption, Streak, VoiceActivityStreak } from "@/interfaces";
+import { ProfilePages, SelectMenuOption, Streak, VoiceActivityStreak } from "@/interfaces";
 import { Message as MessageType } from '@/interfaces/Message';
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import { getGuild } from "@/modules/guild";
@@ -22,7 +22,6 @@ import mongoose from "mongoose";
 import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
 import Vibrant = require('node-vibrant');
 
-import { ProfilePages } from "@/interfaces";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { colorStore } from "@/stores/colorStore";
 import { profileStore } from "@/stores/profileStore";
@@ -141,7 +140,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
     const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
     const colors = await useImageHex(renderedUser.avatarUrl);
-    const manager = new ProfilePagesManager({
+    const manager = await new ProfilePagesManager({
         client,
         colors,
         renderedUser,
@@ -150,6 +149,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
         guild: interaction.guild || undefined,
         selfCall
     })
+        .init();
 
     return {
         ...await manager.getPagePayloadByType(page || ProfilePages.About),
