@@ -2,7 +2,7 @@ import i18n from "@/client/i18n";
 import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { formatLastActivityDetails, getUserLastActivityDetails } from "@/modules/activity";
+import { clientStatusToEmoji, formatLastActivityDetails, getUserClients, getUserLastActivityDetails } from "@/modules/activity";
 import { getFollowers } from "@/modules/follow";
 import { getProfileFollowButton } from "@/modules/messages/buttons";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
@@ -37,12 +37,26 @@ export class About extends BaseProfilePage {
 
         const userLastActivityDetails = await getUserLastActivityDetails(client, renderedUser);
         const followers = await getFollowers(renderedUser.userId).then(followers => followers.length);
+        const { clients, mostUsed } = await getUserClients(renderedUser);
+        const clientsEmojis = clients.map(client => clientStatusToEmoji(client));
+        const mostUsedEmoji = mostUsed ? clientStatusToEmoji(mostUsed) : undefined;
+
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
             .setDescription(formatLastActivityDetails(userLastActivityDetails))
             .setFields([
                 {
                     name: i18n.__("profile.followers"),
                     value: `\`\`\`${followers}\`\`\``,
+                    inline: true,
+                },
+                {
+                    name: i18n.__("profile.mostUsedClient"),
+                    value: `\`\`\`${mostUsedEmoji || i18n.__("utils.lack")}\`\`\``,
+                    inline: true,
+                },
+                {
+                    name: i18n.__("profile.clients"),
+                    value: `\`\`\`${clientsEmojis.length ? clientsEmojis.join(", ") : i18n.__("utils.lack")}\`\`\``,
                     inline: true,
                 },
             ])

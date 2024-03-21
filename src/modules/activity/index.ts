@@ -565,6 +565,35 @@ const formatLastActivityDetails = (details: UserLastActivityDetails) => {
     return `${voice}\n${presence}`;
 };
 
+interface GetUserClientProps {
+    clients: string[];
+    mostUsed?: string;
+}
+
+const getUserClients = async (user: UserDocument): Promise<GetUserClientProps> => {
+    const clients = new Map<string, number>();
+    const activities = await presenceActivityModel
+        .find({ userId: user.userId })
+        .sort({ from: -1 });
+
+    for (const activity of activities) {
+        const client = activity.client;
+        if (clients.has(client)) {
+            clients.set(client, (clients.get(client) || 0) + 1);
+        } else {
+            clients.set(client, 1);
+        }
+    }
+
+    const set = new Set(Array.from(clients.keys()));
+    const mostUsed = Array.from(clients).sort((a, b) => b[1] - a[1])[0];
+
+    return {
+        clients: Array.from(set),
+        mostUsed: mostUsed ? mostUsed[0] : undefined,
+    };
+}
+
 const clientStatusToEmoji = (client: string) => {
     switch (client) {
         case 'desktop':
@@ -578,5 +607,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getGuildActiveVoiceActivities, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceActivityBetween, getPresenceClientStatus, getUserLastActivityDetails, getUserPresenceActivity, getUserVoiceActivity, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, getVoiceActivityBetween, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getGuildActiveVoiceActivities, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceActivityBetween, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserPresenceActivity, getUserVoiceActivity, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, getVoiceActivityBetween, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
 

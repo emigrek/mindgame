@@ -137,6 +137,8 @@
 		"followers": "Obserwujący",
 		"voice": "Czas głosowy",
 		"overall": "Ogółem",
+		"mostUsedClient": "Urządzenie główne",
+		"clients": "Urządzenia",
 		"lastVoiceActivity": "Ostatnio słyszany(a) {time} w **{guild}**.",
 		"currentVoiceActivity": "Obecnie słyszany(a) od {time} w **{guild}**.",
 		"lastPresenceActivity": "Ostatnio widziany(a) {time} w **{guild}**. {client}",

@@ -144,6 +144,8 @@
 		"voice": "Voice time",
 		"overall": "Overall",
 		"statistics": "Statistics",
+		"mostUsedClient": "Main device",
+		"clients": "Devices",
 		"lastVoiceActivity": "Last heard {time} in **{guild}**.",
 		"currentVoiceActivity": "Now talking since {time} in **{guild}**.",
 		"lastPresenceActivity": "Last seen {time} in **{guild}**. {client}",
