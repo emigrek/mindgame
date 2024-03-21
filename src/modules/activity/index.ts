@@ -418,6 +418,39 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
     return presenceActivities;
 }
 
+const getUserClientsTime = async (userId: string): Promise<PresenceActivityDocumentWithSeconds[]> => {
+    const presenceActivities = await presenceActivityModel.aggregate([
+        {
+            $match: {
+                userId,
+                to: { $ne: null }
+            }
+        },
+        {
+            $addFields: {
+                seconds: {
+                    $round: [
+                        {
+                            $divide: [
+                                { $subtract: ["$to", "$from"] },
+                                1000
+                            ]
+                        },
+                        0
+                    ]
+                }
+            }
+        },
+        {
+            $sort: {
+                from: -1
+            }
+        }
+    ]);
+
+    return presenceActivities;
+}
+
 const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<VoiceActivityStreak> => {
     const activities = 
         await voiceActivityModel.find({
@@ -470,9 +503,9 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
 
 const pruneActivities = async () => {
     try {
-        const twoMonthsAgo = moment().subtract(2, "months").toDate();
-        await voiceActivityModel.deleteMany({ createdAt: { $lte: twoMonthsAgo } });
-        await presenceActivityModel.deleteMany({ createdAt: { $lte: twoMonthsAgo } });
+        const twoYearsAgo = moment().subtract(2, "year").toDate();
+        await voiceActivityModel.deleteMany({ createdAt: { $lte: twoYearsAgo } });
+        await presenceActivityModel.deleteMany({ createdAt: { $lte: twoYearsAgo } });
     } catch (e) {
         console.error(e);
     }
@@ -570,18 +603,19 @@ interface GetUserClientProps {
     mostUsed?: string;
 }
 
-const getUserClients = async (user: UserDocument): Promise<GetUserClientProps> => {
+const getUserClients = async (userId: string): Promise<GetUserClientProps> => {
     const clients = new Map<string, number>();
-    const activities = await presenceActivityModel
-        .find({ userId: user.userId })
-        .sort({ from: -1 });
+    const activities = await getUserClientsTime(userId);
 
     for (const activity of activities) {
         const client = activity.client;
-        if (clients.has(client)) {
-            clients.set(client, (clients.get(client) || 0) + 1);
-        } else {
-            clients.set(client, 1);
+        if (!clients.has(client)) {
+            clients.set(client, activity.seconds);
+        }
+
+        const current = clients.get(client);
+        if (current !== undefined) {
+            clients.set(client, current + activity.seconds);
         }
     }
 

@@ -37,7 +37,7 @@ export class About extends BaseProfilePage {
 
         const userLastActivityDetails = await getUserLastActivityDetails(client, renderedUser);
         const followers = await getFollowers(renderedUser.userId).then(followers => followers.length);
-        const { clients, mostUsed } = await getUserClients(renderedUser);
+        const { clients, mostUsed } = await getUserClients(renderedUser.userId);
         const clientsEmojis = clients.map(client => clientStatusToEmoji(client));
         const mostUsedEmoji = mostUsed ? clientStatusToEmoji(mostUsed) : undefined;
 
