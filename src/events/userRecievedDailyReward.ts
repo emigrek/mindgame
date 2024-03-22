@@ -1,19 +1,21 @@
-import { Guild, TextChannel, User } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event, VoiceActivityStreak } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
 import { createMessage, getDailyRewardMessagePayload } from "@/modules/messages";
+import { TextChannel } from "discord.js";
 
 
 export const userRecievedDailyReward: Event = {
     name: "userRecievedDailyReward",
-    run: async (client: ExtendedClient, user: User, guild: Guild, streak: VoiceActivityStreak) => {
-        const sourceGuild = await getGuild(guild);
+    run: async (client: ExtendedClient, userId: string, guildId: string, streak: VoiceActivityStreak) => {
+        const sourceGuild = await getGuild(guildId);
         if(!sourceGuild || !sourceGuild.channelId || !sourceGuild.notifications) return;
 
+        const guild = await client.guilds.fetch(guildId);
         const defaultChannel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
         if(!defaultChannel) return;
 
+        const user = await client.users.fetch(userId);
         const dailyRewardMessagePayload = await getDailyRewardMessagePayload(client, user, guild, streak);
         if(!dailyRewardMessagePayload) return;
         

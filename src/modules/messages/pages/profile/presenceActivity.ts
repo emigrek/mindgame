@@ -3,6 +3,7 @@ import { BaseProfilePage, ProfilePages } from "@/interfaces";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { getColorInt, getLocalizedDateRange } from "@/modules/messages";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
+import { getUserGuildStatistics } from "@/modules/user-guild-statistics";
 
 export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -22,24 +23,29 @@ export class PresenceActivity extends BaseProfilePage {
     }
 
     async getPresenceActivity() {
-        const { renderedUser, colors, selfCall } = this.params;
+        const { renderedUser, colors, selfCall, guild } = this.params;
+        if (!guild) {
+            throw new Error("Guild is required for presence activity page");
+        }
+
+        const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
             .setFields([
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateRange('day')}\n\`\`\`${Math.round(renderedUser.day.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateRange('week')}\n\`\`\`${Math.round(renderedUser.week.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(renderedUser.month.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
             ]);
@@ -55,7 +61,7 @@ export class PresenceActivity extends BaseProfilePage {
     }
 
     get visible() {
-        const { selfCall } = this.params;
-        return selfCall || false;
+        const { selfCall, guild } = this.params;
+        return selfCall || false || !!guild;
     }
 }

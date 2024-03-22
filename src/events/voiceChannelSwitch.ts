@@ -6,15 +6,16 @@ import { GuildMember, VoiceChannel } from "discord.js";
 export const voiceChannelSwitch: Event = {
     name: "voiceChannelSwitch",
     run: async (client: ExtendedClient, member: GuildMember, oldChannel: VoiceChannel, newChannel: VoiceChannel) => {
-        const activity = await getVoiceActivity(member);
+        const { guild } = member;
+
+        const activity = await getVoiceActivity({ userId: member.id, guildId: guild.id });
         if (!activity) {
             await startVoiceActivity(client, member, newChannel);
             return;
         }
 
-        const { guild } = member;
         if(newChannel.id === guild.afkChannelId){
-            await endVoiceActivity(client, member);
+            await endVoiceActivity(member);
             await checkGuildVoiceEmpty(client, guild, oldChannel);
             return;
         }

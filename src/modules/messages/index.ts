@@ -11,7 +11,8 @@ import { getMemberColorRole } from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
 import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-import { getRanking, getUser } from "@/modules/user";
+import { getUser } from "@/modules/user";
+import { getRanking } from '@/modules/user-guild-statistics';
 import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
 import clean from "@/utils/clean";
 import { getLastCommits } from "@/utils/commits";
@@ -63,7 +64,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     if (!guild)
         return getErrorMessagePayload();
 
-    const sourceGuild = await getGuild(guild);
+    const sourceGuild = await getGuild(guild.id);
     if (!sourceGuild)
         return getErrorMessagePayload();
 

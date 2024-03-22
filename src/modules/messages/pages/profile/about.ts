@@ -23,6 +23,12 @@ export class About extends BaseProfilePage {
     async getPayload(): Promise<MessageCreateOptions> {
         const { client, targetUser, sourceUser } = this.params;
 
+        if (targetUser.userId === sourceUser.userId) {
+            return {
+                embeds: [await this.getAboutEmbed()],
+            };
+        }
+
         const buttons = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(await getProfileFollowButton(client, sourceUser, targetUser));
             
@@ -35,7 +41,7 @@ export class About extends BaseProfilePage {
     async getAboutEmbed() {
         const { client, renderedUser, colors } = this.params;
 
-        const userLastActivityDetails = await getUserLastActivityDetails(client, renderedUser);
+        const userLastActivityDetails = await getUserLastActivityDetails(client, renderedUser.userId);
         const followers = await getFollowers(renderedUser.userId).then(followers => followers.length);
         const { clients, mostUsed } = await getUserClients(renderedUser.userId);
         const clientsEmojis = clients.map(client => clientStatusToEmoji(client));

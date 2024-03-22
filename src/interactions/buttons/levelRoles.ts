@@ -13,9 +13,9 @@ const levelRoles: Button = {
             return;
         }
 
-        const success = await syncGuildLevelRoles(interaction);
+        const success = await syncGuildLevelRoles({ client, interaction });
         if (success) {
-            await setLevelRoles(interaction.guild);
+            await setLevelRoles(interaction.guild.id);
         }
 
         const configMessage = await getConfigMessagePayload(client, interaction);

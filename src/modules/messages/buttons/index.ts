@@ -1,5 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
+import { UserGuildStatistics } from "@/interfaces/UserGuildStatistics";
 import { getFollow } from "@/modules/follow";
 import { getMessage } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
@@ -44,11 +45,11 @@ const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: Gui
     return levelRolesHoistButton;
 }
 
-const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: UserDocument) => {
+const getProfileTimePublicButton = async (client: ExtendedClient, userGuildStatistics: UserGuildStatistics) => {
     const publicProfileButton = new ButtonBuilder()
         .setCustomId("profileTimePublic")
         .setLabel(i18n.__("profile.timePublicButtonLabel"))
-        .setStyle(sourceUser.stats.time.public ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(userGuildStatistics.total.time.public ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return publicProfileButton;
 }

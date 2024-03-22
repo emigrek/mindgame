@@ -12,7 +12,7 @@ const notifications: Button = {
             return;
         }
 
-        await setNotifications(interaction.guild);
+        await setNotifications(interaction.guild.id);
         
         const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);

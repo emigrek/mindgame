@@ -12,7 +12,7 @@ const autoSweeping: Button = {
             return;
         }
 
-        await setAutoSweeing(interaction.guild);
+        await setAutoSweeing(interaction.guild.id);
         
         const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);

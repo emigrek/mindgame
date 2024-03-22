@@ -1,13 +1,13 @@
-import { GuildMember, TextChannel } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event, VoiceActivityStreak } from "@/interfaces";
-import { createMessage, getSignificantVoiceActivityStreakMessagePayload } from "@/modules/messages";
 import { getGuild } from "@/modules/guild";
+import { createMessage, getSignificantVoiceActivityStreakMessagePayload } from "@/modules/messages";
+import { GuildMember, TextChannel } from "discord.js";
 
 export const userSignificantVoiceActivityStreak: Event = {
     name: "userSignificantVoiceActivityStreak",
     run: async (client: ExtendedClient, member: GuildMember, streak: VoiceActivityStreak) => {
-        const guild = await getGuild(member.guild);
+        const guild = await getGuild(member.guild.id);
         if (!guild || !guild.notifications || !guild.channelId) return;
 
         const channel = await client.channels.fetch(guild.channelId) as TextChannel;

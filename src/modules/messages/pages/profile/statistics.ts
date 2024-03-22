@@ -3,7 +3,7 @@ import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
-import { getExperienceProcentage, getUserRank } from "@/modules/user";
+import { getExperienceProcentage, getUserGuildRank, getUserGuildStatistics } from "@/modules/user-guild-statistics";
 
 export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -23,9 +23,14 @@ export class Statistics extends BaseProfilePage {
     }
 
     async getStatisticsEmbed() {
-        const { renderedUser, colors } = this.params;
-        const { rank, total } = await getUserRank(renderedUser);
-        const experienceProcentage = await getExperienceProcentage(renderedUser);
+        const { renderedUser, colors, guild } = this.params;
+        if (!guild) {
+            throw new Error("Guild is required for statistics page");
+        }
+        
+        const { rank, total } = await getUserGuildRank({ userId: renderedUser.id, guildId: guild.id})
+        const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.id, guildId: guild.id });
+        const experienceProcentage = await getExperienceProcentage(userGuildStatistics);
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
             .addFields([
                 this.embedTitleField,
@@ -36,11 +41,16 @@ export class Statistics extends BaseProfilePage {
                 },
                 {
                     name: i18n.__("profile.level"),
-                    value: `\`\`\`${renderedUser.stats.level} (${experienceProcentage}%)\`\`\``,
+                    value: `\`\`\`${userGuildStatistics.level} (${experienceProcentage}%)\`\`\``,
                     inline: true,
                 },
             ]);
 
         return embed;
     }
-}
+
+    get visible() {
+        const { guild } = this.params;
+        return !!guild;
+    }
+} 
