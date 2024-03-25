@@ -1,5 +1,5 @@
-<div style="width: 100%;height: 150px;margin: 50px 0px 50px 0px;display: flex;justify-content: center;">
-    <img src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
+<div style="width: 900px;height: 150px;margin: 50px 0px 50px 0px;display: flex;justify-content: center;">
+    <img style="height: 150px;width: 150px;" src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
 </div>
 
 # 🌌 Mindgame
