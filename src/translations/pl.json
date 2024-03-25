@@ -154,7 +154,7 @@
 			"timeStatistics": "Statystyki głosowe",
 			"voiceActivity": "Aktywność głosowa",
 			"presenceActivity": "Aktywność ogólna",
-			"guildVoiceActivityStreak": "Seria aktywności głosowej na {guild}"
+			"guildVoiceActivityStreak": "Seria aktywności głosowej"
 		}
 	},
 	"follow": {
