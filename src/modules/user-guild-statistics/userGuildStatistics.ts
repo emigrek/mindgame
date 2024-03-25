@@ -1,7 +1,8 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { Sorting } from "@/interfaces";
+import { Sorting, SortingRanges, SortingTypes } from "@/interfaces";
 import { ExtendedUserStatistics, UserGuildStatistics, UserStatistics } from "@/interfaces/UserGuildStatistics";
-import userGuildStatisticsSchema from "@/modules/schemas/UserGuildStatistics";
+import { UserDocument } from "@/modules/schemas/User";
+import userGuildStatisticsSchema, { UserGuildStatisticsDocument } from "@/modules/schemas/UserGuildStatistics";
 import { expToLevel, levelToExp } from "@/modules/user";
 import { merge } from "@/utils/merge";
 import { Guild } from "discord.js";
@@ -95,6 +96,10 @@ export const clearExperience = async () => {
     return UserGuildStatisticsModel.deleteMany({});
 };
 
+export interface UserIncludedGuildStatisticsDocument extends UserGuildStatisticsDocument {
+    user: UserDocument;
+}
+
 export const getRanking = async (type: Sorting, page: number, perPage: number, guild: Guild, userIds?: string[]) => {
     const usersFilter = new Set<string>();
 
@@ -108,16 +113,35 @@ export const getRanking = async (type: Sorting, page: number, perPage: number, g
             usersFilter.add(userId);
         });
     }
-
+    
     const query = usersFilter.size ? {
         userId: { $in: Array.from(usersFilter) },
-        guildId: guild?.id
+        guildId: guild?.id,
+        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? {
+            "user.publicTimeStatistics": true
+        } : {})
     } : {};
 
-    const results = await UserGuildStatisticsModel.find(query).sort(type.sort);
-
+    const results = await UserGuildStatisticsModel.aggregate([
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "userId",
+                as: "user"
+            }
+        },
+        {
+            $unwind: "$user"
+        },
+        {
+            $match: query,
+        },
+        {
+            $sort: type.sort
+        },
+    ]) as UserIncludedGuildStatisticsDocument[];
     const pagesCount = Math.ceil((await UserGuildStatisticsModel.countDocuments(query)) / perPage) || 1;
-
     const onPage = results.slice((page - 1) * perPage, page * perPage);
 
     return {

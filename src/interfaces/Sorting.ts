@@ -13,7 +13,7 @@ export enum SortingRanges {
     MONTH = "month",
 }
 
-type SortValues = { [key: string]: mongoose.SortOrder | { $meta: "textScore"; } };
+type SortValues = Record<string, 1 | -1 | mongoose.Expression.Meta>;
 
 export interface Sorting {
     type: SortingTypes;
