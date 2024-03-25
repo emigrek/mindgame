@@ -8,7 +8,7 @@ export const roleUpdate: Event = {
     name: "roleUpdate",
     run: async (client: ExtendedClient, oldRole: Role, newRole: Role) => {
         const { guild } = oldRole;
-        const sourceGuild = await getGuild(guild);
+        const sourceGuild = await getGuild(guild.id);
         if (!sourceGuild || !sourceGuild.levelRoles) return;
 
         const isOldRoleLevelRole = levelRoleRegExp.test(oldRole.name);

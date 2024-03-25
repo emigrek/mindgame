@@ -1,7 +1,7 @@
-import { Presence } from "discord.js";
+import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { endPresenceActivity, getPresenceActivity, getPresenceClientStatus, startPresenceActivity } from "@/modules/activity";
-import ExtendedClient from "@/client/ExtendedClient";
+import { Presence } from "discord.js";
 
 export const presenceUpdate: Event = {
     name: "presenceUpdate",
@@ -21,17 +21,17 @@ export const presenceUpdate: Event = {
         if (
             (oldStatus === 'offline') && (newStatus !== 'offline')
         ) {
-            await startPresenceActivity(client, userId, guildId, newPresence)
+            await startPresenceActivity(userId, guildId, newPresence)
             return;
         } else if (
             (oldStatus !== 'offline') && (newStatus === 'offline')
         ) {
-            await endPresenceActivity(client, userId, guildId);
+            await endPresenceActivity(userId, guildId);
             return;
         } else if (
             (oldStatus !== newStatus)
         ) {
-            const existing = await getPresenceActivity(userId, guildId) || await startPresenceActivity(client, userId, guildId, newPresence);
+            const existing = await getPresenceActivity(userId, guildId) || await startPresenceActivity(userId, guildId, newPresence);
 
             existing.status = newStatus;
             await existing.save();
@@ -39,7 +39,7 @@ export const presenceUpdate: Event = {
         } else if (
             (oldStatus === newStatus) && (oldClient !== newClient)
         ) {
-            const existing = await getPresenceActivity(userId, guildId) || await startPresenceActivity(client, userId, guildId, newPresence);
+            const existing = await getPresenceActivity(userId, guildId) || await startPresenceActivity(userId, guildId, newPresence);
 
             existing.client = newClient;
             await existing.save();

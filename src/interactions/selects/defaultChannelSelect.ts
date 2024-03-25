@@ -13,7 +13,7 @@ export const defaultChannelSelect: Select = {
         }
 
         const selected = interaction.values[0];
-        await setDefaultChannelId(interaction.guild, selected);
+        await setDefaultChannelId({ channelId: selected, guildId: interaction.guild.id });
 
         const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);

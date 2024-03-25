@@ -3,6 +3,7 @@ import { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, Profile
 export interface BaseProfilPageProps {
     type: ProfilePages;
     name: string;
+    description?: string;
     emoji: string;
     params: ProfilePagePayloadParams;
     position: number;
@@ -11,6 +12,7 @@ export interface BaseProfilPageProps {
 export abstract class BaseProfilePage implements ProfilePage {
     type: ProfilePages;
     name: string;
+    description?: string;
     emoji: string;
     params: ProfilePagePayloadParams;
     position: number;
@@ -18,6 +20,7 @@ export abstract class BaseProfilePage implements ProfilePage {
     constructor(props : BaseProfilPageProps) {
         this.type = props.type;
         this.name = props.name;
+        this.description = props.description;
         this.emoji = props.emoji;
         this.params = props.params;
         this.position = props.position;

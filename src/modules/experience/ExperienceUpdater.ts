@@ -1,23 +1,18 @@
-import { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, getPresenceActivitiesByGuildId, getVoiceActivitiesByChannelId } from "@/modules/activity";
-import { getGuild } from "@/modules/guild";
-import { updateUserStatistics } from "@/modules/user";
 import ExtendedClient from "@/client/ExtendedClient";
-import moment from "moment";
 import { ExperienceCalculatorConfig } from "@/interfaces";
+import { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, getPresenceActivitiesByGuildId, getVoiceActivitiesByChannelId } from "@/modules/activity";
+import moment from "moment";
 
 import { ExperienceCalculator } from './ExperienceCalculator';
 
 import { config } from '@/config';
+import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
 
-type UserExperienceData = Partial<{
-    voice: {
-        experience: number;
-        sourceGuildId: string;
-    };
-    presence: {
-        experience: number;
-    };
-}>;
+type UserGuildExperienceData = {
+    userId: string;
+    voice?: number;
+    presence?: number;
+};
 
 class ExperienceUpdater {
     private client: ExtendedClient;
@@ -28,7 +23,7 @@ class ExperienceUpdater {
     private voiceActivities: VoiceActivitiesByChannelId[] =  [];
     private presenceActivities: PresenceActivitiesByGuildId[] = [];
 
-    private cache: Map<string, UserExperienceData> = new Map();
+    private cache: Map<string, UserGuildExperienceData[]> = new Map();
 
     constructor({ client, logging, calculatorConfig }: {
         client: ExtendedClient;
@@ -59,11 +54,9 @@ class ExperienceUpdater {
         const exp = this.calculator.getVoice(activity.seconds, inVoice);
         if (!exp) return;
 
-        this.updateCache(activity.userId, {
-            voice: {
-                experience: exp,
-                sourceGuildId: activity.guildId,
-            }
+        this.updateCache(activity.guildId, {
+            userId: activity.userId,
+            voice: exp,
         });
     }
 
@@ -71,37 +64,27 @@ class ExperienceUpdater {
         const exp = this.calculator.getPresence(activity.seconds);
         if (!exp) return;
 
-        this.updateCache(activity.userId, {
-            presence: {
-                experience: exp,
-            }
+        this.updateCache(activity.guildId, {
+            userId: activity.userId,
+            presence: exp,
         });
     }
 
-    private updateCache(userId: string, payload: UserExperienceData) {
-        const current = this.cache.get(userId);
-        if (!current) {
-            this.cache.set(userId, payload);
-            return;
+    private updateCache(guildId: string, payload: UserGuildExperienceData) {
+        const guild = this.cache.get(guildId);
+        if (!guild) {
+            return this.cache.set(guildId, [payload, ...(this.cache.get(guildId) || [])]);
         }
 
-        if (payload.voice) {
-            if (current.voice) {
-                current.voice.experience += payload.voice.experience;
-            } else {
-                current.voice = payload.voice;
-            }
+        const user = guild.find(user => user.userId === payload.userId);
+        if (!user) {
+            return guild.push(payload);
+        } else {
+            user.voice = (user.voice || 0) + (payload.voice || 0);
+            user.presence = (user.presence || 0) + (payload.presence || 0);
         }
-
-        if (payload.presence) {
-            if (current.presence) {
-                current.presence.experience += payload.presence.experience;
-            } else {
-                current.presence = payload.presence;
-            }
-        }
-
-        this.cache.set(userId, current);
+        
+        this.cache.set(guildId, guild);
     }
 
     private fillCache() {
@@ -121,21 +104,22 @@ class ExperienceUpdater {
     private applyCache() {
         const promises = Array
             .from(this.cache.entries())
-            .map(async ([userId, cache]) => {
-                const user = this.client.users.cache.get(userId);
-                if (!user) return;
-                
-                const guild = this.client.guilds.cache.get(cache.voice?.sourceGuildId || '');
-                const guildContext = guild ? await getGuild(guild) || undefined : undefined;
-                
-                await updateUserStatistics(this.client, user, {
-                    exp: (cache.voice?.experience || 0) + (cache.presence?.experience || 0),
-                    time: {
-                        voice: cache.voice ? 60 : 0,
-                        presence: cache.presence ? 60 : 0,
-                    }
-                }, guildContext);
-            });
+            .map(([guildId, cache]) => 
+                cache.map(async ({ userId, voice, presence }) => 
+                    updateUserGuildStatistics({
+                        client: this.client,
+                        userId: userId,
+                        guildId: guildId,
+                        update: {
+                            exp: (voice || 0) + (presence || 0),
+                            time: {
+                                voice: voice ? 60 : 0,
+                                presence: presence ? 60 : 0,
+                            }
+                        }
+                    })
+                )
+            );
 
         return Promise.all(promises);
     }
@@ -148,3 +132,4 @@ class ExperienceUpdater {
 }
 
 export { ExperienceUpdater };
+

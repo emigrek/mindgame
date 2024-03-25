@@ -26,12 +26,23 @@ const getChannelSelect = async (currentDefault: TextChannel, options: SelectMenu
 const getRankingSortSelect = async (sorting: Sorting, options: SelectMenuOption[]) => {
     const rankingSortSelect = new StringSelectMenuBuilder()
         .setCustomId("rankingSortSelect")
-        .setPlaceholder(`${i18n.__(`rankingSortings.label.${sorting.label}`)} (${i18n.__(`rankingSortings.range.${sorting.range}`)})`)
+        .setPlaceholder(i18n.__(`rankingSortings.label.${sorting.type}`))
         .setMinValues(1)
         .setMaxValues(1)
         .addOptions(options);
 
     return rankingSortSelect;
+};
+
+const getRankingRangeSelect = async (sorting: Sorting, options: SelectMenuOption[]) => {
+    const rankingRangeSelect = new StringSelectMenuBuilder()
+        .setCustomId("rankingRangeSelect")
+        .setPlaceholder(i18n.__(`rankingSortings.range.${sorting.range}`))
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(options);
+
+    return rankingRangeSelect;
 };
 
 const getRankingUsersSelect = () => {
@@ -44,4 +55,5 @@ const getRankingUsersSelect = () => {
     return rankingUsersSelect;
 };
 
-export { getChannelSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect };
+export { getChannelSelect, getRankingRangeSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect };
+

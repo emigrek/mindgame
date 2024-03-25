@@ -9,9 +9,9 @@ export const guildMemberAdd: Event = {
     name: "guildMemberAdd",
     run: async (client: ExtendedClient, member: GuildMember) => {
         await createUser(member.user);
-        const sourceGuild = await getGuild(member.guild);
+        const sourceGuild = await getGuild(member.guild.id);
         if(sourceGuild?.levelRoles) {
-            await assignUserLevelRole(member.user, member.guild);
+            await assignUserLevelRole({ client, userId: member.id, guildId: member.guild.id });
         } 
     }
 }

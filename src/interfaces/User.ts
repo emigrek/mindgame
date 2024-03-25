@@ -25,5 +25,6 @@ export interface User {
   stats: ExtendedStatistics;
   day: Statistics,
   week: Statistics,
-  month: Statistics
+  month: Statistics,
+  publicTimeStatistics: boolean;
 }

@@ -1,12 +1,12 @@
-import { BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel } from "discord.js";
+import ExtendedClient from "@/client/ExtendedClient";
+import i18n from "@/client/i18n";
 import { Event } from "@/interfaces";
+import { setDefaultChannelId } from "@/modules/guild";
 import { createGuild } from "@/modules/guild/";
+import { InformationEmbed } from "@/modules/messages/embeds";
 import { updatePresence } from "@/modules/presence/";
 import { assignLevelRolesInGuild } from "@/modules/roles/";
-import { setDefaultChannelId } from "@/modules/guild";
-import i18n from "@/client/i18n";
-import { InformationEmbed } from "@/modules/messages/embeds";
-import ExtendedClient from "@/client/ExtendedClient";
+import { BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel } from "discord.js";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);
@@ -37,11 +37,11 @@ export const guildCreate: Event = {
             return;
         }
 
-        const sourceGuild = await createGuild(guild);
+        const sourceGuild = await createGuild(guild.id);
         await updatePresence(client);
 
         if(sourceGuild.levelRoles)
-            await assignLevelRolesInGuild(guild);
+            await assignLevelRolesInGuild({client, guildId: guild.id});
 
         const textChannels = guild.channels.cache.filter((channel: BaseChannel) => channel.type === ChannelType.GuildText);
 
@@ -56,6 +56,6 @@ export const guildCreate: Event = {
         }
 
         const proposedTextChannel = textChannels.first() as TextChannel;
-        await setDefaultChannelId(guild, proposedTextChannel.id);
+        await setDefaultChannelId({guildId: guild.id, channelId: proposedTextChannel.id});
     }
 }

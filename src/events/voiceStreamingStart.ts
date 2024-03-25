@@ -6,7 +6,7 @@ import { GuildMember } from "discord.js";
 export const voiceStreamingStart: Event = {
     name: "voiceStreamingStart",
     run: async (client: ExtendedClient, member: GuildMember) => {
-        const voiceActivity = await getVoiceActivity(member);
+        const voiceActivity = await getVoiceActivity({ userId: member.id, guildId: member.guild.id });
         if (!voiceActivity) return;
         
         voiceActivity.streaming = true;

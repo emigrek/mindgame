@@ -3,58 +3,70 @@ import i18n from "@/client/i18n";
 import { getFollow } from "@/modules/follow";
 import { getMessage } from "@/modules/messages";
 import { GuildDocument } from "@/modules/schemas/Guild";
-import { UserDocument } from "@/modules/schemas/User";
 import { ButtonBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonStyle, Message, UserResolvable } from "discord.js";
 import { Groups, getRandomEmojiFromGroup } from "winemoji";
 
-const getNotificationsButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
+interface NotificationsProps {
+    guild: GuildDocument;
+}
+
+const getNotificationsButton = async ({ guild }: NotificationsProps) => {
     const notificationsButton = new ButtonBuilder()
         .setCustomId("notifications")
         .setLabel(i18n.__("config.notificationsButtonLabel"))
-        .setStyle(sourceGuild.notifications ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(guild.notifications ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return notificationsButton;
 }
 
-const getAutoSweepingButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
+const getAutoSweepingButton = async ({ guild }: NotificationsProps) => {
     const autoSweepingButton = new ButtonBuilder()
         .setCustomId("autoSweeping")
         .setLabel(i18n.__("config.autoSweepingButtonLabel"))
-        .setStyle(sourceGuild.autoSweeping ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(guild.autoSweeping ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return autoSweepingButton;
 }
 
-const getLevelRolesButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
+const getLevelRolesButton = async ({ guild }: NotificationsProps) => {
     const levelRolesButton = new ButtonBuilder()
         .setCustomId("levelRoles")
         .setLabel(i18n.__("config.levelRolesButtonLabel"))
-        .setStyle(sourceGuild.levelRoles ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(guild.levelRoles ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return levelRolesButton;
 }
 
-const getLevelRolesHoistButton = async (client: ExtendedClient, sourceGuild: GuildDocument) => {
+const getLevelRolesHoistButton =  async ({ guild }: NotificationsProps) => {
     const levelRolesHoistButton = new ButtonBuilder()
         .setCustomId("levelRolesHoist")
         .setLabel(i18n.__("config.levelRolesHoistButtonLabel"))
-        .setStyle(sourceGuild.levelRolesHoist ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(guild.levelRolesHoist ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return levelRolesHoistButton;
 }
 
-const getProfileTimePublicButton = async (client: ExtendedClient, sourceUser: UserDocument) => {
+interface ProfileTimePublicButtonProps {
+    isPublic: boolean;
+}
+
+const getProfileTimePublicButton = async ({ isPublic }: ProfileTimePublicButtonProps) => {
     const publicProfileButton = new ButtonBuilder()
         .setCustomId("profileTimePublic")
         .setLabel(i18n.__("profile.timePublicButtonLabel"))
-        .setStyle(sourceUser.stats.time.public ? ButtonStyle.Success : ButtonStyle.Secondary);
+        .setStyle(isPublic ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     return publicProfileButton;
 }
 
-const getProfileFollowButton = async (client: ExtendedClient, sourceUser: UserDocument, targetUser: UserDocument) => {
-    const following = await getFollow(sourceUser.userId, targetUser.userId);
+interface ProfileFollowButtonProps {
+    sourceUserId: string;
+    targetUserId: string;
+}
+
+const getProfileFollowButton = async ({ sourceUserId, targetUserId }: ProfileFollowButtonProps) => {
+    const following = await getFollow(sourceUserId, targetUserId);
 
     const followButton = new ButtonBuilder()
         .setCustomId("profileFollow")
@@ -91,7 +103,12 @@ const getRoleColorDisableButton = () => {
     return roleColorDisableButton
 }
 
-const getProfileButton = async (client: ExtendedClient, targetUserId?: UserResolvable) => {
+interface ProfileButtonProps {
+    client: ExtendedClient;
+    targetUserId?: UserResolvable;
+}
+
+const getProfileButton = async ({ client, targetUserId }: ProfileButtonProps) => {
     let profileButton;
 
     if (targetUserId) {
@@ -151,15 +168,6 @@ const getRankingPageDownButton = async (disabled = false) => {
     return rankingPageDownButton;
 };
 
-const getRankingGuildOnlyButton = async (newStatus: boolean) => {
-    const rankingGuildOnlyButton = new ButtonBuilder()
-        .setCustomId("rankingGuildOnly")
-        .setLabel(newStatus ? i18n.__("ranking.guildOnlyButtonLabel") : i18n.__("ranking.allGuildsButtonLabel"))
-        .setStyle(newStatus ? ButtonStyle.Success : ButtonStyle.Secondary);
-
-    return rankingGuildOnlyButton;
-}
-
 const getRankingSettingsButton = async () => {
     const rankingSettingsButton = new ButtonBuilder()
         .setCustomId("rankingSettings")
@@ -195,7 +203,7 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
 
     const row = new ActionRowBuilder<ButtonBuilder>();
 
-    const profileButton = await getProfileButton(client, sourceMessage?.targetUserId || undefined);
+    const profileButton = await getProfileButton({ client, targetUserId: sourceMessage.targetUserId || undefined });
     const sweepButton = await getSweepButton();
     const rankingButton = await getRankingButton();
     const helpButton = await getHelpButton();
@@ -225,5 +233,5 @@ const getSelectRerollButton = async (disabled: boolean) => {
     return rerollButton;
 }
 
-export { getAutoSweepingButton, getHelpButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton };
+export { getAutoSweepingButton, getHelpButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getProfileFollowButton, getProfileTimePublicButton, getQuickButtonsRows, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton };
 

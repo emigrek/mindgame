@@ -1,5 +1,5 @@
-import { Schema, SchemaTimestampsConfig, Document } from 'mongoose';
 import { User } from '@/interfaces';
+import { Document, Schema, SchemaTimestampsConfig } from 'mongoose';
 
 export type UserDocument = User & Document & SchemaTimestampsConfig;
 
@@ -33,7 +33,8 @@ const userSchema = new Schema<User>({
   stats: ExtendedStatistics,
   day: Statistics,
   week: Statistics,
-  month: Statistics
+  month: Statistics,
+  publicTimeStatistics: { type: Boolean, default: false },
 }, {
   timestamps: true
 });

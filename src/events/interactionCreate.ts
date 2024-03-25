@@ -3,7 +3,7 @@ import i18n from "@/client/i18n";
 import { keys } from "@/config";
 import { Event } from "@/interfaces";
 import { WarningEmbed } from "@/modules/messages/embeds";
-import { getUser, updateUserStatistics } from "@/modules/user";
+import { getUserGuildStatistics, updateUserGuildStatistics } from "@/modules/user-guild-statistics/userGuildStatistics";
 import { BaseInteraction } from "discord.js";
 
 export const interactionCreate: Event = {
@@ -28,8 +28,12 @@ export const interactionCreate: Event = {
             }
 
             if (command.options?.level) {
-                const user = await getUser(interaction.user);
-                if (!user) {
+                if (!interaction.guild) return;
+                const userGuildStatistics = await getUserGuildStatistics({
+                    userId: interaction.user.id,
+                    guildId: interaction.guild.id,
+                })
+                if (!userGuildStatistics) {
                     await interaction.reply({
                         embeds: [
                             WarningEmbed()
@@ -39,7 +43,7 @@ export const interactionCreate: Event = {
                     return;
                 }
 
-                if (user.stats.level < command.options.level) {
+                if (userGuildStatistics.level < command.options.level) {
                     await interaction.reply({
                         embeds: [
                             WarningEmbed()
@@ -55,9 +59,16 @@ export const interactionCreate: Event = {
             command.execute(client, interaction)
                 .catch((e) => console.log(`Error executing ChatInputCommand: ${e}`))
                 .then(() => {
-                    updateUserStatistics(client, interaction.user, {
-                        commands: 1
-                    });
+                    if (!interaction.guild) return;
+
+                    updateUserGuildStatistics({
+                        client,
+                        userId: interaction.user.id,
+                        guildId: interaction.guild.id,
+                        update: {
+                            commands: 1
+                        }
+                    })
                 });
         } else if (interaction.isModalSubmit()) {
             client.modals

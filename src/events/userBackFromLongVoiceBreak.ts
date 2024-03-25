@@ -1,10 +1,10 @@
-import { GuildMember } from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { getLastVoiceActivity } from "@/modules/activity";
 import { getFollowers } from "@/modules/follow";
 import { getFollowMessagePayload } from "@/modules/messages";
 import { getUser } from "@/modules/user";
+import { GuildMember } from "discord.js";
 
 export const userBackFromLongVoiceBreak: Event = {
     name: "userBackFromLongVoiceBreak",
@@ -15,7 +15,7 @@ export const userBackFromLongVoiceBreak: Event = {
         const followers = await getFollowers(member.user.id);
         if(!followers) return;
 
-        const lastActivity = await getLastVoiceActivity(member);
+        const lastActivity = await getLastVoiceActivity(member.user.id);
         if(!lastActivity) return;
 
         const followNotifications = followers.map(async (follower) => {

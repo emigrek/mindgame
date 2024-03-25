@@ -2,24 +2,33 @@ import i18n from "@/client/i18n";
 import { ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
+import { ExtendedUserStatistics } from "@/interfaces/UserGuildStatistics";
 import { getColorInt } from "@/modules/messages";
 import { getProfileTimePublicButton } from "@/modules/messages/buttons";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
+import { getUserTotalStatistics } from "@/modules/user-guild-statistics";
 import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 
 export class TimeStatistics extends BaseProfilePage {
+    totalStatistics: ExtendedUserStatistics | undefined = undefined;
+
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "⏳",
             name: i18n.__("profile.pages.timeStatistics"),
             type: ProfilePages.TimeStatistics,
-            position: 2,
+            position: 1,
             params,
         });
     }
 
+    async init() {
+        const { renderedUser } = this.params;
+        this.totalStatistics = await getUserTotalStatistics(renderedUser.userId);
+    }
+
     async getPayload() {
-        const { client, renderedUser, selfCall } = this.params;
+        const { selfCall, renderedUser } = this.params;
 
         if (!selfCall) {
             return {
@@ -27,7 +36,7 @@ export class TimeStatistics extends BaseProfilePage {
             };
         }
 
-        const button = await getProfileTimePublicButton(client, renderedUser);
+        const button = await getProfileTimePublicButton({ isPublic: renderedUser.publicTimeStatistics });
         const buttons = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(button);
 
@@ -39,23 +48,26 @@ export class TimeStatistics extends BaseProfilePage {
 
     async getTimeStatisticsEmbed() {
         const { renderedUser, colors, selfCall } = this.params;
+        if (!this.totalStatistics) {
+            throw new Error("User guild statistics is required for time statistics page");
+        }
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
             .setFields([
                 this.embedTitleField,
                 {
                     name: i18n.__("profile.voice"),
-                    value: `\`\`\`${Math.round(renderedUser.stats.time.voice/3600)}H\`\`\``,
+                    value: `\`\`\`${Math.round(this.totalStatistics.time.voice/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.overall"),
-                    value: `\`\`\`${Math.round(renderedUser.stats.time.presence/3600)}H\`\`\``,
+                    value: `\`\`\`${Math.round(this.totalStatistics.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
             ]);
 
-        if (selfCall && !renderedUser.stats.time.public) {
+        if (selfCall && !renderedUser.publicTimeStatistics) {
             embed.setColor(getColorInt(colors.DarkVibrant));
             embed.setFooter({
                 text: i18n.__("profile.visibilityNotification")
@@ -67,6 +79,6 @@ export class TimeStatistics extends BaseProfilePage {
 
     get visible() {
         const { selfCall, renderedUser } = this.params;
-        return selfCall || renderedUser.stats.time.public;
+        return selfCall || renderedUser.publicTimeStatistics || false;
     }
 }

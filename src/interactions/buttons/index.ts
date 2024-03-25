@@ -1,25 +1,24 @@
 import { Button } from "@/interfaces";
 
-import notifications from "./notifications";
-import levelRoles from "./levelRoles";
-import levelRolesHoist from "./levelRolesHoist";
-import profileTimePublic from "./profileTimePublic";
-import sweep from "./sweep";
-import profile from "./profile";
 import autoSweeping from "./autoSweeping";
 import commits from "./commits";
+import help from "./help";
+import levelRoles from "./levelRoles";
+import levelRolesHoist from "./levelRolesHoist";
+import notifications from "./notifications";
+import profile from "./profile";
+import profileFollow from "./profileFollow";
+import profileTimePublic from "./profileTimePublic";
+import ranking from "./ranking";
+import rankingPageDown from "./rankingPageDown";
+import rankingPageUp from "./rankingPageUp";
+import rankingSettings from "./rankingSettings";
+import roleColorDisable from "./roleColorDisable";
 import roleColorPick from "./roleColorPick";
 import roleColorUpdate from "./roleColorUpdate";
-import roleColorDisable from "./roleColorDisable";
-import ranking from "./ranking";
-import rankingPageUp from "./rankingPageUp";
-import rankingPageDown from "./rankingPageDown";
-import rankingGuildOnly from "./rankingGuildOnly";
-import rankingSettings from "./rankingSettings";
-import help from "./help";
-import profileFollow from "./profileFollow";
 import selectMessageDelete from "./selectMessageDelete";
 import selectReroll from "./selectReroll";
+import sweep from "./sweep";
 const buttons: Button[] = [
     notifications,
     levelRoles,
@@ -36,7 +35,6 @@ const buttons: Button[] = [
     ranking,
     rankingPageUp,
     rankingPageDown,
-    rankingGuildOnly,
     rankingSettings,
     help,
     selectMessageDelete,

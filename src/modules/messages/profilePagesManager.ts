@@ -50,11 +50,12 @@ class ProfilePagesManager {
         const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
                 await getUserPageSelect(
-                    page.name,
-                    pages.map(({ name, type, emoji }) => ({
+                    page.description ? page.description : page.name,
+                    pages.map(({ name, type, emoji, description }) => ({
                         label: name,
                         emoji: emoji,
-                        value: type
+                        value: type,
+                        description: description,
                     }))
                 )
             );
