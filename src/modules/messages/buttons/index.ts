@@ -203,7 +203,7 @@ const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => 
 
     const row = new ActionRowBuilder<ButtonBuilder>();
 
-    const profileButton = await getProfileButton({ client, targetUserId: sourceMessage.targetUserId || undefined });
+    const profileButton = await getProfileButton({ client, targetUserId: sourceMessage?.targetUserId || undefined });
     const sweepButton = await getSweepButton();
     const rankingButton = await getRankingButton();
     const helpButton = await getHelpButton();
