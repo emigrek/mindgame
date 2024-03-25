@@ -50,11 +50,6 @@ const ExtendedUserStatistics = {
         required: true
     },
     time: {
-        public: {
-            type: Boolean,
-            default: false,
-            required: true
-        },
         voice: {
             type: Number,
             default: 0,

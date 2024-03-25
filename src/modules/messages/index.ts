@@ -1,19 +1,17 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { ProfilePages, SelectMenuOption, Streak, VoiceActivityStreak } from "@/interfaces";
+import { ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak, VoiceActivityStreak } from "@/interfaces";
 import { Message as MessageType } from '@/interfaces/Message';
 import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
 import { getGuild } from "@/modules/guild";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getQuickButtonsRows, getRankingGuildOnlyButton, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
-import { getChannelSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
+import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getQuickButtonsRows, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
+import { getChannelSelect, getRankingRangeSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
 import { getMemberColorRole } from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
-import { UserDocument } from "@/modules/schemas/User";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { getUser } from "@/modules/user";
-import { getRanking } from '@/modules/user-guild-statistics';
-import { getSortingByType, runMask, sortings } from "@/modules/user/sortings";
+import { getRanking, getSortingByType, getUserGuildStatistics, runMask } from '@/modules/user-guild-statistics';
 import clean from "@/utils/clean";
 import { getLastCommits } from "@/utils/commits";
 import { ActionRowBuilder, AnySelectMenuInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, CommandInteraction, EmbedBuilder, EmbedField, Guild, GuildMember, Message, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, ThreadChannel, User, UserContextMenuCommandInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, VoiceChannel } from "discord.js";
@@ -92,10 +90,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
         }
     });
 
-    const notificationsButton = await getNotificationsButton(client, sourceGuild);
-    const levelRolesButton = await getLevelRolesButton(client, sourceGuild);
-    const levelRolesHoistButton = await getLevelRolesHoistButton(client, sourceGuild);
-    const autoSweepingButton = await getAutoSweepingButton(client, sourceGuild);
+    const notificationsButton = await getNotificationsButton({ guild: sourceGuild })
+    const levelRolesButton = await getLevelRolesButton({ guild: sourceGuild })
+    const levelRolesHoistButton = await getLevelRolesHoistButton({ guild: sourceGuild })
+    const autoSweepingButton = await getAutoSweepingButton({ guild: sourceGuild })
     const channelSelect = await getChannelSelect(currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
@@ -165,26 +163,27 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     if (!sourceUser)
         return getErrorMessagePayload();
 
+    const userGuildStatistics = await getUserGuildStatistics({ userId: sourceUser.userId, guildId: guild.id });
     const colors = await useImageHex(sourceUser.avatarUrl);
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.levelUpTitle"))
-        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, level: sourceUser.stats.level }))
+        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: userGuildStatistics.userId, level: userGuildStatistics.level }))
         .setFields(
             {
                 name: i18n.__("notifications.levelField"),
-                value: `\`\`\`${sourceUser.stats.level}\`\`\``,
+                value: `\`\`\`${userGuildStatistics.level}\`\`\``,
                 inline: true
             },
             {
                 name: i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${Math.round(sourceUser.day.time.voice / 3600)}H\`\`\``,
+                value: `\`\`\`${Math.round(userGuildStatistics.day.time.voice / 3600)}H\`\`\``,
                 inline: true
             },
             {
                 name: i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${Math.round(sourceUser.week.time.voice / 3600)}H\`\`\``,
+                value: `\`\`\`${Math.round(userGuildStatistics.week.time.voice / 3600)}H\`\`\``,
                 inline: true
             }
         )
@@ -315,74 +314,83 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 };
 
 const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction) => {
-    const { guildOnly, page, userIds, sorting, perPage } = rankingStore.get(interaction.user.id);
-    const guild = (guildOnly && interaction.guild) ? interaction.guild : undefined;
+    const { page, userIds, sorting, range, perPage } = rankingStore.get(interaction.user.id);
+    const guild = interaction.guild;
 
-    const selectOptions: SelectMenuOption[] = sortings.map((sorting) => ({
-        label: i18n.__(`rankingSortings.label.${sorting.label}`),
-        description: i18n.__(`rankingSortings.range.${sorting.range}`),
-        value: sorting.type,
-        emoji: sorting.emoji
-    }));
+    if (!guild)
+        return getErrorMessagePayload();
 
-    const sortingType = getSortingByType(sorting);
+    const sortSelectOptions: SelectMenuOption[] = Object.values(SortingTypes)
+        .map((sortingType: SortingTypes) => {
+            return {
+                label: i18n.__(`rankingSortings.label.${sortingType}`),
+                value: sortingType
+            }
+        });
+
+    const rangeSelectOptions: SelectMenuOption[] = Object.values(SortingRanges)
+        .map((rangeType: SortingRanges) => {
+            return {
+                label: i18n.__(`rankingSortings.range.${rangeType}`),
+                value: rangeType
+            }
+        });
+
+    const sortingType = getSortingByType(sorting, range);
     const { onPage, pagesCount } = await getRanking(sortingType, page, perPage, guild, userIds);
 
     rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
-    const fields: EmbedField[] = onPage.map((user: UserDocument, index: number) => {
+    const fields = onPage.map(async (statistics, index) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);
-        const indexString = () => {
-            switch (relativeIndex) {
-                case 1:
-                    return "`🥇.`";
-                case 2:
-                    return "`🥈.`";
-                case 3:
-                    return "`🥉.`";
-                default:
-                    return `\`${relativeIndex}.\``;
-            }
-        }
-
+        const user = await client.users.fetch(statistics.userId);
         return {
-            name: `${indexString()} ${user.username} ${user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
-            value: `\`\`\`${runMask(client, sortingType.mask, user)}\`\`\``,
+            name: `${relativeIndex}. ${user.username}   ${user.id === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
         };
     });
 
-    const sortSelectMenu = await getRankingSortSelect(sortingType, selectOptions);
+    const sortSelectMenu = await getRankingSortSelect(sortingType, sortSelectOptions);
+    const rangeSelectMenu = await getRankingRangeSelect(sortingType, rangeSelectOptions);
     const usersSelectMenu = getRankingUsersSelect();
     const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
     const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
-    const guildOnlyButton = await getRankingGuildOnlyButton(guild ? true : false);
     const settingsButton = await getRankingSettingsButton();
+    const color = await useImageHex(guild.iconURL({ extension: "png", size: 256 }))
+        .then(colors => getColorInt(colors.Vibrant));
 
     const sortRow = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(sortSelectMenu);
+    const rangeRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+        .addComponents(rangeSelectMenu);
     const usersRow = new ActionRowBuilder<UserSelectMenuBuilder>()
         .addComponents(usersSelectMenu);
     const paginationRow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(pageUpButton, pageDownButton);
-
-    if (interaction.guild && !userIds.length) {
-        paginationRow.addComponents(guildOnlyButton);
-    }
 
     paginationRow.addComponents(settingsButton);
 
     return {
         embeds: [
             InformationEmbed()
-                .setTitle(i18n.__mf("ranking.title"))
-                .setFields(fields)
+                .setColor(color)
+                .setTitle(i18n.__mf("ranking.title", {
+                    emoji: sortingType.emoji,
+                    range: i18n.__(`rankingSortings.range.${sortingType.range}`),
+                    sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
+                }))
+                .setAuthor({
+                    name: guild.name,
+                    iconURL: guild.iconURL({ extension: "png", size: 256 }) || undefined
+                })
+                .setFields(await Promise.all(fields))
                 .setDescription(!onPage.length ? i18n.__("ranking.empty") : null)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
                 })
         ],
-        components: [sortRow, usersRow, paginationRow]
+        components: [sortRow, rangeRow, usersRow, paginationRow]
     }
 };
 
@@ -407,12 +415,12 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             },
             {
                 name: i18n.__("notifications.voiceStreakField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak?.streak?.value || 0)}\`\`\``,
+                value: formatStreakField(streak.streak),
                 inline: true
             },
             {
                 name: i18n.__("notifications.nextVoiceStreakRewardField"),
-                value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - (streak?.streak?.value || 0))}\`\`\``,
+                value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0) || 3),
                 inline: true,
             }
         ]);
@@ -473,119 +481,125 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
     const channel = interaction.options.getChannel('channel');
     const timeout = interaction.options.getInteger('timeout');
 
-    if (subcommand === 'create') {
-        if (!timeout || !channel)
+    switch(subcommand) {
+        case 'create': {
+            if (!timeout || !channel)
+                return getErrorMessagePayload();
+
+            const exists = await getEphemeralChannel(channel.id);
+            if (exists) {
+                return {
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("ephemeralChannel.alreadyExists"))
+                    ]
+                }
+            }
+
+            if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
+                return {
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("utils.textChannelOnly"))
+                    ]
+                };
+            }
+    
+            const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
+            if (guildExisting.length >= 2) {
+                return {
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("ephemeralChannel.limitReached"))
+                    ]
+                }
+            }
+    
+            const ephemeralChannel = await createEphemeralChannel(interaction.guild.id, channel.id, timeout);
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__mf("ephemeralChannel.created", {
+                            channelId: ephemeralChannel.channelId,
+                            timeout: ephemeralChannel.timeout.toString()
+                        }))
+                ]
+            }
+        }
+
+        case 'edit': {
+            if (!timeout || !channel)
+                return getErrorMessagePayload();
+
+            const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
+            if (!ephemeralChannel) {
+                return {
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("ephemeralChannel.notFound"))
+                    ]
+                }
+            }
+    
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__mf("ephemeralChannel.edited", {
+                            channelId: ephemeralChannel.channelId,
+                            timeout: ephemeralChannel.timeout.toString()
+                        }))
+                ]
+            }
+        }
+
+        case 'list': {
+            const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
+            const fields = guildExisting.map((ephemeralChannel) => {
+                const channel = interaction.guild?.channels.cache.get(ephemeralChannel.channelId);
+                return {
+                    name: channel?.name || 'Unknown',
+                    value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\``
+                }
+            });
+            const embed = InformationEmbed()
+                .setTitle(i18n.__("ephemeralChannel.listTitle"))
+                .setFields(fields);
+    
+            if (!fields.length) {
+                embed.setDescription(i18n.__("ephemeralChannel.empty"));
+            }
+    
+            return {
+                embeds: [embed]
+            }
+        }
+
+        case 'delete': {
+            if (!channel) {
+                return getErrorMessagePayload();
+            }
+            
+            const result = await deleteEphemeralChannel(channel.id);
+            if (!result) {
+                return {
+                    embeds: [
+                        WarningEmbed()
+                            .setDescription(i18n.__("ephemeralChannel.notFound"))
+                    ]
+                }
+            }
+    
+            return {
+                embeds: [
+                    InformationEmbed()
+                        .setDescription(i18n.__mf("ephemeralChannel.deleted", { channelId: channel.id }))
+                ]
+            }
+        }
+
+        default: {
             return getErrorMessagePayload();
-
-        const exists = await getEphemeralChannel(channel.id);
-
-        if (exists) {
-            return {
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("ephemeralChannel.alreadyExists"))
-                ]
-            }
         }
-
-        if (!(interaction.guild?.channels.cache.get(channel.id)?.type === ChannelType.GuildText)) {
-            return {
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("utils.textChannelOnly"))
-                ]
-            };
-        }
-
-        const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
-
-        if (guildExisting.length >= 2) {
-            return {
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("ephemeralChannel.limitReached"))
-                ]
-            }
-        }
-
-        const ephemeralChannel = await createEphemeralChannel(interaction.guild.id, channel.id, timeout);
-        return {
-            embeds: [
-                InformationEmbed()
-                    .setDescription(i18n.__mf("ephemeralChannel.created", {
-                        channelId: ephemeralChannel.channelId,
-                        timeout: ephemeralChannel.timeout.toString()
-                    }))
-            ]
-        }
-    } else if (subcommand === 'edit') {
-        if (!timeout || !channel)
-            return getErrorMessagePayload();
-
-        const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
-
-        if (!ephemeralChannel) {
-            return {
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("ephemeralChannel.notFound"))
-                ]
-            }
-        }
-
-        return {
-            embeds: [
-                InformationEmbed()
-                    .setDescription(i18n.__mf("ephemeralChannel.edited", {
-                        channelId: ephemeralChannel.channelId,
-                        timeout: ephemeralChannel.timeout.toString()
-                    }))
-            ]
-        }
-    } else if (subcommand === 'list') {
-        const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
-        const fields = guildExisting.map((ephemeralChannel) => {
-            const channel = interaction.guild?.channels.cache.get(ephemeralChannel.channelId);
-            return {
-                name: channel?.name || 'Unknown',
-                value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\``
-            }
-        });
-        const embed = InformationEmbed()
-            .setTitle(i18n.__("ephemeralChannel.listTitle"))
-            .setFields(fields);
-
-        if (!fields.length) {
-            embed.setDescription(i18n.__("ephemeralChannel.empty"));
-        }
-
-        return {
-            embeds: [embed]
-        }
-    } else if (subcommand === 'delete') {
-        if (!channel) {
-            return getErrorMessagePayload();
-        }
-        
-        const result = await deleteEphemeralChannel(channel.id);
-
-        if (!result) {
-            return {
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("ephemeralChannel.notFound"))
-                ]
-            }
-        }
-
-        return {
-            embeds: [
-                InformationEmbed()
-                    .setDescription(i18n.__mf("ephemeralChannel.deleted", { channelId: channel.id }))
-            ]
-        }
-    } else {
-        return getErrorMessagePayload();
     }
 };
 
@@ -677,11 +691,11 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     embed.addFields([{
         name: i18n.__("notifications.voiceStreakField"),
-        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak?.streak?.value || 0)}\`\`\``,
+        value: formatStreakField(streak.streak),
         inline: true,
     }, {
         name: i18n.__("notifications.nextVoiceStreakRewardField"),
-        value: `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.nextSignificant - (streak?.streak?.value || 0))}\`\`\``,
+        value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0)),
         inline: true,
     }]);
 
@@ -810,7 +824,7 @@ const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
 }
 
 const formatStreakField = (streak?: Streak) => {
-    return streak ? 
+    return streak && streak.value > 1 ? 
         `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.value || 0)}\`\`\`` 
         : 
         `\`\`\`${i18n.__("utils.lack")}\`\`\``;

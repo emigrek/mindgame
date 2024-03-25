@@ -1,8 +1,8 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Sorting } from "@/interfaces";
-import { UserGuildStatistics, UserStatistics } from "@/interfaces/UserGuildStatistics";
+import { ExtendedUserStatistics, UserGuildStatistics, UserStatistics } from "@/interfaces/UserGuildStatistics";
 import userGuildStatisticsSchema from "@/modules/schemas/UserGuildStatistics";
-import { UserModel, expToLevel, getUsers, levelToExp } from "@/modules/user";
+import { expToLevel, levelToExp } from "@/modules/user";
 import { merge } from "@/utils/merge";
 import { Guild } from "discord.js";
 import mongoose from "mongoose";
@@ -34,6 +34,14 @@ export const getUserStatistics = async (userId: string) => {
 export const deleteUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
     return UserGuildStatisticsModel.deleteOne({ userId, guildId });
 }
+
+export const getGuildStatistics = async (guildId: string) => {
+    return UserGuildStatisticsModel.find({ guildId });
+};
+
+export const getAllUserGuildStatistics = async () => {
+    return UserGuildStatisticsModel.find({});
+};
 
 export interface UpdateUserGuildStatisticsProps {
     client: ExtendedClient;
@@ -73,23 +81,11 @@ export interface GetUserGuildRank {
 }
 
 export const getUserGuildRank = async ({ userId, guildId }: GetUserGuildRank) => {
-    const userGuildStatistics = await getUserGuildStatistics({ userId, guildId });
-    const rank = await UserGuildStatisticsModel.countDocuments({ "total.exp": { $gt: userGuildStatistics.total.exp } });
-    const total = await UserGuildStatisticsModel.countDocuments();
-    return { rank: rank + 1, total };
+    const guildStatistics = await getGuildStatistics(guildId);
+    const sorted = guildStatistics.sort((a, b) => b.total.exp - a.total.exp);
+    const rank = sorted.findIndex((statistics) => statistics.userId === userId) + 1;
+    return { rank, total: guildStatistics.length };
 };
-
-export interface UpdateUserGuildTimePublicProps {
-    userId: string;
-    guildId: string;
-}
-
-export const updateUserGuildTimePublic = async ({ userId, guildId }: UpdateUserGuildTimePublicProps) => {
-    const userGuildStatistics = await getUserGuildStatistics({ userId, guildId });
-    userGuildStatistics.total.time.public = !userGuildStatistics.total.time.public;
-    await userGuildStatistics.save();
-    return userGuildStatistics;
-}
 
 export const clearGuildExperience = async (guildId: string) => {
     return UserGuildStatisticsModel.deleteMany({ guildId });
@@ -99,7 +95,7 @@ export const clearExperience = async () => {
     return UserGuildStatisticsModel.deleteMany({});
 };
 
-export const getRanking = async (type: Sorting, page: number, perPage: number, guild?: Guild, userIds?: string[]) => {
+export const getRanking = async (type: Sorting, page: number, perPage: number, guild: Guild, userIds?: string[]) => {
     const usersFilter = new Set<string>();
 
     if (userIds?.length) {
@@ -115,11 +111,12 @@ export const getRanking = async (type: Sorting, page: number, perPage: number, g
 
     const query = usersFilter.size ? {
         userId: { $in: Array.from(usersFilter) },
+        guildId: guild?.id
     } : {};
 
-    const results = await UserModel.find(query).sort(type.sort);
+    const results = await UserGuildStatisticsModel.find(query).sort(type.sort);
 
-    const pagesCount = Math.ceil((await UserModel.countDocuments(query)) / perPage) || 1;
+    const pagesCount = Math.ceil((await UserGuildStatisticsModel.countDocuments(query)) / perPage) || 1;
 
     const onPage = results.slice((page - 1) * perPage, page * perPage);
 
@@ -129,39 +126,18 @@ export const getRanking = async (type: Sorting, page: number, perPage: number, g
     }
 };
 
-export const clearTemporaryStatistics = async (type: string) => {
-    const blankTemporaryStatistic = {
-        exp: 0,
-        commands: 0,
-        messages: 0,
-        time: {
-            voice: 0,
-            presence: 0,
-        }
-    };
-
-    const users = await getUsers();
-    
-    for (const user of users) {
-        const userStatistics = await getUserStatistics(user.userId);
-
-        const promises = userStatistics.map((statistics) => {
-            switch (type) {
-                case "day":
-                    statistics.day = blankTemporaryStatistic;
-                    break;
-                case "week":
-                    statistics.week = blankTemporaryStatistic;
-                    break;
-                case "month":
-                    statistics.month = blankTemporaryStatistic;
-                    break;
+export const clearTemporaryStatistics = async (type: 'day' | 'week' | 'month') => {
+    return UserGuildStatisticsModel.updateMany({}, {
+        [`${type}`]: {
+            exp: 0,
+            commands: 0,
+            messages: 0,
+            time: {
+                voice: 0,
+                presence: 0,
             }
-            return statistics.save();
-        });
-
-        await Promise.all(promises);
-    }
+        }
+    });
 };
 
 export const getExperienceProcentage = async (userGuildStatistics: UserGuildStatistics) => {
@@ -169,3 +145,22 @@ export const getExperienceProcentage = async (userGuildStatistics: UserGuildStat
     const expToLevelUp = levelToExp(userGuildStatistics.level + 1);
     return (((userGuildStatistics.total.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed(2);
 };
+
+export const getUserTotalStatistics = async (userId: string): Promise<ExtendedUserStatistics> => {
+    const userGuildStatistics = await UserGuildStatisticsModel.find({ userId });
+
+    const total = userGuildStatistics.reduce((acc, statistics) => {
+        acc = merge(acc, statistics.total);
+        return acc;
+    }, {
+        exp: 0,
+        commands: 0,
+        messages: 0,
+        time: {
+            voice: 0,
+            presence: 0,
+        }
+    });
+
+    return total;
+}

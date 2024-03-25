@@ -49,8 +49,7 @@ const deleteUser = async (userId: string) => {
 }
 
 const getUser = async (user: User) => {
-    if (user.bot)
-        return null;
+    if (user.bot) return null;
 
     let exists = await UserModel.findOne({ userId: user.id });
 
@@ -78,6 +77,20 @@ const updateUser = async (user: User) => {
     await exists.save();
 
     return exists;
+}
+
+export interface UpdateUserPublicTimeStatisticsProps {
+    userId: string;
+}
+
+export const updateUserPublicTimeStatistics = async ({ userId }: UpdateUserPublicTimeStatisticsProps) => {
+    const user = await UserModel.findOne({userId});
+    if (!user) return null;
+
+    user.publicTimeStatistics = !user.publicTimeStatistics;
+
+    await user.save();
+    return user;
 }
 
 const getNewFeatures = async (client: ExtendedClient, oldLevel: number, newLevel: number) => {

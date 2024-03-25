@@ -12,9 +12,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🔥",
-            name: i18n.__mf("profile.pages.guildVoiceActivityStreak", {
-                guild: params.guild?.name,
-            }),
+            name: params.guild?.name || "🤔",
+            description: i18n.__("profile.pages.guildVoiceActivityStreak"),
             type: ProfilePages.GuildVoiceActivityStreak,
             position: 4,
             params,
@@ -48,6 +47,10 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             throw new Error("Guild is required for guild voice activity streak page");
         
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setAuthor({
+                name: guild.name,
+                iconURL: guild.iconURL() || undefined,
+            })
             .setFields([
                 this.embedTitleField,
                 {
@@ -68,6 +71,14 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             ]);
 
         return embed;
+    }
+
+    get embedTitleField() {
+        return {
+            name: `**${this.emoji}   ${this.description}**`,
+            value: `** **`,
+            inline: false,
+        }
     }
 
     get visible() {

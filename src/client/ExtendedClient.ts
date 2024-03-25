@@ -17,6 +17,8 @@ import i18n from "./i18n";
 import localeList from "./localeList";
 
 import { ExperienceUpdater } from "@/modules/experience";
+import { UserModel, getUsers } from "@/modules/user";
+import { createUserGuildStatistics, getUserGuildStatistics } from "@/modules/user-guild-statistics";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -134,6 +136,43 @@ class ExtendedClient extends Client {
                 body: data
             },
         );
+    }
+
+    public async migrateUserStatistics(guildIds: string[]) {
+        const users = await getUsers();
+
+        const promises = users.map((user) => 
+            guildIds.map(async guildId => {
+                const guild = await this.guilds.fetch(guildId)
+                const isUserInGuild = guild.members.cache.has(user.userId);
+                if (!isUserInGuild) return;
+
+                let userGuildStatistics = await getUserGuildStatistics({ userId: user.userId, guildId: guildId });
+                if (!userGuildStatistics) {
+                    userGuildStatistics = await createUserGuildStatistics({ userId: user.userId, guildId: guildId });
+                }
+
+                userGuildStatistics.level = user.stats.level;
+                userGuildStatistics.total.exp = user.stats.exp;
+                userGuildStatistics.total.commands = user.stats.commands;
+                userGuildStatistics.total.time = {
+                    voice: user.stats.time.voice,
+                    presence: user.stats.time.presence
+                };
+
+                return userGuildStatistics.save();
+            })
+        );
+
+        await Promise.all(promises.flat());
+    }
+
+    public async deleteUnusedUserProps() {
+        await UserModel.updateMany({}, [
+            {
+                $unset: ["followers", "stats", "day", "week", "month"]
+            }
+        ]);
     }
 }
 

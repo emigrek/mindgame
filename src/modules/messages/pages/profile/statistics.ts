@@ -9,9 +9,10 @@ export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "📊",
-            name: i18n.__("profile.pages.statistics"),
+            name: params.guild?.name || "🤔",
+            description: i18n.__("profile.pages.statistics"),
             type: ProfilePages.Statistics,
-            position: 1,
+            position: 2,
             params,
         })
     }
@@ -28,10 +29,15 @@ export class Statistics extends BaseProfilePage {
             throw new Error("Guild is required for statistics page");
         }
         
-        const { rank, total } = await getUserGuildRank({ userId: renderedUser.id, guildId: guild.id})
-        const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.id, guildId: guild.id });
+        const { rank, total } = await getUserGuildRank({ userId: renderedUser.userId, guildId: guild.id})
+        const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
         const experienceProcentage = await getExperienceProcentage(userGuildStatistics);
+
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setAuthor({
+                name: guild.name,
+                iconURL: guild.iconURL() || undefined,
+            })
             .addFields([
                 this.embedTitleField,
                 {
@@ -47,6 +53,14 @@ export class Statistics extends BaseProfilePage {
             ]);
 
         return embed;
+    }
+
+    get embedTitleField() {
+        return {
+            name: `**${this.emoji}   ${this.description}**`,
+            value: `** **`,
+            inline: false,
+        }
     }
 
     get visible() {

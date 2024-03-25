@@ -21,7 +21,7 @@ export class About extends BaseProfilePage {
     }
 
     async getPayload(): Promise<MessageCreateOptions> {
-        const { client, targetUser, sourceUser } = this.params;
+        const { targetUser, sourceUser } = this.params;
 
         if (targetUser.userId === sourceUser.userId) {
             return {
@@ -30,7 +30,7 @@ export class About extends BaseProfilePage {
         }
 
         const buttons = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(await getProfileFollowButton(client, sourceUser, targetUser));
+            .addComponents(await getProfileFollowButton({ sourceUserId: sourceUser.userId, targetUserId: targetUser.userId }));
             
         return {
             embeds: [await this.getAboutEmbed()], 

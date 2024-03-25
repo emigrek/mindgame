@@ -17,8 +17,8 @@ export { PresenceActivity } from "./PresenceActivity";
 export { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages } from './ProfilePage';
 export { Select } from "./Select";
 export { SelectMenuOption } from "./SelectMenuOption";
-export { Sorting } from './Sorting';
-export { ExtendedStatistics, Statistics, User } from "./User";
+export { Sorting, SortingRanges, SortingTypes } from './Sorting';
+export { User } from "./User";
 export { VoiceActivity } from "./VoiceActivity";
 export { Streak, VoiceActivityStreak } from './VoiceActivityStreak';
 

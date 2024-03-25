@@ -13,7 +13,6 @@ export interface ExtendedUserStatistics {
   commands: number;
   messages: number;
   time: {
-    public: boolean;
     voice: number;
     presence: number;
   };

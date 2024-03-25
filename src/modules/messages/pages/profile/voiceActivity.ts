@@ -10,7 +10,8 @@ export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🔊",
-            name: i18n.__("profile.pages.voiceActivity"),
+            name: params.guild?.name || "🤔",
+            description: i18n.__("profile.pages.voiceActivity"),
             type: ProfilePages.VoiceActivity,
             position: 3,
             params,
@@ -32,6 +33,10 @@ export class VoiceActivity extends BaseProfilePage {
         const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setAuthor({
+                name: guild.name,
+                iconURL: guild.iconURL() || undefined,
+            })
             .setFields([
                 this.embedTitleField,
                 {
@@ -52,6 +57,14 @@ export class VoiceActivity extends BaseProfilePage {
             ]);
 
         return embed;
+    }
+
+    get embedTitleField() {
+        return {
+            name: `**${this.emoji}   ${this.description}**`,
+            value: `** **`,
+            inline: false,
+        }
     }
 
     get visible() {

@@ -9,7 +9,8 @@ export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🖥",
-            name: i18n.__("profile.pages.presenceActivity"),
+            name: params.guild?.name  || "🤔",
+            description: i18n.__("profile.pages.presenceActivity"),
             type: ProfilePages.PresenceActivity,
             position: 5,
             params,
@@ -31,6 +32,10 @@ export class PresenceActivity extends BaseProfilePage {
         const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setAuthor({
+                name: guild.name,
+                iconURL: guild.iconURL() || undefined,
+            })
             .setFields([
                 this.embedTitleField,
                 {
@@ -58,6 +63,14 @@ export class PresenceActivity extends BaseProfilePage {
         }
 
         return embed;
+    }
+
+    get embedTitleField() {
+        return {
+            name: `**${this.emoji}   ${this.description}**`,
+            value: `** **`,
+            inline: false,
+        }
     }
 
     get visible() {

@@ -68,7 +68,7 @@
 		},
 		"ranking": {
 			"name": "ranking",
-			"description": "Zobacz ranking serwerowy lub globalny."
+			"description": "Zobacz ranking serwerowy."
 		}
 	},
 	"contextLocalizations": {
@@ -199,7 +199,7 @@
 		"sweeped": "Usunięto {count} wiadomości."
 	},
 	"ranking": {
-		"title": "Ranking",
+		"title": "{emoji}  Ranking {sorting} ({range})",
 		"footer": "Strona {page} z {pages}.",
 		"first": "👑",
 		"you": "👈",
@@ -227,7 +227,8 @@
 	"rankingSortings": {
 		"label": {
 			"experience": "Doświadczenie",
-			"voice time": "Czas głosowy"
+			"voice time": "Czas głosowy",
+			"messages": "Wiadomości"
 		},
 		"range": {
 			"total": "Ogółem",
@@ -238,13 +239,13 @@
 	},
 	"help": {
 		"title": "Pomoc",
-		"description": "**System poziomów**\n- Mindgame śledzi Twój głos i aktywność na serwerze Discord i przyznaje punkty doświadczenia za Twoją aktywność.\n- Będziesz awansować, gdy zdobędziesz więcej punktów doświadczenia.\n- Każdy poziom odblokowuje nowe uprawnienia poziomu, takie jak dostęp do ekskluzywnych kanałów lub ról.\n\n**FAQ**",
+		"description": "**System poziomów**\n- Mindgame śledzi twoją aktywność na serwerach i przyznaje punkty doświadczenia.\n- Każdy poziom doświadczenia odblokowuje nowe uprawnienia, takie jak dostęp do ekskluzywnych kanałów lub ról.\n\n**FAQ**",
 		"faqQuestion1": "Jak zobaczyć swój profil?",
 		"faqAnswer1": "```Wciśnij przycisk Profil lub użyj menu kontekstowego Aplikacje na wybranym użytkowniku.```",
 		"faqQuestion2": "Jaka jest nagroda za X poziom?",
 		"faqAnswer2": "```Każdy serwer ma własne nagrody za poziom.```",
 		"faqQuestion3": "Jak zdobyć punkty doświadczenia?",
-		"faqAnswer3": "```Punkty doświadczenia są obliczane na podstawie aktywności na serwerze. Większość punktów przyznawana jest za aktywność głosową. Im więcej mówisz, tym więcej punktów otrzymujesz. Dodatkowo możesz otrzymać punkty za codzienną nagrodę, która jest przyznawana za pierwszą aktywność głosową dnia na każdym serwerze.```",
+		"faqAnswer3": "```Punkty doświadczenia są obliczane na podstawie aktywności na serwerze. Większość punktów przyznawana jest za aktywność głosową. Im więcej rozmawiasz, tym więcej punktów otrzymujesz. Dodatkowo możesz otrzymać punkty za wiadomości, codzienną nagrodę, która jest przyznawana za pierwszą aktywność głosową dnia na każdym serwerze lub za znaczącą serię aktywności głosowych na serwerze.```",
 		"footer": "Użyj szybkich przycisków do jeszcze szybszej nawigacji.",
 		"repoButtonLabel": "Repozytorium"
 	},

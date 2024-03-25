@@ -1,14 +1,19 @@
-![Mindgame](https://raw.githubusercontent.com/emigrek/mindgame/main/media/repo-banner.png)
+<div style="width: 100%;height: 150px;margin: 50px 0px 50px 0px;display: flex;justify-content: center;">
+    <img src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
+</div>
 
 # 🌌 Mindgame
-Advanced discord application with **leveling** and **activity tracking** utilities.
+**Mindgame** provides a way to track user's activity in guild and reward them for being active. If you looking for a way to engage your community or see the most active users in your guild, this Discord application is for you.
 
 ## 📚 Features
-1. **Experience** - Gain experience for being active by presence or voice activity. Get a reward for a daily voice activity or for significant activity streaks.
+1. **Experience** - Gain experience for messages and being active by presence or voice activity.
     * **Profiles** - View your own or other user's profiles with detailed information about their activity.
-    * **Ranking** - Check out the global and guild ranking to see who's the most active in the community.
-    * **Roles** - Automatically assign roles based on user's level.
+    * **Ranking** - Check out the guild ranking to see who's the most active in the community depending on your sorting preference.
+    * **Level roles** - Unlock custom roles by reaching a certain level. Made them hoisted if u wish.
     * **Color role** - Custom role unlocked at a certain level enabling you to set your own nickname color.
+    * **Extra Rewards**
+        * **Daily** - Get a reward for daily voice activity.
+        * **Streak** - Get a reward for voice activity streak.
 2. **Utility** - Various utilities to make your Discord experience more enjoyable.
     * **Automatic text channel sweeping** - Automatically sweep bot messages from text channels when voice channels are empty.
     * **Ephemeral channels** - Tired of your text channels being cluttered with unimportant messages? Create an ephemeral channel that will automatically delete all messages after a configurable time. Messages with reactions are preserved.
@@ -64,7 +69,7 @@ Change application config file to your needs (can be found in ```src/config/conf
 <summary>Default config</summary>
 
 ``` typescript
-import { Config } from "@/interfaces";
+import { Config, VoiceActivityStreak } from "@/interfaces";
 
 export const config: Config = {
     /** 
@@ -104,7 +109,7 @@ export const config: Config = {
 
     // List of bot prefixes based on which messages are considered as bot messages and are sweeped when guild voice channels are empty
     // Besides that list, all messages from bot users are considered as bot messages
-    emptyGuildSweepBotPrefixesList: ['!', '#', '$', '%', '^', '&', '*', '(', ')', '/'],
+    emptyGuildSweepBotPrefixesList: ['!', '$', '%', '^', '&', '(', ')', '/'],
 
     // Whether to automatically put slash commands on client login
     autoPutSlashCommands: true,

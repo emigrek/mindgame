@@ -8,6 +8,7 @@ import { colorStore } from "@/stores/colorStore";
 import chroma from "chroma-js";
 import { getErrorMessagePayload } from "../messages";
 import { WarningEmbed } from "../messages/embeds";
+import { getUserGuildStatistics } from "../user-guild-statistics";
 import { LevelTreshold, levelTresholds } from "./tresholds";
 
 const levelRoleRegExp = new RegExp('\\bLevel\\s*\\d+\\b');
@@ -133,7 +134,8 @@ const assignUserLevelRole = async ({ client, userId, guildId }: AssignUserLevelR
     if (!member) return null;
 
     const currentMemberTresholdRole = getMemberTresholdRole(member);
-    const treshold = getLevelRoleTreshold(sourceUser.stats.level);
+    const userGuildStatistics = await getUserGuildStatistics({ userId, guildId });
+    const treshold = getLevelRoleTreshold(userGuildStatistics.level);
     let guildTresholdRole = await getGuildTresholdRole({
         client,
         guildId: guild.id,

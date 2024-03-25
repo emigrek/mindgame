@@ -1,2 +1,3 @@
-export { GetUserGuildRank, GuildStatisticsProps, UpdateUserGuildStatisticsProps, UpdateUserGuildTimePublicProps, UserGuildStatisticsModel, clearExperience, clearGuildExperience, clearTemporaryStatistics, createUserGuildStatistics, deleteUserGuildStatistics, getExperienceProcentage, getRanking, getUserGuildRank, getUserGuildStatistics, getUserStatistics, updateUserGuildStatistics, updateUserGuildTimePublic } from './userGuildStatistics';
+export { getSortingByType, runMask, sortings } from './sortings';
+export { GetUserGuildRank, GuildStatisticsProps, UpdateUserGuildStatisticsProps, UserGuildStatisticsModel, clearExperience, clearGuildExperience, clearTemporaryStatistics, createUserGuildStatistics, deleteUserGuildStatistics, getExperienceProcentage, getGuildStatistics, getRanking, getUserGuildRank, getUserGuildStatistics, getUserStatistics, getUserTotalStatistics, updateUserGuildStatistics } from './userGuildStatistics';
 

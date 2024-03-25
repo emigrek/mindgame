@@ -1,6 +1,6 @@
 import { Button } from "@/interfaces";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
-import { updateUserGuildTimePublic } from "@/modules/user-guild-statistics/userGuildStatistics";
+import { updateUserPublicTimeStatistics } from "@/modules/user";
 import { profileStore } from "@/stores/profileStore";
 import { ButtonInteraction } from "discord.js";
 
@@ -14,7 +14,7 @@ const profileTimePublic: Button = {
             return;
         }
 
-        await updateUserGuildTimePublic({ userId: interaction.user.id, guildId: interaction.guildId });
+        await updateUserPublicTimeStatistics({ userId: interaction.user.id });
 
         const profileState = profileStore.get(interaction.user.id);
 

@@ -6,7 +6,7 @@ import { GuildMember, VoiceChannel } from "discord.js";
 export const voiceChannelLeave: Event = {
     name: "voiceChannelLeave",
     run: async (client: ExtendedClient, member: GuildMember, channel: VoiceChannel) => {
-        await endVoiceActivity(client, member);
+        await endVoiceActivity(member);
         await checkGuildVoiceEmpty(client, member.guild, channel);
     }
 }

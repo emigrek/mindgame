@@ -6,13 +6,13 @@ import moment from "moment";
 import { ExperienceCalculator } from './ExperienceCalculator';
 
 import { config } from '@/config';
-import { updateUserGuildStatistics } from "../user-guild-statistics";
+import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
 
-type UserGuildExperienceData = Partial<{
+type UserGuildExperienceData = {
     userId: string;
-    voice: number;
-    presence: number;
-}>;
+    voice?: number;
+    presence?: number;
+};
 
 class ExperienceUpdater {
     private client: ExtendedClient;
@@ -77,7 +77,6 @@ class ExperienceUpdater {
         }
 
         const user = guild.find(user => user.userId === payload.userId);
-        
         if (!user) {
             return guild.push(payload);
         } else {
@@ -105,11 +104,9 @@ class ExperienceUpdater {
     private applyCache() {
         const promises = Array
             .from(this.cache.entries())
-            .map(async ([guildId, cache]) => {
-                return Promise.all(cache.map(async ({ userId, voice, presence }) => {
-                    if (!userId) return;
-
-                    return updateUserGuildStatistics({
+            .map(([guildId, cache]) => 
+                cache.map(async ({ userId, voice, presence }) => 
+                    updateUserGuildStatistics({
                         client: this.client,
                         userId: userId,
                         guildId: guildId,
@@ -120,9 +117,9 @@ class ExperienceUpdater {
                                 presence: presence ? 60 : 0,
                             }
                         }
-                    });
-                }));
-            })
+                    })
+                )
+            );
 
         return Promise.all(promises);
     }
