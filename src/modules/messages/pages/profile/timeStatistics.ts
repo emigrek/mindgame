@@ -79,6 +79,6 @@ export class TimeStatistics extends BaseProfilePage {
 
     get visible() {
         const { selfCall, renderedUser } = this.params;
-        return selfCall || renderedUser.publicTimeStatistics || false;
+        return selfCall || renderedUser.publicTimeStatistics;
     }
 }

@@ -75,6 +75,8 @@ export class PresenceActivity extends BaseProfilePage {
 
     get visible() {
         const { selfCall, guild } = this.params;
-        return selfCall || false || !!guild;
+        if (!selfCall) return false;
+        if (!guild) return false;
+        return true;
     }
 }
