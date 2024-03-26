@@ -9,8 +9,8 @@ export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "📊",
-            name: params.guild?.name || "🤔",
-            description: i18n.__("profile.pages.statistics"),
+            name: i18n.__("profile.pages.statistics"),
+            description: params.guild?.name || "🤔",
             type: ProfilePages.Statistics,
             position: 2,
             params,
@@ -50,6 +50,11 @@ export class Statistics extends BaseProfilePage {
                     value: `\`\`\`${userGuildStatistics.level} (${experienceProcentage}%)\`\`\``,
                     inline: true,
                 },
+                {
+                    name: i18n.__("profile.messages"),
+                    value: `\`\`\`${userGuildStatistics.total.messages}\`\`\``,
+                    inline: true,
+                }
             ]);
 
         return embed;
@@ -57,7 +62,7 @@ export class Statistics extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.description}**`,
+            name: `**${this.emoji}   ${this.name}**`,
             value: `** **`,
             inline: false,
         }

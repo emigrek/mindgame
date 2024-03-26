@@ -1,7 +1,12 @@
 import { UserGuildStatistics } from "@/interfaces/UserGuildStatistics";
 import { Schema, SchemaTimestampsConfig } from "mongoose";
+import { UserDocument } from "./User";
 
 export type UserGuildStatisticsDocument = UserGuildStatistics & Document & SchemaTimestampsConfig;
+
+export interface UserIncludedGuildStatisticsDocument extends UserGuildStatisticsDocument {
+    user: UserDocument;
+}
 
 const UserStatistics = {
     exp: {

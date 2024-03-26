@@ -9,8 +9,8 @@ export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🖥",
-            name: params.guild?.name  || "🤔",
-            description: i18n.__("profile.pages.presenceActivity"),
+            name: i18n.__("profile.pages.presenceActivity"),
+            description: params.guild?.name  || "🤔",
             type: ProfilePages.PresenceActivity,
             position: 5,
             params,
@@ -67,7 +67,7 @@ export class PresenceActivity extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.description}**`,
+            name: `**${this.emoji}   ${this.name}**`,
             value: `** **`,
             inline: false,
         }

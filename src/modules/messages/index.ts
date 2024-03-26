@@ -108,7 +108,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     };
 }
 
-const getProfileMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction) => {
+const getProfileMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction) => {
     const { targetUserId, page } = profileStore.get(interaction.user.id);
 
     const targetUser = client.users.cache.get(targetUserId ? targetUserId : interaction.user.id);
@@ -324,7 +324,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         .map((sortingType: SortingTypes) => {
             return {
                 label: i18n.__(`rankingSortings.label.${sortingType}`),
-                value: sortingType
+                value: sortingType,
+                default: sortingType === sorting,
             }
         });
 
@@ -332,7 +333,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         .map((rangeType: SortingRanges) => {
             return {
                 label: i18n.__(`rankingSortings.range.${rangeType}`),
-                value: rangeType
+                value: rangeType,
+                default: rangeType === range,
             }
         });
 
@@ -341,11 +343,10 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
-    const fields = onPage.map(async (statistics, index) => {
+    const fields = onPage.map((statistics, index) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);
-        const user = await client.users.fetch(statistics.userId);
         return {
-            name: `${relativeIndex}. ${user.username}   ${user.id === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
         };
@@ -353,7 +354,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const sortSelectMenu = await getRankingSortSelect(sortingType, sortSelectOptions);
     const rangeSelectMenu = await getRankingRangeSelect(sortingType, rangeSelectOptions);
-    const usersSelectMenu = getRankingUsersSelect();
+    const usersSelectMenu = getRankingUsersSelect(userIds);
     const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
     const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
     const settingsButton = await getRankingSettingsButton();
@@ -384,7 +385,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     name: guild.name,
                     iconURL: guild.iconURL({ extension: "png", size: 256 }) || undefined
                 })
-                .setFields(await Promise.all(fields))
+                .setFields(fields)
                 .setDescription(!onPage.length ? i18n.__("ranking.empty") : null)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })

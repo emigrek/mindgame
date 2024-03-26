@@ -1,6 +1,6 @@
-<div style="width: 900px;height: 150px;margin: 50px 0px 50px 0px;display: flex;justify-content: center;">
+<p align="center">
     <img style="height: 150px;width: 150px;" src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
-</div>
+</p>
 
 # 🌌 Mindgame
 **Mindgame** provides a way to track user's activity in guild and reward them for being active. If you looking for a way to engage your community or see the most active users in your guild, this Discord application is for you.

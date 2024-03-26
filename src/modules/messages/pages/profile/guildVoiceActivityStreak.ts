@@ -12,8 +12,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🔥",
-            name: params.guild?.name || "🤔",
-            description: i18n.__("profile.pages.guildVoiceActivityStreak"),
+            name: i18n.__("profile.pages.guildVoiceActivityStreak"),
+            description: params.guild?.name || "🤔",
             type: ProfilePages.GuildVoiceActivityStreak,
             position: 4,
             params,
@@ -75,7 +75,7 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.description}**`,
+            name: `**${this.emoji}   ${this.name}**`,
             value: `** **`,
             inline: false,
         }

@@ -165,7 +165,8 @@
 			"voiceActivity": "Voice activity",
 			"presenceActivity": "Overall activity",
 			"guildVoiceActivityStreak": "Voice activity streak"
-		}
+		},
+		"messages": "Messages"
 	},
 	"follow": {
 		"followed": "Successfully followed {tag}!\nYou'll now receive notifications every time he/she comes back from an ≥8 hour break.",

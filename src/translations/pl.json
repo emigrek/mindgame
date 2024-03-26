@@ -155,7 +155,8 @@
 			"voiceActivity": "Aktywność głosowa",
 			"presenceActivity": "Aktywność ogólna",
 			"guildVoiceActivityStreak": "Seria aktywności głosowej"
-		}
+		},
+		"messages": "Wiadomości"
 	},
 	"follow": {
 		"followed": "Pomyślnie obserwujesz {tag}!\nOd teraz będziesz otrzymywać powiadomienia za każdym razem gdy dołączy na kanał głosowy po ≥8 godzinnej przerwie.",

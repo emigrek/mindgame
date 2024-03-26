@@ -1,6 +1,9 @@
 import i18n from "@/client/i18n";
 import { SelectMenuOption, Sorting } from "@/interfaces";
-import { StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from "discord.js";
+import { UserDocument } from "@/modules/schemas/User";
+import { UserSelectMenuBuilder } from "@discordjs/builders";
+import { StringSelectMenuBuilder, TextChannel } from "discord.js";
+
 
 const getUserPageSelect = async (placeholder: string, options: SelectMenuOption[]) => {
     const userPageSelect = new StringSelectMenuBuilder()
@@ -45,15 +48,27 @@ const getRankingRangeSelect = async (sorting: Sorting, options: SelectMenuOption
     return rankingRangeSelect;
 };
 
-const getRankingUsersSelect = () => {
+const getRankingUsersSelect = (defaultUsers: string[]) => {
     const rankingUsersSelect = new UserSelectMenuBuilder()
         .setCustomId("rankingUsersSelect")
         .setPlaceholder(i18n.__("ranking.selectUsersPlaceholder"))
+        .setDefaultUsers(defaultUsers)
         .setMinValues(0)
         .setMaxValues(25);
         
     return rankingUsersSelect;
 };
 
-export { getChannelSelect, getRankingRangeSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect };
+const getProfileUserSelect = (renderedUser: UserDocument) => {
+    const profileUserSelect = new UserSelectMenuBuilder()
+        .setCustomId("profileUserSelect")
+        .setPlaceholder(renderedUser.username)
+        .setDefaultUsers([renderedUser.userId])
+        .setMinValues(1)
+        .setMaxValues(1);
+        
+    return profileUserSelect;
+}
+
+export { getChannelSelect, getProfileUserSelect, getRankingRangeSelect, getRankingSortSelect, getRankingUsersSelect, getUserPageSelect };
 

@@ -1,8 +1,8 @@
 import { BaseProfilePage, ProfilePages } from "@/interfaces";
 import { ProfilePagePayloadParams, ProfilePagePayloadProps } from "@/interfaces/ProfilePage";
-import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
 import * as profilePages from './pages/profile';
-import { getUserPageSelect } from "./selects";
+import { getProfileUserSelect, getUserPageSelect } from "./selects";
 
 class ProfilePagesManager {
     params: ProfilePagePayloadParams;
@@ -21,10 +21,7 @@ class ProfilePagesManager {
     }
 
     async init() {
-        for await (const page of this.pages) {
-            await page.init();
-        }
-
+        await Promise.all(this.pages.map((page) => page.init()));
         return this;
     }
 
@@ -40,8 +37,10 @@ class ProfilePagesManager {
 
     async getPagePayloadByType(type: ProfilePages) {
         const page = this.getPageByType(type);
-        const payload = await page.getPayload();
-        return await this.attachPageSelectRow(type, payload);
+        let payload = await page.getPayload();
+        payload = this.attachUserSelectRow(type, payload);
+        payload = await this.attachPageSelectRow(type, payload);
+        return payload;
     }
 
     async attachPageSelectRow(type: ProfilePages, payload: ProfilePagePayloadProps) {
@@ -56,7 +55,19 @@ class ProfilePagesManager {
                         emoji: emoji,
                         value: type,
                         description: description,
+                        default: type === page.type,
                     }))
+                )
+            );
+        payload.components = [...(payload.components || []), selectRow];
+        return payload;
+    }
+
+    attachUserSelectRow(type: ProfilePages, payload: ProfilePagePayloadProps) {
+        const selectRow = new ActionRowBuilder<UserSelectMenuBuilder>()
+            .addComponents(
+                getProfileUserSelect(
+                    this.params.renderedUser
                 )
             );
         payload.components = [...(payload.components || []), selectRow];

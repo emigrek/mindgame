@@ -10,8 +10,8 @@ export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
         super({
             emoji: "🔊",
-            name: params.guild?.name || "🤔",
-            description: i18n.__("profile.pages.voiceActivity"),
+            name: i18n.__("profile.pages.voiceActivity"),
+            description: params.guild?.name || "🤔",
             type: ProfilePages.VoiceActivity,
             position: 3,
             params,
@@ -61,7 +61,7 @@ export class VoiceActivity extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.description}**`,
+            name: `**${this.emoji}   ${this.name}**`,
             value: `** **`,
             inline: false,
         }
