@@ -1,30 +1,22 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import { getGuild, getGuilds, setLevelRolesHoist } from "@/modules/guild";
-import { getUser } from "@/modules/user";
-import { ButtonInteraction, ColorResolvable, Guild, GuildMember, Role, User } from "discord.js";
+import { getGuild } from "@/modules/guild";
+import { ButtonInteraction, ColorResolvable, Guild, GuildMember, Role } from "discord.js";
 
+import { getErrorMessagePayload } from "@/modules/messages";
+import { WarningEmbed } from "@/modules/messages/embeds";
+import { getUserGuildStatistics } from "@/modules/user-guild-statistics";
 import { colorStore } from "@/stores/colorStore";
 import chroma from "chroma-js";
-import { getErrorMessagePayload } from "../messages";
-import { WarningEmbed } from "../messages/embeds";
-import { getUserGuildStatistics } from "../user-guild-statistics";
 import { LevelTreshold, levelTresholds } from "./tresholds";
 
-const levelRoleRegExp = new RegExp('\\bLevel\\s*\\d+\\b');
-const specificLevelRoleRegExp = (level: number) => new RegExp(`\\bLevel\\s*${level}\\b`);
+const levelRoleRegExp = new RegExp('\\b\\d+\\b');
+const specificLevelRoleRegExp = (level: number) => new RegExp(`\\b${level}\\b`);
 
 const getLevelRoleTreshold = (level: number) => {
-    let result = levelTresholds[0];
-
-    for (const treshold of levelTresholds) {
-        if (level >= treshold.level) {
-            result = treshold;
-            break;
-        } else continue;
-    }
-
-    return result;
+    const treshold = levelTresholds
+        .find(treshold => level >= treshold.level) || levelTresholds[levelTresholds.length - 1];
+    return treshold;
 }
 
 interface GetGuildTresholdRoleProps {
@@ -54,44 +46,24 @@ interface SyncGuildLevelRoles {
 
 const syncGuildLevelRoles = async ({ client, interaction }: SyncGuildLevelRoles) => {
     const { guild } = interaction;
-    if(!guild) return null;
+    if(!guild) return false;
 
     const sourceGuild = await getGuild(guild.id);
-    if (!sourceGuild) return null;
-
-    if(sourceGuild.levelRoles) {
-        return await deleteLevelRoles(guild)
-            .catch(async () => {
-                await interaction.followUp({
-                    embeds: [
-                        WarningEmbed()
-                            .setDescription(i18n.__("roles.missingPermissions"))
-                    ], ephemeral: true
-                });
-                return null;
-            })
-            .finally(async () => {
-                if (sourceGuild.levelRolesHoist) {
-                    await setLevelRolesHoist(guild.id);
-                }
-                return true;
-            });
-    }
-
-    return await createLevelRoles(guild, sourceGuild.levelRolesHoist)
-        .catch(async () => {
-            await interaction.followUp({
-                embeds: [
-                    WarningEmbed()
-                        .setDescription(i18n.__("roles.missingPermissions"))
-                ], ephemeral: true
-            });
-            return null;
-        })
-        .finally(async () => {
-            await assignLevelRolesInGuild({client, guildId: guild.id});
+    if (!sourceGuild) return false;
+    
+    try {
+        if(sourceGuild.levelRoles) {
+            await deleteLevelRoles(guild);
             return true;
-        });
+        }
+
+        await createLevelRoles(guild, sourceGuild.levelRolesHoist);
+        await assignLevelRolesInGuild({client, guildId: guild.id});
+        return true;
+    } catch (error) {
+        console.log(`Error syncing level roles: ${error}`)
+        return false;
+    }
 }
 
 const syncGuildLevelRolesHoisting = async (interaction: ButtonInteraction) => {
@@ -104,18 +76,9 @@ const syncGuildLevelRolesHoisting = async (interaction: ButtonInteraction) => {
     const levelRoles = guild.roles.cache.filter(role => levelRoleRegExp.test(role.name));
     if (!levelRoles.size) return null;
 
-    const hoistingPromise = levelRoles.map(async (role: Role) => {
-        return await role.setHoist(!sourceGuild.levelRolesHoist);
-    });
-
-    return await Promise.all(hoistingPromise)
-        .catch(async () => {
-            await interaction.followUp({ content: i18n.__("roles.missingPermissions"), ephemeral: true });
-            return null;
-        })
-        .finally(async () => {
-            return true;
-        });
+    return Promise.all(
+        levelRoles.map((role: Role) => role.setHoist(!sourceGuild.levelRolesHoist))
+    );
 }
 
 interface AssignUserLevelRoleProps {
@@ -125,12 +88,9 @@ interface AssignUserLevelRoleProps {
 }
 
 const assignUserLevelRole = async ({ client, userId, guildId }: AssignUserLevelRoleProps) => {
-    const user = await client.users.fetch(userId);
     const guild = await client.guilds.fetch(guildId);
-    const sourceUser = await getUser(user);
-    if (!sourceUser || !guild) return null;
-
-    const member = guild.members.cache.get(sourceUser.userId);
+    if (!guild) return null;
+    const member = guild.members.cache.get(userId);
     if (!member) return null;
 
     const currentMemberTresholdRole = getMemberTresholdRole(member);
@@ -145,7 +105,7 @@ const assignUserLevelRole = async ({ client, userId, guildId }: AssignUserLevelR
     if (!guildTresholdRole) {
         const sourceGuild = await getGuild(guildId);
         if (!sourceGuild) return null;
-
+ 
         const tresholdIndex = levelTresholds.findIndex(t => t.level === treshold.level);
         const priorTreshold = levelTresholds[tresholdIndex + 1];
         const priorGuildTresholdRole = priorTreshold ? await getGuildTresholdRole({ client, guildId: guild.id, treshold: priorTreshold }) : null;
@@ -180,29 +140,26 @@ const assignUserLevelRole = async ({ client, userId, guildId }: AssignUserLevelR
 }
 
 const createLevelRoles = async (guild: Guild, hoist?: boolean) => {
-    const creationPromise = levelTresholds.map(async (treshold: LevelTreshold) => {
-        const role = await guild.roles.create({
-            name: `Level ${treshold.level}`,
-            color: treshold.color,
-            hoist: hoist || false,
-            position: 0
-        });
-        return role;
-    });
-
-    return await Promise.all(creationPromise);
+    return Promise.all(
+        levelTresholds
+            .map((treshold: LevelTreshold) => 
+                guild.roles.create({
+                    name: `Level ${treshold.level}`,
+                    color: treshold.color,
+                    hoist: hoist || false,
+                    position: -1
+                })
+            )
+    );
 }
 
 const deleteLevelRoles = async (guild: Guild) => {
     const levelRoles = guild.roles.cache.filter(role => levelRoleRegExp.test(role.name));
-
     if (!levelRoles.size) return;
 
-    const deletionPromise = levelRoles.map(async (role: Role) => {
-        return await role.delete();
-    });
-
-    return await Promise.all(deletionPromise);
+    return Promise.all(
+        levelRoles.map((role: Role) => role.delete())
+    );
 }
 
 interface AssignLevelRolesInGuildProps {
@@ -216,35 +173,18 @@ const assignLevelRolesInGuild = async ({ client, guildId }: AssignLevelRolesInGu
     if (!guild) return null;
 
     const members = await guild.members.fetch();
-    const promises = members.map(async (member) => {
-        return assignUserLevelRole({
-            client,
-            userId: member.user.id,
-            guildId: guild.id,
-        });
-    });
-
-    return Promise.all(promises);
+    return Promise.all(
+        members
+            .filter(member => !member.user.bot)
+            .map((member) => 
+                assignUserLevelRole({
+                    client,
+                    userId: member.user.id,
+                    guildId: guild.id,
+                })
+            )
+    );
 }
-
-const assignLevelRolesInAllGuilds = async (client: ExtendedClient, user: User) => {
-    const guilds = await getGuilds();
-
-    for await (const sourceGuild of guilds) {
-        const guild = client.guilds.cache.get(sourceGuild.guildId);
-        if (!guild) continue;
-
-        if (!guild.members.cache.has(user.id)) continue;
-        if (!sourceGuild.levelRoles) continue;
-
-        const success = await assignUserLevelRole({
-            client,
-            userId: user.id,
-            guildId: guild.id
-        });
-        if (!success) continue;
-    }
-};
 
 const getMemberColorRole = (member: GuildMember) => {
     const colorRole = member.roles.cache.find(role => role.name.includes("🎨"));
@@ -307,11 +247,11 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
         });
 };
 
-const checkColorLuminance = (hex: `${string}` | string, luminanceTreshold?: number) => {
+const checkColorLuminance = (hex: string, luminanceTreshold?: number) => {
     const color = chroma(hex);
     const luminance = color.luminance();
     return luminance > (luminanceTreshold || 0.2);
 };
 
-export { assignLevelRolesInAllGuilds, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleTreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
+export { assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleTreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
 

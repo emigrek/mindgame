@@ -1,12 +1,19 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { ExperienceCalculatorConfig } from "@/interfaces";
-import { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, getPresenceActivitiesByGuildId, getVoiceActivitiesByChannelId } from "@/modules/activity";
+import {ExperienceCalculatorConfig} from "@/interfaces";
+import {
+    getPresenceActivitiesByGuildId,
+    getVoiceActivitiesByChannelId,
+    PresenceActivitiesByGuildId,
+    PresenceActivityDocumentWithSeconds,
+    VoiceActivitiesByChannelId,
+    VoiceActivityDocumentWithSeconds
+} from "@/modules/activity";
 import moment from "moment";
 
-import { ExperienceCalculator } from './ExperienceCalculator';
+import {ExperienceCalculator} from './ExperienceCalculator';
 
-import { config } from '@/config';
-import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
+import {config} from '@/config';
+import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
 
 type UserGuildExperienceData = {
     userId: string;
@@ -15,9 +22,9 @@ type UserGuildExperienceData = {
 };
 
 class ExperienceUpdater {
-    private client: ExtendedClient;
-    private calculator: ExperienceCalculator;
-    private logging: boolean;
+    readonly client: ExtendedClient;
+    public calculator: ExperienceCalculator;
+    readonly logging: boolean;
     public lastUpdateTimeInMs: number;
 
     private voiceActivities: VoiceActivitiesByChannelId[] =  [];
@@ -51,7 +58,7 @@ class ExperienceUpdater {
     }
 
     private accumulateVoice(activity: VoiceActivityDocumentWithSeconds, inVoice: number) {
-        const exp = this.calculator.getVoice(activity.seconds, inVoice);
+        const exp = this.calculator.getVoiceReward(activity.seconds, inVoice);
         if (!exp) return;
 
         this.updateCache(activity.guildId, {
@@ -61,7 +68,7 @@ class ExperienceUpdater {
     }
 
     private accumulatePresence(activity: PresenceActivityDocumentWithSeconds) {
-        const exp = this.calculator.getPresence(activity.seconds);
+        const exp = this.calculator.getPresenceReward(activity.seconds);
         if (!exp) return;
 
         this.updateCache(activity.guildId, {
@@ -88,17 +95,21 @@ class ExperienceUpdater {
     }
 
     private fillCache() {
-        this.voiceActivities.flatMap(({ activities }) => 
-            activities.forEach(activity => {
-                this.accumulateVoice(activity, activities.length);
-            }),
-        );
+        if (config.enableVoiceExperienceReward) {
+            this.voiceActivities.flatMap(({activities}) =>
+                activities.forEach(activity => {
+                    this.accumulateVoice(activity, activities.length);
+                }),
+            );
+        }
 
-        this.presenceActivities.flatMap(({ activities }) =>
-            activities.forEach(activity => {
-                this.accumulatePresence(activity);
-            }),
-        );
+        if (config.enablePresenceExperienceReward) {
+            this.presenceActivities.flatMap(({activities}) =>
+                activities.forEach(activity => {
+                    this.accumulatePresence(activity);
+                }),
+            );
+        }
     }
 
     private applyCache() {

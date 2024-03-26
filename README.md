@@ -1,16 +1,16 @@
 <p align="center">
-    <img style="height: 150px;width: 150px;" src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
+    <img alt="Mindgame logo" style="height: 150px;width: 150px;" src="https://raw.githubusercontent.com/emigrek/mindgame/main/media/logo.png" />
 </p>
 
 # 🌌 Mindgame
-**Mindgame** provides a way to track user's activity in guild and reward them for being active. If you looking for a way to engage your community or see the most active users in your guild, this Discord application is for you.
+**Mindgame** provides a way to track user's activity in guild and reward them for being active. If you're looking for a way to engage your community or see the most active users in your guild, this Discord application is for you.
 
 ## 📚 Features
-1. **Experience** - Gain experience for messages and being active by presence or voice activity.
+1. **Experience** - Configurable experience system that rewards users for being active in various ways.
     * **Profiles** - View your own or other user's profiles with detailed information about their activity.
     * **Ranking** - Check out the guild ranking to see who's the most active in the community depending on your sorting preference.
-    * **Level roles** - Unlock custom roles by reaching a certain level. Made them hoisted if u wish.
-    * **Color role** - Custom role unlocked at a certain level enabling you to set your own nickname color.
+    * **Level roles** - Roles indicating user's level in the guild. Automatically assigned based on user's level. Can be hoisted or renamed.
+    * **Color role** - Custom role unlocked at a certain level enabling you to set your own nickname color in the guild.
     * **Extra Rewards**
         * **Daily** - Get a reward for daily voice activity.
         * **Streak** - Get a reward for voice activity streak.
@@ -26,19 +26,19 @@ This application is fully translated (including slash commands, context menus, e
 - Polish (pl)
 
 ## 📦 Used packages
-| 📦 Package  | 📋 Reasons |
-| ------------- | ------------- |
-| Typescript  | type safety  |
-| discord.js  | discord bot baseline |
-| Mongoose  | storing data  |
-| i18n  | internationalization-framework  |
-| Dotenv  | environment variables  |
-| Nodemon  | development  |
-| discord-logs | extended discord events |
-| moment | time formatting |
-| node-vibrant | cool looking embed colors |
-| node-cron | scheduling |
-| @octokit/rest | github commits |
+| 📦 Package    | 📋 Reasons                     |
+|---------------|--------------------------------|
+| Typescript    | type safety                    |
+| discord.js    | discord bot baseline           |
+| Mongoose      | storing data                   |
+| i18n          | internationalization-framework |
+| Dotenv        | environment variables          |
+| Nodemon       | development                    |
+| discord-logs  | extended discord events        |
+| moment        | time formatting                |
+| node-vibrant  | cool looking embed colors      |
+| node-cron     | scheduling                     |
+| @octokit/rest | github commits                 |
 
 ## 🚀 Running
 Get running MongoDB instance for storing data. Make sure you create collection, name it whatever you want and put it at the end of your MongoDB connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for free MongoDB instance. 
@@ -69,9 +69,18 @@ Change application config file to your needs (can be found in ```src/config/conf
 <summary>Default config</summary>
 
 ``` typescript
-import { Config, VoiceActivityStreak } from "@/interfaces";
+import {Config, VoiceActivityStreak} from "@/interfaces";
 
 export const config: Config = {
+    // Whether to enable experience reward for voice activity
+    enableVoiceExperienceReward: true,
+
+    // Whether to enable experience reward for presence activity
+    enablePresenceExperienceReward: true,
+
+    // Whether to enable experience reward for message activity
+    enableMessageExperienceReward: true,
+
     /** 
      * This constant directly affects the scaling between experience points and levels. 
      * A lower experienceConstant means that each level requires more experience points, making the progression slower. 
@@ -96,6 +105,13 @@ export const config: Config = {
             const hours = seconds / 3600;
             return hours < 12 ? 1 : 0.5;
         },
+
+        // Experience reward for message activity
+        messageExperience: 150,
+        // Used to calculate experience gain for messages
+        messageModificator: (files: boolean) => {
+            return files ? 2 : 1;
+        }
     },
 
     // Experience reward for daily voice activity
@@ -151,12 +167,7 @@ export const config: Config = {
 ```
 </details>
 
-Run development server
-
-``` bash
-npm run dev
-```
-or start application
+Start application
 
 ``` bash
 npm run start

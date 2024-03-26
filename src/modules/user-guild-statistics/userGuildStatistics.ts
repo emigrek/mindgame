@@ -1,10 +1,10 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { Sorting, SortingRanges, SortingTypes } from "@/interfaces";
-import { ExtendedUserStatistics, UserGuildStatistics, UserStatistics } from "@/interfaces/UserGuildStatistics";
-import userGuildStatisticsSchema, { UserIncludedGuildStatisticsDocument } from "@/modules/schemas/UserGuildStatistics";
-import { expToLevel, levelToExp } from "@/modules/user";
-import { merge } from "@/utils/merge";
-import { Guild } from "discord.js";
+import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
+import {ExtendedUserStatistics, UserGuildStatistics, UserStatistics} from "@/interfaces/UserGuildStatistics";
+import userGuildStatisticsSchema, {UserIncludedGuildStatisticsDocument} from "@/modules/schemas/UserGuildStatistics";
+import {expToLevel, levelToExp} from "@/modules/user";
+import {merge} from "@/utils/merge";
+import {Guild} from "discord.js";
 import mongoose from "mongoose";
 
 export const UserGuildStatisticsModel = mongoose.model("UserGuildStatistics", userGuildStatisticsSchema);
@@ -159,7 +159,7 @@ export const getExperienceProcentage = async (userGuildStatistics: UserGuildStat
 export const getUserTotalStatistics = async (userId: string): Promise<ExtendedUserStatistics> => {
     const userGuildStatistics = await UserGuildStatisticsModel.find({ userId });
 
-    const total = userGuildStatistics.reduce((acc, statistics) => {
+    return userGuildStatistics.reduce((acc, statistics) => {
         acc = merge(acc, statistics.total);
         return acc;
     }, {
@@ -171,6 +171,4 @@ export const getUserTotalStatistics = async (userId: string): Promise<ExtendedUs
             presence: 0,
         }
     });
-
-    return total;
 }

@@ -1,24 +1,27 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { Event } from "@/interfaces";
-import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
-import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
-import { attachQuickButtons } from "@/modules/messages";
-import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
-import { delay } from "@/utils/delay";
-import { Message, TextChannel } from "discord.js";
+import {Event} from "@/interfaces";
+import {getEphemeralChannel, isMessageCacheable} from "@/modules/ephemeral-channel";
+import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
+import {attachQuickButtons} from "@/modules/messages";
+import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
+import {delay} from "@/utils/delay";
+import {config} from "@/config";
+import {Message, TextChannel} from "discord.js";
 
 export const messageCreate: Event = {
     name: "messageCreate",
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
 
-        if (!message.author.bot) {
+        if (!message.author.bot && config.enableMessageExperienceReward) {
+            const { getMessageReward } = client.experienceUpdater.calculator;
             await updateUserGuildStatistics({
                 client,
                 userId: message.author.id,
                 guildId: message.guild.id,
                 update: {
-                    messages: 1
+                    messages: 1,
+                    exp: getMessageReward(!!message.attachments.size)
                 }
             });
         }

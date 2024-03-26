@@ -1,5 +1,5 @@
-import { ExperienceCalculatorConfig } from "@/interfaces";
-import { getRandomGaussian } from "@/utils/random";
+import {ExperienceCalculatorConfig} from "@/interfaces";
+import {getRandomGaussian} from "@/utils/random";
 
 class ExperienceCalculator {
     private config: ExperienceCalculatorConfig;
@@ -8,14 +8,19 @@ class ExperienceCalculator {
         this.config = config;
     }
     
-    public getVoice(seconds: number, inVoice: number): number {
+    public getVoiceReward(seconds: number, inVoice: number): number {
         const maxExp = Math.round(seconds * this.config.voiceMultiplier * this.config.voiceModificator(seconds, inVoice));
         return this.random(1, maxExp || 1);
     }
 
-    public getPresence(seconds: number): number {
+    public getPresenceReward(seconds: number): number {
         const maxExp = Math.round(seconds * this.config.presenceMultiplier * this.config.presenceModificator(seconds));
         return this.random(1, maxExp || 1);
+    }
+
+    public getMessageReward(files: boolean): number {
+        const maxExp = this.config.messageExperience * this.config.messageModificator(files);
+        return this.random(1, maxExp);
     }
     
     private random(min: number, max: number): number {

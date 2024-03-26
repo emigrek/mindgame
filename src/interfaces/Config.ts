@@ -1,5 +1,5 @@
-import { ExperienceCalculatorConfig } from "./ExperienceCalculatorConfig";
-import { Streak, VoiceActivityStreak } from "./VoiceActivityStreak";
+import {ExperienceCalculatorConfig} from "./ExperienceCalculatorConfig";
+import {Streak, VoiceActivityStreak} from "./VoiceActivityStreak";
 
 export interface VoiceActivityStreakLogicProps {
     streak?: Streak;
@@ -7,8 +7,13 @@ export interface VoiceActivityStreakLogicProps {
 }
 
 export interface Config {
+    enableVoiceExperienceReward: boolean;
+    enablePresenceExperienceReward: boolean;
+    enableMessageExperienceReward: boolean;
+
     experienceConstant: number;
     experienceCalculatorConfig: ExperienceCalculatorConfig;
+
     dailyRewardExperience: number;
 
     userLongBreakHours: number;

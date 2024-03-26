@@ -1,6 +1,15 @@
-import { Config, VoiceActivityStreak } from "@/interfaces";
+import {Config, VoiceActivityStreak} from "@/interfaces";
 
 export const config: Config = {
+    // Whether to enable experience reward for voice activity
+    enableVoiceExperienceReward: true,
+
+    // Whether to enable experience reward for presence activity
+    enablePresenceExperienceReward: true,
+
+    // Whether to enable experience reward for message activity
+    enableMessageExperienceReward: true,
+
     /** 
      * This constant directly affects the scaling between experience points and levels. 
      * A lower experienceConstant means that each level requires more experience points, making the progression slower. 
@@ -25,6 +34,13 @@ export const config: Config = {
             const hours = seconds / 3600;
             return hours < 12 ? 1 : 0.5;
         },
+
+        // Experience reward for message activity
+        messageExperience: 150,
+        // Used to calculate experience gain for messages
+        messageModificator: (files: boolean) => {
+            return files ? 2 : 1;
+        }
     },
 
     // Experience reward for daily voice activity

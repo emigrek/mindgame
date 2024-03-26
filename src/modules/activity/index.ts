@@ -1,15 +1,15 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import {ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel} from "discord.js";
 
-import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
-import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
+import presenceActivitySchema, {PresenceActivityDocument} from "@/modules/schemas/PresenceActivity";
+import voiceActivitySchema, {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
 
 import i18n from "@/client/i18n";
-import { config } from "@/config";
-import { Streak, VoiceActivityStreak } from "@/interfaces";
+import {config} from "@/config";
+import {Streak, VoiceActivityStreak} from "@/interfaces";
 import moment from "moment";
 import mongoose from "mongoose";
-import { updateUserGuildStatistics } from "../user-guild-statistics";
+import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -27,7 +27,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
                 exp: config.dailyRewardExperience
             }
         });
-        client.emit("userRecievedDailyReward", member.user.id, member.guild.id, streak);
+        client.emit("userReceivedDailyReward", member.user.id, member.guild.id, streak);
         return;
     }
 
@@ -47,7 +47,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
         }
     });
 
-    client.emit("userRecievedDailyReward", member.user.id, member.guild.id, streak);
+    client.emit("userReceivedDailyReward", member.user.id, member.guild.id, streak);
     if (streak.isSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 
@@ -177,7 +177,6 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         if (member.voice.channelId == member.guild.afkChannelId) {
             outOfSync.push(userId);
             activity.delete();
-            continue;
         }
     }
 
@@ -222,42 +221,11 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
             outOfSync.push(userId);
             activity.client = newClient;
             await activity.save();
-            continue;
         }
     }
 
     return outOfSync;
 };
-
-const getVoiceActivityBetween = async (guildId: string, startDate: Date, endDate: Date): Promise<VoiceActivityDocument[]> => {
-    const activities = await voiceActivityModel.find({
-        guildId,
-        from: {
-            $gte: startDate,
-        },
-        $or: [
-            { to: { $eq: null } },
-            { to: { $lte: endDate } }
-        ]
-    });
-
-    return activities;
-}
-
-const getPresenceActivityBetween = async (guildId: string, startDate: Date, endDate: Date): Promise<PresenceActivityDocument[]> => {
-    const activities = await presenceActivityModel.find({
-        guildId,
-        from: {
-            $gte: startDate,
-        },
-        $or: [
-            { to: { $eq: null } },
-            { to: { $lte: endDate } }
-        ]
-    });
-
-    return activities;
-}
 
 const getPresenceClientStatus = (clientStatus: ClientPresenceStatusData | null): string => {
     if (!clientStatus)
@@ -287,11 +255,6 @@ const getLastVoiceActivity = async (userId: string): Promise<VoiceActivityDocume
     return last;
 };
 
-const getUserVoiceActivity = async (userId: string): Promise<VoiceActivityDocument | null> => {
-    const exists = await voiceActivityModel.findOne({ userId, to: null });
-    return exists;
-}
-
 const getLastUserVoiceActivity = async (userId: string): Promise<VoiceActivityDocument | null> => {
     const entries = await voiceActivityModel.aggregate([
         {
@@ -317,11 +280,6 @@ const getPresenceActivity = async (userId: string, guildId: string): Promise<Pre
     return exists;
 }
 
-const getUserPresenceActivity = async (userId: string): Promise<PresenceActivityDocument | null> => {
-    const exists = await presenceActivityModel.findOne({ userId: userId, to: null });
-    return exists;
-}
-
 const getLastUserPresenceActivity = async (userId: string): Promise<PresenceActivityDocument | null> => {
     const entries = await presenceActivityModel.aggregate([
         {
@@ -340,11 +298,6 @@ const getLastUserPresenceActivity = async (userId: string): Promise<PresenceActi
     ]);
     
     return entries[0];
-};
-
-const getGuildActiveVoiceActivities = async (guildId: string): Promise<VoiceActivityDocument[]> => {
-    const activities = await voiceActivityModel.find({ guildId, to: null });
-    return activities;
 };
 
 interface VoiceActivityDocumentWithSeconds extends VoiceActivityDocument {
@@ -531,6 +484,10 @@ const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): P
     return query.at(0);
 };
 
+const getGuildActiveVoiceActivities = async (guildId: string): Promise<VoiceActivityDocument[]> => {
+    return voiceActivityModel.find({ guildId, to: null });
+}
+
 interface UserLastActivityDetails {
     voice: {
         activity: VoiceActivityDocument;
@@ -652,5 +609,4 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getGuildActiveVoiceActivities, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceActivityBetween, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserPresenceActivity, getUserVoiceActivity, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, getVoiceActivityBetween, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
-
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };

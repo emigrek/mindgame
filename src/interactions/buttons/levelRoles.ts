@@ -12,12 +12,10 @@ const levelRoles: Button = {
             await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
             return;
         }
-
         const success = await syncGuildLevelRoles({ client, interaction });
         if (success) {
             await setLevelRoles(interaction.guild.id);
         }
-
         const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);
     }

@@ -19,7 +19,7 @@ import { voiceStreamingStart } from "./voiceStreamingStart";
 import { voiceStreamingStop } from "./voiceStreamingStop";
 import { presenceUpdate } from "./presenceUpdate";
 import { messageCreate } from "./messageCreate";
-import { userRecievedDailyReward } from "./userRecievedDailyReward";
+import { userReceivedDailyReward } from "./userReceivedDailyReward";
 import { yearly } from "./yearly";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
@@ -53,7 +53,7 @@ const events: Event[] = [
     voiceStreamingStop,
     presenceUpdate,
     messageCreate,
-    userRecievedDailyReward,
+    userReceivedDailyReward,
     yearly,
     messageDelete,
     messageDeleteBulk,
