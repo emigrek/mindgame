@@ -1,12 +1,12 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import { Event } from "@/interfaces";
-import { setDefaultChannelId } from "@/modules/guild";
-import { createGuild } from "@/modules/guild/";
-import { InformationEmbed } from "@/modules/messages/embeds";
-import { updatePresence } from "@/modules/presence/";
-import { assignLevelRolesInGuild } from "@/modules/roles/";
-import { BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel } from "discord.js";
+import {Event} from "@/interfaces";
+import {setDefaultChannelId} from "@/modules/guild";
+import {createGuild} from "@/modules/guild/";
+import {InformationEmbed} from "@/modules/messages/embeds";
+import {updatePresence} from "@/modules/presence/";
+import {assignLevelRolesInGuild} from "@/modules/roles/";
+import {BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel} from "discord.js";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);
@@ -15,9 +15,8 @@ const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const permissions = me.permissions;
     const requiredPermissionsInteger = BigInt(395405552720);
     const requiredPermissions = new PermissionsBitField(requiredPermissionsInteger);
-    const missingPermissions = permissions.missing(requiredPermissions);
 
-    return missingPermissions;
+    return permissions.missing(requiredPermissions);
 };
 
 export const guildCreate: Event = {

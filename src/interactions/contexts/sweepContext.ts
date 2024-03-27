@@ -1,7 +1,7 @@
-import { ApplicationCommandType, ContextMenuCommandBuilder, TextChannel } from "discord.js";
-import { ContextMenu } from "@/interfaces";
-import { sweepTextChannel } from "@/modules/messages";
-import { InformationEmbed } from "@/modules/messages/embeds";
+import {ApplicationCommandType, ContextMenuCommandBuilder, TextChannel} from "discord.js";
+import {ContextMenu} from "@/interfaces";
+import {sweepTextChannel} from "@/modules/messages";
+import {InformationEmbed} from "@/modules/messages/embeds";
 import i18n from "@/client/i18n";
 
 const sweepContext: ContextMenu = {
@@ -12,12 +12,11 @@ const sweepContext: ContextMenu = {
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
-        const sweeped = await sweepTextChannel(client, interaction.channel as TextChannel);
-
+        const swept = await sweepTextChannel(client, interaction.channel as TextChannel);
         await interaction.followUp({
             embeds: [
                 InformationEmbed()
-                    .setDescription(i18n.__mf("sweeper.sweeped", { count: sweeped }))
+                    .setDescription(i18n.__mf("sweeper.swept", { count: swept }))
             ]
         });
     }

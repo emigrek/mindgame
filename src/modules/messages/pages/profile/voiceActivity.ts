@@ -1,10 +1,10 @@
 import i18n from "@/client/i18n";
-import { ProfilePages } from "@/interfaces";
-import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { getLocalizedDateRange } from "@/modules/messages";
-import { BaseProfileEmbed } from "@/modules/messages/embeds";
-import { getUserGuildStatistics } from "@/modules/user-guild-statistics";
+import {ProfilePages} from "@/interfaces";
+import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
+import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
+import {getLocalizedDateRange} from "@/modules/messages";
+import {BaseProfileEmbed} from "@/modules/messages/embeds";
+import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 
 export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -32,7 +32,7 @@ export class VoiceActivity extends BaseProfilePage {
 
         const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
 
-        const embed = BaseProfileEmbed({ user: renderedUser, colors })
+        return BaseProfileEmbed({ user: renderedUser, colors })
             .setAuthor({
                 name: guild.name,
                 iconURL: guild.iconURL() || undefined,
@@ -55,8 +55,6 @@ export class VoiceActivity extends BaseProfilePage {
                     inline: true,
                 },
             ]);
-
-        return embed;
     }
 
     get embedTitleField() {

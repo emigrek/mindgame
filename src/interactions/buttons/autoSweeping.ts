@@ -1,6 +1,6 @@
-import { Button } from "@/interfaces";
-import { setAutoSweeing } from "@/modules/guild";
-import { getConfigMessagePayload, getErrorMessagePayload } from "@/modules/messages";
+import {Button} from "@/interfaces";
+import {setAutoSweeping} from "@/modules/guild";
+import {getConfigMessagePayload, getErrorMessagePayload} from "@/modules/messages";
 
 const autoSweeping: Button = {
     customId: `autoSweeping`,
@@ -12,7 +12,7 @@ const autoSweeping: Button = {
             return;
         }
 
-        await setAutoSweeing(interaction.guild.id);
+        await setAutoSweeping(interaction.guild.id);
         
         const configMessage = await getConfigMessagePayload(client, interaction);
         await interaction.editReply(configMessage);

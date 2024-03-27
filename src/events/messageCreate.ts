@@ -7,21 +7,21 @@ import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
 import {delay} from "@/utils/delay";
 import {config} from "@/config";
 import {Message, TextChannel} from "discord.js";
+import {ExperienceCalculator} from "@/modules/experience";
 
 export const messageCreate: Event = {
     name: "messageCreate",
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
 
-        if (!message.author.bot && config.enableMessageExperienceReward) {
-            const { getMessageReward } = client.experienceUpdater.calculator;
+        if (!message.author.bot && config.experience.message.enabled) {
             await updateUserGuildStatistics({
                 client,
                 userId: message.author.id,
                 guildId: message.guild.id,
                 update: {
                     messages: 1,
-                    exp: getMessageReward(!!message.attachments.size)
+                    exp: ExperienceCalculator.getMessageReward(!!message.attachments.size)
                 }
             });
         }

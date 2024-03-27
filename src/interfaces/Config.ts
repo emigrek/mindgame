@@ -1,20 +1,13 @@
-import {ExperienceCalculatorConfig} from "./ExperienceCalculatorConfig";
-import {Streak, VoiceActivityStreak} from "./VoiceActivityStreak";
+import {ExperienceConfig} from "./ExperienceConfig";
+import {ActivityStreak, Streak} from "./ActivityStreak";
 
-export interface VoiceActivityStreakLogicProps {
+export interface StreakLogicProps {
     streak?: Streak;
     maxStreak?: Streak;
 }
 
 export interface Config {
-    enableVoiceExperienceReward: boolean;
-    enablePresenceExperienceReward: boolean;
-    enableMessageExperienceReward: boolean;
-
-    experienceConstant: number;
-    experienceCalculatorConfig: ExperienceCalculatorConfig;
-
-    dailyRewardExperience: number;
+    experience: ExperienceConfig;
 
     userLongBreakHours: number;
 
@@ -23,6 +16,5 @@ export interface Config {
 
     autoPutSlashCommands: boolean;
 
-    voiceSignificantActivityStreakReward: number;
-    voiceActivityStreakLogic: (props: VoiceActivityStreakLogicProps) => VoiceActivityStreak;
+    voiceActivityStreakLogic: (props: StreakLogicProps) => ActivityStreak;
 }

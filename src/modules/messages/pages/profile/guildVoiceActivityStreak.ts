@@ -1,13 +1,13 @@
 import i18n from "@/client/i18n";
-import { ProfilePages, VoiceActivityStreak } from "@/interfaces";
-import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { getUserVoiceActivityStreak } from "@/modules/activity";
-import { formatNextStreakField, formatStreakField } from "@/modules/messages";
-import { BaseProfileEmbed } from "@/modules/messages/embeds";
+import {ActivityStreak, ProfilePages} from "@/interfaces";
+import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
+import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
+import {getUserVoiceActivityStreak} from "@/modules/activity";
+import {formatNextStreakField, formatStreakField} from "@/modules/messages";
+import {BaseProfileEmbed} from "@/modules/messages/embeds";
 
 export class GuildVoiceActivityStreak extends BaseProfilePage {
-    voiceActivityStreak: VoiceActivityStreak | undefined = undefined;
+    voiceActivityStreak: ActivityStreak | undefined = undefined;
 
     constructor(params: ProfilePagePayloadParams) {
         super({
@@ -45,8 +45,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
 
         if (!guild)
             throw new Error("Guild is required for guild voice activity streak page");
-        
-        const embed = BaseProfileEmbed({ user: renderedUser, colors })
+
+        return BaseProfileEmbed({ user: renderedUser, colors })
             .setAuthor({
                 name: guild.name,
                 iconURL: guild.iconURL() || undefined,
@@ -69,8 +69,6 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
                     inline: true,
                 }
             ]);
-
-        return embed;
     }
 
     get embedTitleField() {

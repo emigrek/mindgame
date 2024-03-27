@@ -1,29 +1,26 @@
-import {ExperienceCalculatorConfig} from "@/interfaces";
 import {getRandomGaussian} from "@/utils/random";
+import {config} from "@/config";
+
+const { experience } = config;
+const { voice, presence, message } = experience;
 
 class ExperienceCalculator {
-    private config: ExperienceCalculatorConfig;
-
-    constructor(config: ExperienceCalculatorConfig) {
-        this.config = config;
-    }
-    
-    public getVoiceReward(seconds: number, inVoice: number): number {
-        const maxExp = Math.round(seconds * this.config.voiceMultiplier * this.config.voiceModificator(seconds, inVoice));
+    public static getVoiceReward(seconds: number, inVoice: number): number {
+        const maxExp = Math.round(seconds * voice.value * voice.multiplier(seconds, inVoice));
         return this.random(1, maxExp || 1);
     }
 
-    public getPresenceReward(seconds: number): number {
-        const maxExp = Math.round(seconds * this.config.presenceMultiplier * this.config.presenceModificator(seconds));
+    public static getPresenceReward(seconds: number): number {
+        const maxExp = Math.round(seconds * presence.value * presence.multiplier(seconds));
         return this.random(1, maxExp || 1);
     }
 
-    public getMessageReward(files: boolean): number {
-        const maxExp = this.config.messageExperience * this.config.messageModificator(files);
-        return this.random(1, maxExp);
+    public static getMessageReward(files: boolean): number {
+        const maxExp = message.value * message.multiplier(files);
+        return this.random(1, maxExp || 1);
     }
-    
-    private random(min: number, max: number): number {
+
+    public static random(min: number, max: number): number {
         return Math.floor(getRandomGaussian() * (max - min + 1)) + min;
     }
 }

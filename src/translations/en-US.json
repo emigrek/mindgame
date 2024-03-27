@@ -207,7 +207,7 @@
 		"helpLabel": "Help"
 	},
 	"sweeper": {
-		"sweeped": "Sweeped {count} messages."
+		"swept": "Swept {count} messages."
 	},
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",

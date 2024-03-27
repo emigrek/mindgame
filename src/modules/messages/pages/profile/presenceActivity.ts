@@ -1,9 +1,9 @@
 import i18n from "@/client/i18n";
-import { BaseProfilePage, ProfilePages } from "@/interfaces";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { getColorInt, getLocalizedDateRange } from "@/modules/messages";
-import { BaseProfileEmbed } from "@/modules/messages/embeds";
-import { getUserGuildStatistics } from "@/modules/user-guild-statistics";
+import {BaseProfilePage, ProfilePages} from "@/interfaces";
+import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
+import {getColorInt, getLocalizedDateRange} from "@/modules/messages";
+import {BaseProfileEmbed} from "@/modules/messages/embeds";
+import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 
 export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -76,7 +76,6 @@ export class PresenceActivity extends BaseProfilePage {
     get visible() {
         const { selfCall, guild } = this.params;
         if (!selfCall) return false;
-        if (!guild) return false;
-        return true;
+        return Boolean(guild);
     }
 }

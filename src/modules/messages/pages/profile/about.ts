@@ -1,13 +1,18 @@
 import i18n from "@/client/i18n";
-import { ProfilePages } from "@/interfaces";
-import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { clientStatusToEmoji, formatLastActivityDetails, getUserClients, getUserLastActivityDetails } from "@/modules/activity";
-import { getFollowers } from "@/modules/follow";
-import { getProfileFollowButton } from "@/modules/messages/buttons";
-import { BaseProfileEmbed } from "@/modules/messages/embeds";
-import { KnownLinks } from "@/modules/messages/knownLinks";
-import { ActionRowBuilder, ButtonBuilder, MessageCreateOptions } from "discord.js";
+import {ProfilePages} from "@/interfaces";
+import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
+import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
+import {
+    clientStatusToEmoji,
+    formatLastActivityDetails,
+    getUserClients,
+    getUserLastActivityDetails
+} from "@/modules/activity";
+import {getFollowers} from "@/modules/follow";
+import {getProfileFollowButton} from "@/modules/messages/buttons";
+import {BaseProfileEmbed} from "@/modules/messages/embeds";
+import {KnownLinks} from "@/modules/messages/knownLinks";
+import {ActionRowBuilder, ButtonBuilder, MessageCreateOptions} from "discord.js";
 
 export class About extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -47,7 +52,7 @@ export class About extends BaseProfilePage {
         const clientsEmojis = clients.map(client => clientStatusToEmoji(client));
         const mostUsedEmoji = mostUsed ? clientStatusToEmoji(mostUsed) : undefined;
 
-        const embed = BaseProfileEmbed({ user: renderedUser, colors })
+        return BaseProfileEmbed({ user: renderedUser, colors })
             .setDescription(formatLastActivityDetails(userLastActivityDetails))
             .setFields([
                 {
@@ -67,8 +72,6 @@ export class About extends BaseProfilePage {
                 },
             ])
             .setImage(KnownLinks.EMBED_SPACER);
-
-        return embed;
     }
 
     get visible() {

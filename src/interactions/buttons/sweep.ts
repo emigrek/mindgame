@@ -1,7 +1,7 @@
-import { TextChannel } from "discord.js";
-import { Button } from "@/interfaces";
-import { getErrorMessagePayload, sweepTextChannel } from "@/modules/messages";
-import { InformationEmbed } from "@/modules/messages/embeds";
+import {TextChannel} from "discord.js";
+import {Button} from "@/interfaces";
+import {getErrorMessagePayload, sweepTextChannel} from "@/modules/messages";
+import {InformationEmbed} from "@/modules/messages/embeds";
 import i18n from "@/client/i18n";
 
 const sweep: Button = {
@@ -14,12 +14,12 @@ const sweep: Button = {
             return;
         }
 
-        const sweeped = await sweepTextChannel(client, interaction.channel as TextChannel);
+        const swept = await sweepTextChannel(client, interaction.channel as TextChannel);
 
         await interaction.followUp({
             embeds: [
                 InformationEmbed()
-                    .setDescription(i18n.__mf("sweeper.sweeped", { count: sweeped }))
+                    .setDescription(i18n.__mf("sweeper.swept", { count: swept }))
             ]
         });
     }

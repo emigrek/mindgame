@@ -1,5 +1,4 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {ExperienceCalculatorConfig} from "@/interfaces";
 import {
     getPresenceActivitiesByGuildId,
     getVoiceActivitiesByChannelId,
@@ -10,10 +9,9 @@ import {
 } from "@/modules/activity";
 import moment from "moment";
 
-import {ExperienceCalculator} from './ExperienceCalculator';
-
 import {config} from '@/config';
 import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
+import {ExperienceCalculator} from "@/modules/experience/ExperienceCalculator";
 
 type UserGuildExperienceData = {
     userId: string;
@@ -23,7 +21,6 @@ type UserGuildExperienceData = {
 
 class ExperienceUpdater {
     readonly client: ExtendedClient;
-    public calculator: ExperienceCalculator;
     readonly logging: boolean;
     public lastUpdateTimeInMs: number;
 
@@ -32,13 +29,11 @@ class ExperienceUpdater {
 
     private cache: Map<string, UserGuildExperienceData[]> = new Map();
 
-    constructor({ client, logging, calculatorConfig }: {
+    constructor({ client, logging }: {
         client: ExtendedClient;
-        calculatorConfig?: ExperienceCalculatorConfig;
         logging?: boolean;
     }) {
         this.client = client;
-        this.calculator = new ExperienceCalculator(calculatorConfig || config.experienceCalculatorConfig);
         this.logging = logging || true;
         this.lastUpdateTimeInMs = 0;
     }
@@ -58,7 +53,7 @@ class ExperienceUpdater {
     }
 
     private accumulateVoice(activity: VoiceActivityDocumentWithSeconds, inVoice: number) {
-        const exp = this.calculator.getVoiceReward(activity.seconds, inVoice);
+        const exp = ExperienceCalculator.getVoiceReward(activity.seconds, inVoice);
         if (!exp) return;
 
         this.updateCache(activity.guildId, {
@@ -68,7 +63,7 @@ class ExperienceUpdater {
     }
 
     private accumulatePresence(activity: PresenceActivityDocumentWithSeconds) {
-        const exp = this.calculator.getPresenceReward(activity.seconds);
+        const exp = ExperienceCalculator.getPresenceReward(activity.seconds);
         if (!exp) return;
 
         this.updateCache(activity.guildId, {
@@ -95,7 +90,7 @@ class ExperienceUpdater {
     }
 
     private fillCache() {
-        if (config.enableVoiceExperienceReward) {
+        if (config.experience.voice.enabled) {
             this.voiceActivities.flatMap(({activities}) =>
                 activities.forEach(activity => {
                     this.accumulateVoice(activity, activities.length);
@@ -103,7 +98,7 @@ class ExperienceUpdater {
             );
         }
 
-        if (config.enablePresenceExperienceReward) {
+        if (config.experience.presence.enabled) {
             this.presenceActivities.flatMap(({activities}) =>
                 activities.forEach(activity => {
                     this.accumulatePresence(activity);

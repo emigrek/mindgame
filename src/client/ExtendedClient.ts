@@ -1,5 +1,5 @@
-import { Button, Command, ContextMenu, Event, Modal, Module, Select } from "@/interfaces";
-import { Client, Collection, REST, Routes } from "discord.js";
+import {Button, Command, ContextMenu, Event, Modal, Module, Select} from "@/interfaces";
+import {Client, Collection, REST, Routes} from "discord.js";
 
 import events from "@/events";
 import modules from "@/modules";
@@ -10,13 +10,13 @@ import contexts from "@/interactions/contexts";
 import modals from "@/interactions/modals";
 import selects from "@/interactions/selects";
 
-import { config, keys } from "@/config";
+import {config, keys} from "@/config";
 import moment from "moment";
 
 import i18n from "./i18n";
 import localeList from "./localeList";
 
-import { ExperienceUpdater } from "@/modules/experience";
+import {ExperienceUpdater} from "@/modules/experience";
 
 class ExtendedClient extends Client {
     public events: Collection<string, Event> = new Collection();
@@ -34,12 +34,12 @@ class ExtendedClient extends Client {
     public async init() {
         moment.locale("pl-PL");
 
-        this.loadContexts();
-        this.loadButtons();
-        this.loadSelects();
-        this.loadEvents();
-        this.loadSlashCommands();
-        this.loadModals();
+        await this.loadContexts();
+        await this.loadButtons();
+        await this.loadSelects();
+        await this.loadEvents();
+        await this.loadSlashCommands();
+        await this.loadModals();
 
         config.autoPutSlashCommands && await this.putSlashCommands();
 

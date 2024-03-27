@@ -1,6 +1,6 @@
-import { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages } from "@/interfaces";
+import {ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages} from "@/interfaces";
 
-export interface BaseProfilPageProps {
+export interface BaseProfilePageProps {
     type: ProfilePages;
     name: string;
     description?: string;
@@ -17,7 +17,7 @@ export abstract class BaseProfilePage implements ProfilePage {
     params: ProfilePagePayloadParams;
     position: number;
 
-    constructor(props : BaseProfilPageProps) {
+    protected constructor(props : BaseProfilePageProps) {
         this.type = props.type;
         this.name = props.name;
         this.description = props.description;

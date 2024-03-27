@@ -5,7 +5,7 @@ export { Config } from './Config';
 export { ContextMenu } from "./ContextMenu";
 export { EphemeralChannel } from './EphemeralChannel';
 export { Event } from "./Event";
-export { ExperienceCalculatorConfig, PresenceModificator, VoiceModificator } from './ExperienceCalculatorConfig';
+export { ExperienceConfig, MessageMultiplier, PresenceMultiplier, VoiceMultiplier } from './ExperienceConfig';
 export { Follow } from './Follow';
 export { Guild } from "./Guild";
 export { Interaction } from "./Interaction";
@@ -20,7 +20,7 @@ export { SelectMenuOption } from "./SelectMenuOption";
 export { Sorting, SortingRanges, SortingTypes } from './Sorting';
 export { User } from "./User";
 export { VoiceActivity } from "./VoiceActivity";
-export { Streak, VoiceActivityStreak } from './VoiceActivityStreak';
+export { Streak, ActivityStreak } from './ActivityStreak';
 
 export type DeepPartial<T> = {
     [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]

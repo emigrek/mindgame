@@ -6,7 +6,7 @@ import voiceActivitySchema, {VoiceActivityDocument} from "@/modules/schemas/Voic
 
 import i18n from "@/client/i18n";
 import {config} from "@/config";
-import {Streak, VoiceActivityStreak} from "@/interfaces";
+import {ActivityStreak, Streak} from "@/interfaces";
 import moment from "moment";
 import mongoose from "mongoose";
 import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
@@ -24,7 +24,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
             userId: member.user.id,
             guildId: member.guild.id,
             update: {
-                exp: config.dailyRewardExperience
+                exp: config.experience.voice.dailyActivityReward,
             }
         });
         client.emit("userReceivedDailyReward", member.user.id, member.guild.id, streak);
@@ -43,7 +43,7 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
         userId: member.user.id,
         guildId: member.guild.id,
         update: {
-            exp: config.dailyRewardExperience + (streak.isSignificant ? config.voiceSignificantActivityStreakReward : 0)
+            exp: config.experience.voice.dailyActivityReward + (streak.isSignificant ? config.experience.voice.significantActivityStreakReward  : 0)
         }
     });
 
@@ -246,13 +246,11 @@ interface GetVoiceActivityProps {
 }
 
 const getVoiceActivity = async ({ userId, guildId }: GetVoiceActivityProps): Promise<VoiceActivityDocument | null> => {
-    const exists = await voiceActivityModel.findOne({ userId, guildId, to: null });
-    return exists;
+    return voiceActivityModel.findOne({ userId, guildId, to: null });
 };
 
 const getLastVoiceActivity = async (userId: string): Promise<VoiceActivityDocument | null> => {
-    const last = await voiceActivityModel.findOne({ userId }).sort({ to: -1 });
-    return last;
+    return voiceActivityModel.findOne({ userId }).sort({ to: -1 });
 };
 
 const getLastUserVoiceActivity = async (userId: string): Promise<VoiceActivityDocument | null> => {
@@ -276,8 +274,7 @@ const getLastUserVoiceActivity = async (userId: string): Promise<VoiceActivityDo
 };
 
 const getPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
-    const exists = await presenceActivityModel.findOne({ userId: userId, guildId: guildId, to: null });
-    return exists;
+    return presenceActivityModel.findOne({ userId: userId, guildId: guildId, to: null });
 }
 
 const getLastUserPresenceActivity = async (userId: string): Promise<PresenceActivityDocument | null> => {
@@ -319,7 +316,7 @@ interface PresenceActivitiesByGuildId {
 }
 
 const getVoiceActivitiesByChannelId = async (): Promise<VoiceActivitiesByChannelId[]> => {
-    const voiceActivities = await voiceActivityModel.aggregate([
+    return voiceActivityModel.aggregate([
         {
             $match: {
                 to: null
@@ -347,11 +344,10 @@ const getVoiceActivitiesByChannelId = async (): Promise<VoiceActivitiesByChannel
             }
         }
     ]);
-    return voiceActivities;
 }
 
 const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGuildId[]> => {
-    const presenceActivities = await presenceActivityModel.aggregate([
+    return presenceActivityModel.aggregate([
         {
             $match: {
                 to: null
@@ -379,11 +375,10 @@ const getPresenceActivitiesByGuildId = async (): Promise<PresenceActivitiesByGui
             }
         }
     ]);
-    return presenceActivities;
 }
 
 const getUserClientsTime = async (userId: string): Promise<PresenceActivityDocumentWithSeconds[]> => {
-    const presenceActivities = await presenceActivityModel.aggregate([
+    return presenceActivityModel.aggregate([
         {
             $match: {
                 userId,
@@ -411,11 +406,9 @@ const getUserClientsTime = async (userId: string): Promise<PresenceActivityDocum
             }
         }
     ]);
-
-    return presenceActivities;
 }
 
-const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<VoiceActivityStreak> => {
+const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<ActivityStreak> => {
     const activities = 
         await voiceActivityModel.find({
             userId,

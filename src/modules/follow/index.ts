@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
-import followSchema, { FollowDocument } from "@/modules/schemas/Follow";
+import followSchema, {FollowDocument} from "@/modules/schemas/Follow";
 
 const FollowModel = mongoose.model("Follow", followSchema);
 
 const getFollow = async (sourceUserId: string, targetUserId: string): Promise<FollowDocument | null> => {
-    const follow = await FollowModel.findOne({ sourceUserId, targetUserId });
-    return follow;
+    return FollowModel.findOne({ sourceUserId, targetUserId });
 };
 
 const createFollow = async (sourceUserId: string, targetUserId: string): Promise<FollowDocument | null> => {
@@ -23,21 +22,11 @@ const deleteFollow = async (sourceUserId: string, targetUserId: string): Promise
 };
 
 const getFollowers = async (userId: string): Promise<FollowDocument[]> => {
-    const followers = await FollowModel.find({ targetUserId: userId });
-    return followers;
+    return FollowModel.find({ targetUserId: userId });
 }
 
 const getFollowing = async (userId: string): Promise<FollowDocument[]> => {
-    const following = await FollowModel.find({ sourceUserId: userId });
-    return following;
+    return FollowModel.find({ sourceUserId: userId });
 };
 
-const getMutuals = async (userId: string): Promise<FollowDocument[]> => {
-    const followers = await getFollowers(userId);
-    const following = await getFollowing(userId);
-
-    const mutuals = followers.filter(follower => following.some(following => following.targetUserId === follower.sourceUserId));
-    return mutuals;
-}
-
-export { createFollow, deleteFollow, getFollowers, getFollowing, getMutuals, getFollow };
+export { createFollow, deleteFollow, getFollowers, getFollowing, getFollow };

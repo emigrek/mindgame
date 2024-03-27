@@ -1,11 +1,11 @@
-import { ColorResolvable } from "discord.js";
+import {ColorResolvable} from "discord.js";
 
-export interface LevelTreshold {
+export interface LevelThreshold {
     level: number;
     color: ColorResolvable;
 }
 
-export const levelTresholds: LevelTreshold[] = [
+export const levelThresholds: LevelThreshold[] = [
     {
         level: 200,
         color: "#3be8ff"

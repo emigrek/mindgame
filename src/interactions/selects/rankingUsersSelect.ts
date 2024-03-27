@@ -1,7 +1,7 @@
-import { Select } from "@/interfaces";
-import { getRankingMessagePayload } from "@/modules/messages";
-import { rankingStore } from "@/stores/rankingStore";
-import { UserSelectMenuInteraction } from "discord.js";
+import {Select} from "@/interfaces";
+import {getRankingMessagePayload} from "@/modules/messages";
+import {rankingStore} from "@/stores/rankingStore";
+import {UserSelectMenuInteraction} from "discord.js";
 
 export const rankingUsersSelect: Select = {
     customId: "rankingUsersSelect",
@@ -9,7 +9,6 @@ export const rankingUsersSelect: Select = {
         await interaction.deferUpdate();
 
         const rankingState = rankingStore.get(interaction.user.id);
-
         rankingState.userIds = interaction.values;
         rankingState.page = 1;
 

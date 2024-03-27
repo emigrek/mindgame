@@ -1,4 +1,4 @@
-import GuildSchema, { GuildDocument } from "@/modules/schemas/Guild";
+import GuildSchema, {GuildDocument} from "@/modules/schemas/Guild";
 import mongoose from "mongoose";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);
@@ -28,8 +28,7 @@ const getGuild = async (guildId: string): Promise<GuildDocument | null> => {
 }
 
 const getGuilds = async (): Promise<GuildDocument[]> => {
-    const guilds = await GuildModel.find();
-    return guilds;
+    return GuildModel.find();
 }
 
 interface GuildSetDefaultChannelIdProps {
@@ -75,7 +74,7 @@ const setLevelRolesHoist = async (guildId: string): Promise<GuildDocument | null
     return guildToUpdate;
 }
 
-const setAutoSweeing = async (guildId: string): Promise<GuildDocument | null>  => {
+const setAutoSweeping = async (guildId: string): Promise<GuildDocument | null>  => {
     const guildToUpdate = await GuildModel.findOne({
         guildId: guildId
     });
@@ -86,5 +85,5 @@ const setAutoSweeing = async (guildId: string): Promise<GuildDocument | null>  =
     return guildToUpdate;
 }
 
-export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeing, setDefaultChannelId, setLevelRoles, setLevelRolesHoist, setNotifications };
+export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setDefaultChannelId, setLevelRoles, setLevelRolesHoist, setNotifications };
 

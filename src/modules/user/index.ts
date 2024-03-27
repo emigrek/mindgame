@@ -1,11 +1,11 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import { config } from "@/config";
-import { Command } from "@/interfaces";
-import { getColorInt, useImageHex } from "@/modules/messages";
-import { InformationEmbed } from "@/modules/messages/embeds";
+import {config} from "@/config";
+import {Command} from "@/interfaces";
+import {getColorInt, useImageHex} from "@/modules/messages";
+import {InformationEmbed} from "@/modules/messages/embeds";
 import userSchema from "@/modules/schemas/User";
-import { User } from "discord.js";
+import {User} from "discord.js";
 import mongoose from "mongoose";
 
 const UserModel = mongoose.model("User", userSchema);
@@ -16,13 +16,13 @@ const root = (x: number, n: number) => {
 
 const expToLevel = (exp: number) => {
     return Math.floor(
-        root(exp, 3) * config.experienceConstant
+        root(exp, 3) * config.experience.constant
     );
 };
 
 const levelToExp = (level: number) => {
     return Math.floor(
-        Math.pow(level / config.experienceConstant, 3)
+        Math.pow(level / config.experience.constant, 3)
     );
 };
 
@@ -61,8 +61,7 @@ const getUser = async (user: User) => {
 }
 
 const getUsers = async () => {
-    const users = await UserModel.find();
-    return users;
+    return UserModel.find();
 }
 
 const updateUser = async (user: User) => {

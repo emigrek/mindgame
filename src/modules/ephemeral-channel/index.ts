@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import ephemeralChannelSchema, { EphemeralChannelDocument } from "@/modules/schemas/EphemeralChannel";
+import ephemeralChannelSchema, {EphemeralChannelDocument} from "@/modules/schemas/EphemeralChannel";
 import ExtendedClient from "@/client/ExtendedClient";
-import { Message, MessageReaction, TextChannel } from "discord.js";
+import {Message, MessageReaction, TextChannel} from "discord.js";
 import moment from "moment";
-import { ephemeralChannelMessageCache } from "./cache";
+import {ephemeralChannelMessageCache} from "./cache";
 
 const EphemeralChannelModel = mongoose.model("EphemeralChannel", ephemeralChannelSchema);
 
@@ -37,18 +37,15 @@ const deleteEphemeralChannel = async (channelId: string): Promise<boolean> => {
 }
 
 const getEphemeralChannel = async (channelId: string): Promise<EphemeralChannelDocument | null> => {
-    const ephemeralChannel = await EphemeralChannelModel.findOne({ channelId });
-    return ephemeralChannel;
+    return EphemeralChannelModel.findOne({ channelId });
 }
 
 const getGuildsEphemeralChannels = async (guildId: string): Promise<EphemeralChannelDocument[]> => {
-    const ephemeralChannels = await EphemeralChannelModel.find({ guildId });
-    return ephemeralChannels;
+    return EphemeralChannelModel.find({ guildId });
 }
 
 const getEphemeralChannels = async (): Promise<EphemeralChannelDocument[]> => {
-    const ephemeralChannels = await EphemeralChannelModel.find();
-    return ephemeralChannels;
+    return EphemeralChannelModel.find();
 }
 
 const deleteCachedMessages = async () => {
@@ -118,18 +115,15 @@ const isMessageCacheable = async (message: Message): Promise<boolean> => {
 
     const referenceMessageCachable = await isMessageCacheable(referenceMessage);
 
-    const conditions = referenceMessageCachable || 
-                       (!referenceMessageCachable && message.author.id === referenceMessage.author.id);
-
-    return conditions;
+    return referenceMessageCachable ||
+        (!referenceMessageCachable && message.author.id === referenceMessage.author.id);
 }
 
 const fetchReferenceMessage = async (message: Message): Promise<Message | null> => {
     const reference = message.reference;
     if (!reference || !reference.messageId) return null;
     try {
-        const referenceMessage = await message.channel.messages.fetch(reference.messageId);
-        return referenceMessage;
+        return message.channel.messages.fetch(reference.messageId);
     } catch (error) {
         console.log("Error fetching reference message: ", error);
         return null;
@@ -141,12 +135,9 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
 
     const uniqueUsersPromises = reactions.map(async (reaction: MessageReaction) => {
         const reactionUsers = await reaction.users.fetch();
-        
-        const unique = reactionUsers
+        return reactionUsers
             .filter((user) => user.id !== message.author.id && !user.bot)
             .map((user) => user.id);
-
-        return unique;
     });
 
     const uniqueUsers = await Promise.all(uniqueUsersPromises)

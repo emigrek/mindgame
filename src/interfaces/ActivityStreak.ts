@@ -1,4 +1,4 @@
-export interface VoiceActivityStreak {
+export interface ActivityStreak {
     streak?: Streak;
     maxStreak?: Streak;
     isSignificant: boolean;

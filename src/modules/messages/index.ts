@@ -1,33 +1,84 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import { config } from "@/config";
-import { ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak, VoiceActivityStreak } from "@/interfaces";
-import { Message as MessageType } from '@/interfaces/Message';
-import { createEphemeralChannel, deleteEphemeralChannel, editEphemeralChannel, getEphemeralChannel, getGuildsEphemeralChannels } from "@/modules/ephemeral-channel";
-import { getGuild } from "@/modules/guild";
-import { getAutoSweepingButton, getLevelRolesButton, getLevelRolesHoistButton, getNotificationsButton, getQuickButtonsRows, getRankingPageDownButton, getRankingPageUpButton, getRankingSettingsButton, getRepoButton, getRoleColorDisableButton, getRoleColorPickButton, getRoleColorUpdateButton, getSelectMessageDeleteButton, getSelectRerollButton } from "@/modules/messages/buttons";
-import { getChannelSelect, getRankingRangeSelect, getRankingSortSelect, getRankingUsersSelect } from "@/modules/messages/selects";
-import { getMemberColorRole } from "@/modules/roles";
+import {config} from "@/config";
+import {ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak} from "@/interfaces";
+import {Message as MessageType} from '@/interfaces/Message';
+import {
+    createEphemeralChannel,
+    deleteEphemeralChannel,
+    editEphemeralChannel,
+    getEphemeralChannel,
+    getGuildsEphemeralChannels
+} from "@/modules/ephemeral-channel";
+import {getGuild} from "@/modules/guild";
+import {
+    getAutoSweepingButton,
+    getLevelRolesButton,
+    getLevelRolesHoistButton,
+    getNotificationsButton,
+    getQuickButtonsRows,
+    getRankingPageDownButton,
+    getRankingPageUpButton,
+    getRankingSettingsButton,
+    getRepoButton,
+    getRoleColorDisableButton,
+    getRoleColorPickButton,
+    getRoleColorUpdateButton,
+    getSelectMessageDeleteButton,
+    getSelectRerollButton
+} from "@/modules/messages/buttons";
+import {
+    getChannelSelect,
+    getRankingRangeSelect,
+    getRankingSortSelect,
+    getRankingUsersSelect
+} from "@/modules/messages/selects";
+import {getMemberColorRole} from "@/modules/roles";
 import messageSchema from "@/modules/schemas/Message";
-import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-import { getUser } from "@/modules/user";
-import { getRanking, getSortingByType, getUserGuildStatistics, runMask } from '@/modules/user-guild-statistics';
+import {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
+import {getUser} from "@/modules/user";
+import {getRanking, getSortingByType, getUserGuildStatistics, runMask} from '@/modules/user-guild-statistics';
 import clean from "@/utils/clean";
-import { getLastCommits } from "@/utils/commits";
-import { ActionRowBuilder, AnySelectMenuInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, CommandInteraction, EmbedBuilder, EmbedField, Guild, GuildMember, Message, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, ThreadChannel, User, UserContextMenuCommandInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction, VoiceChannel } from "discord.js";
-import { GetColorName } from 'hex-color-to-color-name';
+import {getLastCommits} from "@/utils/commits";
+import {
+    ActionRowBuilder,
+    AnySelectMenuInteraction,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    ChannelType,
+    ChatInputCommandInteraction,
+    Collection,
+    CommandInteraction,
+    EmbedBuilder,
+    EmbedField,
+    Guild,
+    GuildMember,
+    Message,
+    ModalSubmitInteraction,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
+    TextChannel,
+    ThreadChannel,
+    User,
+    UserContextMenuCommandInteraction,
+    UserSelectMenuBuilder,
+    UserSelectMenuInteraction,
+    VoiceChannel
+} from "discord.js";
+import {GetColorName} from 'hex-color-to-color-name';
 import moment from "moment";
 import mongoose from "mongoose";
-import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
-import Vibrant = require('node-vibrant');
+import {ErrorEmbed, InformationEmbed, WarningEmbed} from "./embeds";
 
-import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
-import { colorStore } from "@/stores/colorStore";
-import { profileStore } from "@/stores/profileStore";
-import { rankingStore } from "@/stores/rankingStore";
-import { selectOptionsStore } from "@/stores/selectOptionsStore";
-import { KnownLinks } from "./knownLinks";
+import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
+import {colorStore} from "@/stores/colorStore";
+import {profileStore} from "@/stores/profileStore";
+import {rankingStore} from "@/stores/rankingStore";
+import {selectOptionsStore} from "@/stores/selectOptionsStore";
+import {KnownLinks} from "./knownLinks";
 import ProfilePagesManager from "./profilePagesManager";
+import Vibrant = require('node-vibrant');
 
 interface ImageHexColors {
     Vibrant: string;
@@ -110,14 +161,26 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
 
 const getProfileMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction) => {
     const { targetUserId, page } = profileStore.get(interaction.user.id);
+    if (!targetUserId) {
+        return {
+            embeds: [
+                WarningEmbed()
+                    .setDescription(i18n.__("profile.notFound"))
+                    .setImage(KnownLinks.EMBED_SPACER)
+            ],
+            ephemeral: true
+        };
+    }
 
-    const targetUser = client.users.cache.get(targetUserId ? targetUserId : interaction.user.id);
+    const targetUser = await client.users.fetch(targetUserId);
     if (!targetUser) {
         return {
             embeds: [
                 WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
+                    .setImage(KnownLinks.EMBED_SPACER)
             ],
+            components: [],
             ephemeral: true
         };
     }
@@ -130,7 +193,9 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
             embeds: [
                 WarningEmbed()
                     .setDescription(i18n.__("profile.notFound"))
+                    .setImage(KnownLinks.EMBED_SPACER)
             ],
+            components: [],
             ephemeral: true
         };
     }
@@ -355,8 +420,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const sortSelectMenu = await getRankingSortSelect(sortingType, sortSelectOptions);
     const rangeSelectMenu = await getRankingRangeSelect(sortingType, rangeSelectOptions);
     const usersSelectMenu = getRankingUsersSelect(userIds);
-    const pageUpButton = await getRankingPageUpButton(page > 1 ? false : true);
-    const pageDownButton = await getRankingPageDownButton(page < pagesCount ? false : true);
+    const pageUpButton = await getRankingPageUpButton(page <= 1);
+    const pageDownButton = await getRankingPageDownButton(page >= pagesCount);
     const settingsButton = await getRankingSettingsButton();
     const color = await useImageHex(guild.iconURL({ extension: "png", size: 256 }))
         .then(colors => getColorInt(colors.Vibrant));
@@ -395,7 +460,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
-const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: VoiceActivityStreak) => {
+const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: ActivityStreak) => {
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
@@ -411,7 +476,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
-                value: `\`\`\`${client.numberFormat.format(config.dailyRewardExperience)} EXP\`\`\``,
+                value: `\`\`\`${client.numberFormat.format(config.experience.voice.dailyActivityReward)} EXP\`\`\``,
                 inline: true
             },
             {
@@ -665,7 +730,7 @@ const getFollowMessagePayload = async (client: ExtendedClient, member: GuildMemb
     }
 };
 
-const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedClient, member: GuildMember, streak: VoiceActivityStreak) => {
+const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedClient, member: GuildMember, streak: ActivityStreak) => {
     i18n.setLocale(member.guild.preferredLocale);
 
     const avatar = member.user.displayAvatarURL({ extension: "png", size: 256 });
@@ -680,11 +745,11 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         }))
         .setThumbnail(KnownLinks.FIRE)
         
-    if (config.voiceSignificantActivityStreakReward > 0) {
+    if (config.experience.voice.significantActivityStreakReward > 0) {
         embed.addFields([
             {
                 name: i18n.__("notifications.voiceStreakRewardField"),
-                value: `\`\`\`${client.numberFormat.format(config.voiceSignificantActivityStreakReward)} EXP\`\`\``,
+                value: `\`\`\`${client.numberFormat.format(config.experience.voice.significantActivityStreakReward)} EXP\`\`\``,
                 inline: true,
             }
         ]);
@@ -739,7 +804,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     });
 
     await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
-    attachQuickButtons(client, channel);
+    await attachQuickButtons(client, channel);
     return count;
 };
 

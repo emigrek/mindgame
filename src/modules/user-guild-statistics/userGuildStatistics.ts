@@ -27,8 +27,7 @@ export const getUserGuildStatistics = async ({ userId, guildId }: GuildStatistic
 }
 
 export const getUserStatistics = async (userId: string) => {
-    const userGuildStatistics = await UserGuildStatisticsModel.find({ userId });
-    return userGuildStatistics;
+    return UserGuildStatisticsModel.find({ userId });
 }
 
 export const deleteUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
@@ -37,10 +36,6 @@ export const deleteUserGuildStatistics = async ({ userId, guildId }: GuildStatis
 
 export const getGuildStatistics = async (guildId: string) => {
     return UserGuildStatisticsModel.find({ guildId });
-};
-
-export const getAllUserGuildStatistics = async () => {
-    return UserGuildStatisticsModel.find({});
 };
 
 export interface UpdateUserGuildStatisticsProps {
@@ -150,7 +145,7 @@ export const clearTemporaryStatistics = async (type: 'day' | 'week' | 'month') =
     });
 };
 
-export const getExperienceProcentage = async (userGuildStatistics: UserGuildStatistics) => {
+export const getExperiencePercentage = async (userGuildStatistics: UserGuildStatistics) => {
     const expToCurrentLevel = levelToExp(userGuildStatistics.level);
     const expToLevelUp = levelToExp(userGuildStatistics.level + 1);
     return (((userGuildStatistics.total.exp-expToCurrentLevel)/(expToLevelUp-expToCurrentLevel))*100).toFixed(2);

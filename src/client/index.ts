@@ -1,5 +1,5 @@
 import ExtendedClient from './ExtendedClient';
-import { GatewayIntentBits, Partials } from "discord.js";
+import {GatewayIntentBits, Partials} from "discord.js";
 import logs from "discord-logs";
 
 const client = new ExtendedClient({
@@ -19,5 +19,4 @@ const client = new ExtendedClient({
 });
 
 logs(client);
-
 client.init();
