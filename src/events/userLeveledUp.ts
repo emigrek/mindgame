@@ -1,19 +1,19 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { Event } from "@/interfaces";
-import { getGuild } from "@/modules/guild";
-import { createMessage, getLevelUpMessagePayload, getMessage } from "@/modules/messages";
-import { assignUserLevelRole } from "@/modules/roles";
-import { sendNewFeaturesMessage } from "@/modules/user";
-import { TextChannel } from "discord.js";
+import {Event} from "@/interfaces";
+import {getGuild} from "@/modules/guild";
+import {createMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
+import {assignUserLevelRole, isLevelThreshold} from "@/modules/roles";
+import {sendNewFeaturesMessage} from "@/modules/user";
+import {TextChannel} from "discord.js";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
     run: async (client: ExtendedClient, userId: string, guildId: string, oldLevel: number, newLevel: number) => {
-        const sourceGuild = await getGuild(guildId);
-        if (!sourceGuild) return;
-
         await sendNewFeaturesMessage({ client, userId, guildId, oldLevel, newLevel })
             .catch(err => console.log("Error while sending new features message: ", err));
+
+        const sourceGuild = await getGuild(guildId);
+        if (!sourceGuild) return;
 
         const { notifications, channelId, levelRoles } = sourceGuild;
         if (levelRoles) {
@@ -27,6 +27,8 @@ export const userLeveledUp: Event = {
 
         const channel = guild.channels.cache.get(channelId) as TextChannel;
         if (!channel) return;
+
+        if (!isLevelThreshold(newLevel)) return;
 
         const user = await client.users.fetch(userId);
         const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild);
