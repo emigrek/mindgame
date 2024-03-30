@@ -39,6 +39,8 @@ class ExperienceUpdater {
     }
 
     public async update() {
+        this.cache.clear();
+
         this.voiceActivities = await getVoiceActivitiesByChannelId();
         this.presenceActivities = await getPresenceActivitiesByGuildId();
 
@@ -49,7 +51,6 @@ class ExperienceUpdater {
 
         this.lastUpdateTimeInMs = moment().diff(start, 'milliseconds', true);
         if (this.logging) this.logUpdate();
-        this.cache.clear();
     }
 
     private accumulateVoice(activity: VoiceActivityDocumentWithSeconds, inVoice: number) {
@@ -127,7 +128,7 @@ class ExperienceUpdater {
                 )
             );
 
-        return Promise.all(promises);
+        return Promise.all(promises.flat());
     }
 
     private logUpdate() {
