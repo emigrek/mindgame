@@ -14,7 +14,7 @@ export const messageCreate: Event = {
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
 
-        if (!message.author.bot && config.experience.message.enabled) {
+        if (config.experience.message.enabled && !message.author.bot) {
             await updateUserGuildStatistics({
                 client,
                 userId: message.author.id,

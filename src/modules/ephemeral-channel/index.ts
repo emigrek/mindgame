@@ -106,17 +106,14 @@ const isMessageCacheable = async (message: Message): Promise<boolean> => {
     const referenceMessage = await fetchReferenceMessage(message);
 
     if (reactionUsers.length || message.pinned) {
+        if (referenceMessage) ephemeralChannelMessageCache.remove(message.channel.id, referenceMessage.id);
         return false;
     }
+    if (!referenceMessage) return true;
 
-    if (!referenceMessage) {
-        return true;
-    }
-
-    const referenceMessageCachable = await isMessageCacheable(referenceMessage);
-
-    return referenceMessageCachable ||
-        (!referenceMessageCachable && message.author.id === referenceMessage.author.id);
+    const referenceMessageCacheable = await isMessageCacheable(referenceMessage);
+    return referenceMessageCacheable ||
+        (!referenceMessageCacheable && message.author.id === referenceMessage.author.id);
 }
 
 const fetchReferenceMessage = async (message: Message): Promise<Message | null> => {
