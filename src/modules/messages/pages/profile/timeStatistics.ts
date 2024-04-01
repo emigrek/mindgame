@@ -1,13 +1,13 @@
 import i18n from "@/client/i18n";
-import { ProfilePages } from "@/interfaces";
-import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
-import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { ExtendedUserStatistics } from "@/interfaces/UserGuildStatistics";
-import { getColorInt } from "@/modules/messages";
-import { getProfileTimePublicButton } from "@/modules/messages/buttons";
-import { BaseProfileEmbed } from "@/modules/messages/embeds";
-import { getUserTotalStatistics } from "@/modules/user-guild-statistics";
-import { ActionRowBuilder, ButtonBuilder } from "discord.js";
+import {ProfilePages} from "@/interfaces";
+import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
+import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
+import {ExtendedUserStatistics} from "@/interfaces/UserGuildStatistics";
+import {getColorInt} from "@/modules/messages";
+import {getProfileTimePublicButton} from "@/modules/messages/buttons";
+import {BaseProfileEmbed} from "@/modules/messages/embeds";
+import {getUserTotalStatistics} from "@/modules/user-guild-statistics";
+import {ActionRowBuilder, ButtonBuilder} from "discord.js";
 
 export class TimeStatistics extends BaseProfilePage {
     totalStatistics: ExtendedUserStatistics | undefined = undefined;
@@ -17,7 +17,6 @@ export class TimeStatistics extends BaseProfilePage {
             emoji: "⏳",
             name: i18n.__("profile.pages.timeStatistics"),
             type: ProfilePages.TimeStatistics,
-            position: 1,
             params,
         });
     }

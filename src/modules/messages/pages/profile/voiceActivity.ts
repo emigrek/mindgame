@@ -13,7 +13,6 @@ export class VoiceActivity extends BaseProfilePage {
             name: i18n.__("profile.pages.voiceActivity"),
             description: params.guild?.name || "🤔",
             type: ProfilePages.VoiceActivity,
-            position: 3,
             params,
         });
     }

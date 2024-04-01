@@ -12,7 +12,6 @@ export class PresenceActivity extends BaseProfilePage {
             name: i18n.__("profile.pages.presenceActivity"),
             description: params.guild?.name  || "🤔",
             type: ProfilePages.PresenceActivity,
-            position: 5,
             params,
         })
     }

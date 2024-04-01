@@ -1,23 +1,23 @@
-import { BaseProfilePage, ProfilePages } from "@/interfaces";
-import { ProfilePagePayloadParams, ProfilePagePayloadProps } from "@/interfaces/ProfilePage";
-import { ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
-import * as profilePages from './pages/profile';
-import { getProfileUserSelect, getUserPageSelect } from "./selects";
+import {BaseProfilePage, ProfilePages} from "@/interfaces";
+import {ProfilePagePayloadParams, ProfilePagePayloadProps} from "@/interfaces/ProfilePage";
+import {ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder} from "discord.js";
+import {About, GuildVoiceActivityStreak, PresenceActivity, Statistics, TimeStatistics, VoiceActivity} from './profile';
+import {getProfileUserSelect, getUserPageSelect} from "../selects";
 
 class ProfilePagesManager {
     params: ProfilePagePayloadParams;
-    pages: BaseProfilePage[] = [];
+    pages: BaseProfilePage[];
 
     constructor(params: ProfilePagePayloadParams) {
         this.params = params;
-        this.pages = this.renderPages(params);
-    }
-
-    renderPages(params: ProfilePagePayloadParams): BaseProfilePage[] {
-        this.params = params;
-        return Object
-            .values(profilePages)
-            .map((Page) => new Page(params));
+        this.pages = [
+            new About(params),
+            new TimeStatistics(params),
+            new Statistics(params),
+            new VoiceActivity(params),
+            new GuildVoiceActivityStreak(params),
+            new PresenceActivity(params),
+        ];
     }
 
     async init() {
@@ -27,12 +27,11 @@ class ProfilePagesManager {
 
     async getVisiblePages(): Promise<BaseProfilePage[]> {
         return this.pages
-            .filter((page) => page.visible)
-            .sort((a, b) => a.position - b.position);
+            .filter((page) => page.visible);
     }
 
     getPageByType(type: ProfilePages): BaseProfilePage {
-        return this.pages.find((page) => page.type === type) || new profilePages.About(this.params);
+        return this.pages.find((page) => page.type === type) || new About(this.params);
     }
 
     async getPagePayloadByType(type: ProfilePages) {

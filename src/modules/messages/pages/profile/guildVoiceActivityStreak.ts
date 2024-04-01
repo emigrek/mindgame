@@ -15,7 +15,6 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             name: i18n.__("profile.pages.guildVoiceActivityStreak"),
             description: params.guild?.name || "🤔",
             type: ProfilePages.GuildVoiceActivityStreak,
-            position: 4,
             params,
         });
     }
@@ -80,7 +79,8 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
     }
 
     get visible() {
-        if (this.voiceActivityStreak === undefined) return false;
-        return this.voiceActivityStreak.streak !== undefined;
+        if (this.voiceActivityStreak === undefined || this.voiceActivityStreak.streak === undefined) return false;
+        const { streak } = this.voiceActivityStreak;
+        return streak.value > 1;
     }
 }

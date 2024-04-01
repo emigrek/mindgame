@@ -20,7 +20,6 @@ export class About extends BaseProfilePage {
             emoji: "📝",
             name: i18n.__("profile.pages.about"),
             type: ProfilePages.About,
-            position: 0,
             params,
         });
     }

@@ -12,7 +12,6 @@ export class Statistics extends BaseProfilePage {
             name: i18n.__("profile.pages.statistics"),
             description: params.guild?.name || "🤔",
             type: ProfilePages.Statistics,
-            position: 2,
             params,
         })
     }

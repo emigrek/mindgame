@@ -6,7 +6,6 @@ export interface BaseProfilePageProps {
     description?: string;
     emoji: string;
     params: ProfilePagePayloadParams;
-    position: number;
 }
 
 export abstract class BaseProfilePage implements ProfilePage {
@@ -15,7 +14,6 @@ export abstract class BaseProfilePage implements ProfilePage {
     description?: string;
     emoji: string;
     params: ProfilePagePayloadParams;
-    position: number;
 
     protected constructor(props : BaseProfilePageProps) {
         this.type = props.type;
@@ -23,7 +21,6 @@ export abstract class BaseProfilePage implements ProfilePage {
         this.description = props.description;
         this.emoji = props.emoji;
         this.params = props.params;
-        this.position = props.position;
     }
 
     init(): Promise<void> {

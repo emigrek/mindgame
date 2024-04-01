@@ -78,7 +78,7 @@ import {profileStore} from "@/stores/profileStore";
 import {rankingStore} from "@/stores/rankingStore";
 import {selectOptionsStore} from "@/stores/selectOptionsStore";
 import {KnownLinks} from "./knownLinks";
-import ProfilePagesManager from "./profilePagesManager";
+import ProfilePagesManager from "./pages/profilePagesManager";
 import Vibrant = require('node-vibrant');
 
 interface ImageHexColors {
