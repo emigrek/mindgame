@@ -8,7 +8,8 @@ import {
     deleteEphemeralChannel,
     editEphemeralChannel,
     getEphemeralChannel,
-    getGuildsEphemeralChannels
+    getGuildsEphemeralChannels,
+    syncEphemeralChannelMessages
 } from "@/modules/ephemeral-channel";
 import {getGuild} from "@/modules/guild";
 import {
@@ -545,7 +546,8 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
 
     const subcommand = interaction.options.getSubcommand();
     const channel = interaction.options.getChannel('channel');
-    const timeout = interaction.options.getInteger('timeout');
+    const timeout = interaction.options.getInteger('timeout') ?? undefined;
+    const keepMessagesWithReactions = interaction.options.getBoolean('keep-messages-with-reactions') ?? undefined;
 
     switch(subcommand) {
         case 'create': {
@@ -570,7 +572,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                     ]
                 };
             }
-    
+
             const guildExisting = await getGuildsEphemeralChannels(interaction.guild.id);
             if (guildExisting.length >= 2) {
                 return {
@@ -580,24 +582,21 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                     ]
                 }
             }
-    
-            const ephemeralChannel = await createEphemeralChannel(interaction.guild.id, channel.id, timeout);
+
+            await createEphemeralChannel({ guildId: interaction.guild.id, keepMessagesWithReactions, channelId: channel.id, timeout });
             return {
                 embeds: [
                     InformationEmbed()
-                        .setDescription(i18n.__mf("ephemeralChannel.created", {
-                            channelId: ephemeralChannel.channelId,
-                            timeout: ephemeralChannel.timeout.toString()
-                        }))
+                        .setDescription(i18n.__("ephemeralChannel.created"))
                 ]
             }
         }
 
         case 'edit': {
-            if (!timeout || !channel)
+            if (!channel)
                 return getErrorMessagePayload();
 
-            const ephemeralChannel = await editEphemeralChannel(channel.id, timeout);
+            const ephemeralChannel = await editEphemeralChannel({ channelId: channel.id, update: { timeout, keepMessagesWithReactions } });
             if (!ephemeralChannel) {
                 return {
                     embeds: [
@@ -606,14 +605,12 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                     ]
                 }
             }
-    
+
+            await syncEphemeralChannelMessages(client, ephemeralChannel);
             return {
                 embeds: [
                     InformationEmbed()
-                        .setDescription(i18n.__mf("ephemeralChannel.edited", {
-                            channelId: ephemeralChannel.channelId,
-                            timeout: ephemeralChannel.timeout.toString()
-                        }))
+                        .setDescription(i18n.__("ephemeralChannel.edited"))
                 ]
             }
         }
@@ -624,17 +621,18 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                 const channel = interaction.guild?.channels.cache.get(ephemeralChannel.channelId);
                 return {
                     name: channel?.name || 'Unknown',
-                    value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\``
+                    value: `${i18n.__("ephemeralChannel.timeout")}: \`${ephemeralChannel.timeout}min\`\n${i18n.__("ephemeralChannel.keepMessagesWithReactions")}: \`${ephemeralChannel.keepMessagesWithReactions ? '✔' : '❌'}\``,
+                    inline: false,
                 }
             });
             const embed = InformationEmbed()
                 .setTitle(i18n.__("ephemeralChannel.listTitle"))
                 .setFields(fields);
-    
+
             if (!fields.length) {
                 embed.setDescription(i18n.__("ephemeralChannel.empty"));
             }
-    
+
             return {
                 embeds: [embed]
             }
@@ -644,7 +642,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
             if (!channel) {
                 return getErrorMessagePayload();
             }
-            
+
             const result = await deleteEphemeralChannel(channel.id);
             if (!result) {
                 return {
@@ -654,7 +652,7 @@ const getEphemeralChannelMessagePayload = async (client: ExtendedClient, interac
                     ]
                 }
             }
-    
+
             return {
                 embeds: [
                     InformationEmbed()

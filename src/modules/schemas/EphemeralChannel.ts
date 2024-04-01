@@ -1,5 +1,5 @@
-import { Schema, Document, SchemaTimestampsConfig } from 'mongoose';
-import { EphemeralChannel } from '@/interfaces';
+import {Document, Schema, SchemaTimestampsConfig} from 'mongoose';
+import {EphemeralChannel} from '@/interfaces';
 
 export type EphemeralChannelDocument = EphemeralChannel & Document & SchemaTimestampsConfig;
 
@@ -16,6 +16,11 @@ const ephemeralChannelSchema = new Schema<EphemeralChannel>({
     timeout: {
         type: Number,
         default: 15,
+        required: true
+    },
+    keepMessagesWithReactions: {
+        type: Boolean,
+        default: true,
         required: true
     }
 }, {

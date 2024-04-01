@@ -1,7 +1,7 @@
-import { MessageReaction } from "discord.js";
-import { Event } from "@/interfaces"
-import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
-import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
+import {MessageReaction} from "discord.js";
+import {Event} from "@/interfaces"
+import {getEphemeralChannel, isMessageCacheable} from "@/modules/ephemeral-channel";
+import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
 import ExtendedClient from "@/client/ExtendedClient";
 
 export const messageReactionAdd: Event = {
@@ -14,7 +14,7 @@ export const messageReactionAdd: Event = {
         if(!ephemeralChannel) return;
 
         const m = message.partial ? await message.fetch() : message;
-        const cacheable = await isMessageCacheable(m);
+        const cacheable = await isMessageCacheable(ephemeralChannel, m);
         cacheable ? ephemeralChannelMessageCache.add(channel.id, m) : ephemeralChannelMessageCache.remove(channel.id, message.id);
     }
 }

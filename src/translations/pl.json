@@ -41,6 +41,10 @@
 				"timeout": {
 					"name": "opóźnienie",
 					"description": "Ilość czasu po którym wiadomości zostaną usunięte."
+				},
+				"keep-messages-with-reactions": {
+					"name": "zachowaj-wiadomości-z-reakcjami",
+					"description": "Zachowaj wiadomości z reakcjami."
 				}
 			}
 		},
@@ -265,14 +269,15 @@
 		}
 	},
 	"ephemeralChannel": {
-		"alreadyExists": "Ten kanał jest już kanałem efemerycznym.\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",
-		"created": "<#{channelId}> jest teraz kanałem efemerycznym.\nWiadomości na tym kanalę będą znikać po {timeout} minutach.\n\nUżyj </ephemeral-channel edit:1116832272021192784> aby zmienić czas znikania wiadomości.",
-		"edited": "Czas znikania wiadomości na kanalę <#{channelId}> został zmieniony na {timeout} minut(y).",
+		"alreadyExists": "Ten kanał jest już kanałem efemerycznym.\nZamiast tego użyj </ephemeral-channel edit:1116832272021192784>.",
+		"created": "Stworzono kanał efemeryczny.",
+		"edited": "Edycja kanału efemerycznego zakończona sukcesem.",
 		"deleted": "<#{channelId}> nie jest już kanałem efemerycznym.",
 		"notFound": "Ten kanał nie jest kanałem efemerycznym.",
 		"limitReached": "Osiągnąłeś limit kanałów efemerycznych na tym serwerze.\nUsuń jeden z nich aby utworzyć nowy.",
 		"listTitle": "Kanały efemeryczne",
 		"timeout": "Opóźnienie",
+		"keepMessagesWithReactions": "Zostaw wiadomości z reakcjami",
 		"empty": "Brak kanałów efemerycznych."
 	},
 	"achievements": {

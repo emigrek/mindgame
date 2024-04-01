@@ -1,9 +1,9 @@
-import { Module } from "@/interfaces";
-import { syncEphemeralChannelMessages } from "@/modules/ephemeral-channel";
+import {Module} from "@/interfaces";
+import {syncALlEphemeralChannelsMessages} from "@/modules/ephemeral-channel";
 
 export const ephemeralChannel: Module = {
     name: "ephemeralChannel",
     run: async (client) => {
-        await syncEphemeralChannelMessages(client);
+        await syncALlEphemeralChannelsMessages(client);
     }
 }   

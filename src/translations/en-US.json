@@ -41,6 +41,14 @@
 				"timeout": {
 					"name": "timeout",
 					"description": "Amount of time after message gets deleted."
+				},
+				"keepMessagesWithReactions": {
+					"name": "keep-messages-with-reactions",
+					"description": "Keep messages with reactions."
+				},
+				"keep-messages-with-reactions": {
+					"name": "keep-messages-with-reactions",
+					"description": "Keep messages with reactions."
 				}
 			}
 		},
@@ -275,14 +283,15 @@
 		}
 	},
 	"ephemeralChannel": {
-		"alreadyExists": "This channel is already an ephemeral channel.\nUse </ephemeral-channel edit:1116832272021192784> to change message dissapearing timeout.",
-		"created": "<#{channelId}> is now an ephemeral channel.\nMessages in this channel will dissapear after {timeout} minute(s).\n\nUse </ephemeral-channel edit:1116832272021192784> to change message dissapearing timeout.",
-		"edited": "<#{channelId}> timeout has been changed to {timeout} minute(s).",
+		"alreadyExists": "This channel is already an ephemeral channel.\nUse </ephemeral-channel edit:1116832272021192784> instead.",
+		"created": "Ephemeral channel has been created.",
+		"edited": "Ephemeral channel has been successfully edited.",
 		"deleted": "<#{channelId}> is no longer an ephemeral channel.",
 		"notFound": "This channel is not ephemeral channel.",
-		"limitReached": "You have reached the limit of ephemeral channels.\nPlease delete some of them in order to create new.",
+		"limitReached": "You have reached the limit of ephemeral channels.\nPlease delete one of them in order to create new.",
 		"listTitle": "Ephemeral channels list",
 		"timeout": "Timeout",
+		"keepMessagesWithReactions": "Keep messages with reactions",
 		"empty": "No ephemeral channels found."
 	},
 	"achievements": {

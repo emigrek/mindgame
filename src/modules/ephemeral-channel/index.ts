@@ -4,36 +4,38 @@ import ExtendedClient from "@/client/ExtendedClient";
 import {Message, MessageReaction, TextChannel} from "discord.js";
 import moment from "moment";
 import {ephemeralChannelMessageCache} from "./cache";
+import {EphemeralChannel} from '@/interfaces';
 
 const EphemeralChannelModel = mongoose.model("EphemeralChannel", ephemeralChannelSchema);
 
-const createEphemeralChannel = async (guildId: string, channelId: string, timeout: number): Promise<EphemeralChannelDocument> => {
-    const newEphemeralChannel = new EphemeralChannelModel({ guildId, channelId, timeout });
-    await newEphemeralChannel.save();
-    return newEphemeralChannel;
+type CreateEphemeralChannelProps = EphemeralChannel;
+const createEphemeralChannel = async ({ guildId, channelId, timeout, keepMessagesWithReactions }: CreateEphemeralChannelProps): Promise<EphemeralChannelDocument> => {
+    return EphemeralChannelModel.create({
+        guildId,
+        channelId,
+        timeout,
+        keepMessagesWithReactions,
+        createdAt: moment().toISOString()
+    });
 }
 
-const editEphemeralChannel = async (channelId: string, timeout: number): Promise<EphemeralChannelDocument | null> => {
-    const ephemeralChannel = await EphemeralChannelModel.findOne({ channelId });
+interface EditEphemeralChannelProps {
+    channelId: string;
+    update: Partial<EphemeralChannel>;
+}
 
-    if (!ephemeralChannel) {
-        return null;
-    }
-
-    ephemeralChannel.timeout = timeout;
-    await ephemeralChannel.save();
-    return ephemeralChannel;
+const editEphemeralChannel = async ({ channelId, update }: EditEphemeralChannelProps): Promise<EphemeralChannelDocument | null> => {
+    return EphemeralChannelModel.findOneAndUpdate(
+        { channelId },
+        update,
+        { new: true }
+    );
 }
 
 const deleteEphemeralChannel = async (channelId: string): Promise<boolean> => {
-    const ephemeralChannel = await EphemeralChannelModel.findOne({ channelId });
-
-    if (!ephemeralChannel) {
-        return false;
-    }
-
-    await ephemeralChannel.remove();
-    return true;
+    return EphemeralChannelModel.findOneAndDelete({ channelId })
+        .then(() => true)
+        .catch(() => false);
 }
 
 const getEphemeralChannel = async (channelId: string): Promise<EphemeralChannelDocument | null> => {
@@ -75,43 +77,47 @@ const deleteCachedMessages = async () => {
         .catch(error => console.log("Error deleting cached messages: ", error));
 }
 
-const syncEphemeralChannelMessages = async (client: ExtendedClient) => {
+const syncALlEphemeralChannelsMessages = async (client: ExtendedClient) => {
     const ephemeralChannels = await getEphemeralChannels();
-
-    const syncPromises = ephemeralChannels.map(async (ephemeralChannel: EphemeralChannelDocument) => {
-        const channel = await client.channels.fetch(ephemeralChannel.channelId) as TextChannel;
-        if (!channel) return null;
-
-        const messages = await channel.messages.fetch({ limit: 50 });
-        const valid = messages
-            .filter((message: Message) => moment(message.createdAt).isAfter(moment(ephemeralChannel.createdAt as string)));
-        
-        const cachePromises = valid.map(async (message: Message) => {
-            const cacheable = await isMessageCacheable(message);
-            if (!cacheable) return null;
-
-            ephemeralChannelMessageCache.add(message.channel.id, message);
-        });
-
-        await Promise.all(cachePromises)
-            .catch(error => console.log("Error caching ephemeral channel messages: ", error));
-    });
-
-    await Promise.all(syncPromises)
+    await Promise.all(
+        ephemeralChannels.map(
+            (ephemeralChannel: EphemeralChannelDocument) => syncEphemeralChannelMessages(client, ephemeralChannel)
+        )
+    )
         .catch(error => console.log("Error syncing ephemeral channel messages: ", error));
 }
 
-const isMessageCacheable = async (message: Message): Promise<boolean> => {
+const syncEphemeralChannelMessages = async (client: ExtendedClient, ephemeralChannel: EphemeralChannelDocument) => {
+    ephemeralChannelMessageCache.removeChannel(ephemeralChannel.channelId);
+    const channel = await client.channels.fetch(ephemeralChannel.channelId) as TextChannel;
+    if (!channel) return null;
+
+    const messages = await channel.messages.fetch({ limit: 50 });
+    const valid = messages
+        .filter((message: Message) => moment(message.createdAt).isAfter(moment(ephemeralChannel.createdAt as string)));
+
+    const cachePromises = valid.map(async (message: Message) => {
+        const cacheable = await isMessageCacheable(ephemeralChannel, message);
+        if (!cacheable) return null;
+
+        ephemeralChannelMessageCache.add(message.channel.id, message);
+    });
+
+    await Promise.all(cachePromises)
+        .catch(error => console.log("Error caching ephemeral channel messages: ", error));
+};
+
+const isMessageCacheable = async (ephemeralChannel: EphemeralChannelDocument, message: Message): Promise<boolean> => {
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
     const referenceMessage = await fetchReferenceMessage(message);
 
-    if (reactionUsers.length || message.pinned) {
+    if ((ephemeralChannel.keepMessagesWithReactions && reactionUsers.length) || message.pinned) {
         if (referenceMessage) ephemeralChannelMessageCache.remove(message.channel.id, referenceMessage.id);
         return false;
     }
     if (!referenceMessage) return true;
 
-    const referenceMessageCacheable = await isMessageCacheable(referenceMessage);
+    const referenceMessageCacheable = await isMessageCacheable(ephemeralChannel, referenceMessage);
     return referenceMessageCacheable ||
         (!referenceMessageCacheable && message.author.id === referenceMessage.author.id);
 }
@@ -148,4 +154,4 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
     );
 }
 
-export { createEphemeralChannel, fetchReferenceMessage, editEphemeralChannel, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncEphemeralChannelMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
+export { createEphemeralChannel, fetchReferenceMessage, editEphemeralChannel, syncEphemeralChannelMessages, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncALlEphemeralChannelsMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };

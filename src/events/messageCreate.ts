@@ -28,7 +28,7 @@ export const messageCreate: Event = {
 
         const ephemeralChannel = await getEphemeralChannel(message.channel.id);
         if(ephemeralChannel) {
-            const cachable = await isMessageCacheable(message);
+            const cachable = await isMessageCacheable(ephemeralChannel, message);
             cachable && ephemeralChannelMessageCache.add(message.channel.id, message);
         }
 
