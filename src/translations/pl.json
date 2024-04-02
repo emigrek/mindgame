@@ -201,7 +201,7 @@
 		"helpLabel": "Pomoc"
 	},
 	"sweeper": {
-		"sweeped": "Usunięto {count} wiadomości."
+		"swept": "Usunięto {count} wiadomości."
 	},
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",
