@@ -788,10 +788,9 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         });
 
     const messagesToDelete = messages.filter((message: Message) => {
-        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
-        const isBot = message.author.bot;
-        const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) : false;
-        return startsWithConfigPrefix || (willBeDeletedByEphemeralChannel ? isBot : false);
+        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));const isFromBot = message.author.bot;
+        const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
+        return startsWithConfigPrefix || (isFromBot && willBeDeletedByEphemeralChannel);
     });
 
     let count = 0;

@@ -28,8 +28,8 @@ export const messageCreate: Event = {
 
         const ephemeralChannel = await getEphemeralChannel(message.channel.id);
         if(ephemeralChannel) {
-            const cachable = await isMessageCacheable(ephemeralChannel, message);
-            cachable && ephemeralChannelMessageCache.add(message.channel.id, message);
+            const cacheable = await isMessageCacheable(ephemeralChannel, message);
+            cacheable && ephemeralChannelMessageCache.add(message.channel.id, message);
         }
 
         if(message.author.id === client.user?.id) {
