@@ -801,13 +801,13 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     });
 
     await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
-    await attachQuickButtons(client, channel);
+    await attachQuickButtons(client, channel.id);
     return count;
 };
 
-const attachQuickButtons = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
+const attachQuickButtons = async (client: ExtendedClient, channelId: string) => {
+    const channel = await client.channels.fetch(channelId) as TextChannel;
     i18n.setLocale(channel.guild.preferredLocale);
-
     const lastMessages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)

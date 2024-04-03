@@ -2,11 +2,9 @@ import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {getEphemeralChannel, isMessageCacheable} from "@/modules/ephemeral-channel";
 import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
-import {attachQuickButtons} from "@/modules/messages";
 import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
-import {delay} from "@/utils/delay";
 import {config} from "@/config";
-import {Message, TextChannel} from "discord.js";
+import {Message} from "discord.js";
 import {ExperienceCalculator} from "@/modules/experience";
 
 export const messageCreate: Event = {
@@ -31,9 +29,9 @@ export const messageCreate: Event = {
             const cacheable = await isMessageCacheable(ephemeralChannel, message);
             cacheable && ephemeralChannelMessageCache.add(message.channel.id, message);
         }
-
-        if(message.author.id === client.user?.id) {
-            delay(500).then(() => attachQuickButtons(client, message.channel as TextChannel));
-        }
+        //
+        // if(message.author.id === client.user?.id) {
+        //     delay(500).then(() => attachQuickButtons(client, message.channel as TextChannel));
+        // }
     }
 }

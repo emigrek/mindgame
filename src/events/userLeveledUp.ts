@@ -5,6 +5,7 @@ import {createMessage, getLevelUpMessagePayload, getMessage} from "@/modules/mes
 import {assignUserLevelRole, isLevelThreshold} from "@/modules/roles";
 import {sendNewFeaturesMessage} from "@/modules/user";
 import {TextChannel} from "discord.js";
+import NotificationsManager from "@/modules/messages/notificationsManager";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
@@ -48,13 +49,13 @@ export const userLeveledUp: Event = {
             return;
         }
 
-        await channel.send(levelUpMessagePayload)
-            .then(async message => {
+        await NotificationsManager.getInstance().schedule({
+            channel: channel,
+            payload: levelUpMessagePayload,
+            callback: async message => {
                 await message.react("🎉");
                 await createMessage(message, user.id, "levelUpMessage");
-            })
-            .catch(error => {
-                console.log("Error while sending level up message: ", error);
-            });
+            }
+        });
     }
 }

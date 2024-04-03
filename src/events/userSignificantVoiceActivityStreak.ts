@@ -3,6 +3,7 @@ import {ActivityStreak, Event} from "@/interfaces";
 import {getGuild} from "@/modules/guild";
 import {createMessage, getSignificantVoiceActivityStreakMessagePayload} from "@/modules/messages";
 import {GuildMember, TextChannel} from "discord.js";
+import NotificationsManager from "@/modules/messages/notificationsManager";
 
 export const userSignificantVoiceActivityStreak: Event = {
     name: "userSignificantVoiceActivityStreak",
@@ -15,11 +16,13 @@ export const userSignificantVoiceActivityStreak: Event = {
 
         const payload = await getSignificantVoiceActivityStreakMessagePayload(client, member, streak);
 
-        await channel.send(payload)
-            .then(async message => {
+        await NotificationsManager.getInstance().schedule({
+            channel: channel,
+            payload: payload,
+            callback: async message => {
                 await message.react("😱");
                 await createMessage(message, member.id, "significantVoiceActivityStreakMessage");
-            })
-            .catch(error => console.log("Error while sending significant voice activity streak message: ", error));
+            }
+        });
     }
 }
