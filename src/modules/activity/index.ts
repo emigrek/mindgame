@@ -432,8 +432,12 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
 
         if (date.dayOfYear() === last.dayOfYear() + 1) {
             streak.value++;
+            streak.date = date.toDate();
             if (maxStreak) {
                 maxStreak.value = Math.max(streak.value, maxStreak.value);
+                if (maxStreak.value === streak.value) {
+                    maxStreak.date = date.toDate();
+                }
             }
         } else {
             streak = { 

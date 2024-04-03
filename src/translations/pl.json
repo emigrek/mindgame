@@ -185,7 +185,11 @@
 			"one": "%s dzień",
 			"other": "%s dni"
 		},
-		"nextVoiceStreakRewardField": "Następna nagroda serii za",
+		"voiceStreakInFormat": {
+			"one": "za %s dzień",
+			"other": "za %s dni"
+		},
+		"nextVoiceStreakRewardField": "Następna nagroda serii",
 		"voiceStreakRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",
 		"weekVoiceTimeField": "W tym tygodniu",

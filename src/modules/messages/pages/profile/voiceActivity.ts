@@ -2,9 +2,9 @@ import i18n from "@/client/i18n";
 import {ProfilePages} from "@/interfaces";
 import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
-import {getLocalizedDateRange} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
+import {getLocalizedDateTypeRange} from "@/utils/date";
 
 export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -40,17 +40,17 @@ export class VoiceActivity extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.voice/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.voice/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.voice/3600)}H\`\`\``,
                     inline: true,
                 },
             ]);

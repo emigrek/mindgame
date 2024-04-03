@@ -194,11 +194,15 @@
 		"voiceStreakTitle": "Voice streak",
 		"voiceStreakDescription": "<@{userId}> is on a **daily voice activity in a row streak**!",
 		"voiceStreakField": "Streak",
-		"nextVoiceStreakRewardField": "Next streak reward in",
+		"nextVoiceStreakRewardField": "Next streak reward",
 		"maxVoiceStreakField": "Best streak",
 		"voiceStreakFormat": {
 			"one": "%s day",
 			"other": "%s days"
+		},
+		"voiceStreakInFormat": {
+			"one": "in %s day",
+			"other": "in %s days"
 		},
 		"voiceStreakRewardField": "Reward",
 		"todayVoiceTimeField": "Today",

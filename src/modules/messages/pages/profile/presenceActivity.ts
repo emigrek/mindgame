@@ -1,9 +1,10 @@
 import i18n from "@/client/i18n";
 import {BaseProfilePage, ProfilePages} from "@/interfaces";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
-import {getColorInt, getLocalizedDateRange} from "@/modules/messages";
+import {getColorInt} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
+import {getLocalizedDateTypeRange} from "@/utils/date";
 
 export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -39,17 +40,17 @@ export class PresenceActivity extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.presence/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.presence/3600)}H\`\`\``,
                     inline: true,
                 },
             ]);

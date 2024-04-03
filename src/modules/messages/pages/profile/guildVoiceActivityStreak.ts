@@ -54,7 +54,7 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.voiceStreakField"),
-                    value: formatStreakField(this.voiceActivityStreak.streak),
+                    value: formatStreakField(this.voiceActivityStreak.streak, true),
                     inline: true
                 },
                 {
@@ -64,7 +64,7 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
                 },
                 {
                     name: i18n.__("notifications.maxVoiceStreakField"),
-                    value: formatStreakField(this.voiceActivityStreak.maxStreak),
+                    value: formatStreakField(this.voiceActivityStreak.maxStreak, true),
                     inline: true,
                 }
             ]);

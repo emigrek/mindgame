@@ -79,6 +79,7 @@ import {rankingStore} from "@/stores/rankingStore";
 import {selectOptionsStore} from "@/stores/selectOptionsStore";
 import {KnownLinks} from "./knownLinks";
 import ProfilePagesManager from "./pages/profilePagesManager";
+import {getLocalizedDateRange} from "@/utils/date";
 import Vibrant = require('node-vibrant');
 
 interface ImageHexColors {
@@ -869,33 +870,15 @@ const deleteMessage = async (messageId: string) => {
     return true;
 };
 
-const getLocalizedDateRange = (type: 'day' | 'week' | 'month') => {
-    const startOf = moment().startOf(type);
-    const endOf = moment().endOf(type);
-
-    if (type === 'day') {
-        return `(${startOf.format('DD/MM')})`;
-    }
-
-    if (type === 'week') {
-        return startOf.month() === endOf.month() ?
-        `(${startOf.format('DD')}-${endOf.format('DD/MM')})` :
-        `(${startOf.format('DD/MM')}-${endOf.format('DD/MM')})`;
-    }
-
-    return `(${startOf.format('DD')}-${endOf.format('DD')}/${startOf.format('MM')})`;
-}
-
-const formatStreakField = (streak?: Streak) => {
+const formatStreakField = (streak?: Streak, includeDateRange?: boolean) => {
     return streak && streak.value > 1 ? 
-        `\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.value || 0)}\`\`\`` 
+        `${includeDateRange ? getLocalizedDateRange(streak.startedAt, streak.date) : ''}\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.value || 0)}\`\`\``
         : 
         `\`\`\`${i18n.__("utils.lack")}\`\`\``;
 }
 
 const formatNextStreakField = (daysTillNext: number) => {
-    return daysTillNext ? `\`\`\`${i18n.__n("notifications.voiceStreakFormat", daysTillNext)}\`\`\`` : `\`\`\`${i18n.__("utils.never")}\`\`\``;
+    return daysTillNext ? `\`\`\`${i18n.__n("notifications.voiceStreakInFormat", daysTillNext)}\`\`\`` : `\`\`\`${i18n.__("utils.never")}\`\`\``;
 };
 
-export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getLocalizedDateRange, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
-
+export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
