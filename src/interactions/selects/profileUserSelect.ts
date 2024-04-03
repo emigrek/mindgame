@@ -1,4 +1,4 @@
-import {Select} from "@/interfaces";
+import {ProfilePages, Select} from "@/interfaces";
 import {getProfileMessagePayload} from "@/modules/messages";
 import {profileStore} from "@/stores/profileStore";
 import {UserSelectMenuInteraction} from "discord.js";
@@ -14,6 +14,7 @@ export const profileUserSelect: Select = {
             .then(user => user.bot)
             .catch(() => true);
 
+        profileState.page = ProfilePages.About;
         profileState.targetUserId = !isBot ? interaction.values[0] : undefined;
 
         const profileMessagePayload = await getProfileMessagePayload(client, interaction as UserSelectMenuInteraction);

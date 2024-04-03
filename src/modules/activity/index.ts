@@ -427,7 +427,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
     const maxStreak: Streak = { date: last.toDate(), value: 1, startedAt: last.toDate() };
 
     for (const date of dates) {
-        if (!last || date.isSame(last, "day"))
+        if (date.isSame(last, "day"))
             continue;
 
         if (date.dayOfYear() === last.dayOfYear() + 1) {
