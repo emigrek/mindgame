@@ -5,20 +5,25 @@
 # 🌌 Mindgame
 **Mindgame** provides a way to track user's activity in guild and reward them for being active. If you're looking for a way to engage your community or see the most active users in your guild, this Discord application is for you.
 
-## 📚 Features
-1. **Experience** - Configurable experience system that rewards users for being active in various ways.
-    * **Profiles** - View your own or other user's profiles with detailed information about their activity.
-    * **Ranking** - Check out the guild ranking to see who's the most active in the community depending on your sorting preference.
-    * **Level roles** - Roles indicating user's level in the guild. Automatically assigned based on user's level. Can be hoisted or renamed.
-    * **Color role** - Custom role unlocked at a certain level enabling you to set your own nickname color in the guild.
-    * **Extra Rewards**
-        * **Daily** - Get a reward for daily voice activity.
-        * **Streak** - Get a reward for voice activity streak.
-2. **Utility** - Various utilities to make your Discord experience more enjoyable.
-    * **Automatic text channel sweeping** - Automatically sweep bot messages from text channels when voice channels are empty.
-    * **Ephemeral channels** - Tired of your text channels being cluttered with unimportant messages? Create an ephemeral channel that will automatically delete all messages after a configurable time. Messages with reactions are preserved.
-    * **User follow** - Follow your friends to get notified when they join voice channel. (note: works only on guilds where bot is present)
-    * **Select** - Have u ever hesitated to choose between games to play? Use the select command to let the Math.random() decide for you.
+## 📚 Features Overview
+### 1. **Experience Enhancement Tools** 
+Configurable experience system that rewards users for being active in various ways.
+
+* **Profiles** -  Access profiles to view detailed activity insights for yourself or other users.
+* **Guild Ranking** - Discover the most active members with a ranking system armed with wide range of sorting options.
+* **Level roles** - Receive roles that reflect your engagement level within the guild. These roles are automatically updated and can be customized.
+* **Color role** - Unlock ability to create a custom role with a color of your choice.
+* **Extra rewards**
+    * **Daily** - Earn rewards for participating in voice channels daily.
+    * **Streak** - Accumulate rewards by maintaining a consecutive daily voice activity streak.
+
+### 2. **Utility Features**
+Enhance your Discord experience with tools designed from user to user.
+
+* **Automatic text channel sweeping** - Keep your text channels clean by automatically removing bot related messages when voice channels are vacant.
+* **Ephemeral channels** - Tired of your text channels being cluttered with unimportant messages? Create an ephemeral channel that automatically deletes all messages after a set period of time. Messages with reactions can be preserved.
+* **User follow** - Stay connected by receiving notifications when friends join a voice channel (available only in guilds with the bot).
+* **Select** - Indecisive about game choices? Let the Select command randomly make the choice for you, powered by Math.random().
 
 ## 🌍 Locales
 This application is fully translated (including slash commands, context menus, etc.) in:
