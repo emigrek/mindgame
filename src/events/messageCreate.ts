@@ -29,9 +29,5 @@ export const messageCreate: Event = {
             const cacheable = await isMessageCacheable(ephemeralChannel, message);
             cacheable && ephemeralChannelMessageCache.add(message.channel.id, message);
         }
-        //
-        // if(message.author.id === client.user?.id) {
-        //     delay(500).then(() => attachQuickButtons(client, message.channel as TextChannel));
-        // }
     }
 }
