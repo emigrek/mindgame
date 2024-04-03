@@ -1,6 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { Sorting, SortingRanges, SortingTypes } from "@/interfaces";
-import { UserGuildStatistics } from "@/interfaces/UserGuildStatistics";
+import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
+import {UserGuildStatistics} from "@/interfaces/UserGuildStatistics";
 
 export const getSortingByType = (type: SortingTypes, range: SortingRanges): Sorting => {
     return sortings.find(s => s.type === type && s.range === range) as Sorting;
@@ -30,7 +30,7 @@ export const sortings: Sorting[] = [
         type: SortingTypes.EXP,
         range: SortingRanges.TOTAL,
         sort: { "total.exp": -1 },
-        mask: "{total.level} LVL ({total.exp} EXP)",
+        mask: "{total.level} LVL\n({total.exp} EXP)",
         emoji: "✨"
     },
     {

@@ -289,8 +289,8 @@
 		}
 	},
 	"utils": {
-		"never": "Nigdy",
-		"lack": "Brak",
+		"never": "-",
+		"lack": "-",
 		"userOnly": "Ta funkcja może zostać użyta tylko przez użytkowników z profilem.",
 		"textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
 		"guildOnly": "Ta funkcja może zostać użyta tylko w gildiach.",
