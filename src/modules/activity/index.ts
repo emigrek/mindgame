@@ -573,12 +573,10 @@ const getUserClients = async (userId: string): Promise<GetUserClientProps> => {
         }
     }
 
-    const set = new Set(Array.from(clients.keys()));
-    const mostUsed = Array.from(clients).sort((a, b) => b[1] - a[1])[0];
-
+    const sorted = Array.from(clients).sort((a, b) => b[1] - a[1]);
     return {
-        clients: Array.from(set),
-        mostUsed: mostUsed ? mostUsed[0] : undefined,
+        clients: sorted.map(([client]) => client),
+        mostUsed: sorted[0] ? sorted[0][0] : undefined
     };
 }
 
