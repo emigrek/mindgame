@@ -77,7 +77,8 @@
 	},
 	"contextLocalizations": {
 		"profile": "Zobacz profil",
-		"sweep": "Posprzątaj wiadomości"
+		"sweep": "Posprzątaj wiadomości",
+		"ranking": "Zobacz ranking"
 	},
 	"config": {
 		"channelWatchers": "{count} 👀 widzi ten kanał.",
@@ -197,7 +198,6 @@
 	},
 	"quickButton": {
 		"profileLabel": "Profil 👤",
-		"profileTargetLabel": "Profil {username} 👤",
 		"guildStatisticsLabel": "Statystyki 📅",
 		"commitsLabel": "Zmiany 📝",
 		"sweepLabel": "Spam? 🧹",

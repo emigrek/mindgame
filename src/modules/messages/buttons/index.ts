@@ -1,38 +1,36 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import {getFollow} from "@/modules/follow";
-import {getMessage} from "@/modules/messages";
 import {GuildDocument} from "@/modules/schemas/Guild";
 import {ButtonBuilder} from "@discordjs/builders";
-import {ActionRowBuilder, ButtonStyle, Message, UserResolvable} from "discord.js";
+import {ActionRowBuilder, ButtonStyle} from "discord.js";
 import {getRandomEmojiFromGroup, Groups} from "winemoji";
 
 interface NotificationsProps {
     guild: GuildDocument;
 }
 
-const getNotificationsButton = async ({ guild }: NotificationsProps) => {
+const getNotificationsButton = ({ guild }: NotificationsProps) => {
     return new ButtonBuilder()
         .setCustomId("notifications")
         .setLabel(i18n.__("config.notificationsButtonLabel"))
         .setStyle(guild.notifications ? ButtonStyle.Success : ButtonStyle.Secondary);
 }
 
-const getAutoSweepingButton = async ({ guild }: NotificationsProps) => {
+const getAutoSweepingButton = ({ guild }: NotificationsProps) => {
     return new ButtonBuilder()
         .setCustomId("autoSweeping")
         .setLabel(i18n.__("config.autoSweepingButtonLabel"))
         .setStyle(guild.autoSweeping ? ButtonStyle.Success : ButtonStyle.Secondary);
 }
 
-const getLevelRolesButton = async ({ guild }: NotificationsProps) => {
+const getLevelRolesButton = ({ guild }: NotificationsProps) => {
     return new ButtonBuilder()
         .setCustomId("levelRoles")
         .setLabel(i18n.__("config.levelRolesButtonLabel"))
         .setStyle(guild.levelRoles ? ButtonStyle.Success : ButtonStyle.Secondary);
 }
 
-const getLevelRolesHoistButton =  async ({ guild }: NotificationsProps) => {
+const getLevelRolesHoistButton =  ({ guild }: NotificationsProps) => {
     return new ButtonBuilder()
         .setCustomId("levelRolesHoist")
         .setLabel(i18n.__("config.levelRolesHoistButtonLabel"))
@@ -43,7 +41,7 @@ interface ProfileTimePublicButtonProps {
     isPublic: boolean;
 }
 
-const getProfileTimePublicButton = async ({ isPublic }: ProfileTimePublicButtonProps) => {
+const getProfileTimePublicButton = ({ isPublic }: ProfileTimePublicButtonProps) => {
     return new ButtonBuilder()
         .setCustomId("profileTimePublic")
         .setLabel(i18n.__("profile.timePublicButtonLabel"))
@@ -71,7 +69,7 @@ const getRoleColorPickButton = () => {
         .setStyle(ButtonStyle.Secondary);
 }
 
-const getRoleColorUpdateButton = async () => {
+const getRoleColorUpdateButton = () => {
     return new ButtonBuilder()
         .setCustomId("roleColorUpdate")
         .setLabel(i18n.__("color.roleColorUpdateButtonLabel"))
@@ -85,48 +83,28 @@ const getRoleColorDisableButton = () => {
         .setStyle(ButtonStyle.Danger)
 }
 
-interface ProfileButtonProps {
-    client: ExtendedClient;
-    targetUserId?: UserResolvable;
-}
-
-const getProfileButton = async ({ client, targetUserId }: ProfileButtonProps) => {
-    let profileButton;
-
-    if (targetUserId) {
-        const targetUser = await client.users.fetch(targetUserId);
-
-        profileButton = new ButtonBuilder()
-            .setCustomId("profile")
-            .setLabel(i18n.__mf("quickButton.profileTargetLabel", { username: targetUser.username }))
-            .setStyle(ButtonStyle.Primary);
-
-        return profileButton;
-    }
-
-    profileButton = new ButtonBuilder()
+const getProfileButton = () => {
+    return new ButtonBuilder()
         .setCustomId("profile")
         .setLabel(i18n.__("quickButton.profileLabel"))
         .setStyle(ButtonStyle.Primary);
-
-    return profileButton;
 }
 
-const getSweepButton = async () => {
+const getSweepButton = () => {
     return new ButtonBuilder()
         .setCustomId("sweep")
         .setLabel(i18n.__("quickButton.sweepLabel"))
         .setStyle(ButtonStyle.Secondary);
 };
 
-const getRankingButton = async () => {
+const getRankingButton = () => {
     return new ButtonBuilder()
         .setCustomId("ranking")
         .setLabel(i18n.__("quickButton.rankingLabel"))
         .setStyle(ButtonStyle.Primary);
 };
 
-const getRankingPageUpButton = async (disabled = false) => {
+const getRankingPageUpButton = (disabled = false) => {
     return new ButtonBuilder()
         .setCustomId("rankingPageUp")
         .setDisabled(disabled)
@@ -134,7 +112,7 @@ const getRankingPageUpButton = async (disabled = false) => {
         .setStyle(ButtonStyle.Secondary);
 };
 
-const getRankingPageDownButton = async (disabled = false) => {
+const getRankingPageDownButton = (disabled = false) => {
     return new ButtonBuilder()
         .setCustomId("rankingPageDown")
         .setDisabled(disabled)
@@ -142,14 +120,14 @@ const getRankingPageDownButton = async (disabled = false) => {
         .setStyle(ButtonStyle.Secondary);
 };
 
-const getRankingSettingsButton = async () => {
+const getRankingSettingsButton = () => {
     return new ButtonBuilder()
         .setCustomId("rankingSettings")
         .setLabel(i18n.__("ranking.settingsButtonLabel"))
         .setStyle(ButtonStyle.Secondary);
 };
 
-const getHelpButton = async () => {
+const getHelpButton = () => {
     return new ButtonBuilder()
         .setCustomId("help")
         .setLabel(`${i18n.__("quickButton.helpLabel")} ${getRandomEmojiFromGroup(Groups.AnimalsAndNature).char}`)
@@ -164,24 +142,20 @@ const getRepoButton = async () => {
         .setLabel(i18n.__("help.repoButtonLabel"));
 }
 
-const getQuickButtonsRows = async (client: ExtendedClient, message: Message) => {
-    const sourceMessage = await getMessage({
-        messageId: message.id,
-    });
-
+const getQuickButtonsRows = async () => {
     const row = new ActionRowBuilder<ButtonBuilder>();
 
-    const profileButton = await getProfileButton({ client, targetUserId: sourceMessage?.targetUserId || undefined });
-    const sweepButton = await getSweepButton();
-    const rankingButton = await getRankingButton();
-    const helpButton = await getHelpButton();
+    const profileButton = getProfileButton();
+    const sweepButton = getSweepButton();
+    const rankingButton = getRankingButton();
+    const helpButton = getHelpButton();
 
     row.setComponents(sweepButton, profileButton, rankingButton, helpButton);
 
     return [row];
 }
 
-const getSelectMessageDeleteButton = async (disabled: boolean) => {
+const getSelectMessageDeleteButton = (disabled: boolean) => {
     return new ButtonBuilder()
         .setCustomId("selectMessageDelete")
         .setLabel(i18n.__("select.messageDeleteButtonLabel"))
@@ -189,7 +163,7 @@ const getSelectMessageDeleteButton = async (disabled: boolean) => {
         .setDisabled(disabled);
 }
 
-const getSelectRerollButton = async (disabled: boolean) => {
+const getSelectRerollButton = (disabled: boolean) => {
     return new ButtonBuilder()
         .setCustomId("selectReroll")
         .setLabel(i18n.__("select.rerollButtonLabel"))

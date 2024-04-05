@@ -1,5 +1,5 @@
-import { SortingRanges, SortingTypes } from "@/interfaces";
-import { Store } from "@/stores";
+import {SortingRanges, SortingTypes} from "@/interfaces";
+import {Store} from "@/stores";
 
 interface RankingStoreInterface {
     page: number;
@@ -8,6 +8,7 @@ interface RankingStoreInterface {
     sorting: SortingTypes;
     range: SortingRanges;
     userIds: string[];
+    targetUserId?: string;
 }
 
 const initial: RankingStoreInterface = {

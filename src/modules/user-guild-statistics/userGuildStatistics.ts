@@ -98,7 +98,16 @@ export const clearExperience = async () => {
     return UserGuildStatisticsModel.deleteMany({});
 };
 
-export const getRanking = async (type: Sorting, page: number, perPage: number, guild: Guild, userIds?: string[]) => {
+interface GetRankingProps {
+    type: Sorting;
+    page: number;
+    perPage: number;
+    guild: Guild;
+    userIds?: string[];
+    targetUserId?: string;
+}
+
+export const getRanking = async ({ type, page, perPage, guild, userIds, targetUserId }: GetRankingProps) => {
     const match = {
         guildId: guild?.id,
         ...(userIds?.length ? { userId: { $in: userIds } } : {}), // Compare users
@@ -125,8 +134,16 @@ export const getRanking = async (type: Sorting, page: number, perPage: number, g
         },
     ]) as UserIncludedGuildStatisticsDocument[];
 
+    let renderedPage = page;
+
+    if (targetUserId) {
+        const targetPage = results.findIndex((statistics) => statistics.userId === targetUserId) + 1;
+        if (targetPage > 0) renderedPage = targetPage;
+    }
+
     return {
-        onPage: results.slice((page - 1) * perPage, page * perPage),
+        renderedPage,
+        onPage: results.slice((renderedPage - 1) * perPage, renderedPage * perPage),
         pagesCount: Math.ceil((await UserGuildStatisticsModel.countDocuments(match)) / perPage) || 1
     }
 };

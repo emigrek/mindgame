@@ -56,6 +56,7 @@ import {
     Guild,
     GuildMember,
     Message,
+    MessageContextMenuCommandInteraction,
     ModalSubmitInteraction,
     StringSelectMenuBuilder,
     StringSelectMenuInteraction,
@@ -143,10 +144,10 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
         }
     });
 
-    const notificationsButton = await getNotificationsButton({ guild: sourceGuild })
-    const levelRolesButton = await getLevelRolesButton({ guild: sourceGuild })
-    const levelRolesHoistButton = await getLevelRolesHoistButton({ guild: sourceGuild })
-    const autoSweepingButton = await getAutoSweepingButton({ guild: sourceGuild })
+    const notificationsButton = getNotificationsButton({ guild: sourceGuild })
+    const levelRolesButton = getLevelRolesButton({ guild: sourceGuild })
+    const levelRolesHoistButton = getLevelRolesHoistButton({ guild: sourceGuild })
+    const autoSweepingButton = getAutoSweepingButton({ guild: sourceGuild })
     const channelSelect = await getChannelSelect(currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
 
     const row = new ActionRowBuilder<StringSelectMenuBuilder>()
@@ -349,7 +350,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
         colorState.color = roleColor ? roleColor.hexColor : defaultColor;
     }
 
-    const roleColorUpdateButton = await getRoleColorUpdateButton();
+    const roleColorUpdateButton = getRoleColorUpdateButton();
     const roleColorPickButton = getRoleColorPickButton();
     const row = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(roleColorPickButton, roleColorUpdateButton);
@@ -380,53 +381,59 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     };
 };
 
-const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction) => {
-    const { page, userIds, sorting, range, perPage } = rankingStore.get(interaction.user.id);
+const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction | MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction) => {
+    const { page, userIds, sorting, range, perPage, targetUserId } = rankingStore.get(interaction.user.id);
     const guild = interaction.guild;
 
     if (!guild)
         return getErrorMessagePayload();
 
-    const sortSelectOptions: SelectMenuOption[] = Object.values(SortingTypes)
-        .map((sortingType: SortingTypes) => {
-            return {
-                label: i18n.__(`rankingSortings.label.${sortingType}`),
-                value: sortingType,
-                default: sortingType === sorting,
-            }
-        });
-
-    const rangeSelectOptions: SelectMenuOption[] = Object.values(SortingRanges)
-        .map((rangeType: SortingRanges) => {
-            return {
-                label: i18n.__(`rankingSortings.range.${rangeType}`),
-                value: rangeType,
-                default: rangeType === range,
-            }
-        });
-
     const sortingType = getSortingByType(sorting, range);
-    const { onPage, pagesCount } = await getRanking(sortingType, page, perPage, guild, userIds);
+    const { renderedPage, onPage, pagesCount } = await getRanking({
+        type: sortingType,
+        page,
+        perPage,
+        guild,
+        userIds
+    });
 
+    rankingStore.get(interaction.user.id).page = renderedPage;
     rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
     const fields = onPage.map((statistics, index) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);
+        const targetId = targetUserId || interaction.user.id;
         return {
-            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
         };
     });
 
-    const sortSelectMenu = await getRankingSortSelect(sortingType, sortSelectOptions);
-    const rangeSelectMenu = await getRankingRangeSelect(sortingType, rangeSelectOptions);
+    const sortSelectMenu = await getRankingSortSelect(sortingType,
+        Object.values(SortingTypes)
+            .map((sortingType: SortingTypes) => {
+                return {
+                    label: i18n.__(`rankingSortings.label.${sortingType}`),
+                    value: sortingType,
+                    default: sortingType === sorting,
+                }
+            })
+    );
+    const rangeSelectMenu = await getRankingRangeSelect(sortingType,
+        Object.values(SortingRanges)
+            .map((rangeType: SortingRanges) => {
+                return {
+                    label: i18n.__(`rankingSortings.range.${rangeType}`),
+                    value: rangeType,
+                    default: rangeType === range,
+                }
+            })
+    );
     const usersSelectMenu = getRankingUsersSelect(userIds);
-    const pageUpButton = await getRankingPageUpButton(page <= 1);
-    const pageDownButton = await getRankingPageDownButton(page >= pagesCount);
-    const settingsButton = await getRankingSettingsButton();
-    const color = await useImageHex(guild.iconURL({ extension: "png", size: 256 }))
-        .then(colors => getColorInt(colors.Vibrant));
+    const pageUpButton = getRankingPageUpButton(page <= 1);
+    const pageDownButton = getRankingPageDownButton(page >= pagesCount);
+    const settingsButton = getRankingSettingsButton();
 
     const sortRow = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(sortSelectMenu);
@@ -435,25 +442,28 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const usersRow = new ActionRowBuilder<UserSelectMenuBuilder>()
         .addComponents(usersSelectMenu);
     const paginationRow = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(pageUpButton, pageDownButton);
+        .addComponents(pageUpButton, pageDownButton, settingsButton);
 
-    paginationRow.addComponents(settingsButton);
+    const targetUser = await client.users.fetch(targetUserId || interaction.user.id);
+    const color = await useImageHex(targetUser.displayAvatarURL({ extension: "png", size: 256 }))
+        .then(colors => getColorInt(colors.Vibrant));
 
     return {
         embeds: [
             InformationEmbed()
                 .setColor(color)
-                .setTitle(i18n.__mf("ranking.title", {
-                    emoji: sortingType.emoji,
-                    range: i18n.__(`rankingSortings.range.${sortingType.range}`),
-                    sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
-                }))
+                .setThumbnail(targetUser.displayAvatarURL({ extension: "png", size: 256 }))
+                .setTitle(targetUser.username)
                 .setAuthor({
                     name: guild.name,
                     iconURL: guild.iconURL({ extension: "png", size: 256 }) || undefined
                 })
                 .setFields(fields)
-                .setDescription(!onPage.length ? i18n.__("ranking.empty") : null)
+                .setDescription(`**${i18n.__mf("ranking.title", {
+                    emoji: sortingType.emoji,
+                    range: i18n.__(`rankingSortings.range.${sortingType.range}`),
+                    sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
+                })}**\n${!onPage.length ? i18n.__("ranking.empty") : ''}`)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
                 })
@@ -530,8 +540,8 @@ const getSelectMessagePayload = async (client: ExtendedClient, interaction: Chat
             })
         )
 
-    const selectMessageDeleteButton = await getSelectMessageDeleteButton(!reveal);
-    const selectRerollButton = await getSelectRerollButton(!reveal);
+    const selectMessageDeleteButton = getSelectMessageDeleteButton(!reveal);
+    const selectRerollButton = getSelectRerollButton(!reveal);
     const row = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(selectRerollButton, selectMessageDeleteButton);
 
@@ -791,7 +801,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
     const messagesToDelete = messages.filter((message: Message) => {
         const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));const isFromBot = message.author.bot;
         const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
-        return startsWithConfigPrefix || (isFromBot && willBeDeletedByEphemeralChannel);
+        return startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel);
     });
 
     let count = 0;
@@ -829,7 +839,7 @@ const attachQuickButtons = async (client: ExtendedClient, channelId: string) => 
             console.log(`There was an error when clearing components: ${e}`);
         });
 
-    await lastMessage.edit({ components: await getQuickButtonsRows(client, lastMessage) })
+    await lastMessage.edit({ components: await getQuickButtonsRows() })
         .catch(e => {
             console.log(`There was an error when editing the message: ${e}`);
         });

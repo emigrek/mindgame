@@ -132,10 +132,9 @@ class ExperienceUpdater {
     }
 
     private logUpdate() {
-        const timestamp = new Date(new Date().getTime() - this.lastUpdateTimeInMs).toLocaleString();
         const guildsSize = this.cache.size;
         const cacheSize = Array.from(this.cache.values()).reduce((acc, val) => acc + val.length, 0);
-        console.log(`[${timestamp}][ExperienceUpdater] Updated ${guildsSize} guild(s) (${cacheSize} user(s)) in ${this.lastUpdateTimeInMs}ms.`);
+        console.log(`[ExperienceUpdater] Updated ${guildsSize} guild(s) (${cacheSize} user(s)) in ${this.lastUpdateTimeInMs}ms.`);
     }
 }
 
