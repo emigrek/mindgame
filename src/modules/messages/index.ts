@@ -394,7 +394,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         page,
         perPage,
         guild,
-        userIds
+        userIds,
+        targetUserId
     });
 
     rankingStore.get(interaction.user.id).page = renderedPage;
