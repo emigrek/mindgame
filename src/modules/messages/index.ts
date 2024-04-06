@@ -382,7 +382,7 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 };
 
 const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction | MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction) => {
-    const { page, userIds, sorting, range, perPage, targetUserId } = rankingStore.get(interaction.user.id);
+    const { page, userIds, sorting, range, perPage } = rankingStore.get(interaction.user.id);
     const guild = interaction.guild;
 
     if (!guild)
@@ -400,9 +400,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const fields = onPage.map((statistics, index) => {
         const relativeIndex = index + 1 + ((page - 1) * perPage);
-        const targetId = targetUserId || interaction.user.id;
         return {
-            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}`,
+            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
         };
@@ -442,7 +441,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const paginationRow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(pageUpButton, pageDownButton, settingsButton);
 
-    const targetUser = await client.users.fetch(targetUserId || interaction.user.id);
+    const targetUser = await client.users.fetch(interaction.user.id);
     const color = await useImageHex(targetUser.displayAvatarURL({ extension: "png", size: 256 }))
         .then(colors => getColorInt(colors.Vibrant));
 
