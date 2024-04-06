@@ -134,13 +134,7 @@ export const getRanking = async ({ type, page, perPage, guild, userIds, targetUs
         },
     ]) as UserIncludedGuildStatisticsDocument[];
 
-    let renderedPage = page;
-
-    if (targetUserId) {
-        const targetPage = results.findIndex((statistics) => statistics.userId === targetUserId) + 1;
-        if (targetPage > 0) renderedPage = targetPage;
-    }
-
+    const renderedPage = targetUserId ? results.findIndex((statistics) => statistics.userId === targetUserId) + 1 : page;
     return {
         renderedPage,
         onPage: results.slice((renderedPage - 1) * perPage, renderedPage * perPage),
