@@ -10,12 +10,7 @@ const rankingUserContext: ContextMenu = {
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
-        const isBot = await client.users.fetch(interaction.targetId)
-            .then(user => user.bot)
-            .catch(() => true);
-
         const rankingState = rankingStore.get(interaction.user.id);
-        rankingState.targetUserId = !isBot ? interaction.targetId : undefined;
         rankingState.userIds = [];
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as UserContextMenuCommandInteraction);

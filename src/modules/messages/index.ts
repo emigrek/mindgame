@@ -389,16 +389,13 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
         return getErrorMessagePayload();
 
     const sortingType = getSortingByType(sorting, range);
-    const { renderedPage, onPage, pagesCount } = await getRanking({
+    const { onPage, pagesCount } = await getRanking({
         type: sortingType,
         page,
         perPage,
         guild,
         userIds,
-        targetUserId
     });
-
-    rankingStore.get(interaction.user.id).page = renderedPage;
     rankingStore.get(interaction.user.id).pagesCount = pagesCount;
 
     const fields = onPage.map((statistics, index) => {

@@ -1,5 +1,5 @@
 import {Button} from "@/interfaces";
-import {getMessage, getRankingMessagePayload} from "@/modules/messages";
+import {getRankingMessagePayload} from "@/modules/messages";
 import {rankingStore} from "@/stores/rankingStore";
 
 const ranking: Button = {
@@ -7,12 +7,8 @@ const ranking: Button = {
     run: async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true });
 
-        const sourceMessage = await getMessage({
-            messageId: interaction.message.id,
-        });
         const rankingState = rankingStore.get(interaction.user.id);
-
-        rankingState.targetUserId = (sourceMessage && sourceMessage.targetUserId) ? sourceMessage.targetUserId : undefined;
+        rankingState.page = 1;
         rankingState.userIds = [];
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction);

@@ -104,10 +104,9 @@ interface GetRankingProps {
     perPage: number;
     guild: Guild;
     userIds?: string[];
-    targetUserId?: string;
 }
 
-export const getRanking = async ({ type, page, perPage, guild, userIds, targetUserId }: GetRankingProps) => {
+export const getRanking = async ({ type, page, perPage, guild, userIds }: GetRankingProps) => {
     const match = {
         guildId: guild?.id,
         ...(userIds?.length ? { userId: { $in: userIds } } : {}), // Compare users
@@ -134,23 +133,10 @@ export const getRanking = async ({ type, page, perPage, guild, userIds, targetUs
         },
     ]) as UserIncludedGuildStatisticsDocument[];
 
-    const pagesCount = Math.ceil(results.length / perPage);
-    let targetPageNumber = page;
-
-    if (targetUserId) {
-        const targetIndex = results.findIndex(result => result.userId === targetUserId);
-        if (targetIndex !== -1) {
-            targetPageNumber = Math.ceil((targetIndex + 1) / perPage);
-        }
-    }
-
-    const onPageResults = results.slice((targetPageNumber - 1) * perPage, targetPageNumber * perPage);
-
     return {
-        renderedPage: targetPageNumber,
-        onPage: onPageResults,
-        pagesCount
-    };
+        onPage: results.slice((page - 1) * perPage, page * perPage),
+        pagesCount: Math.ceil((await UserGuildStatisticsModel.countDocuments(match)) / perPage) || 1
+    }
 };
 
 export const clearTemporaryStatistics = async (type: 'day' | 'week' | 'month') => {
