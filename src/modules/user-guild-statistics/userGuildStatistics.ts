@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
 import {ExtendedUserStatistics, UserGuildStatistics, UserStatistics} from "@/interfaces/UserGuildStatistics";
-import userGuildStatisticsSchema from "@/modules/schemas/UserGuildStatistics";
+import userGuildStatisticsSchema, {UserIncludedGuildStatisticsDocument} from "@/modules/schemas/UserGuildStatistics";
 import {expToLevel, levelToExp} from "@/modules/user";
 import {merge} from "@/utils/merge";
 import {Guild} from "discord.js";
@@ -108,42 +108,13 @@ interface GetRankingProps {
 }
 
 export const getRanking = async ({ type, page, perPage, guild, userIds, targetUserId }: GetRankingProps) => {
-    const matchFilter = {
-        guildId: guild.id,
-        ...(userIds?.length ? { userId: { $in: userIds } } : {}),
-        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? { "user.publicTimeStatistics": true } : {})
-    };
-
-    let targetUserPosition: number | null = null;
-    if (targetUserId) {
-        const positionPipeline = [
-            { $match: matchFilter },
-            { $sort: type.sort },
-            {
-                $group: {
-                    _id: null,
-                    users: { $push: "$userId" }
-                }
-            },
-            {
-                $project: {
-                    position: { $indexOfArray: ["$users", targetUserId] }
-                }
-            }
-        ];
-        const positionResult = await UserGuildStatisticsModel.aggregate(positionPipeline);
-        if (positionResult.length > 0 && positionResult[0].position !== -1) {
-            targetUserPosition = positionResult[0].position;
-        }
+    const match = {
+        guildId: guild?.id,
+        ...(userIds?.length ? { userId: { $in: userIds } } : {}), // Compare users
+        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? { "user.publicTimeStatistics": true } : {}) // Support private time statistics
     }
 
-    let renderedPage = page;
-    if (targetUserPosition !== null) {
-        renderedPage = Math.ceil((targetUserPosition + 1) / perPage);
-    }
-
-    const resultsPipeline = [
-        { $match: matchFilter },
+    const results = await UserGuildStatisticsModel.aggregate([
         {
             $lookup: {
                 from: "users",
@@ -152,19 +123,32 @@ export const getRanking = async ({ type, page, perPage, guild, userIds, targetUs
                 as: "user"
             }
         },
-        { $unwind: "$user" },
-        { $sort: type.sort },
-        { $skip: (renderedPage - 1) * perPage },
-        { $limit: perPage },
-    ];
-    const results = await UserGuildStatisticsModel.aggregate(resultsPipeline);
+        {
+            $unwind: "$user"
+        },
+        {
+            $match: match,
+        },
+        {
+            $sort: type.sort
+        },
+    ]) as UserIncludedGuildStatisticsDocument[];
 
-    const totalCount = await UserGuildStatisticsModel.countDocuments(matchFilter);
-    const pagesCount = Math.ceil(totalCount / perPage);
+    const pagesCount = Math.ceil(results.length / perPage);
+    let targetPageNumber = page;
+
+    if (targetUserId) {
+        const targetIndex = results.findIndex(result => result.userId === targetUserId);
+        if (targetIndex !== -1) {
+            targetPageNumber = Math.ceil((targetIndex + 1) / perPage);
+        }
+    }
+
+    const onPageResults = results.slice((targetPageNumber - 1) * perPage, targetPageNumber * perPage);
 
     return {
-        renderedPage,
-        onPage: results,
+        renderedPage: targetPageNumber,
+        onPage: onPageResults,
         pagesCount
     };
 };
