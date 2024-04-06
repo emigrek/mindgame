@@ -463,7 +463,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     emoji: sortingType.emoji,
                     range: i18n.__(`rankingSortings.range.${sortingType.range}`),
                     sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
-                })}**\n${!onPage.length ? i18n.__("ranking.empty") : ''}`)
+                })}**\n\n${!onPage.length ? i18n.__("ranking.empty") : ''}`)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
                 })
