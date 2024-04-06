@@ -490,7 +490,11 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
                 name: i18n.__("notifications.dailyRewardField"),
                 value: `\`\`\`${client.numberFormat.format(config.experience.voice.dailyActivityReward)} EXP\`\`\``,
                 inline: true
-            },
+            }
+        ]);
+
+    if (streak.streak) {
+        embed.addFields([
             {
                 name: i18n.__("notifications.voiceStreakField"),
                 value: formatStreakField(streak.streak),
@@ -499,9 +503,10 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             {
                 name: i18n.__("notifications.nextVoiceStreakRewardField"),
                 value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0) || 3),
-                inline: true,
+                inline: true
             }
         ]);
+    }
 
     return {
         embeds: [embed],
@@ -799,21 +804,21 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         });
 
     const messagesToDelete = messages.filter((message: Message) => {
-        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));const isFromBot = message.author.bot;
+        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
+        const isFromBot = message.author.bot;
         const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
-        return startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel);
+        return message.deletable && (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel));
     });
 
-    let count = 0;
-    const promises = messagesToDelete.map(async (message: Message) => {
-        if (!message.deletable) return;
-        count++;
-        return message.delete();
-    });
-
-    await Promise.all(promises).catch(e => console.log(`There was an error when sweeping the channel: ${e}`));
-    await attachQuickButtons(client, channel.id);
-    return count;
+    return Promise.all(messagesToDelete.map((message: Message) => message.delete()))
+        .then(async deleted => {
+            await attachQuickButtons(client, channel.id);
+            return deleted.length;
+        })
+        .catch(e => {
+            console.log(`There was an error when sweeping the channel: ${e}`);
+            return 0;
+        });
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channelId: string) => {

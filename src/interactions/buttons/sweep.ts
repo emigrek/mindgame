@@ -19,7 +19,7 @@ const sweep: Button = {
         await interaction.followUp({
             embeds: [
                 InformationEmbed()
-                    .setDescription(i18n.__mf("sweeper.swept", { count: swept }))
+                    .setDescription(i18n.__n("sweeper.swept", swept))
             ]
         });
     }

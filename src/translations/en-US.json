@@ -219,7 +219,10 @@
 		"helpLabel": "Help"
 	},
 	"sweeper": {
-		"swept": "Swept {count} messages."
+		"swept": {
+			"one": "Swept %s message.",
+			"other": "Swept %s messages."
+		}
 	},
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",

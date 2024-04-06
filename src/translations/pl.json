@@ -205,7 +205,10 @@
 		"helpLabel": "Pomoc"
 	},
 	"sweeper": {
-		"swept": "Usunięto {count} wiadomości."
+		"swept": {
+			"one": "Usunięto %s wiadomość.",
+			"other": "Usunięto %s wiadomości."
+		}
 	},
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",
