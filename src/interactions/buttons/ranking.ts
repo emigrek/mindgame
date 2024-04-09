@@ -23,9 +23,11 @@ const ranking: Button = {
         rankingState.range = SortingRanges.TOTAL;
         rankingState.userIds = [];
         rankingState.targetUserId = targetUserId;
-        if (targetUserId) {
-            rankingState.page = await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId, guild: interaction.guild });
-        }
+        rankingState.page = await findUserRankingPage({
+            sourceUserId: interaction.user.id,
+            targetUserId: targetUserId || interaction.user.id,
+            guild: interaction.guild
+        });
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction);
         await interaction.followUp(rankingMessagePayload);

@@ -16,11 +16,19 @@ const rankingUserContext: ContextMenu = {
             return;
         }
 
+        const isBot = await client.users.fetch(interaction.targetId)
+            .then(user => user.bot)
+            .catch(() => true);
+
         const rankingState = rankingStore.get(interaction.user.id);
         rankingState.sorting = SortingTypes.EXP;
         rankingState.range = SortingRanges.TOTAL;
-        rankingState.targetUserId = interaction.targetId;
-        rankingState.page = await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId: interaction.targetId, guild: interaction.guild });
+        rankingState.targetUserId = !isBot ? interaction.targetId : undefined;
+        rankingState.page = await findUserRankingPage({
+            sourceUserId: interaction.user.id,
+            targetUserId: !isBot ? interaction.targetId : interaction.user.id,
+            guild: interaction.guild
+        });
         rankingState.userIds = [];
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as UserContextMenuCommandInteraction);

@@ -47,7 +47,7 @@ const rankingSettingsModal: Modal = {
         }
 
         const pageChanged = currentPage !== rankingState.page;
-        rankingState.page = !pageChanged && perPageChanged && rankingState.targetUserId ? await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId: rankingState.targetUserId, guild: interaction.guild }) : currentPage;
+        rankingState.page = !pageChanged && perPageChanged ? await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId: rankingState.targetUserId || interaction.user.id, guild: interaction.guild }) : currentPage;
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction);
         await interaction.editReply(rankingMessagePayload);

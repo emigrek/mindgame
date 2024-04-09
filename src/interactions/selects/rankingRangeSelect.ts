@@ -17,7 +17,11 @@ export const rankingRangeSelect: Select = {
 
         const rankingState = rankingStore.get(interaction.user.id);
         rankingState.range = interaction.values[0] as SortingRanges;
-        rankingState.page = rankingState.targetUserId ? await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId: rankingState.targetUserId, guild: interaction.guild }) : 1;
+        rankingState.page = await findUserRankingPage({
+            sourceUserId: interaction.user.id,
+            targetUserId: rankingState.targetUserId || interaction.user.id,
+            guild: interaction.guild
+        });
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as StringSelectMenuInteraction);
         await interaction.editReply(rankingMessagePayload);
