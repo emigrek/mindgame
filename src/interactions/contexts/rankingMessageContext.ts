@@ -26,9 +26,7 @@ const rankingMessageContext: ContextMenu = {
         rankingState.range = SortingRanges.TOTAL;
         rankingState.userIds = [];
         rankingState.targetUserId = targetUserId;
-        if (targetUserId) {
-            rankingState.page = await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId, guild: interaction.guild });
-        }
+        rankingState.page = targetUserId ? await findUserRankingPage({ sourceUserId: interaction.user.id, targetUserId, guild: interaction.guild }) : 1;
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as MessageContextMenuCommandInteraction);
         await interaction.followUp(rankingMessagePayload);
