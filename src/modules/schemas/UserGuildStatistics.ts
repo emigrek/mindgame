@@ -1,11 +1,12 @@
-import { UserGuildStatistics } from "@/interfaces/UserGuildStatistics";
-import { Schema, SchemaTimestampsConfig } from "mongoose";
-import { UserDocument } from "./User";
+import {UserGuildStatistics} from "@/interfaces/UserGuildStatistics";
+import {Schema, SchemaTimestampsConfig} from "mongoose";
+import {UserDocument} from "./User";
 
 export type UserGuildStatisticsDocument = UserGuildStatistics & Document & SchemaTimestampsConfig;
 
 export interface UserIncludedGuildStatisticsDocument extends UserGuildStatisticsDocument {
     user: UserDocument;
+    position: number;
 }
 
 const UserStatistics = {

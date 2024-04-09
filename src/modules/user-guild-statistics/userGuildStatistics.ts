@@ -1,11 +1,13 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
+import {SortingRanges, SortingTypes} from "@/interfaces";
 import {ExtendedUserStatistics, UserGuildStatistics, UserStatistics} from "@/interfaces/UserGuildStatistics";
 import userGuildStatisticsSchema, {UserIncludedGuildStatisticsDocument} from "@/modules/schemas/UserGuildStatistics";
 import {expToLevel, levelToExp} from "@/modules/user";
 import {merge} from "@/utils/merge";
 import {Guild} from "discord.js";
 import mongoose from "mongoose";
+import {rankingStore} from "@/stores/rankingStore";
+import {getSortingByType} from "@/modules/user-guild-statistics/sortings";
 
 export const UserGuildStatisticsModel = mongoose.model("UserGuildStatistics", userGuildStatisticsSchema);
 
@@ -99,14 +101,23 @@ export const clearExperience = async () => {
 };
 
 interface GetRankingProps {
-    type: Sorting;
-    page: number;
-    perPage: number;
+    sourceUserId: string;
     guild: Guild;
-    userIds?: string[];
 }
 
-export const getRanking = async ({ type, page, perPage, guild, userIds }: GetRankingProps) => {
+interface GetRankingResponse {
+    metadata: {
+        total: number;
+        page: number;
+        perPage: number;
+    };
+    data: UserIncludedGuildStatisticsDocument[];
+}
+
+export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Promise<GetRankingResponse> => {
+    const { page, userIds, perPage, sorting, range } = rankingStore.get(sourceUserId);
+    const type = getSortingByType(sorting, range);
+
     const match = {
         guildId: guild?.id,
         ...(userIds?.length ? { userId: { $in: userIds } } : {}), // Compare users
@@ -131,13 +142,93 @@ export const getRanking = async ({ type, page, perPage, guild, userIds }: GetRan
         {
             $sort: type.sort
         },
-    ]) as UserIncludedGuildStatisticsDocument[];
+        {
+            $setWindowFields: {
+                partitionBy: null,
+                sortBy: type.sort as Record<string, 1 | -1> | undefined,
+                output: {
+                    position: {
+                        $documentNumber: {},
+                    }
+                }
+            }
+        },
+        {
+            $facet: {
+                metadata: [
+                    { $count: "total" },
+                    {
+                        $addFields: {
+                            totalPages: { $ceil: { $divide: ["$total", perPage] } }
+                        }
+                    }
+                ],
+                data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }]
+            }
+        },
+    ]);
 
     return {
-        onPage: results.slice((page - 1) * perPage, page * perPage),
-        pagesCount: Math.ceil((await UserGuildStatisticsModel.countDocuments(match)) / perPage) || 1
-    }
+        metadata: {
+            total: results[0].metadata[0]?.totalPages || 0,
+            page,
+            perPage
+        },
+        data: results[0].data
+    };
 };
+
+interface FindUserRankingPageProps {
+    sourceUserId: string;
+    targetUserId: string;
+    guild: Guild;
+}
+
+export const findUserRankingPage = async ({ sourceUserId, targetUserId, guild }: FindUserRankingPageProps) => {
+    const { perPage, sorting, range, userIds } = rankingStore.get(sourceUserId);
+    const type = getSortingByType(sorting, range);
+
+    const match = {
+        guildId: guild?.id,
+        ...(userIds?.length ? { userId: { $in: userIds } } : {}),
+        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? { "user.publicTimeStatistics": true } : {})
+    }
+
+    const userStatistics = await UserGuildStatisticsModel.aggregate([
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "userId",
+                as: "user"
+            }
+        },
+        {
+            $unwind: "$user"
+        },
+        {
+            $match: match
+        },
+        {
+            $sort: type.sort
+        },
+        {
+            $setWindowFields: {
+                partitionBy: null,
+                sortBy: type.sort as Record<string, 1 | -1> | undefined,
+                output: {
+                    position: {
+                        $documentNumber: {},
+                    }
+                }
+            }
+        },
+    ]);
+
+    const userPosition = userStatistics.findIndex((statistics) => statistics.userId === targetUserId);
+    if (userPosition === -1) return 1;
+    return Math.ceil((userPosition + 1) / perPage);
+}
 
 export const clearTemporaryStatistics = async (type: 'day' | 'week' | 'month') => {
     return UserGuildStatisticsModel.updateMany({}, {

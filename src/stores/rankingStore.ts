@@ -8,6 +8,7 @@ interface RankingStoreInterface {
     sorting: SortingTypes;
     range: SortingRanges;
     userIds: string[];
+    targetUserId?: string;
 }
 
 const initial: RankingStoreInterface = {

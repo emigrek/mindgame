@@ -35,7 +35,7 @@ import {
     getRankingUsersSelect
 } from "@/modules/messages/selects";
 import {getMemberColorRole} from "@/modules/roles";
-import messageSchema from "@/modules/schemas/Message";
+import messageSchema, {MessageDocument} from "@/modules/schemas/Message";
 import {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
 import {getUser} from "@/modules/user";
 import {getRanking, getSortingByType, getUserGuildStatistics, runMask} from '@/modules/user-guild-statistics';
@@ -382,26 +382,20 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
 };
 
 const getRankingMessagePayload = async (client: ExtendedClient, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction | ModalSubmitInteraction | MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction) => {
-    const { page, userIds, sorting, range, perPage } = rankingStore.get(interaction.user.id);
+    const { page, userIds, sorting, range, targetUserId } = rankingStore.get(interaction.user.id);
+    const targetId = targetUserId || interaction.user.id;
     const guild = interaction.guild;
 
     if (!guild)
         return getErrorMessagePayload();
 
     const sortingType = getSortingByType(sorting, range);
-    const { onPage, pagesCount } = await getRanking({
-        type: sortingType,
-        page,
-        perPage,
-        guild,
-        userIds,
-    });
-    rankingStore.get(interaction.user.id).pagesCount = pagesCount;
+    const { data, metadata } = await getRanking({ sourceUserId: interaction.user.id, guild });
+    rankingStore.get(interaction.user.id).pagesCount = metadata.total;
 
-    const fields = onPage.map((statistics, index) => {
-        const relativeIndex = index + 1 + ((page - 1) * perPage);
+    const fields = data.map((statistics) => {
         return {
-            name: `${relativeIndex}. ${statistics.user.username}   ${statistics.user.userId === interaction.user.id ? i18n.__("ranking.you") : ""}`,
+            name: `${statistics.position}. ${statistics.user.username}   ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}`,
             value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
         };
@@ -429,7 +423,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     );
     const usersSelectMenu = getRankingUsersSelect(userIds);
     const pageUpButton = getRankingPageUpButton(page <= 1);
-    const pageDownButton = getRankingPageDownButton(page >= pagesCount);
+    const pageDownButton = getRankingPageDownButton(page >= metadata.total);
     const settingsButton = getRankingSettingsButton();
 
     const sortRow = new ActionRowBuilder<StringSelectMenuBuilder>()
@@ -441,7 +435,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const paginationRow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(pageUpButton, pageDownButton, settingsButton);
 
-    const targetUser = await client.users.fetch(interaction.user.id);
+    const targetUser = await client.users.fetch(targetId);
     const color = await useImageHex(targetUser.displayAvatarURL({ extension: "png", size: 256 }))
         .then(colors => getColorInt(colors.Vibrant));
 
@@ -460,9 +454,9 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     emoji: sortingType.emoji,
                     range: i18n.__(`rankingSortings.range.${sortingType.range}`),
                     sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
-                })}**\n\n${!onPage.length ? i18n.__("ranking.empty") : ''}`)
+                })}**\n\n${!data.length ? i18n.__("ranking.empty") : ''}`)
                 .setFooter({
-                    text: i18n.__mf("ranking.footer", { page: page, pages: pagesCount })
+                    text: i18n.__mf("ranking.footer", { page: page, pages: metadata.total || 1 })
                 })
         ],
         components: [sortRow, rangeRow, usersRow, paginationRow]
@@ -864,7 +858,7 @@ const createMessage = async (message: Message, targetUserId: string | null, name
     return newMessage;
 };
 
-const getMessage = async (message: Partial<MessageType>) => {
+const getMessage = async (message: Partial<MessageType>): Promise<MessageDocument | undefined> => {
     const response = await messageModel
         .find(message)
         .sort({ createdAt: -1 }) // if there are multiple messages, get the latest one

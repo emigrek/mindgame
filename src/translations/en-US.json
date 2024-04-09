@@ -82,7 +82,9 @@
 	"contextLocalizations": {
 		"profile": "Show profile",
 		"sweep": "Sweep messages",
-		"ranking": "Show ranking"
+		"ranking": "Show ranking",
+		"rankingMessage": "Show ranking",
+		"rankingUser": "Show user ranking"
 	},
 	"config": {
 		"channelWatchers": "{count} 👀 see this channel.",
@@ -215,7 +217,7 @@
 		"commitsLabel": "Commits 📝",
 		"guildStatisticsLabel": "Statistics 📅",
 		"sweepLabel": "Spam? 🧹",
-		"rankingLabel": "Ranking \uD83D\uDC65👑",
+		"rankingLabel": "Ranking 👥👑",
 		"helpLabel": "Help"
 	},
 	"sweeper": {
