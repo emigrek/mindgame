@@ -168,9 +168,12 @@ export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Prom
         },
     ]);
 
+    const total = results[0].metadata[0]?.totalPages || 0;
+    rankingStore.get(sourceUserId).pagesCount = total;
+
     return {
         metadata: {
-            total: results[0].metadata[0]?.totalPages || 0,
+            total,
             page,
             perPage
         },

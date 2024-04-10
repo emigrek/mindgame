@@ -391,15 +391,14 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const sortingType = getSortingByType(sorting, range);
     const { data, metadata } = await getRanking({ sourceUserId: interaction.user.id, guild });
-    rankingStore.get(interaction.user.id).pagesCount = metadata.total;
 
-    const fields = data.map((statistics) => {
-        return {
-            name: `${statistics.position}. ${statistics.user.username}   ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}`,
-            value: `\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
+    const fields = data.map((statistics) => (
+        {
+            name: statistics.position.toString(),
+            value: `<@${statistics.user.userId}> ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
             inline: true
-        };
-    });
+        }
+    ));
 
     const sortSelectMenu = await getRankingSortSelect(sortingType,
         Object.values(SortingTypes)
