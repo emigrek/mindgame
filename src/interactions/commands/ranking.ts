@@ -22,7 +22,7 @@ export const ranking: Command = {
         rankingState.page = await findUserRankingPage({
             sourceUserId: interaction.user.id,
             targetUserId: interaction.user.id,
-            guild: interaction.guild 
+            guild: interaction.guild
         });
         rankingState.userIds = [];
 

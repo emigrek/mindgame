@@ -484,20 +484,23 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
             }
         ]);
 
-    if (streak.streak) {
+    if (streak.streak && streak.streak.value > 1) {
         embed.addFields([
             {
                 name: i18n.__("notifications.voiceStreakField"),
                 value: formatStreakField(streak.streak),
                 inline: true
-            },
-            {
-                name: i18n.__("notifications.nextVoiceStreakRewardField"),
-                value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0) || 3),
-                inline: true
             }
         ]);
     }
+
+    embed.addFields([
+        {
+            name: i18n.__("notifications.nextVoiceStreakRewardField"),
+            value: formatNextStreakField(streak.nextSignificant - (streak.streak?.value || 0) || 3),
+            inline: true
+        }
+    ]);
 
     return {
         embeds: [embed],
