@@ -45,6 +45,18 @@ This application is fully translated (including slash commands, context menus, e
 | node-cron     | scheduling                     |
 | @octokit/rest | github commits                 |
 
+## 📋 Requirements 
+
+1. Node.js 18.16.0 or newer
+2. MongoDB 5.0.0 or newer
+<details>
+<summary>3. Discord installation settings</summary>
+
+![Discord installation settings](https://raw.githubusercontent.com/emigrek/mindgame/main/media/installation-settings.png)
+
+</details>
+
+
 ## 🚀 Running
 Get running MongoDB instance for storing data. Make sure you create collection, name it whatever you want and put it at the end of your MongoDB connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for free MongoDB instance. 
 
