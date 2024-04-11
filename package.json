@@ -42,7 +42,7 @@
     "axios": "^1.2.1",
     "chroma-js": "^2.4.2",
     "discord-logs": "^2.2.1",
-    "discord.js": "^14.11.0",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.0.3",
     "hex-color-to-color-name": "^1.0.2",
     "i18n": "^0.15.1",
