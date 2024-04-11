@@ -165,7 +165,15 @@ export const config: Config = {
 ```
 </details>
 
-### Docker
+### 🏠 Local
+
+Start application
+
+``` bash
+npm run start
+```
+
+### 🐳 Docker 
 
 Build Docker image
 
@@ -173,7 +181,7 @@ Build Docker image
 docker build -t mindgame .
 ```
 
-* Run Docker container
+Run Docker container
 
 ``` bash
 docker run --env-file .env --rm mindgame
@@ -181,24 +189,15 @@ docker run --env-file .env --rm mindgame
 
 Hosting MongoDB in other container?
 
-Replace `[container_name]` with your MongoDB container name
-
-Replace `[alias]` with your MongoDB container alias
-
 ``` bash
 docker run --env-file .env --link [container_name]:[alias] --rm mindgame
 ```
 
-Your `MONGO_URI` should look like this:
+* Replace `[container_name]` with your MongoDB container name
+* Replace `[alias]` with your MongoDB container alias
+
+Your `MONGO_URI` in `.env` file should look like this:
 
 ``` .env
 MONGO_URI=mongodb://[alias]:[your_port]/[collection_name]
-```
-
-### Local
-
-Start application
-
-``` bash
-npm run start
 ```
