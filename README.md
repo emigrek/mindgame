@@ -74,10 +74,10 @@ Set up your .env file
 <summary>Example .env file</summary>
 
 ``` .env
-DISCORD_TOKEN="Discord bot token"
-DISCORD_CLIENT_ID="Discord application client ID"
-MONGO_URI="MongoDB connection string (IMPORTANT: put root collection name at the end of the connection string)"
-OWNER_ID="Your Discord ID"
+DISCORD_TOKEN=Discord bot token
+DISCORD_CLIENT_ID=Discord application client ID
+MONGO_URI=MongoDB connection string (IMPORTANT: put root collection name at the end of the connection string)
+OWNER_ID=Your Discord ID
 ```
 </details>
 
@@ -164,6 +164,38 @@ export const config: Config = {
 }
 ```
 </details>
+
+### Docker
+
+Build Docker image
+
+``` bash
+docker build -t mindgame .
+```
+
+* Run Docker container
+
+``` bash
+docker run --env-file .env --rm mindgame
+```
+
+Hosting MongoDB in other container?
+
+Replace `[container_name]` with your MongoDB container name
+
+Replace `[alias]` with your MongoDB container alias
+
+``` bash
+docker run --env-file .env --link [container_name]:[alias] --rm mindgame
+```
+
+Your `MONGO_URI` should look like this:
+
+``` .env
+MONGO_URI=mongodb://[alias]:[your_port]/[collection_name]
+```
+
+### Local
 
 Start application
 
