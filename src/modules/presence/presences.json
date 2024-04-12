@@ -3,35 +3,8 @@
         "status": "idle",
         "activities": [
             {
-                "name": "{guilds}🏨 guilds.",
-                "type": 3
-            }
-        ]
-    },
-    {
-        "status": "idle",
-        "activities": [
-            {
-                "name": "{users}👨‍👩‍👧‍👦 users.",
-                "type": 3
-            }
-        ]
-    },
-    {
-        "status": "idle",
-        "activities": [
-            {
-                "name": "you inviting me! 🤗",
-                "type": 3
-            }
-        ]
-    },
-    {
-        "status": "idle",
-        "activities": [
-            {
-                "name": "/help {animal}",
-                "type": 3
+                "name": "{animalsAndNatureEmoji} Active: {guilds}🏨 {users}👨‍👩‍👧‍👦",
+                "type": 4
             }
         ]
     }

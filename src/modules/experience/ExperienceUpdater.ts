@@ -28,7 +28,6 @@ class ExperienceUpdater {
     private presenceActivities: PresenceActivitiesByGuildId[] = [];
 
     private cache: Map<string, UserGuildExperienceData[]> = new Map();
-
     constructor({ client, logging }: {
         client: ExtendedClient;
         logging?: boolean;
@@ -132,9 +131,15 @@ class ExperienceUpdater {
     }
 
     private logUpdate() {
-        const guildsSize = this.cache.size;
-        const cacheSize = Array.from(this.cache.values()).reduce((acc, val) => acc + val.length, 0);
-        console.log(`[ExperienceUpdater] Updated ${guildsSize} guild(s) (${cacheSize} user(s)) in ${this.lastUpdateTimeInMs}ms.`);
+        const { users, guilds } = this.getLogDetails();
+        console.log(`[ExperienceUpdater] Updated ${guilds} guild(s) (${users} user(s)) in ${this.lastUpdateTimeInMs}ms.`);
+    }
+
+    public getLogDetails() {
+        return {
+            users: Array.from(this.cache.values()).reduce((acc, val) => acc + val.length, 0),
+            guilds: this.cache.size,
+        }
     }
 }
 
