@@ -1,5 +1,5 @@
 import {Button, Command, ContextMenu, Event, Modal, Module, Select} from "@/interfaces";
-import {Client, Collection, REST, Routes} from "discord.js";
+import {Client, Collection, OAuth2Scopes, PermissionFlagsBits, REST, Routes} from "discord.js";
 
 import events from "@/events";
 import modules from "@/modules";
@@ -134,6 +134,31 @@ class ExtendedClient extends Client {
                 body: data
             },
         );
+    }
+
+    public getInvite() {
+        return this.generateInvite({
+            scopes: [
+                OAuth2Scopes.Bot,
+                OAuth2Scopes.ApplicationsCommands,
+            ],
+            permissions: [
+                PermissionFlagsBits.AddReactions,
+                PermissionFlagsBits.AttachFiles,
+                PermissionFlagsBits.CreatePrivateThreads,
+                PermissionFlagsBits.CreatePublicThreads,
+                PermissionFlagsBits.EmbedLinks,
+                PermissionFlagsBits.ManageChannels,
+                PermissionFlagsBits.ManageMessages,
+                PermissionFlagsBits.ManageRoles,
+                PermissionFlagsBits.ManageThreads,
+                PermissionFlagsBits.ReadMessageHistory,
+                PermissionFlagsBits.SendMessages,
+                PermissionFlagsBits.ReadMessageHistory,
+                PermissionFlagsBits.ViewChannel,
+                PermissionFlagsBits.SendMessagesInThreads,
+            ]
+        });
     }
 }
 

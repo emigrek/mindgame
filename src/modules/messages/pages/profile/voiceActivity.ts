@@ -5,6 +5,7 @@ import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 import {getLocalizedDateTypeRange} from "@/utils/date";
+import {bold, codeBlock} from "discord.js";
 
 export class VoiceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -40,17 +41,17 @@ export class VoiceActivity extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('day')}\n\`\`\`${Math.round(userGuildStatistics.day.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('day')}\n${codeBlock(`${Math.round(userGuildStatistics.day.time.voice/3600)}H`)}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('week')}\n\`\`\`${Math.round(userGuildStatistics.week.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('week')}\n${codeBlock(`${Math.round(userGuildStatistics.week.time.voice/3600)}H`)}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('month')}\n\`\`\`${Math.round(userGuildStatistics.month.time.voice/3600)}H\`\`\``,
+                    value: `${getLocalizedDateTypeRange('month')}\n${codeBlock(`${Math.round(userGuildStatistics.month.time.voice/3600)}H`)}`,
                     inline: true,
                 },
             ]);
@@ -58,8 +59,8 @@ export class VoiceActivity extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.name}**`,
-            value: `** **`,
+            name: bold(`${this.emoji}   ${this.name}`),
+            value: bold(" "),
             inline: false,
         }
     }

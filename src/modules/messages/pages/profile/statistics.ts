@@ -4,6 +4,7 @@ import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getExperiencePercentage, getUserGuildRank, getUserGuildStatistics} from "@/modules/user-guild-statistics";
+import {bold, codeBlock} from "discord.js";
 
 export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -41,17 +42,17 @@ export class Statistics extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("profile.rank"),
-                    value: `\`\`\`#${rank} ${rank === 1 ? '👑 ' : ''}/ ${total}\`\`\``,
+                    value: codeBlock(`#${rank} ${rank === 1 ? '👑 ' : ''}/ ${total}`),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.level"),
-                    value: `\`\`\`${userGuildStatistics.level} (${experiencePercentage}%)\`\`\``,
+                    value: codeBlock(`${userGuildStatistics.level} (${experiencePercentage}%)`),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.messages"),
-                    value: `\`\`\`${userGuildStatistics.total.messages}\`\`\``,
+                    value: codeBlock(userGuildStatistics.total.messages.toString()),
                     inline: true,
                 }
             ]);
@@ -59,8 +60,8 @@ export class Statistics extends BaseProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.name}**`,
-            value: `** **`,
+            name: bold(`${this.emoji}   ${this.name}`),
+            value: bold(" "),
             inline: false,
         }
     }

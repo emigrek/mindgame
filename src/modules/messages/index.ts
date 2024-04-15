@@ -44,11 +44,13 @@ import {getLastCommits} from "@/utils/commits";
 import {
     ActionRowBuilder,
     AnySelectMenuInteraction,
+    bold,
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
     ChannelType,
     ChatInputCommandInteraction,
+    codeBlock,
     Collection,
     CommandInteraction,
     EmbedBuilder,
@@ -81,6 +83,7 @@ import {selectOptionsStore} from "@/stores/selectOptionsStore";
 import {KnownLinks} from "./knownLinks";
 import ProfilePagesManager from "./pages/profilePagesManager";
 import {getLocalizedDateRange} from "@/utils/date";
+import Colors from "@/utils/colors";
 import Vibrant = require('node-vibrant');
 
 interface ImageHexColors {
@@ -224,7 +227,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
     }
 }
 
-const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild) => {
+const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, level: number) => {
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
@@ -237,21 +240,21 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.levelUpTitle"))
-        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: userGuildStatistics.userId, level: userGuildStatistics.level }))
+        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId }))
         .setFields(
             {
                 name: i18n.__("notifications.levelField"),
-                value: `\`\`\`${userGuildStatistics.level}\`\`\``,
+                value: codeBlock(level.toString()),
                 inline: true
             },
             {
                 name: i18n.__("notifications.todayVoiceTimeField"),
-                value: `\`\`\`${Math.round(userGuildStatistics.day.time.voice / 3600)}H\`\`\``,
+                value: codeBlock(`${Math.round(userGuildStatistics.day.time.voice / 3600)}H`),
                 inline: true
             },
             {
                 name: i18n.__("notifications.weekVoiceTimeField"),
-                value: `\`\`\`${Math.round(userGuildStatistics.week.time.voice / 3600)}H\`\`\``,
+                value: codeBlock(`${Math.round(userGuildStatistics.week.time.voice / 3600)}H`),
                 inline: true
             }
         )
@@ -276,8 +279,8 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
         return getErrorMessagePayload();
 
     const fields: EmbedField[] = commits.map((commit: any) => ({
-        name: `${commit.author.login}`,
-        value: `\`\`\`${commit.commit.message}\`\`\`[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
+        name: commit.author.login,
+        value: `${codeBlock(commit.commit.message)}[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
         inline: true
     }));
 
@@ -307,17 +310,17 @@ const getHelpMessagePayload = async (client: ExtendedClient) => {
         .setFields([
             {
                 name: i18n.__("help.faqQuestion1"),
-                value: i18n.__("help.faqAnswer1"),
+                value: codeBlock(i18n.__("help.faqAnswer1")),
                 inline: true
             },
             {
                 name: i18n.__("help.faqQuestion2"),
-                value: i18n.__("help.faqAnswer2"),
+                value: codeBlock(i18n.__("help.faqAnswer2")),
                 inline: true
             },
             {
                 name: i18n.__("help.faqQuestion3"),
-                value: i18n.__("help.faqAnswer3"),
+                value: codeBlock(i18n.__("help.faqAnswer3")),
             }
         ])
         .setThumbnail(clientUserAvatar)
@@ -395,7 +398,7 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     const fields = data.map((statistics) => (
         {
             name: statistics.position.toString(),
-            value: `<@${statistics.user.userId}> ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}\`\`\`${runMask(client, sortingType.mask, statistics)}\`\`\``,
+            value: `<@${statistics.user.userId}> ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}${codeBlock(runMask(client, sortingType.mask, statistics))}`,
             inline: true
         }
     ));
@@ -449,11 +452,11 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
                     iconURL: guild.iconURL({ extension: "png", size: 256 }) || undefined
                 })
                 .setFields(fields)
-                .setDescription(`**${i18n.__mf("ranking.title", {
+                .setDescription(`${bold(i18n.__mf("ranking.title", {
                     emoji: sortingType.emoji,
                     range: i18n.__(`rankingSortings.range.${sortingType.range}`),
                     sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
-                })}**\n\n${!data.length ? i18n.__("ranking.empty") : ''}`)
+                }))}\n\n${!data.length ? i18n.__("ranking.empty") : ''}`)
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: metadata.total || 1 })
                 })
@@ -478,7 +481,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
-                value: `\`\`\`${client.numberFormat.format(config.experience.voice.dailyActivityReward)} EXP\`\`\``,
+                value: codeBlock(`${client.numberFormat.format(config.experience.voice.dailyActivityReward)} EXP`),
                 inline: true
             }
         ]);
@@ -532,7 +535,7 @@ const getSelectMessagePayload = async (client: ExtendedClient, interaction: Chat
                 const count = selectOptionsState.results.filter((result: string) => result === option).length;
                 return {
                     name: `${index + 1}. ${option}`,
-                    value: count ? `\`\`\`${count}\`\`\`` : `\`\`\`\u200b\`\`\``,
+                    value: count ? codeBlock(count.toString()) : codeBlock(`\u200b`),
                     inline: true
                 }
             })
@@ -682,18 +685,18 @@ const getEvalMessagePayload = async (client: ExtendedClient, interaction: ChatIn
 
     const embed = new EmbedBuilder();
     try {
-        const evaled = await eval(code ?? '');
-        const output = await clean(evaled, depth ?? 0);
+        const result = await eval(code ?? '');
+        const output = await clean(result, depth ?? 0);
 
         embed
             .setTitle(i18n.__("evaluation.title"))
-            .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${output}\n\`\`\``)
-            .setColor('Blurple');
+            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${code}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${output}\n\`\`\``)
+            .setColor(Colors.Blurple);
     } catch (e) {
         embed
             .setTitle(i18n.__("evaluation.title"))
-            .setDescription(`**${i18n.__("evaluation.input")}**\n\`\`\`js\n${code}\n\`\`\`\n**${i18n.__("evaluation.output")}**\n\`\`\`js\n${e}\n\`\`\``)
-            .setColor('Red');
+            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${code}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${e}\n\`\`\``)
+            .setColor(Colors.Red);
     }
 
     return {
@@ -756,7 +759,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         embed.addFields([
             {
                 name: i18n.__("notifications.voiceStreakRewardField"),
-                value: `\`\`\`${client.numberFormat.format(config.experience.voice.significantActivityStreakReward)} EXP\`\`\``,
+                value: codeBlock(`${client.numberFormat.format(config.experience.voice.significantActivityStreakReward)} EXP`),
                 inline: true,
             }
         ]);
@@ -776,6 +779,26 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         embeds: [embed],
         flags: [4096]
     }
+}
+
+const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild: Guild) => {
+    i18n.setLocale(guild.preferredLocale);
+    
+    const invite = client.getInvite();
+    const repo = (await import("../../../package.json")).repository.url;
+
+    const embed = InformationEmbed()
+        .setColor(Colors.Red)
+        .setTitle(i18n.__("notifications.inviteTitle"))
+        .setDescription(i18n.__mf("notifications.inviteDescription", {
+            invite,
+            repo,
+        }))
+        .setThumbnail(KnownLinks.ROCKET);
+
+    return {
+        embeds: [embed]
+    };
 }
 
 const getErrorMessagePayload = () => {
@@ -880,13 +903,13 @@ const deleteMessage = async (messageId: string) => {
 
 const formatStreakField = (streak?: Streak, includeDateRange?: boolean) => {
     return streak && streak.value > 1 ? 
-        `${includeDateRange ? getLocalizedDateRange(streak.startedAt, streak.date) : ''}\`\`\`${i18n.__n("notifications.voiceStreakFormat", streak.value || 0)}\`\`\``
+        `${includeDateRange ? getLocalizedDateRange(streak.startedAt, streak.date) : ''}${codeBlock(i18n.__n("notifications.voiceStreakFormat", streak.value || 0))}`
         : 
-        `\`\`\`${i18n.__("utils.lack")}\`\`\``;
+        codeBlock(i18n.__("utils.lack"));
 }
 
 const formatNextStreakField = (daysTillNext: number) => {
-    return daysTillNext ? `\`\`\`${i18n.__n("notifications.voiceStreakInFormat", daysTillNext)}\`\`\`` : `\`\`\`${i18n.__("utils.never")}\`\`\``;
-};
+    return daysTillNext ? codeBlock(i18n.__n("notifications.voiceStreakInFormat", daysTillNext)) : codeBlock(i18n.__("utils.never"));
+}
 
-export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, getInviteNotificationMessagePayload, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };

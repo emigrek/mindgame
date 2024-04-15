@@ -1,6 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
-import {updatePresence} from "@/modules/presence/index";
+import {updatePresence} from "@/modules/presence";
 
 export const quarter: Event = {
     name: "quarter",

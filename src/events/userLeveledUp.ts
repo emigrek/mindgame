@@ -17,7 +17,7 @@ export const userLeveledUp: Event = {
         if (!sourceGuild) return;
 
         const { notifications, channelId, levelRoles } = sourceGuild;
-        if (levelRoles) {
+        if (levelRoles && isLevelThreshold(newLevel)) {
             await assignUserLevelRole({ client, userId, guildId });
         }
         
@@ -32,7 +32,7 @@ export const userLeveledUp: Event = {
         if (!isLevelThreshold(newLevel)) return;
 
         const user = await client.users.fetch(userId);
-        const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild);
+        const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild, newLevel);
 
         const existing = await getMessage({
             channelId: channel.id,

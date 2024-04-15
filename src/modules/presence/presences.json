@@ -1,9 +1,9 @@
 [
     {
-        "status": "idle",
+        "status": "online",
         "activities": [
             {
-                "name": "{animalsAndNatureEmoji} Active: {guilds}🏨 {users}👨‍👩‍👧‍👦",
+                "name": "{animalsAndNatureEmoji}  Active: {guilds}🏨 {users}👨‍👩‍👧‍👦",
                 "type": 4
             }
         ]

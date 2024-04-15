@@ -7,7 +7,7 @@ import {getColorInt} from "@/modules/messages";
 import {getProfileTimePublicButton} from "@/modules/messages/buttons";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserTotalStatistics} from "@/modules/user-guild-statistics";
-import {ActionRowBuilder, ButtonBuilder} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, codeBlock} from "discord.js";
 
 export class TimeStatistics extends BaseProfilePage {
     totalStatistics: ExtendedUserStatistics | undefined = undefined;
@@ -56,12 +56,12 @@ export class TimeStatistics extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("profile.voice"),
-                    value: `\`\`\`${Math.round(this.totalStatistics.time.voice/3600)}H\`\`\``,
+                    value: codeBlock(`${Math.round(this.totalStatistics.time.voice/3600)}H`),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.overall"),
-                    value: `\`\`\`${Math.round(this.totalStatistics.time.presence/3600)}H\`\`\``,
+                    value: codeBlock(`${Math.round(this.totalStatistics.time.presence/3600)}H`),
                     inline: true,
                 },
             ]);

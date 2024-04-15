@@ -127,12 +127,6 @@
 				"placeholder": "It could be color name or hex format",
 				"invalid": "Invalid color format, it could be color name or it's hex format."
 			}
-		},
-		"selectModal": {
-			"optionsInput": {
-				"label": "color.selectModal.optionsInput.label",
-				"placeholder": "color.selectModal.optionsInput.placeholder"
-			}
 		}
 	},
 	"newFeatures": {
@@ -210,7 +204,9 @@
 		"voiceStreakRewardField": "Reward",
 		"todayVoiceTimeField": "Today",
 		"weekVoiceTimeField": "Weekly",
-		"monthVoiceTimeField": "Monthly"
+		"monthVoiceTimeField": "Monthly",
+		"inviteTitle": "Engage Your Community with Mindgame!",
+		"inviteDescription": "Reward activity and enhance Discord experiences with Mindgame. Level up your guild experience today, [invite me]({invite}) or [host an instance]({repo})!"
 	},
 	"quickButton": {
 		"profileLabel": "Profile 👤",
@@ -269,11 +265,11 @@
 		"title": "Help",
 		"description": "**Leveling System**\n- Mindgame tracks your activity on servers and awards experience points.\n- Each level of experience unlocks new permissions, such as access to exclusive channels or roles.\n\n**FAQ**",
 		"faqQuestion1": "How to view your profile?",
-		"faqAnswer1": "```Press the Profile button or use the Applications context menu on a selected user.```",
+		"faqAnswer1": "Press the Profile button or use the Applications context menu on a selected user.",
 		"faqQuestion2": "What is the reward for level X?",
-		"faqAnswer2": "```Each server has its own rewards for levels.```",
+		"faqAnswer2": "Each server has its own rewards for levels.",
 		"faqQuestion3": "How to earn experience points?",
-		"faqAnswer3": "```Experience points are calculated based on server activity. Most points are awarded for voice activity. The more you talk, the more points you receive. Additionally, you can receive points for messages, a daily reward given for the first voice activity of the day on any server, or for a significant streak of voice activities on the server.```",
+		"faqAnswer3": "Experience points are calculated based on server activity. Most points are awarded for voice activity. The more you talk, the more points you receive. Additionally, you can receive points for messages, a daily reward given for the first voice activity of the day on any server, or for a significant streak of voice activities on the server.",
 		"footer": "Use quick buttons for even faster navigation.",
 		"repoButtonLabel": "Source code"
 	},
@@ -327,7 +323,6 @@
 		"description": "Something went wrong. Please try again later."
 	},
 	"roles": {
-		"roles": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles.",
-		"missingPermissions": "roles.missingPermissions"
+		"missingPermissions": "Seems like I don't have enough permissions to manage roles. It is suggested to put my role above all other roles."
 	}
 }

@@ -1,4 +1,5 @@
 import {ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages} from "@/interfaces";
+import {bold} from "discord.js";
 
 export interface BaseProfilePageProps {
     type: ProfilePages;
@@ -35,8 +36,8 @@ export abstract class BaseProfilePage implements ProfilePage {
 
     get embedTitleField() {
         return {
-            name: `**${this.emoji}   ${this.name}**`,
-            value: `** **`,
+            name: bold(`${this.emoji}   ${this.name}`),
+            value: bold(` `),
             inline: false,
         }
     }

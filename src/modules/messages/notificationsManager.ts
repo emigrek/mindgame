@@ -13,6 +13,7 @@ class NotificationsManager {
     private queue: Map<string, ExtendedMessageCreateOptions[]>;
 
     private workDelay = 750;
+    private workStartCallback: ((channelId: string) => void) | null = null;
     private workEndCallback: ((channelId: string) => void) | null = null;
 
     private constructor() {
@@ -24,6 +25,10 @@ class NotificationsManager {
             NotificationsManager.instance = new NotificationsManager();
         }
         return NotificationsManager.instance;
+    }
+
+    public setWorkStartCallback(callback: (channelId: string) => void): void {
+        this.workStartCallback = callback;
     }
 
     public setWorkEndCallback(callback: (channelId: string) => void): void {
@@ -47,6 +52,10 @@ class NotificationsManager {
 
     private async work(channel: TextBasedChannel): Promise<void> {
         const channelId = channel.id;
+
+        if (this.workStartCallback) {
+            this.workStartCallback(channelId);
+        }
 
         while (this.queue.get(channelId)?.length) {
             await delay(this.workDelay);

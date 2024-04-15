@@ -196,7 +196,9 @@
 		"voiceStreakRewardField": "Nagroda",
 		"todayVoiceTimeField": "Dziś",
 		"weekVoiceTimeField": "W tym tygodniu",
-		"monthVoiceTimeField": "W tym miesiącu"
+		"monthVoiceTimeField": "W tym miesiącu",
+		"inviteTitle": "Zaangażuj swoją społeczność dzięki Mindgame!",
+		"inviteDescription": "Nagradzaj aktywność i zwiększ możliwości Discorda dzięki konfigurowalnym rozwiązaniom Mindgame. Rozszerz doświadczenia na swoim serwerze, [zaproś mnie]({invite}) lub [zahostuj własną kopię]({repo})!"
 	},
 	"quickButton": {
 		"profileLabel": "Profil 👤",
@@ -255,11 +257,11 @@
 		"title": "Pomoc",
 		"description": "**System poziomów**\n- Mindgame śledzi twoją aktywność na serwerach i przyznaje punkty doświadczenia.\n- Każdy poziom doświadczenia odblokowuje nowe uprawnienia, takie jak dostęp do ekskluzywnych kanałów lub ról.\n\n**FAQ**",
 		"faqQuestion1": "Jak zobaczyć swój profil?",
-		"faqAnswer1": "```Wciśnij przycisk Profil lub użyj menu kontekstowego Aplikacje na wybranym użytkowniku.```",
+		"faqAnswer1": "Wciśnij przycisk Profil lub użyj menu kontekstowego Aplikacje na wybranym użytkowniku.",
 		"faqQuestion2": "Jaka jest nagroda za X poziom?",
-		"faqAnswer2": "```Każdy serwer ma własne nagrody za poziom.```",
+		"faqAnswer2": "Każdy serwer ma własne nagrody za poziom.",
 		"faqQuestion3": "Jak zdobyć punkty doświadczenia?",
-		"faqAnswer3": "```Punkty doświadczenia są obliczane na podstawie aktywności na serwerze. Większość punktów przyznawana jest za aktywność głosową. Im więcej rozmawiasz, tym więcej punktów otrzymujesz. Dodatkowo możesz otrzymać punkty za wiadomości, codzienną nagrodę, która jest przyznawana za pierwszą aktywność głosową dnia na każdym serwerze lub za znaczącą serię aktywności głosowych na serwerze.```",
+		"faqAnswer3": "Punkty doświadczenia są obliczane na podstawie aktywności na serwerze. Większość punktów przyznawana jest za aktywność głosową. Im więcej rozmawiasz, tym więcej punktów otrzymujesz. Dodatkowo możesz otrzymać punkty za wiadomości, codzienną nagrodę, która jest przyznawana za pierwszą aktywność głosową dnia na każdym serwerze lub za znaczącą serię aktywności głosowych na serwerze.",
 		"footer": "Użyj szybkich przycisków do jeszcze szybszej nawigacji.",
 		"repoButtonLabel": "Repozytorium"
 	},

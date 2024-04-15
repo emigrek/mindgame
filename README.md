@@ -131,6 +131,13 @@ export const config: Config = {
 
     // Whether to automatically put slash commands on client login
     autoPutSlashCommands: true,
+    
+    // Configuration for invite notifications
+    inviteNotification: {
+        enabled: true,
+        // Chance for guild invite notifications to be sent after a notifications work start
+        chance: 10,
+    },
 
     // A function that determines whether a streak is significant enough to be notified about
     // The default formula is that a streak is significant if it's 3 or 5 or a multiple of 10

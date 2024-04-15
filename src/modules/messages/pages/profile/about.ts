@@ -12,7 +12,7 @@ import {getFollowers} from "@/modules/follow";
 import {getProfileFollowButton} from "@/modules/messages/buttons";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {KnownLinks} from "@/modules/messages/knownLinks";
-import {ActionRowBuilder, ButtonBuilder, MessageCreateOptions} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, codeBlock, MessageCreateOptions} from "discord.js";
 
 export class About extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -56,17 +56,17 @@ export class About extends BaseProfilePage {
             .setFields([
                 {
                     name: i18n.__("profile.followers"),
-                    value: `\`\`\`${followers}\`\`\``,
+                    value: codeBlock(followers.toString()),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.mostUsedClient"),
-                    value: `\`\`\`${mostUsedEmoji || i18n.__("utils.lack")}\`\`\``,
+                    value: codeBlock(mostUsedEmoji || i18n.__("utils.lack")),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.clients"),
-                    value: `\`\`\`${clientsEmojis.length ? clientsEmojis.join(", ") : i18n.__("utils.lack")}\`\`\``,
+                    value: codeBlock(clientsEmojis.length ? clientsEmojis.join(", ") : i18n.__("utils.lack")),
                     inline: true,
                 },
             ])
