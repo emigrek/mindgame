@@ -205,8 +205,10 @@
 		"todayVoiceTimeField": "Today",
 		"weekVoiceTimeField": "Weekly",
 		"monthVoiceTimeField": "Monthly",
-		"inviteTitle": "Engage Your Community with Mindgame!",
-		"inviteDescription": "Reward activity and enhance Discord experiences with Mindgame. Level up your guild experience today, [invite me]({invite}) or [host an instance]({repo})!"
+		"inviteTitle": "Engage Your Community",
+		"inviteDescription": "Reward activity and level up your guild experience today, [invite]({invite}) or [host an instance]({repo}).",
+		"guildsField": "Guilds",
+		"usersField": "Users"
 	},
 	"quickButton": {
 		"profileLabel": "Profile 👤",

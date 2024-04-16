@@ -143,5 +143,9 @@ const sendNewFeaturesMessage = async ({ client, userId, guildId, oldLevel, newLe
     await user.send({ embeds: [embed] });
 };
 
-export { UserModel, createUser, deleteUser, expToLevel, getUser, getUsers, levelToExp, sendNewFeaturesMessage, updateUser };
+const getUsersCount = async () => {
+    return UserModel.countDocuments();
+}
+
+export { UserModel, createUser, deleteUser, expToLevel, getUser, getUsers, levelToExp, sendNewFeaturesMessage, updateUser, getUsersCount };
 

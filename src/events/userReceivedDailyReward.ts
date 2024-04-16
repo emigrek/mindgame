@@ -13,16 +13,13 @@ export const userReceivedDailyReward: Event = {
         if(!sourceGuild || !sourceGuild.channelId || !sourceGuild.notifications) return;
 
         const guild = await client.guilds.fetch(guildId);
-        const defaultChannel = guild.channels.cache.get(sourceGuild.channelId) as TextChannel;
+        const defaultChannel = await guild.channels.fetch(sourceGuild.channelId);
         if(!defaultChannel) return;
 
         const user = await client.users.fetch(userId);
-        const dailyRewardMessagePayload = await getDailyRewardMessagePayload(client, user, guild, streak);
-        if(!dailyRewardMessagePayload) return;
-
         await NotificationsManager.getInstance().schedule({
-            channel: defaultChannel,
-            payload: dailyRewardMessagePayload,
+            channel: defaultChannel as TextChannel,
+            payload: await getDailyRewardMessagePayload(client, user, guild, streak),
             callback: async message => {
                 await createMessage(message, user.id, "dailyRewardMessage");
             }

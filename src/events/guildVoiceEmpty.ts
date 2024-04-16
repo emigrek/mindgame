@@ -1,10 +1,10 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { config } from "@/config";
-import { Event } from "@/interfaces";
-import { getGuild } from "@/modules/guild";
-import { sweepTextChannel } from "@/modules/messages";
-import { delay } from '@/utils/delay';
-import { VoiceChannel } from "discord.js";
+import {config} from "@/config";
+import {Event} from "@/interfaces";
+import {getGuild} from "@/modules/guild";
+import {sweepTextChannel} from "@/modules/messages";
+import {delay} from '@/utils/delay';
+import {VoiceChannel} from "discord.js";
 
 export const guildVoiceEmpty: Event = {
     name: "guildVoiceEmpty",
@@ -18,9 +18,9 @@ export const guildVoiceEmpty: Event = {
         if(!sourceGuild.channelId) return;
 
         const guild = await client.guilds.fetch(guildId);
-        const guildDefaultChannel = guild.channels.cache.get(sourceGuild.channelId) as VoiceChannel;
+        const guildDefaultChannel = await guild.channels.fetch(sourceGuild.channelId);
         if (!guildDefaultChannel) return;
 
-        await sweepTextChannel(client, guildDefaultChannel);
+        await sweepTextChannel(client, guildDefaultChannel as VoiceChannel);
     }
 }

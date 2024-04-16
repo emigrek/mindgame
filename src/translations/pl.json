@@ -197,8 +197,10 @@
 		"todayVoiceTimeField": "Dziś",
 		"weekVoiceTimeField": "W tym tygodniu",
 		"monthVoiceTimeField": "W tym miesiącu",
-		"inviteTitle": "Zaangażuj swoją społeczność dzięki Mindgame!",
-		"inviteDescription": "Nagradzaj aktywność i zwiększ możliwości Discorda dzięki konfigurowalnym rozwiązaniom Mindgame. Rozszerz doświadczenia na swoim serwerze, [zaproś mnie]({invite}) lub [zahostuj własną kopię]({repo})!"
+		"inviteTitle": "Zaangażuj swoją społeczność",
+		"inviteDescription": "Nagradzaj aktywność i przenieś doświadczenia swojego serwera na inny poziom, [zaproś]({invite}) lub [zahostuj własną kopię]({repo}).",
+		"guildsField": "Serwery",
+		"usersField": "Użytkownicy"
 	},
 	"quickButton": {
 		"profileLabel": "Profil 👤",

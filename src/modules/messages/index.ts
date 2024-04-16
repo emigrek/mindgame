@@ -11,7 +11,7 @@ import {
     getGuildsEphemeralChannels,
     syncEphemeralChannelMessages
 } from "@/modules/ephemeral-channel";
-import {getGuild} from "@/modules/guild";
+import {getGuild, getGuildsCount} from "@/modules/guild";
 import {
     getAutoSweepingButton,
     getLevelRolesButton,
@@ -37,7 +37,7 @@ import {
 import {getMemberColorRole} from "@/modules/roles";
 import messageSchema, {MessageDocument} from "@/modules/schemas/Message";
 import {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
-import {getUser} from "@/modules/user";
+import {getUser, getUsersCount} from "@/modules/user";
 import {getRanking, getSortingByType, getUserGuildStatistics, runMask} from '@/modules/user-guild-statistics';
 import clean from "@/utils/clean";
 import {getLastCommits} from "@/utils/commits";
@@ -787,6 +787,9 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
     const invite = client.getInvite();
     const repo = (await import("../../../package.json")).repository.url;
 
+    const guilds = await getGuildsCount();
+    const users = await getUsersCount();
+
     const embed = InformationEmbed()
         .setColor(Colors.Red)
         .setTitle(i18n.__("notifications.inviteTitle"))
@@ -794,10 +797,24 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
             invite,
             repo,
         }))
+        .setFields([
+            {
+                name: i18n.__("notifications.usersField"),
+                value: codeBlock(client.numberFormat.format(users)),
+                inline: true
+            },
+            {
+                name: i18n.__("notifications.guildsField"),
+                value: codeBlock(client.numberFormat.format(guilds)),
+                inline: true
+            },
+        ])
+        .setImage(KnownLinks.EMBED_SPACER)
         .setThumbnail(KnownLinks.ROCKET);
 
     return {
-        embeds: [embed]
+        embeds: [embed],
+        flags: [4096]
     };
 }
 
@@ -807,7 +824,8 @@ const getErrorMessagePayload = () => {
         .setDescription(i18n.__("error.description"));
 
     return {
-        embeds: [embed]
+        embeds: [embed],
+        flags: [4096]
     };
 }
 
@@ -840,12 +858,12 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
 const attachQuickButtons = async (client: ExtendedClient, channelId: string) => {
     const channel = await client.channels.fetch(channelId) as TextChannel;
     i18n.setLocale(channel.guild.preferredLocale);
+
     const lastMessages = await channel.messages.fetch({ limit: 50 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
         });
-
     const clientMessages = lastMessages.filter(m => m.author.id === client.user?.id && !m.interaction);
     const lastMessage = clientMessages.first();
     if (!lastMessage) return;
@@ -884,13 +902,12 @@ const createMessage = async (message: Message, targetUserId: string | null, name
 };
 
 const getMessage = async (message: Partial<MessageType>): Promise<MessageDocument | undefined> => {
-    const response = await messageModel
-        .find(message)
-        .sort({ createdAt: -1 }) // if there are multiple messages, get the latest one
-        .limit(1)
-        .exec();
-    
-    return response[0];
+    const response = await messageModel.aggregate([
+        { $match: message },
+        { $sort: { createdAt: -1 } },
+        { $limit: 1 }
+    ]);
+    return response.at(0);
 }
 
 const deleteMessage = async (messageId: string) => {
@@ -902,9 +919,9 @@ const deleteMessage = async (messageId: string) => {
 };
 
 const formatStreakField = (streak?: Streak, includeDateRange?: boolean) => {
-    return streak && streak.value > 1 ? 
+    return streak && streak.value > 1 ?
         `${includeDateRange ? getLocalizedDateRange(streak.startedAt, streak.date) : ''}${codeBlock(i18n.__n("notifications.voiceStreakFormat", streak.value || 0))}`
-        : 
+        :
         codeBlock(i18n.__("utils.lack"));
 }
 

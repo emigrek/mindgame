@@ -11,14 +11,12 @@ export const userSignificantVoiceActivityStreak: Event = {
         const guild = await getGuild(member.guild.id);
         if (!guild || !guild.notifications || !guild.channelId) return;
 
-        const channel = await client.channels.fetch(guild.channelId) as TextChannel;
+        const channel = await client.channels.fetch(guild.channelId);
         if (!channel) return;
 
-        const payload = await getSignificantVoiceActivityStreakMessagePayload(client, member, streak);
-
         await NotificationsManager.getInstance().schedule({
-            channel: channel,
-            payload: payload,
+            channel: channel as TextChannel,
+            payload: await getSignificantVoiceActivityStreakMessagePayload(client, member, streak),
             callback: async message => {
                 await message.react("😱");
                 await createMessage(message, member.id, "significantVoiceActivityStreakMessage");

@@ -85,5 +85,9 @@ const setAutoSweeping = async (guildId: string): Promise<GuildDocument | null>  
     return guildToUpdate;
 }
 
-export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setDefaultChannelId, setLevelRoles, setLevelRolesHoist, setNotifications };
+const getGuildsCount = async () => {
+    return GuildModel.countDocuments();
+}
+
+export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setDefaultChannelId, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
 

@@ -7,10 +7,8 @@ export interface StreakLogicProps {
 }
 
 export type InviteNotificationConfig = {
-    enabled: true;
+    enabled: boolean;
     chance: number;
-} | {
-    enabled: false;
 };
 
 export interface Config {

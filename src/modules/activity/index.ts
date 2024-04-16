@@ -95,8 +95,8 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
         streaming: member.voice?.streaming,
         from: moment().toDate()
     });
-
     await newVoiceActivity.save();
+
     await checkVoiceActivityRewards(client, member);
 
     return newVoiceActivity;
@@ -462,11 +462,23 @@ const pruneActivities = async () => {
 };
 
 const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): Promise<VoiceActivityDocument | undefined> => {
-    const query = await voiceActivityModel.find({
-        userId,
-        guildId,
-        to: { $ne: null }
-    }).sort({ from: -1 }).limit(1);
+    const query = await voiceActivityModel.aggregate([
+        {
+            $match: {
+                userId,
+                guildId,
+                to: { $ne: null }
+            }
+        },
+        {
+            $sort: {
+                from: -1
+            }
+        },
+        {
+            $limit: 1
+        }
+    ]);
     return query.at(0);
 };
 

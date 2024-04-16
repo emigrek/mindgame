@@ -33,7 +33,6 @@ export const userLeveledUp: Event = {
 
         const user = await client.users.fetch(userId);
         const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild, newLevel);
-
         const existing = await getMessage({
             channelId: channel.id,
             targetUserId: user.id,

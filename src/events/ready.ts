@@ -14,8 +14,9 @@ export const ready: Event = {
         NotificationsManager.getInstance().setWorkStartCallback(
             async (channelId: string) => {
                 const channel = await client.channels.fetch(channelId) as TextChannel;
-                const random = getRandomNumber(0, 100);
-                if (config.inviteNotification.enabled && config.inviteNotification.chance > random && channel) {
+                const chance = config.inviteNotification.chance > getRandomNumber(0, 100);
+
+                if (channel && config.inviteNotification.enabled && chance) {
                     await NotificationsManager.getInstance().schedule({
                         channel,
                         payload: await getInviteNotificationMessagePayload(client, channel.guild)

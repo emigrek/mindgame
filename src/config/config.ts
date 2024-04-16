@@ -47,7 +47,7 @@ export const config: Config = {
     // Configuration for invite notifications
     inviteNotification: {
         enabled: true,
-        // Chance for guild invite notifications to be sent after a notifications work start
+        // Chance for guild invite notifications to be scheduled after notifications work start
         chance: 10,
     },
 
