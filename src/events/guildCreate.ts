@@ -4,9 +4,8 @@ import {Event} from "@/interfaces";
 import {setDefaultChannelId} from "@/modules/guild";
 import {createGuild} from "@/modules/guild/";
 import {InformationEmbed} from "@/modules/messages/embeds";
-import {updatePresence} from "@/modules/presence/";
 import {assignLevelRolesInGuild} from "@/modules/roles/";
-import {BaseChannel, ChannelType, Guild, PermissionsBitField, TextChannel} from "discord.js";
+import {ChannelType, Guild, NonThreadGuildBasedChannel, PermissionsBitField, TextChannel} from "discord.js";
 
 const checkClientMissingPermissions = (guild: Guild): string[] | false => {
     const me = guild.members.cache.get(guild.client.user.id);
@@ -36,13 +35,8 @@ export const guildCreate: Event = {
             return;
         }
 
-        const sourceGuild = await createGuild(guild.id);
-        await updatePresence(client);
-
-        if(sourceGuild.levelRoles)
-            await assignLevelRolesInGuild({client, guildId: guild.id});
-
-        const textChannels = guild.channels.cache.filter((channel: BaseChannel) => channel.type === ChannelType.GuildText);
+        const channels = await guild.channels.fetch();
+        const textChannels = channels.filter((channel: NonThreadGuildBasedChannel | null) => channel && channel.type === ChannelType.GuildText);
 
         if(!textChannels.size) {
             await owner?.send({
@@ -56,5 +50,10 @@ export const guildCreate: Event = {
 
         const proposedTextChannel = textChannels.first() as TextChannel;
         await setDefaultChannelId({guildId: guild.id, channelId: proposedTextChannel.id});
+
+        const sourceGuild = await createGuild(guild.id);
+
+        if(sourceGuild.levelRoles)
+            await assignLevelRolesInGuild({client, guildId: guild.id});
     }
 }

@@ -4,6 +4,7 @@ import {getGuild} from "@/modules/guild";
 import {createMessage, getDailyRewardMessagePayload} from "@/modules/messages";
 import {TextChannel} from "discord.js";
 import NotificationsManager from "@/modules/messages/notificationsManager";
+import {MessageTypeIds} from "@/interfaces/Message";
 
 
 export const userReceivedDailyReward: Event = {
@@ -21,7 +22,11 @@ export const userReceivedDailyReward: Event = {
             channel: defaultChannel as TextChannel,
             payload: await getDailyRewardMessagePayload(client, user, guild, streak),
             callback: async message => {
-                await createMessage(message, user.id, "dailyRewardMessage");
+                await createMessage({
+                    message,
+                    typeId: MessageTypeIds.DAILY_REWARD,
+                    targetUserId: user.id,
+                });
             }
         });
     }

@@ -6,6 +6,7 @@ import {assignUserLevelRole, isLevelThreshold} from "@/modules/roles";
 import {sendNewFeaturesMessage} from "@/modules/user";
 import {TextChannel} from "discord.js";
 import NotificationsManager from "@/modules/messages/notificationsManager";
+import {MessageTypeIds} from "@/interfaces/Message";
 
 export const userLeveledUp: Event = {
     name: "userLeveledUp",
@@ -30,13 +31,13 @@ export const userLeveledUp: Event = {
         if (!channel) return;
 
         if (!isLevelThreshold(newLevel)) return;
-
+        
         const user = await client.users.fetch(userId);
         const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild, newLevel);
         const existing = await getMessage({
             channelId: channel.id,
             targetUserId: user.id,
-            name: "levelUpMessage"
+            typeId: MessageTypeIds.LEVEL_UP,
         });
 
         if (existing) {
@@ -53,7 +54,11 @@ export const userLeveledUp: Event = {
             payload: levelUpMessagePayload,
             callback: async message => {
                 await message.react("🎉");
-                await createMessage(message, user.id, "levelUpMessage");
+                await createMessage({
+                    message,
+                    typeId: MessageTypeIds.LEVEL_UP,
+                    targetUserId: user.id,
+                });
             }
         });
     }

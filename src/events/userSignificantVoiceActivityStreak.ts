@@ -4,6 +4,7 @@ import {getGuild} from "@/modules/guild";
 import {createMessage, getSignificantVoiceActivityStreakMessagePayload} from "@/modules/messages";
 import {GuildMember, TextChannel} from "discord.js";
 import NotificationsManager from "@/modules/messages/notificationsManager";
+import {MessageTypeIds} from "@/interfaces/Message";
 
 export const userSignificantVoiceActivityStreak: Event = {
     name: "userSignificantVoiceActivityStreak",
@@ -19,7 +20,11 @@ export const userSignificantVoiceActivityStreak: Event = {
             payload: await getSignificantVoiceActivityStreakMessagePayload(client, member, streak),
             callback: async message => {
                 await message.react("😱");
-                await createMessage(message, member.id, "significantVoiceActivityStreakMessage");
+                await createMessage({
+                    message,
+                    typeId: MessageTypeIds.SIGNIFICANT_VOICE_ACTIVITY_STREAK,
+                    targetUserId: member.user.id,
+                });
             }
         });
     }

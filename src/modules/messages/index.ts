@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import {config} from "@/config";
 import {ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak} from "@/interfaces";
-import {Message as MessageType} from '@/interfaces/Message';
+import {Message as MessageType, MessageTypeIds} from '@/interfaces/Message';
 import {
     createEphemeralChannel,
     deleteEphemeralChannel,
@@ -787,9 +787,6 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
     const invite = client.getInvite();
     const repo = (await import("../../../package.json")).repository.url;
 
-    const guilds = await getGuildsCount();
-    const users = await getUsersCount();
-
     const embed = InformationEmbed()
         .setColor(Colors.Red)
         .setTitle(i18n.__("notifications.inviteTitle"))
@@ -800,16 +797,15 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
         .setFields([
             {
                 name: i18n.__("notifications.usersField"),
-                value: codeBlock(client.numberFormat.format(users)),
+                value: codeBlock(client.numberFormat.format(await getUsersCount())),
                 inline: true
             },
             {
                 name: i18n.__("notifications.guildsField"),
-                value: codeBlock(client.numberFormat.format(guilds)),
+                value: codeBlock(client.numberFormat.format(await getGuildsCount())),
                 inline: true
             },
         ])
-        .setImage(KnownLinks.EMBED_SPACER)
         .setThumbnail(KnownLinks.ROCKET);
 
     return {
@@ -884,7 +880,13 @@ const attachQuickButtons = async (client: ExtendedClient, channelId: string) => 
         });
 };
 
-const createMessage = async (message: Message, targetUserId: string | null, name: string | null) => {
+interface CreateMessageProps {
+    message: Message;
+    typeId: MessageTypeIds;
+    targetUserId?: string;
+}
+
+const createMessage = async ({ message, typeId, targetUserId }: CreateMessageProps) => {
     const exists = await getMessage({
         messageId: message.id,
     });
@@ -893,8 +895,8 @@ const createMessage = async (message: Message, targetUserId: string | null, name
     const newMessage = new messageModel({
         messageId: message.id,
         channelId: message.channel.id,
-        targetUserId: targetUserId,
-        name: name
+        targetUserId,
+        typeId,
     });
 
     await newMessage.save();
@@ -911,12 +913,16 @@ const getMessage = async (message: Partial<MessageType>): Promise<MessageDocumen
 }
 
 const deleteMessage = async (messageId: string) => {
-    await messageModel.deleteOne({
+    return messageModel.deleteOne({
         messageId: messageId
-    });
-
-    return true;
+    })
 };
+
+const deleteMessages = async (channelId: string) => {
+    return messageModel.deleteMany({
+        channelId: channelId
+    });
+}
 
 const formatStreakField = (streak?: Streak, includeDateRange?: boolean) => {
     return streak && streak.value > 1 ?
@@ -929,4 +935,4 @@ const formatNextStreakField = (daysTillNext: number) => {
     return daysTillNext ? codeBlock(i18n.__n("notifications.voiceStreakInFormat", daysTillNext)) : codeBlock(i18n.__("utils.never"));
 }
 
-export { ImageHexColors, attachQuickButtons, getInviteNotificationMessagePayload, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, deleteMessages, getInviteNotificationMessagePayload, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
