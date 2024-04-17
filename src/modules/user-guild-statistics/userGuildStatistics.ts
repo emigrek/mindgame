@@ -56,14 +56,14 @@ export const updateUserGuildStatistics = async ({ client, userId, guildId, updat
     userGuildStatistics.week = merge(userGuildStatistics.week, update);
     userGuildStatistics.month = merge(userGuildStatistics.month, update);
 
-    if (userGuildStatistics.total.exp >= levelToExp(userGuildStatistics.level + 1))
+    const oldLevel = userGuildStatistics.level;
+    const expToNext = levelToExp(oldLevel + 1);
+
+    if (userGuildStatistics.total.exp > expToNext)
         userLeveledUpDuringUpdate = true;
 
-    const oldLevel = userGuildStatistics.level;
     const newLevel = expToLevel(userGuildStatistics.total.exp);
-
     userGuildStatistics.level = newLevel;
-
     await userGuildStatistics.save();
 
     if (userLeveledUpDuringUpdate)
