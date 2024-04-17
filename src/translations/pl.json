@@ -198,7 +198,7 @@
 		"weekVoiceTimeField": "W tym tygodniu",
 		"monthVoiceTimeField": "W tym miesiącu",
 		"inviteTitle": "Zaangażuj swoją społeczność",
-		"inviteDescription": "Nagradzaj aktywność i przenieś doświadczenia swojego serwera na inny poziom, [zaproś]({invite}) lub [zahostuj własną kopię]({repo}).",
+		"inviteDescription": "Przenieś swój serwer na inny poziom, [zaproś]({invite}) lub [zahostuj własną kopię]({repo}).",
 		"guildsField": "Serwery",
 		"usersField": "Użytkownicy"
 	},

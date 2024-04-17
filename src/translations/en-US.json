@@ -206,7 +206,7 @@
 		"weekVoiceTimeField": "Weekly",
 		"monthVoiceTimeField": "Monthly",
 		"inviteTitle": "Engage Your Community",
-		"inviteDescription": "Reward activity and level up your guild experience today, [invite]({invite}) or [host an instance]({repo}).",
+		"inviteDescription": "Bring your guild to another level, [invite]({invite}) or [host an instance]({repo}).",
 		"guildsField": "Guilds",
 		"usersField": "Users"
 	},
