@@ -7,7 +7,7 @@ import {getColorInt} from "@/modules/messages";
 import {getProfileTimePublicButton} from "@/modules/messages/buttons";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserTotalStatistics} from "@/modules/user-guild-statistics";
-import {ActionRowBuilder, ButtonBuilder, codeBlock} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, codeBlock, heading, HeadingLevel, userMention} from "discord.js";
 
 export class TimeStatistics extends BaseProfilePage {
     totalStatistics: ExtendedUserStatistics | undefined = undefined;
@@ -35,7 +35,7 @@ export class TimeStatistics extends BaseProfilePage {
             };
         }
 
-        const button = await getProfileTimePublicButton({ isPublic: renderedUser.publicTimeStatistics });
+        const button = getProfileTimePublicButton({ isPublic: renderedUser.publicTimeStatistics });
         const buttons = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(button);
 
@@ -52,6 +52,7 @@ export class TimeStatistics extends BaseProfilePage {
         }
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setDescription(heading(userMention(renderedUser.userId), HeadingLevel.Two))
             .setFields([
                 this.embedTitleField,
                 {

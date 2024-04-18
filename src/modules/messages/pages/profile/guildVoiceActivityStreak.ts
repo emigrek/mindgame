@@ -5,7 +5,7 @@ import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {getUserVoiceActivityStreak} from "@/modules/activity";
 import {formatNextStreakField, formatStreakField} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
-import {bold} from "discord.js";
+import {bold, heading, HeadingLevel, userMention} from "discord.js";
 
 export class GuildVoiceActivityStreak extends BaseProfilePage {
     voiceActivityStreak: ActivityStreak | undefined = undefined;
@@ -47,6 +47,7 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
             throw new Error("Guild is required for guild voice activity streak page");
 
         return BaseProfileEmbed({ user: renderedUser, colors })
+            .setDescription(heading(userMention(renderedUser.userId), HeadingLevel.Two))
             .setAuthor({
                 name: guild.name,
                 iconURL: guild.iconURL() || undefined,

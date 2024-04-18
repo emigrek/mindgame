@@ -12,9 +12,7 @@ interface BaseProfileProps {
 const BaseProfileEmbed = ({ colors, user }: BaseProfileProps) => {
     return new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
-        .setTitle(user.username)
         .setThumbnail(user.avatarUrl)
-        .setDescription(`** **`)
         .setImage(KnownLinks.EMBED_SPACER);
 };
 

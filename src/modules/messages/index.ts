@@ -57,6 +57,8 @@ import {
     EmbedField,
     Guild,
     GuildMember,
+    heading,
+    HeadingLevel,
     Message,
     MessageContextMenuCommandInteraction,
     ModalSubmitInteraction,
@@ -66,6 +68,7 @@ import {
     ThreadChannel,
     User,
     UserContextMenuCommandInteraction,
+    userMention,
     UserSelectMenuBuilder,
     UserSelectMenuInteraction,
     VoiceChannel
@@ -398,8 +401,8 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
 
     const fields = data.map((statistics) => (
         {
-            name: statistics.position.toString(),
-            value: `<@${statistics.user.userId}> ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}${codeBlock(runMask(client, sortingType.mask, statistics))}`,
+            name: statistics.position.toString() + ".",
+            value: `<@${statistics.user.userId}> ${statistics.user.userId === targetId ? i18n.__("ranking.you") : ""}\n${codeBlock(runMask(client, sortingType.mask, statistics))}`,
             inline: true
         }
     ));
@@ -447,17 +450,20 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
             InformationEmbed()
                 .setColor(color)
                 .setThumbnail(targetUser.displayAvatarURL({ extension: "png", size: 256 }))
-                .setTitle(targetUser.username)
                 .setAuthor({
                     name: guild.name,
                     iconURL: guild.iconURL({ extension: "png", size: 256 }) || undefined
                 })
                 .setFields(fields)
-                .setDescription(`${bold(i18n.__mf("ranking.title", {
-                    emoji: sortingType.emoji,
-                    range: i18n.__(`rankingSortings.range.${sortingType.range}`),
-                    sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
-                }))}\n\n${!data.length ? i18n.__("ranking.empty") : ''}`)
+                .setDescription(
+                    heading(userMention(targetId), HeadingLevel.Two) + `\n` +
+                    heading(bold(i18n.__mf("ranking.title", {
+                        emoji: sortingType.emoji,
+                        range: i18n.__(`rankingSortings.range.${sortingType.range}`),
+                        sorting: i18n.__(`rankingSortings.label.${sortingType.type}`),
+                    })), HeadingLevel.Three)+ `\n\n` +
+                    (!data.length ? i18n.__("ranking.empty") : '')
+                )
                 .setFooter({
                     text: i18n.__mf("ranking.footer", { page: page, pages: metadata.total || 1 })
                 })

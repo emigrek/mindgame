@@ -12,7 +12,15 @@ import {getFollowers} from "@/modules/follow";
 import {getProfileFollowButton} from "@/modules/messages/buttons";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {KnownLinks} from "@/modules/messages/knownLinks";
-import {ActionRowBuilder, ButtonBuilder, codeBlock, MessageCreateOptions} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    codeBlock,
+    heading,
+    HeadingLevel,
+    MessageCreateOptions,
+    userMention
+} from "discord.js";
 
 export class About extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -52,7 +60,10 @@ export class About extends BaseProfilePage {
         const mostUsedEmoji = mostUsed ? clientStatusToEmoji(mostUsed) : undefined;
 
         return BaseProfileEmbed({ user: renderedUser, colors })
-            .setDescription(formatLastActivityDetails(userLastActivityDetails))
+            .setDescription(
+                heading(userMention(renderedUser.userId), HeadingLevel.Two) +
+                formatLastActivityDetails(userLastActivityDetails)
+            )
             .setFields([
                 {
                     name: i18n.__("profile.followers"),

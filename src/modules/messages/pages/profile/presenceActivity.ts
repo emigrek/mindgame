@@ -5,7 +5,7 @@ import {getColorInt} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 import {getLocalizedDateTypeRange} from "@/utils/date";
-import {bold, codeBlock} from "discord.js";
+import {bold, codeBlock, heading, HeadingLevel, userMention} from "discord.js";
 
 export class PresenceActivity extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -33,6 +33,7 @@ export class PresenceActivity extends BaseProfilePage {
         const userGuildStatistics = await getUserGuildStatistics({ userId: renderedUser.userId, guildId: guild.id });
 
         const embed = BaseProfileEmbed({ user: renderedUser, colors })
+            .setDescription(heading(userMention(renderedUser.userId), HeadingLevel.Two))
             .setAuthor({
                 name: guild.name,
                 iconURL: guild.iconURL() || undefined,

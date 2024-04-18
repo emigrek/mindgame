@@ -561,7 +561,7 @@ const formatLastActivityDetails = (details: UserLastActivityDetails) => {
         });
     }
 
-    return `${voice}\n${presence}`;
+    return `\n${voice}\n${presence}`;
 };
 
 interface GetUserClientProps {
