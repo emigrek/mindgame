@@ -174,6 +174,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
                     .setDescription(i18n.__("profile.notFound"))
                     .setImage(KnownLinks.EMBED_SPACER)
             ],
+            components: [],
             ephemeral: true
         };
     }
@@ -783,16 +784,13 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
 const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild: Guild) => {
     i18n.setLocale(guild.preferredLocale);
-    
-    const invite = client.getInvite();
-    const repo = (await import("../../../package.json")).repository.url;
 
     const embed = InformationEmbed()
         .setColor(Colors.Red)
         .setTitle(i18n.__("notifications.inviteTitle"))
         .setDescription(i18n.__mf("notifications.inviteDescription", {
-            invite,
-            repo,
+            invite: client.getInvite(),
+            repo: (await import("../../../package.json")).repository.url,
         }))
         .setFields([
             {
