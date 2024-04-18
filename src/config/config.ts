@@ -48,7 +48,7 @@ export const config: Config = {
     inviteNotification: {
         enabled: true,
         // Chance for guild invite notifications to be scheduled after notifications work start
-        chance: 10,
+        chance: 7,
     },
 
     // A function that determines whether a streak is significant enough to be notified about
