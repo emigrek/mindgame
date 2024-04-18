@@ -12,7 +12,7 @@ export const ready: Event = {
     run: async (client: ExtendedClient) => {
         await client.loadModules();
 
-        NotificationsManager.getInstance().setWorkStartCallback(
+        NotificationsManager.getInstance().setWorkLastItemInQueueCallback(
             async (channelId: string) => {
                 const channel = await client.channels.fetch(channelId) as TextChannel;
                 const chance = config.inviteNotification.chance > getRandomNumber(0, 100);

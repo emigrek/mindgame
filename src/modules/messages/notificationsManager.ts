@@ -7,14 +7,18 @@ interface ExtendedMessageCreateOptions {
     callback?: (message: Message) => Promise<void>;
 }
 
+type WorkCallback = ((channelId: string) => Promise<void>) | null;
+
 class NotificationsManager {
     private static instance: NotificationsManager;
 
     private queue: Map<string, ExtendedMessageCreateOptions[]>;
 
     private workDelay = 750;
-    private workStartCallback: ((channelId: string) => void) | null = null;
-    private workEndCallback: ((channelId: string) => void) | null = null;
+    private workStartCallback: WorkCallback = null;
+    private workEndCallback: WorkCallback = null;
+    private workLastItemInQueueCallback: WorkCallback = null;
+    private workLastItemInQueueCallbackCalled = false;
 
     private constructor() {
         this.queue = new Map();
@@ -27,12 +31,16 @@ class NotificationsManager {
         return NotificationsManager.instance;
     }
 
-    public setWorkStartCallback(callback: (channelId: string) => void): void {
+    public setWorkStartCallback(callback: WorkCallback): void {
         this.workStartCallback = callback;
     }
 
-    public setWorkEndCallback(callback: (channelId: string) => void): void {
+    public setWorkEndCallback(callback: WorkCallback): void {
         this.workEndCallback = callback;
+    }
+
+    public setWorkLastItemInQueueCallback(callback: WorkCallback): void {
+        this.workLastItemInQueueCallback = callback;
     }
 
     public async schedule(options: ExtendedMessageCreateOptions): Promise<void> {
@@ -54,11 +62,19 @@ class NotificationsManager {
         const channelId = channel.id;
 
         if (this.workStartCallback) {
-            this.workStartCallback(channelId);
+            await this.workStartCallback(channelId)
+                .catch(e => console.log(`Error when calling workStartCallback in NotificationManager: ${e}`));
         }
 
         while (this.queue.get(channelId)?.length) {
             await delay(this.workDelay);
+
+            if (this.workLastItemInQueueCallback && !this.workLastItemInQueueCallbackCalled && this.isQueueOnLastItem(channelId)) {
+                this.workLastItemInQueueCallbackCalled = true;
+                await this.workLastItemInQueueCallback(channelId)
+                    .catch(e => console.log(`Error when calling workLastItemInQueueCallback in NotificationManager: ${e}`));
+            }
+
             try {
                 const options = this.queue.get(channelId)?.shift();
                 if (!options) continue;
@@ -66,17 +82,23 @@ class NotificationsManager {
                 const message = await channel.send(payload);
                 if (callback) await callback(message);
             } catch (e) {
-                console.log(`Error when sending message in MessageManager: ${e}`);
+                console.log(`Error when sending message in NotificationManager: ${e}`);
             }
         }
 
+        this.workLastItemInQueueCallbackCalled = false;
         if (this.workEndCallback && this.isQueueEmpty(channelId)) {
-            this.workEndCallback(channelId);
+            await this.workEndCallback(channelId)
+                .catch(e => console.log(`Error when calling workEndCallback in NotificationManager: ${e}`));
         }
     }
 
     private isQueueEmpty(channelId: string): boolean {
         return !this.queue.has(channelId) || this.queue.get(channelId)?.length === 0;
+    }
+
+    private isQueueOnLastItem(channelId: string): boolean {
+        return this.queue.get(channelId)?.length === 1;
     }
 }
 
