@@ -182,7 +182,7 @@
 	},
 	"notifications": {
 		"levelUpTitle": "Level up!",
-		"levelUpDescription": "<@{userId}> has reached **new level** <@{roleId}>!",
+		"levelUpDescription": "<@{userId}> has reached <@&{roleId}>!",
 		"levelField": "Level",
 		"winsField": "Wins",
 		"dailyRewardTitle": "Daily reward",
