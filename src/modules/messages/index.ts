@@ -34,7 +34,7 @@ import {
     getRankingSortSelect,
     getRankingUsersSelect
 } from "@/modules/messages/selects";
-import {getMemberColorRole} from "@/modules/roles";
+import {getGuildTresholdRole, getLevelRoleThreshold, getMemberColorRole} from "@/modules/roles";
 import messageSchema, {MessageDocument} from "@/modules/schemas/Message";
 import {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
 import {getUser, getUsersCount} from "@/modules/user";
@@ -240,11 +240,16 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 
     const userGuildStatistics = await getUserGuildStatistics({ userId: sourceUser.userId, guildId: guild.id });
     const colors = await useImageHex(sourceUser.avatarUrl);
+    const guildTresholdRole = await getGuildTresholdRole({
+        client,
+        guildId: guild.id,
+        threshold: getLevelRoleThreshold(level)
+    });
 
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.levelUpTitle"))
-        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId }))
+        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, roleId: guildTresholdRole?.id }))
         .setFields(
             {
                 name: i18n.__("notifications.levelField"),

@@ -256,5 +256,5 @@ const isLevelThreshold = (level: number) => {
     return levelThresholds.some(t => t.level === level);
 }
 
-export { isLevelThreshold, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleThreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
+export { isLevelThreshold, getGuildTresholdRole, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleThreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
 
