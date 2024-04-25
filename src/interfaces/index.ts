@@ -21,6 +21,7 @@ export { Sorting, SortingRanges, SortingTypes } from './Sorting';
 export { User } from "./User";
 export { VoiceActivity } from "./VoiceActivity";
 export { Streak, ActivityStreak } from './ActivityStreak';
+export { Achievement, BaseAchievement, AchievementType } from "./Achievement";
 
 export type DeepPartial<T> = {
     [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
