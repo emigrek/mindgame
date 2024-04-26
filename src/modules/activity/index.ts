@@ -152,7 +152,11 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
 
         const member = await guild.members.fetch(userId)
             .catch(() => null);
-        if (!member) continue;
+        if (!member) {
+            outOfSync.push(userId);
+            activity.delete();
+            continue;
+        }
         
         const channel = client.channels.cache.get(channelId) as VoiceBasedChannel;
         if (!channel) {
@@ -198,7 +202,11 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 
         const member = await guild.members.fetch(userId)
             .catch(() => null);
-        if (!member) continue;
+        if (!member) {
+            outOfSync.push(userId);
+            activity.delete();
+            continue;
+        }
 
         const presence = member.presence;
         if (!presence) {
