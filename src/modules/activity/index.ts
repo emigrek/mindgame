@@ -1,15 +1,15 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel} from "discord.js";
+import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
 
-import presenceActivitySchema, {PresenceActivityDocument} from "@/modules/schemas/PresenceActivity";
-import voiceActivitySchema, {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
+import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
+import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 
 import i18n from "@/client/i18n";
-import {config} from "@/config";
-import {ActivityStreak, Streak} from "@/interfaces";
+import { config } from "@/config";
+import { ActivityStreak, Streak } from "@/interfaces";
+import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
 import moment from "moment";
 import mongoose from "mongoose";
-import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
@@ -490,6 +490,26 @@ const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): P
     return query.at(0);
 };
 
+const getLastChannelVoiceActivity = async (channelId: string): Promise<VoiceActivityDocument | undefined> => {
+    const query = await voiceActivityModel.aggregate([
+        {
+            $match: {
+                channelId,
+                to: null
+            }
+        },
+        {
+            $sort: {
+                from: -1
+            }
+        },
+        {
+            $limit: 1
+        }
+    ]);
+    return query.at(0);
+};
+
 const getGuildActiveVoiceActivities = async (guildId: string): Promise<VoiceActivityDocument[]> => {
     return voiceActivityModel.find({ guildId, to: null });
 }
@@ -613,4 +633,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+

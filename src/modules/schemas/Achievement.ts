@@ -1,5 +1,5 @@
-import {Document, Schema, SchemaTimestampsConfig} from 'mongoose';
-import {Achievement} from '@/interfaces';
+import { Achievement } from '@/interfaces';
+import { Document, Schema, SchemaTimestampsConfig } from 'mongoose';
 
 export type AchievementDocument = Achievement & Document & SchemaTimestampsConfig;
 
@@ -20,6 +20,10 @@ const achievementSchema = new Schema<Achievement>({
         type: String,
         required: true,
     },
+    payload: {
+        type: Schema.Types.Mixed,
+        required: false
+    }
 }, {
     timestamps: true
 });

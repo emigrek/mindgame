@@ -154,4 +154,4 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
     );
 }
 
-export { createEphemeralChannel, fetchReferenceMessage, editEphemeralChannel, syncEphemeralChannelMessages, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncALlEphemeralChannelsMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
+export { createEphemeralChannel, getMessageReactionsUniqueUsers, fetchReferenceMessage, editEphemeralChannel, syncEphemeralChannelMessages, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncALlEphemeralChannelsMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
