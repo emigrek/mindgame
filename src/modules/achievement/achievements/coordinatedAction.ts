@@ -1,4 +1,5 @@
-import { AchievementType, GradualAchievement } from "@/interfaces";
+import { AchievementType } from "@/interfaces";
+import { GradualAchievement } from "@/modules/achievement/structures";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 
 interface CoordinatedActionPayload {
@@ -7,7 +8,7 @@ interface CoordinatedActionPayload {
 }
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
-    achievementType: AchievementType.COORDINATED_ACTION = AchievementType.COORDINATED_ACTION;
+    achievementType = AchievementType.COORDINATED_ACTION;
     first?: VoiceActivityDocument;
     second?: VoiceActivityDocument;
     thresholds = [

@@ -1,5 +1,5 @@
-import { AchievementType, ProgressThreshold } from "@/interfaces";
-import { BaseAchievement } from "./BaseAchievement";
+import { AchievementType, ProgressThreshold } from '@/interfaces';
+import { BaseAchievement } from './BaseAchievement';
 
 export abstract class GradualAchievement<T extends AchievementType> extends BaseAchievement<T> {
     thresholds: ProgressThreshold[];

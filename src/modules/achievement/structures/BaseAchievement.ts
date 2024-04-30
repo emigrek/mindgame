@@ -8,7 +8,7 @@ export interface ProgressResult {
 }
 
 export abstract class BaseAchievement<T extends AchievementType> {
-    abstract achievementType: T;
+    abstract achievementType: AchievementType;
     userId?: string;
     guildId?: string;
     level: number;
@@ -24,13 +24,15 @@ export abstract class BaseAchievement<T extends AchievementType> {
         this.payload = {
             ...payload,
         };
-
+        
         return achievementModel.updateOne({
             userId: this.userId,
             guildId: this.guildId,
             achievementType: this.achievementType
         }, {
             payload: this.payload
+        }, {
+            upsert: true,
         })
             .then(() => this);
     }
@@ -76,6 +78,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
             achievementType: this.achievementType
         }, {
             level: this.level + 1
+        }, {
+            upsert: true
         })
             .then(() => {
                 this.level++;
@@ -93,6 +97,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
             achievementType: this.achievementType
         }, {
             level
+        }, {
+            upsert: true
         })
             .then(() => {
                 this.level = level;

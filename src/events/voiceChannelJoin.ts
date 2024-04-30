@@ -1,6 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
-import { AchievementManager, CoordinatedAction } from "@/modules/achievement";
+import { AchievementManager } from "@/modules/achievement";
+import { CoordinatedAction } from "@/modules/achievement/achievements";
 import { getLastChannelVoiceActivity, startVoiceActivity } from "@/modules/activity";
 import { GuildMember, VoiceChannel } from "discord.js";
 

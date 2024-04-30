@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { AchievementManager } from "@/modules/achievement";
-import { UniqueReactions } from "@/modules/achievement/achievements/uniqueReactions";
+import { UniqueReactions } from "@/modules/achievement/achievements";
 import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { MessageReaction } from "discord.js";
@@ -11,13 +11,13 @@ export const messageReactionAdd: Event = {
     run: async (client: ExtendedClient, messageReaction: MessageReaction) => {
         const { message } = messageReaction;
         const { channel } = message;
+        const m = message.partial ? await message.fetch() : message;
 
         const ephemeralChannel = await getEphemeralChannel(channel.id);
-        if(!ephemeralChannel) return;
-
-        const m = message.partial ? await message.fetch() : message;
-        const cacheable = await isMessageCacheable(ephemeralChannel, m);
-        cacheable ? ephemeralChannelMessageCache.add(channel.id, m) : ephemeralChannelMessageCache.remove(channel.id, message.id);
+        if (ephemeralChannel) {
+            const cacheable = await isMessageCacheable(ephemeralChannel, m);
+            cacheable ? ephemeralChannelMessageCache.add(channel.id, m) : ephemeralChannelMessageCache.remove(channel.id, message.id);
+        }
 
         if (!m.guild) return;
 

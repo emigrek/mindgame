@@ -1,4 +1,5 @@
-import { AchievementType, AchievementTypePayload, LinearAchievement } from "@/interfaces";
+import { AchievementType, AchievementTypePayload } from "@/interfaces";
+import { LinearAchievement } from "@/modules/achievement/structures";
 import { getMessageReactionsUniqueUsers } from "@/modules/ephemeral-channel";
 import { Message } from "discord.js";
 
@@ -7,7 +8,7 @@ interface UniqueReactionsPayload {
 }
 
 export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_REACTIONS> {
-    achievementType: AchievementType.UNIQUE_REACTIONS = AchievementType.UNIQUE_REACTIONS;
+    achievementType = AchievementType.UNIQUE_REACTIONS;
     message?: Message;
     formula = (level: number, payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
         const { uniqueReactions } = payload;

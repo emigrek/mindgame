@@ -1,6 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { AchievementType, BaseAchievement } from "@/interfaces";
+import { AchievementType } from "@/interfaces";
 import { CoordinatedAction, UniqueReactions } from "./achievements";
+import { BaseAchievement } from "./structures";
 
 interface AchievementManagerProps {
     client: ExtendedClient;
