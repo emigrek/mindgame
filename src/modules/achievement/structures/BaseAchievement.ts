@@ -65,6 +65,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
         if (!this.userId || !this.guildId) 
             throw new Error("The achievement must be directed to a user in a guild.");
 
+        await this.get();
         return this.progress(this.level);
     }
 
