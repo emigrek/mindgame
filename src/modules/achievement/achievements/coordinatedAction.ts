@@ -57,15 +57,23 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
     }
 
     async progress() {
+        await this.get();
+
         if (!this.first || !this.second) 
             throw new Error("The achievement must have two voice activities to progress.");
 
         const fTimestamp = this.first.from.getTime();
         const sTimestamp = this.second.from.getTime();
         const diff = Math.abs(sTimestamp - fTimestamp);
-        const { level } = this.getThreshold({ value: diff, level: this.level });
-        return level ? this.updatePayload({ ms: diff })
-            .then(() => this.setLevel(level))
-            .then(() => ({ leveledUp: true, change: level })) : { leveledUp: false, change: 0 };
+
+        const threshold = this.findClosestThreshold(diff);
+
+        if (threshold && threshold.level > this.level) {
+            await this.updatePayload({ ms: diff });
+            await this.setLevel(threshold.level);
+            return { leveledUp: true, change: threshold.level };
+        } else {
+            return { leveledUp: false, change: 0 };
+        }
     }
 }

@@ -9,10 +9,9 @@ export abstract class GradualAchievement<T extends AchievementType> extends Base
         this.thresholds = [];
     }
 
-    getThreshold({ value, level}: { value: number, level: number }): ProgressThreshold {
-        return this.thresholds.find((threshold) => threshold.value >= value && threshold.level > level) || {
-            value: 0,
-            level: 0
-        };
+    findClosestThreshold(value: number): ProgressThreshold {
+        return this.thresholds.reduce((prev, curr) => {
+            return (Math.abs(curr.value - value) < Math.abs(prev.value - value) ? curr : prev);
+        });
     }
 }
