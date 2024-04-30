@@ -69,9 +69,10 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
         const threshold = this.findClosestThreshold(diff);
 
         if (threshold && threshold.level > this.level) {
+            const change = threshold.level - this.level;
             await this.updatePayload({ ms: diff });
             await this.setLevel(threshold.level);
-            return { leveledUp: true, change: threshold.level };
+            return { leveledUp: true, change };
         } else {
             return { leveledUp: false, change: 0 };
         }
