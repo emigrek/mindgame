@@ -7,52 +7,51 @@ interface CoordinatedActionPayload {
     second?: VoiceActivityDocument;
 }
 
-const THRESHOLDS = [
-    {
-        value: 1000 * 60 * 10,
-        level: 1
-    },
-    {
-        value: 1000 * 60 * 5,
-        level: 2
-    },
-    {
-        value: 1000 * 60 * 2,
-        level: 3
-    },
-    {
-        value: 1000 * 60,
-        level: 4
-    },
-    {
-        value: 1000 * 15,
-        level: 5
-    },
-    {
-        value: 1000 * 5,
-        level: 6
-    },
-    {
-        value: 1000 * 1,
-        level: 7
-    },
-    {
-        value: 1000 * 0.5,
-        level: 8
-    },
-    {
-        value: 1000 * 0.25,
-        level: 9
-    }
-];
-
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
     achievementType = AchievementType.COORDINATED_ACTION;
+    emoji = "🙏";
     first?: VoiceActivityDocument;
     second?: VoiceActivityDocument;
-    thresholds = THRESHOLDS;
+    levels = [
+        {
+            value: 1000 * 60 * 10,
+            level: 1
+        },
+        {
+            value: 1000 * 60 * 5,
+            level: 2
+        },
+        {
+            value: 1000 * 60 * 2,
+            level: 3
+        },
+        {
+            value: 1000 * 60,
+            level: 4
+        },
+        {
+            value: 1000 * 15,
+            level: 5
+        },
+        {
+            value: 1000 * 5,
+            level: 6
+        },
+        {
+            value: 1000 * 1,
+            level: 7
+        },
+        {
+            value: 1000 * 0.5,
+            level: 8
+        },
+        {
+            value: 1000 * 0.25,
+            level: 9
+        }
+    ];
 
-    constructor({first, second}: CoordinatedActionPayload) {
+    constructor({first, second}: CoordinatedActionPayload = {}) {
         super();
         this.first = first;
         this.second = second;
@@ -62,19 +61,15 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
         if (!this.first || !this.second) 
             throw new Error("The achievement must have two voice activities to progress.");
 
-        const fTimestamp = this.first.from.getTime();
-        const sTimestamp = this.second.from.getTime();
-        const diff = Math.abs(sTimestamp - fTimestamp);
+        const diff = Math.abs(this.second.from.getTime() - this.first.from.getTime());
+        const threshold = this.findClosestLevelThreshold(diff);
 
-        const threshold = this.findClosestThreshold(diff);
-
-        if (threshold && threshold.level > this.level) {
-            const change = threshold.level - this.level;
-            await this.updatePayload({ ms: diff });
-            await this.setLevel(threshold.level);
-            return { leveledUp: true, change };
-        } else {
+        if (!threshold || threshold.level <= this.level) 
             return { leveledUp: false, change: 0 };
-        }
+
+        return this.updatePayload({ ms: diff, withUserId: this.first.userId })
+            .then(() => this.setLevel(threshold.level))
+            .then(() => ({ leveledUp: true, change: threshold.level - this.level }));
     }
 }
+

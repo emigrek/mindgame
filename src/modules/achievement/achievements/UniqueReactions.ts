@@ -10,30 +10,32 @@ interface UniqueReactionsPayload {
 export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_REACTIONS> {
     achievementType = AchievementType.UNIQUE_REACTIONS;
     message?: Message;
-    formula = (level: number, payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
-        const { uniqueReactions } = payload;
-        const leveledUp = uniqueReactions > 2 && uniqueReactions >= level * 3;
-        return {
-            leveledUp,
-            change: leveledUp ? 1 : 0
-        };
-    }
+    emoji = "⭐";
 
-    constructor({message}: UniqueReactionsPayload) {
+    constructor({message}: UniqueReactionsPayload = {}) {
         super();
         this.message = message;
     }
 
-    async progress(level: number) {
+    async progress() {
         if (!this.message) 
             throw new Error("The achievement must have a message to progress.");
 
         const uniqueReactions = await getMessageReactionsUniqueUsers(this.message)
             .then((reactions) => reactions.length)
         
-        const result = this.formula(level, { uniqueReactions });
+        const result = this.formula({ uniqueReactions });
         return result.leveledUp ? this.updatePayload({ uniqueReactions })
             .then(() => this.levelUp())
             .then(() => result) : result;
+    }
+
+    formula = (payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
+        const { uniqueReactions } = payload;
+        const leveledUp = uniqueReactions > 2 && uniqueReactions >= this.level * 3;
+        return {
+            leveledUp,
+            change: leveledUp ? 1 : 0
+        };
     }
 }

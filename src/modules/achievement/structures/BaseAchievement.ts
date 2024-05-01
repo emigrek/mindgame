@@ -11,14 +11,11 @@ export abstract class BaseAchievement<T extends AchievementType> {
     abstract achievementType: AchievementType;
     userId?: string;
     guildId?: string;
-    level: number;
+    level = 0;
     payload?: AchievementTypePayload[T];
+    emoji = "";
 
-    constructor() {
-        this.level = 0;
-    }
-
-    abstract progress (level: number): Promise<ProgressResult>;
+    abstract progress (): Promise<ProgressResult>;
 
     async updatePayload(payload: AchievementTypePayload[T]): Promise<this> {
         this.payload = {
@@ -64,9 +61,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
     async check (): Promise<ProgressResult> {
         if (!this.userId || !this.guildId) 
             throw new Error("The achievement must be directed to a user in a guild.");
-
-        await this.get();
-        return this.progress(this.level);
+        return this.progress();
     }
 
     async levelUp(): Promise<this> {

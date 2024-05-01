@@ -1,16 +1,16 @@
-import { AchievementType, ProgressThreshold } from '@/interfaces';
+import { AchievementType, LevelThreshold } from '@/interfaces';
 import { BaseAchievement } from './BaseAchievement';
 
 export abstract class GradualAchievement<T extends AchievementType> extends BaseAchievement<T> {
-    thresholds: ProgressThreshold[];
+    levels: LevelThreshold[];
 
     constructor() {
         super();
-        this.thresholds = [];
+        this.levels = [];
     }
 
-    findClosestThreshold(value: number): ProgressThreshold {
-        return this.thresholds.reduce((prev, curr) => {
+    findClosestLevelThreshold(value: number): LevelThreshold {
+        return this.levels.reduce((prev, curr) => {
             return (Math.abs(curr.value - value) < Math.abs(prev.value - value) ? curr : prev);
         });
     }
