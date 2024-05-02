@@ -11,36 +11,37 @@ interface AchievementManagerProps {
 
 class AchievementManager {
     client: ExtendedClient;
-    achievements: BaseAchievement<AchievementType>[];
-
     userId: string;
     guildId: string;
 
     constructor({client, userId, guildId}: AchievementManagerProps) {
         this.client = client;
-        this.achievements = [];
-        
         this.userId = userId;
         this.guildId = guildId;
     }
 
-    add(achievement: BaseAchievement<AchievementType>): AchievementManager;
-    add(achievements: BaseAchievement<AchievementType>[]): AchievementManager;
-    add(arg: BaseAchievement<AchievementType> | BaseAchievement<AchievementType>[]): this {
-        Array.isArray(arg) ? this.achievements.push(...arg) : this.achievements.push(arg);
+    check(achievement: BaseAchievement<AchievementType>): AchievementManager;
+    check(achievements: BaseAchievement<AchievementType>[]): AchievementManager;
+    check(arg: BaseAchievement<AchievementType> | BaseAchievement<AchievementType>[]): this {
+        const { userId, guildId } = this;
+
+        if (Array.isArray(arg)) {
+            for (const achievement of arg)
+                achievement.direct({ userId, guildId })
+                    .get()
+                    .then(() => achievement.check())
+                    .then(({leveledUp, change}) => leveledUp && this.client.emit("achievementLeveledUp", achievement, change));
+        } else {
+            arg.direct({ userId, guildId })
+                .get()
+                .then(() => arg.check())
+                .then(({leveledUp, change}) => leveledUp && this.client.emit("achievementLeveledUp", arg, change));
+        }
+
         return this;
     }
 
-    async check(): Promise<void> {
-        const { userId, guildId } = this;
-        for (const achievement of this.achievements)
-            achievement.direct({ userId, guildId })
-                .get()
-                .then(() => achievement.check())
-                .then(({leveledUp, change}) => leveledUp && this.client.emit("achievementLeveledUp", achievement, change));
-    }
-
-    async get(): Promise<BaseAchievement<AchievementType>[]> {
+    async getAll(): Promise<BaseAchievement<AchievementType>[]> {
         const { userId, guildId } = this;
         return Promise.all(allAchievements.map(achievement => achievement.direct({ userId, guildId }).get()));
     }

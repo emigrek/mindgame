@@ -1,5 +1,5 @@
 export { Achievement } from "./Achievement";
-export { AchievementType, AchievementTypePayload } from "./AchievementType";
+export { AchievementType, AchievementTypeContext, AchievementTypePayload } from "./AchievementType";
 export { ActivityStreak, Streak } from './ActivityStreak';
 export { BaseProfilePage } from './BaseProfilePage';
 export { Button } from "./Button";

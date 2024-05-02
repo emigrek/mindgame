@@ -1,27 +1,17 @@
 import { AchievementType, AchievementTypePayload } from "@/interfaces";
 import { LinearAchievement } from "@/modules/achievement/structures";
 import { getMessageReactionsUniqueUsers } from "@/modules/ephemeral-channel";
-import { Message } from "discord.js";
-
-interface UniqueReactionsPayload {
-    message?: Message;
-}
 
 export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_REACTIONS> {
     achievementType = AchievementType.UNIQUE_REACTIONS;
-    message?: Message;
     emoji = "⭐";
 
-    constructor({message}: UniqueReactionsPayload = {}) {
-        super();
-        this.message = message;
-    }
-
     async progress() {
-        if (!this.message) 
-            throw new Error("The achievement must have a message to progress.");
+        if (!this.context)
+            throw new Error("The achievement's context must be provided to progress.");
 
-        const uniqueReactions = await getMessageReactionsUniqueUsers(this.message)
+        const { message } = this.context;
+        const uniqueReactions = await getMessageReactionsUniqueUsers(message)
             .then((reactions) => reactions.length)
         
         const result = this.formula({ uniqueReactions });

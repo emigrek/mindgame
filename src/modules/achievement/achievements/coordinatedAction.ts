@@ -1,17 +1,10 @@
 import { AchievementType } from "@/interfaces";
 import { GradualAchievement } from "@/modules/achievement/structures";
-import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
-
-interface CoordinatedActionPayload {
-    first?: VoiceActivityDocument;
-    second?: VoiceActivityDocument;
-}
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
     achievementType = AchievementType.COORDINATED_ACTION;
     emoji = "🙏";
-    first?: VoiceActivityDocument;
-    second?: VoiceActivityDocument;
+
     levels = [
         {
             value: 1000 * 60 * 10,
@@ -51,23 +44,18 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
         }
     ];
 
-    constructor({first, second}: CoordinatedActionPayload = {}) {
-        super();
-        this.first = first;
-        this.second = second;
-    }
-
     async progress() {
-        if (!this.first || !this.second) 
-            throw new Error("The achievement must have two voice activities to progress.");
+        if (!this.context)
+            throw new Error("The achievement's context must be provided to progress.");
 
-        const diff = Math.abs(this.second.from.getTime() - this.first.from.getTime());
+        const { first, second } = this.context;
+        const diff = Math.abs(second.from.getTime() - first.from.getTime());
         const threshold = this.findClosestLevelThreshold(diff);
 
         if (!threshold || threshold.level <= this.level) 
             return { leveledUp: false, change: 0 };
 
-        return this.updatePayload({ ms: diff, withUserId: this.first.userId })
+        return this.updatePayload({ ms: diff, withUserId: first.userId })
             .then(() => this.setLevel(threshold.level))
             .then(() => ({ leveledUp: true, change: threshold.level - this.level }));
     }

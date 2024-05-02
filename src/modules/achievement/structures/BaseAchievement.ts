@@ -1,4 +1,4 @@
-import { AchievementType, AchievementTypePayload } from "@/interfaces";
+import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { GuildUser } from "@/interfaces/GuildUser";
 import { achievementModel } from "@/modules/achievement";
 
@@ -13,7 +13,12 @@ export abstract class BaseAchievement<T extends AchievementType> {
     guildId?: string;
     level = 0;
     payload?: AchievementTypePayload[T];
+    context?: AchievementTypeContext[T];
     emoji = "";
+
+    constructor(context?: AchievementTypeContext[T]) {
+        this.context = context;
+    }
 
     abstract progress (): Promise<ProgressResult>;
 

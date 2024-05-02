@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { AchievementManager } from "@/modules/achievement";
-import { CoordinatedAction } from "@/modules/achievement/achievements";
+import { CoordinatedAction, Suss } from "@/modules/achievement/achievements";
 import { getLastChannelVoiceActivity, startVoiceActivity } from "@/modules/activity";
 import { GuildMember, VoiceChannel } from "discord.js";
 
@@ -15,8 +15,10 @@ export const voiceChannelJoin: Event = {
                 if (!activity || !lastChannelActivity) return;
 
                 new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
-                    .add(new CoordinatedAction({ first: lastChannelActivity, second: activity }))
-                    .check();
+                    .check([
+                        new CoordinatedAction({ first: lastChannelActivity, second: activity }),
+                        new Suss({ member, channel })
+                    ]);
             });
     }
 }

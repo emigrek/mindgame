@@ -22,9 +22,8 @@ export const messageReactionAdd: Event = {
         if (!m.guild) return;
 
         new AchievementManager({ client, userId: m.author.id, guildId: m.guild.id })
-            .add(
+            .check(
                 new UniqueReactions({ message: m })
-            )
-            .check();
+            );
     }
 }
