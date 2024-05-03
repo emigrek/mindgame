@@ -1,11 +1,10 @@
 import { AchievementType } from "@/interfaces";
-import { GradualAchievement } from "@/modules/achievement/structures";
+import { BaseAchievementContext, GradualAchievement } from "@/modules/achievement/structures";
 import { voiceActivityModel } from "@/modules/activity";
 
 export class Suss extends GradualAchievement<AchievementType.SUSS> {
     achievementType = AchievementType.SUSS;
     emoji = "🤫";
-
     levels = [
         {
             value: 1000 * 60 * 5,
@@ -29,16 +28,33 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
         },
     ];
 
+    constructor(context?: BaseAchievementContext<AchievementType.SUSS>) {
+        super({ context, achievementType: AchievementType.SUSS });
+    }
+
     async progress() {
         if (!this.context)
             throw new Error("The achievement's context must be provided to progress.");
 
         const { member, channel } = this.context;
+
+        if (channel.id === member.guild.afkChannelId) 
+            return { leveledUp: false, change: 0 };
+
         const channelVoiceActivities = await voiceActivityModel.find({ guildId: member.guild.id, channelId: channel.id, to: null });
         const userVoiceActivity = channelVoiceActivities.find(activity => activity.userId === this.userId);
+        const noUserActivity = userVoiceActivity === undefined;
+        const usersJoined = userVoiceActivity && channelVoiceActivities.length > 1
 
-        if (!userVoiceActivity || channelVoiceActivities.length > 1 && userVoiceActivity) {
-            await this.updateAloneTime();
+        if (noUserActivity || usersJoined) {
+            if (!this.payload?.from) return { leveledUp: false, change: 0 };
+            const { from, aloneMs } = this.payload;
+            const diff = new Date().getTime() - from.getTime();
+
+            await this.updatePayload({
+                from: undefined,
+                aloneMs: aloneMs + diff,
+            });
         } else if (channelVoiceActivities.length === 1 && userVoiceActivity) {
             await this.updatePayload({
                 from: new Date(),
@@ -53,18 +69,6 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
 
         return this.setLevel(threshold.level)
             .then(() => ({ leveledUp: true, change: threshold.level - this.level }));
-    }
-
-    async updateAloneTime() {
-        if (!this.payload?.from || !this.payload?.aloneMs) return;
-
-        const { from, aloneMs } = this.payload;
-        const diff = new Date().getTime() - from.getTime();
-
-        return this.updatePayload({
-            from: undefined,
-            aloneMs: aloneMs + diff,
-        });
     }
 }
 

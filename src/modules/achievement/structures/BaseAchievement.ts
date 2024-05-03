@@ -1,3 +1,4 @@
+import i18n from "@/client/i18n";
 import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { GuildUser } from "@/interfaces/GuildUser";
 import { achievementModel } from "@/modules/achievement";
@@ -7,17 +8,29 @@ export interface ProgressResult {
     change: number;
 }
 
+export interface BaseAchievementParams<T extends AchievementType> {
+    achievementType: AchievementType;
+    context?: AchievementTypeContext[T];
+}
+
+export type BaseAchievementContext<T extends AchievementType> = AchievementTypeContext[T] | undefined;
+
 export abstract class BaseAchievement<T extends AchievementType> {
-    abstract achievementType: AchievementType;
+    achievementType: AchievementType;
     userId?: string;
     guildId?: string;
+    name: string;
+    description: string;
     level = 0;
     payload?: AchievementTypePayload[T];
     context?: AchievementTypeContext[T];
     emoji = "";
 
-    constructor(context?: AchievementTypeContext[T]) {
-        this.context = context;
+    constructor(params: BaseAchievementParams<T>) {
+        this.achievementType = params.achievementType;
+        this.context = params.context;
+        this.name = i18n.__(`achievements.${this.achievementType}.name`);
+        this.description = i18n.__(`achievements.${this.achievementType}.description`);
     }
 
     abstract progress (): Promise<ProgressResult>;

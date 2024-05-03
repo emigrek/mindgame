@@ -12,12 +12,18 @@ export const voiceChannelJoin: Event = {
 
         startVoiceActivity(client, member, channel)
             .then(activity => {
-                if (!activity || !lastChannelActivity) return;
+                if (!activity) return;
+
+                if (lastChannelActivity) {
+                    new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
+                        .check([
+                            new CoordinatedAction({ first: lastChannelActivity, second: activity }),
+                        ]);
+                }
 
                 new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
                     .check([
-                        new CoordinatedAction({ first: lastChannelActivity, second: activity }),
-                        new Suss({ member, channel })
+                        new Suss({ member, channel }),
                     ]);
             });
     }

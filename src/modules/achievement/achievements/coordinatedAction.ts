@@ -1,10 +1,9 @@
 import { AchievementType } from "@/interfaces";
 import { GradualAchievement } from "@/modules/achievement/structures";
+import { BaseAchievementContext } from "../structures/BaseAchievement";
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
-    achievementType = AchievementType.COORDINATED_ACTION;
-    emoji = "🙏";
-
+    emoji = "🤝";
     levels = [
         {
             value: 1000 * 60 * 10,
@@ -43,6 +42,13 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
             level: 9
         }
     ];
+
+    constructor(context?: BaseAchievementContext<AchievementType.COORDINATED_ACTION>) {
+        super({ 
+            context,
+            achievementType: AchievementType.COORDINATED_ACTION
+        });
+    }
 
     async progress() {
         if (!this.context)

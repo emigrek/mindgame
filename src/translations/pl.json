@@ -294,11 +294,13 @@
 		"empty": "Brak kanałów efemerycznych."
 	},
 	"achievements": {
-		"significant_voice_streak": {
-			"name": "Seria głosowa"
+		"0": {
+			"name": "achievements.0.name",
+			"description": "achievements.0.description"
 		},
-		"message_reaction_unique_users": {
-			"name": "Liczba reakcji"
+		"1": {
+			"name": "achievements.1.name",
+			"description": "achievements.1.description"
 		}
 	},
 	"utils": {

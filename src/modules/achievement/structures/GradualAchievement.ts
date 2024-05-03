@@ -1,11 +1,11 @@
-import { AchievementType, AchievementTypeContext, LevelThreshold } from '@/interfaces';
-import { BaseAchievement } from './BaseAchievement';
+import { AchievementType, LevelThreshold } from '@/interfaces';
+import { BaseAchievement, BaseAchievementParams } from './BaseAchievement';
 
 export abstract class GradualAchievement<T extends AchievementType> extends BaseAchievement<T> {
     levels: LevelThreshold[];
 
-    constructor(context?: AchievementTypeContext[T]) {
-        super(context);
+    constructor(params: BaseAchievementParams<T>) {
+        super(params);
         this.levels = [];
     }
 

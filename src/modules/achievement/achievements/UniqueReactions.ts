@@ -1,10 +1,22 @@
 import { AchievementType, AchievementTypePayload } from "@/interfaces";
-import { LinearAchievement } from "@/modules/achievement/structures";
+import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
 import { getMessageReactionsUniqueUsers } from "@/modules/ephemeral-channel";
 
 export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_REACTIONS> {
     achievementType = AchievementType.UNIQUE_REACTIONS;
     emoji = "⭐";
+    formula = (payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
+        const { uniqueReactions } = payload;
+        const leveledUp = uniqueReactions > 2 && uniqueReactions >= this.level * 3;
+        return {
+            leveledUp,
+            change: leveledUp ? 1 : 0
+        };
+    }
+
+    constructor(context?: BaseAchievementContext<AchievementType.UNIQUE_REACTIONS>) {
+        super({ context, achievementType: AchievementType.UNIQUE_REACTIONS });
+    }
 
     async progress() {
         if (!this.context)
@@ -18,14 +30,5 @@ export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_RE
         return result.leveledUp ? this.updatePayload({ uniqueReactions })
             .then(() => this.levelUp())
             .then(() => result) : result;
-    }
-
-    formula = (payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
-        const { uniqueReactions } = payload;
-        const leveledUp = uniqueReactions > 2 && uniqueReactions >= this.level * 3;
-        return {
-            leveledUp,
-            change: leveledUp ? 1 : 0
-        };
     }
 }

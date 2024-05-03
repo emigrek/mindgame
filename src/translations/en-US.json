@@ -302,11 +302,17 @@
 		"empty": "No ephemeral channels found."
 	},
 	"achievements": {
-		"significant_voice_streak": {
-			"name": "Voice streak"
+		"0": {
+			"name": "achievements.0.name",
+			"description": "achievements.0.description"
 		},
-		"message_reaction_unique_users": {
-			"name": "Popular"
+		"1": {
+			"name": "achievements.1.name",
+			"description": "achievements.1.description"
+		},
+		"2": {
+			"name": "achievements.2.name",
+			"description": "achievements.2.description"
 		}
 	},
 	"utils": {
