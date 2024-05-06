@@ -14,17 +14,12 @@ export const voiceChannelJoin: Event = {
             .then(activity => {
                 if (!activity) return;
 
-                if (lastChannelActivity) {
-                    new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
-                        .check([
-                            new CoordinatedAction({ first: lastChannelActivity, second: activity }),
-                        ]);
-                }
+                const achievements = [];
+                lastChannelActivity && achievements.push(new CoordinatedAction({ first: lastChannelActivity, second: activity }));
+                achievements.push(new Suss({ member, channel }));
 
                 new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
-                    .check([
-                        new Suss({ member, channel }),
-                    ]);
+                    .check(achievements);
             });
     }
 }
