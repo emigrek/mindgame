@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import ephemeralChannelSchema, {EphemeralChannelDocument} from "@/modules/schemas/EphemeralChannel";
 import ExtendedClient from "@/client/ExtendedClient";
-import {Message, MessageReaction, TextChannel} from "discord.js";
+import { EphemeralChannel } from '@/interfaces';
+import ephemeralChannelSchema, { EphemeralChannelDocument } from "@/modules/schemas/EphemeralChannel";
+import { Message, MessageReaction, TextChannel } from "discord.js";
 import moment from "moment";
-import {ephemeralChannelMessageCache} from "./cache";
-import {EphemeralChannel} from '@/interfaces';
+import mongoose from "mongoose";
+import { ephemeralChannelMessageCache } from "./cache";
 
 const EphemeralChannelModel = mongoose.model("EphemeralChannel", ephemeralChannelSchema);
 
@@ -110,8 +110,10 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient, ephemeralCha
 const isMessageCacheable = async (ephemeralChannel: EphemeralChannelDocument, message: Message): Promise<boolean> => {
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
     const referenceMessage = await fetchReferenceMessage(message);
+    const hasPollExpired = message.poll && moment().isAfter(message.poll.expiresAt);
+    const keepMessagesWithReactions = ephemeralChannel.keepMessagesWithReactions && reactionUsers.length;
 
-    if ((ephemeralChannel.keepMessagesWithReactions && reactionUsers.length) || message.pinned) {
+    if (keepMessagesWithReactions || message.pinned || !hasPollExpired) {
         if (referenceMessage) ephemeralChannelMessageCache.remove(message.channel.id, referenceMessage.id);
         return false;
     }
@@ -154,4 +156,5 @@ const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[
     );
 }
 
-export { createEphemeralChannel, getMessageReactionsUniqueUsers, fetchReferenceMessage, editEphemeralChannel, syncEphemeralChannelMessages, deleteEphemeralChannel, getEphemeralChannel, getEphemeralChannels, syncALlEphemeralChannelsMessages, deleteCachedMessages, isMessageCacheable, getGuildsEphemeralChannels };
+export { createEphemeralChannel, deleteCachedMessages, deleteEphemeralChannel, editEphemeralChannel, fetchReferenceMessage, getEphemeralChannel, getEphemeralChannels, getGuildsEphemeralChannels, getMessageReactionsUniqueUsers, isMessageCacheable, syncALlEphemeralChannelsMessages, syncEphemeralChannelMessages };
+
