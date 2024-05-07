@@ -1,8 +1,8 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import {config} from "@/config";
-import {ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak} from "@/interfaces";
-import {Message as MessageType, MessageTypeIds} from '@/interfaces/Message';
+import { config } from "@/config";
+import { ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak } from "@/interfaces";
+import { Message as MessageType, MessageTypeIds } from '@/interfaces/Message';
 import {
     createEphemeralChannel,
     deleteEphemeralChannel,
@@ -11,7 +11,7 @@ import {
     getGuildsEphemeralChannels,
     syncEphemeralChannelMessages
 } from "@/modules/ephemeral-channel";
-import {getGuild, getGuildsCount} from "@/modules/guild";
+import { getGuild, getGuildsCount } from "@/modules/guild";
 import {
     getAutoSweepingButton,
     getLevelRolesButton,
@@ -34,30 +34,27 @@ import {
     getRankingSortSelect,
     getRankingUsersSelect
 } from "@/modules/messages/selects";
-import {getGuildTresholdRole, getLevelRoleThreshold, getMemberColorRole} from "@/modules/roles";
-import messageSchema, {MessageDocument} from "@/modules/schemas/Message";
-import {VoiceActivityDocument} from "@/modules/schemas/VoiceActivity";
-import {getUser, getUsersCount} from "@/modules/user";
-import {getRanking, getSortingByType, getUserGuildStatistics, runMask} from '@/modules/user-guild-statistics';
+import { getGuildTresholdRole, getLevelRoleThreshold, getMemberColorRole } from "@/modules/roles";
+import messageSchema, { MessageDocument } from "@/modules/schemas/Message";
+import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
+import { getUser, getUsersCount } from "@/modules/user";
+import { getRanking, getSortingByType, getUserGuildStatistics, runMask } from '@/modules/user-guild-statistics';
 import clean from "@/utils/clean";
-import {getLastCommits} from "@/utils/commits";
+import { getLastCommits } from "@/utils/commits";
 import {
     ActionRowBuilder,
     AnySelectMenuInteraction,
-    bold,
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
     ChannelType,
     ChatInputCommandInteraction,
-    codeBlock,
     Collection,
     CommandInteraction,
     EmbedBuilder,
     EmbedField,
     Guild,
     GuildMember,
-    heading,
     HeadingLevel,
     Message,
     MessageContextMenuCommandInteraction,
@@ -68,25 +65,28 @@ import {
     ThreadChannel,
     User,
     UserContextMenuCommandInteraction,
-    userMention,
     UserSelectMenuBuilder,
     UserSelectMenuInteraction,
-    VoiceChannel
+    VoiceChannel,
+    bold,
+    codeBlock,
+    heading,
+    userMention
 } from "discord.js";
-import {GetColorName} from 'hex-color-to-color-name';
+import { GetColorName } from 'hex-color-to-color-name';
 import moment from "moment";
 import mongoose from "mongoose";
-import {ErrorEmbed, InformationEmbed, WarningEmbed} from "./embeds";
+import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
 
-import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
-import {colorStore} from "@/stores/colorStore";
-import {profileStore} from "@/stores/profileStore";
-import {rankingStore} from "@/stores/rankingStore";
-import {selectOptionsStore} from "@/stores/selectOptionsStore";
-import {KnownLinks} from "./knownLinks";
-import ProfilePagesManager from "./pages/profilePagesManager";
-import {getLocalizedDateRange} from "@/utils/date";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
+import { colorStore } from "@/stores/colorStore";
+import { profileStore } from "@/stores/profileStore";
+import { rankingStore } from "@/stores/rankingStore";
+import { selectOptionsStore } from "@/stores/selectOptionsStore";
 import Colors from "@/utils/colors";
+import { getLocalizedDateRange } from "@/utils/date";
+import { KnownLinks } from "./knownLinks";
+import ProfilePagesManager from "./pages/profilePagesManager";
 import Vibrant = require('node-vibrant');
 
 interface ImageHexColors {
@@ -846,7 +846,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
         const isFromBot = message.author.bot;
         const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
-        return message.deletable && (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel));
+        return (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel));
     });
 
     return Promise.all(messagesToDelete.map((message: Message) => message.delete()))
@@ -944,4 +944,5 @@ const formatNextStreakField = (daysTillNext: number) => {
     return daysTillNext ? codeBlock(i18n.__n("notifications.voiceStreakInFormat", daysTillNext)) : codeBlock(i18n.__("utils.never"));
 }
 
-export { ImageHexColors, attachQuickButtons, deleteMessages, getInviteNotificationMessagePayload, createMessage, deleteMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, deleteMessages, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getInviteNotificationMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+

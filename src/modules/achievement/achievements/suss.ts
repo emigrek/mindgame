@@ -54,11 +54,13 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
             await this.updatePayload({
                 from: undefined,
                 aloneMs: aloneMs + diff,
+                topAloneMs: Math.max(aloneMs + diff, this.payload?.topAloneMs || 0)
             });
         } else if (channelVoiceActivities.length === 1 && userVoiceActivity) {
             await this.updatePayload({
                 from: new Date(),
                 aloneMs: 0,
+                topAloneMs: Math.max(this.payload?.aloneMs || 0, this.payload?.topAloneMs || 0)
             });
         }
 

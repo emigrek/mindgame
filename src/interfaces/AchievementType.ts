@@ -10,7 +10,7 @@ export enum AchievementType {
 export interface AchievementTypePayload {
     [AchievementType.UNIQUE_REACTIONS]: {uniqueReactions: number},
     [AchievementType.COORDINATED_ACTION]: {ms: number, withUserId: string},
-    [AchievementType.SUSS]: {from?: Date, aloneMs: number},
+    [AchievementType.SUSS]: {from?: Date, aloneMs: number, topAloneMs: number},
 }
 
 export interface AchievementTypeContext {

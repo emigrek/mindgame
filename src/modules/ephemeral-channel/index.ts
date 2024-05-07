@@ -108,16 +108,22 @@ const syncEphemeralChannelMessages = async (client: ExtendedClient, ephemeralCha
 };
 
 const isMessageCacheable = async (ephemeralChannel: EphemeralChannelDocument, message: Message): Promise<boolean> => {
+    const keepMessagesWithReactions = ephemeralChannel.keepMessagesWithReactions;
     const reactionUsers = await getMessageReactionsUniqueUsers(message);
     const referenceMessage = await fetchReferenceMessage(message);
-    const hasPollExpired = message.poll && moment().isAfter(message.poll.expiresAt);
-    const keepMessagesWithReactions = ephemeralChannel.keepMessagesWithReactions && reactionUsers.length;
+    const hasPollOngoing = Boolean(message.poll && moment().isBefore(message.poll.expiresAt));
 
-    if (keepMessagesWithReactions || message.pinned || !hasPollExpired) {
+    if (
+        message.pinned ||
+        (keepMessagesWithReactions && reactionUsers.length) ||
+        hasPollOngoing
+    ) {
         if (referenceMessage) ephemeralChannelMessageCache.remove(message.channel.id, referenceMessage.id);
         return false;
     }
-    if (!referenceMessage) return true;
+    if (!referenceMessage) {
+        return true;
+    }
 
     const referenceMessageCacheable = await isMessageCacheable(ephemeralChannel, referenceMessage);
     return referenceMessageCacheable ||
