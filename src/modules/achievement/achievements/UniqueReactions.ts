@@ -1,13 +1,13 @@
-import { AchievementType, AchievementTypePayload } from "@/interfaces";
+import { AchievementType } from "@/interfaces";
 import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
 import { getMessageReactionsUniqueUsers } from "@/modules/ephemeral-channel";
 
 export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_REACTIONS> {
     achievementType = AchievementType.UNIQUE_REACTIONS;
     emoji = "⭐";
-    formula = (payload: AchievementTypePayload[AchievementType.UNIQUE_REACTIONS]) => {
-        const { uniqueReactions } = payload;
-        const leveledUp = uniqueReactions > 2 && uniqueReactions >= this.level * 3;
+    formula = () => {
+        const { uniqueReactions } = this.payload || {};
+        const leveledUp = (uniqueReactions || 0) > 2 && (uniqueReactions || 0) >= this.level * 3;
         return {
             leveledUp,
             change: leveledUp ? 1 : 0
@@ -23,12 +23,15 @@ export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_RE
             throw new Error("The achievement's context must be provided to progress.");
 
         const { message } = this.context;
+
         const uniqueReactions = await getMessageReactionsUniqueUsers(message)
-            .then((reactions) => reactions.length)
+            .then((reactions) => reactions.length);
         
-        const result = this.formula({ uniqueReactions });
-        return result.leveledUp ? this.updatePayload({ uniqueReactions })
+        const result = this.formula();
+        if (!result.leveledUp) return;
+
+        return this.updatePayload({ uniqueReactions })
             .then(() => this.levelUp())
-            .then(() => result) : result;
+            .then(() => result);
     }
 }

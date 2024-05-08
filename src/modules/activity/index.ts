@@ -490,10 +490,13 @@ const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): P
     return query.at(0);
 };
 
-const getLastChannelVoiceActivity = async (channelId: string): Promise<VoiceActivityDocument | undefined> => {
+const getLastChannelVoiceActivity = async (userId: string, channelId: string): Promise<VoiceActivityDocument | undefined> => {
     const query = await voiceActivityModel.aggregate([
         {
             $match: {
+                userId: {
+                    $ne: userId
+                },
                 channelId,
                 to: null
             }

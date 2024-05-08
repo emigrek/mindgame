@@ -25,17 +25,18 @@ class AchievementManager {
     check(arg: BaseAchievement<AchievementType> | BaseAchievement<AchievementType>[]): this {
         const { userId, guildId } = this;
 
+        const check = (achievement: BaseAchievement<AchievementType>) => 
+            achievement.direct({ userId, guildId })
+                .check()
+                .then(result => 
+                    result && result.leveledUp && this.client.emit("achievementLeveledUp", achievement, result.change)
+                );
+
         if (Array.isArray(arg)) {
             for (const achievement of arg)
-                achievement.direct({ userId, guildId })
-                    .get()
-                    .then(() => achievement.check())
-                    .then(({leveledUp, change}) => leveledUp && this.client.emit("achievementLeveledUp", achievement, change));
+                check(achievement)
         } else {
-            arg.direct({ userId, guildId })
-                .get()
-                .then(() => arg.check())
-                .then(({leveledUp, change}) => leveledUp && this.client.emit("achievementLeveledUp", arg, change));
+            check(arg);
         }
 
         return this;

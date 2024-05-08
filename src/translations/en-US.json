@@ -313,6 +313,10 @@
 		"2": {
 			"name": "achievements.2.name",
 			"description": "achievements.2.description"
+		},
+		"3": {
+			"name": "achievements.3.name",
+			"description": "achievements.3.description"
 		}
 	},
 	"utils": {

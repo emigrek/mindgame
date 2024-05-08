@@ -1,5 +1,6 @@
 import { AchievementType } from "@/interfaces";
 import { GradualAchievement } from "@/modules/achievement/structures";
+import { voiceActivityModel } from "@/modules/activity";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
@@ -54,16 +55,25 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
         if (!this.context)
             throw new Error("The achievement's context must be provided to progress.");
 
-        const { first, second } = this.context;
-        const diff = Math.abs(second.from.getTime() - first.from.getTime());
-        const threshold = this.findClosestLevelThreshold(diff);
+        const { lastChannelActivity, userActivity } = this.context;
 
-        if (!threshold || threshold.level <= this.level) 
-            return { leveledUp: false, change: 0 };
+        if (!lastChannelActivity || !userActivity) 
+            return;
 
-        return this.updatePayload({ ms: diff, withUserId: first.userId })
-            .then(() => this.setLevel(threshold.level))
-            .then(() => ({ leveledUp: true, change: threshold.level - this.level }));
+        const { guildId, channelId } = userActivity;
+        const channelActivities = await voiceActivityModel.find({ guildId, channelId, to: null });
+        
+        if (channelActivities.length > 2) 
+            return;
+
+        const diff = Math.abs(userActivity.from.getTime() - lastChannelActivity.from.getTime());
+        const result = this.findClosestLevelThreshold(diff);
+        if (!result || result.level <= this.level) 
+            return;
+
+        return this.updatePayload({ ms: diff, withUserId: lastChannelActivity.userId })
+            .then(() => this.setLevel(result.level))
+            .then(() => ({ leveledUp: true, change: result.level - this.level }));
     }
 }
 

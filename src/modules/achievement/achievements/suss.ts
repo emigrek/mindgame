@@ -34,12 +34,13 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
 
     async progress() {
         if (!this.context)
-            throw new Error("The achievement's context must be provided to progress.");
+            throw new Error("The achievement's context and payload must be provided to progress.");
 
         const { member, channel } = this.context;
+        const { from, aloneMs, topAloneMs } = this.payload || {};
 
         if (channel.id === member.guild.afkChannelId) 
-            return { leveledUp: false, change: 0 };
+            return;
 
         const channelVoiceActivities = await voiceActivityModel.find({ guildId: member.guild.id, channelId: channel.id, to: null });
         const userVoiceActivity = channelVoiceActivities.find(activity => activity.userId === this.userId);
@@ -47,30 +48,29 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
         const usersJoined = userVoiceActivity && channelVoiceActivities.length > 1
 
         if (noUserActivity || usersJoined) {
-            if (!this.payload?.from) return { leveledUp: false, change: 0 };
-            const { from, aloneMs } = this.payload;
-            const diff = new Date().getTime() - from.getTime();
+            if (!from)
+                return;
 
+            const diff = new Date().getTime() - from.getTime();
             await this.updatePayload({
                 from: undefined,
-                aloneMs: aloneMs + diff,
-                topAloneMs: Math.max(aloneMs + diff, this.payload?.topAloneMs || 0)
+                aloneMs: aloneMs || 0 + diff,
+                topAloneMs: Math.max(aloneMs || 0 + diff, topAloneMs || 0)
             });
         } else if (channelVoiceActivities.length === 1 && userVoiceActivity) {
             await this.updatePayload({
                 from: new Date(),
                 aloneMs: 0,
-                topAloneMs: Math.max(this.payload?.aloneMs || 0, this.payload?.topAloneMs || 0)
+                topAloneMs: Math.max(aloneMs || 0, topAloneMs || 0)
             });
         }
 
-        const threshold = this.findClosestLevelThreshold(this.payload?.aloneMs || 0);
+        const result = this.findClosestLevelThreshold(aloneMs || 0);
+        if (!result || result.level <= this.level) 
+            return;
 
-        if (!threshold || threshold.level <= this.level) 
-            return { leveledUp: false, change: 0 };
-
-        return this.setLevel(threshold.level)
-            .then(() => ({ leveledUp: true, change: threshold.level - this.level }));
+        return this.setLevel(result.level)
+            .then(() => ({ leveledUp: true, change: result.level - this.level }));
     }
 }
 

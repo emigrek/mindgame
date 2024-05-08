@@ -17,7 +17,23 @@ Configurable experience system that rewards users for being active in various wa
     * **Daily** - Earn rewards for participating in voice channels daily.
     * **Streak** - Accumulate rewards by maintaining a consecutive daily voice activity streak.
 
-### 2. **Utility Features**
+### 2. **Achievements**
+Unlock guild achievements by completing various tasks and challenges.
+
+<details>
+
+<summary>List of achievements</summary>
+
+| Name                   | Deciding factor                                            |
+|------------------------|--------------------------------------------------------|
+| Unique Reactions       | Number of reactions from other users.                              |
+| Coordinated Action     | Time between you joining voice channel and someone else joining you. |
+| Suss                   | Time spent alone in voice channel.                       |
+| Streamer               | Time spent streaming.                                    |
+
+</details>
+
+### 3. **Utility Features**
 Enhance your Discord experience with tools designed from user to user.
 
 * **Automatic text channel sweeping** - Keep your text channels clean by automatically removing bot related messages when voice channels are vacant.

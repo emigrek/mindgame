@@ -33,12 +33,13 @@ export abstract class BaseAchievement<T extends AchievementType> {
         this.description = i18n.__(`achievements.${this.achievementType}.description`);
     }
 
-    abstract progress (): Promise<ProgressResult>;
+    abstract progress (): Promise<ProgressResult | undefined>;
 
-    async updatePayload(payload: AchievementTypePayload[T]): Promise<this> {
+    async updatePayload(payload: Partial<AchievementTypePayload[T]>): Promise<this> {
         this.payload = {
-            ...payload,
-        };
+            ...this.payload,
+            ...payload
+        } as AchievementTypePayload[T];
         
         return achievementModel.updateOne({
             userId: this.userId,
@@ -76,10 +77,10 @@ export abstract class BaseAchievement<T extends AchievementType> {
             });
     }
 
-    async check (): Promise<ProgressResult> {
+    async check (): Promise<ProgressResult | undefined> {
         if (!this.userId || !this.guildId) 
             throw new Error("The achievement must be directed to a user in a guild.");
-        return this.progress();
+        return this.get().then(() => this.progress());
     }
 
     async levelUp(): Promise<this> {
