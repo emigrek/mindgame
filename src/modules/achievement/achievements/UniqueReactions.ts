@@ -1,4 +1,4 @@
-import { AchievementType } from "@/interfaces";
+import { AchievementType, AchievementTypeContext } from "@/interfaces";
 import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
 import { getMessageReactionsUniqueUsers } from "@/modules/ephemeral-channel";
 
@@ -18,11 +18,8 @@ export class UniqueReactions extends LinearAchievement<AchievementType.UNIQUE_RE
         super({ context, achievementType: AchievementType.UNIQUE_REACTIONS });
     }
 
-    async progress() {
-        if (!this.context)
-            throw new Error("The achievement's context must be provided to progress.");
-
-        const { message } = this.context;
+    async progress(context: AchievementTypeContext[AchievementType.UNIQUE_REACTIONS]) {
+        const { message } = context;
 
         const uniqueReactions = await getMessageReactionsUniqueUsers(message)
             .then((reactions) => reactions.length);

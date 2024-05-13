@@ -1,4 +1,4 @@
-import { AchievementType } from "@/interfaces";
+import { AchievementType, AchievementTypeContext } from "@/interfaces";
 import { GradualAchievement } from "@/modules/achievement/structures";
 import { voiceActivityModel } from "@/modules/activity";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
@@ -51,11 +51,8 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
         });
     }
 
-    async progress() {
-        if (!this.context)
-            throw new Error("The achievement's context must be provided to progress.");
-
-        const { lastChannelActivity, userActivity } = this.context;
+    async progress(context: AchievementTypeContext[AchievementType.COORDINATED_ACTION]) {
+        const { lastChannelActivity, userActivity } = context;
 
         if (!lastChannelActivity || !userActivity) 
             return;

@@ -1,4 +1,4 @@
-import { AchievementType } from "@/interfaces";
+import { AchievementType, AchievementTypeContext } from "@/interfaces";
 import { BaseAchievementContext, GradualAchievement } from "@/modules/achievement/structures";
 import { voiceActivityModel } from "@/modules/activity";
 
@@ -32,11 +32,8 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
         super({ context, achievementType: AchievementType.SUSS });
     }
 
-    async progress() {
-        if (!this.context)
-            throw new Error("The achievement's context and payload must be provided to progress.");
-
-        const { member, channel } = this.context;
+    async progress(context: AchievementTypeContext[AchievementType.SUSS]) {
+        const { member, channel } = context;
         const { from, aloneMs, topAloneMs } = this.payload || {};
 
         if (channel.id === member.guild.afkChannelId) 

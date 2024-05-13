@@ -23,7 +23,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
     description: string;
     level = 0;
     payload?: AchievementTypePayload[T];
-    context?: AchievementTypeContext[T];
+    private context?: AchievementTypeContext[T];
     emoji = "";
 
     constructor(params: BaseAchievementParams<T>) {
@@ -33,7 +33,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
         this.description = i18n.__(`achievements.${this.achievementType}.description`);
     }
 
-    abstract progress (): Promise<ProgressResult | undefined>;
+    abstract progress (context: AchievementTypeContext[T]): Promise<ProgressResult | undefined>;
 
     async updatePayload(payload: Partial<AchievementTypePayload[T]>): Promise<this> {
         this.payload = {
@@ -78,9 +78,11 @@ export abstract class BaseAchievement<T extends AchievementType> {
     }
 
     async check (): Promise<ProgressResult | undefined> {
-        if (!this.userId || !this.guildId) 
+        if (!this.userId || !this.guildId)
             throw new Error("The achievement must be directed to a user in a guild.");
-        return this.get().then(() => this.progress());
+
+        return this.get()
+            .then(() => this.progress(this.getContext()));
     }
 
     async levelUp(): Promise<this> {
@@ -119,5 +121,11 @@ export abstract class BaseAchievement<T extends AchievementType> {
                 this.level = level;
                 return this;
             });
+    }
+
+    getContext(): AchievementTypeContext[T] {
+        if (!this.context)
+            throw new Error("The achievement context is not defined.");
+        return this.context;
     }
 }

@@ -1,5 +1,6 @@
-import { AchievementType } from "@/interfaces";
+import { AchievementType, AchievementTypeContext } from "@/interfaces";
 import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
+import { voiceActivityModel } from "@/modules/activity";
 
 export class Streamer extends LinearAchievement<AchievementType.STREAMER> {
     achievementType = AchievementType.STREAMER;
@@ -17,14 +18,15 @@ export class Streamer extends LinearAchievement<AchievementType.STREAMER> {
         super({ context, achievementType: AchievementType.STREAMER });
     }
 
-    async progress() {
-        if (!this.context)
-            throw new Error("The achievement's context must be provided to progress.");
-
-        const { member, channel, streaming } = this.context;
+    async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
+        const { member, channel, streaming } = context;
         const { last, ms, topMs } = this.payload || {};
 
         if (channel.id === member.guild.afkChannelId) 
+            return;
+
+        const channelActivities = await voiceActivityModel.find({ guildId: member.guild.id, channelId: channel.id, to: null });
+        if (channelActivities.length < 2)
             return;
 
         if (streaming) {
