@@ -26,10 +26,8 @@ class AchievementManager {
     check(arg: BaseAchievement<AchievementType> | BaseAchievement<AchievementType>[]): this {
         const { userId, guildId } = this;
 
-        if (!config.achievements.enabled) {
-            console.log("Achievments are disabled");
+        if (!config.achievements.enabled)
             return this;
-        }
 
         const check = (achievement: BaseAchievement<AchievementType>) => 
             achievement.direct({ userId, guildId })
