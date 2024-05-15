@@ -846,7 +846,7 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
         const isFromBot = message.author.bot;
         const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
-        return (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel));
+        return (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel) || (isFromBot && isEphemeralChannel && !willBeDeletedByEphemeralChannel));
     });
 
     return Promise.all(messagesToDelete.map((message: Message) => message.delete()))
