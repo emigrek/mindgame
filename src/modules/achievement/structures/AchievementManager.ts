@@ -1,4 +1,5 @@
 import ExtendedClient from "@/client/ExtendedClient";
+import { config } from '@/config';
 import { AchievementType } from "@/interfaces";
 import { allAchievements } from "@/modules/achievement";
 import { BaseAchievement } from "./BaseAchievement";
@@ -24,6 +25,11 @@ class AchievementManager {
     check(achievements: BaseAchievement<AchievementType>[]): AchievementManager;
     check(arg: BaseAchievement<AchievementType> | BaseAchievement<AchievementType>[]): this {
         const { userId, guildId } = this;
+
+        if (!config.achievements.enabled) {
+            console.log("Achievments are disabled");
+            return this;
+        }
 
         const check = (achievement: BaseAchievement<AchievementType>) => 
             achievement.direct({ userId, guildId })

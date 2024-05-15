@@ -1,5 +1,5 @@
-import {ExperienceConfig} from "./ExperienceConfig";
-import {ActivityStreak, Streak} from "./ActivityStreak";
+import { ActivityStreak, Streak } from "./ActivityStreak";
+import { ExperienceConfig } from "./ExperienceConfig";
 
 export interface StreakLogicProps {
     streak?: Streak;
@@ -11,8 +11,14 @@ export type InviteNotificationConfig = {
     chance: number;
 };
 
+export type AchievementsConfig = {
+    enabled: boolean;
+}
+
 export interface Config {
     experience: ExperienceConfig;
+
+    achievements: AchievementsConfig;
 
     userLongBreakHours: number;
 

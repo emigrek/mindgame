@@ -1,4 +1,4 @@
-import {ActivityStreak, Config} from "@/interfaces";
+import { ActivityStreak, Config } from "@/interfaces";
 
 export const config: Config = {
     // Experience configuration
@@ -29,6 +29,11 @@ export const config: Config = {
                 return hours < 12 ? 1 : 0.5;
             },
         },
+    },
+    
+    // Achievements configuration
+    achievements: {
+        enabled: false,
     },
 
     // Hours of inactivity before a user is considered to be on a long break. When user join a voice channel after a long break, his followers are notified about it.
