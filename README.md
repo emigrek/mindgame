@@ -30,6 +30,7 @@ Unlock guild achievements by completing various tasks and challenges.
 | Coordinated Action     | Time between you joining voice channel and someone else joining you. |
 | Suss                   | Time spent alone in voice channel.                       |
 | Streamer               | Time spent streaming.                                    |
+| Ghost                 | Join voice channel with `Invisible` status.              |
 
 </details>
 
