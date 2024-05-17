@@ -78,7 +78,6 @@ import moment from "moment";
 import mongoose from "mongoose";
 import { ErrorEmbed, InformationEmbed, WarningEmbed } from "./embeds";
 
-import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { colorStore } from "@/stores/colorStore";
 import { profileStore } from "@/stores/profileStore";
 import { rankingStore } from "@/stores/rankingStore";
@@ -835,19 +834,15 @@ const getErrorMessagePayload = () => {
 }
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
-    const isEphemeralChannel = await getEphemeralChannel(channel.id);
     const messages = await channel.messages.fetch()
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
         });
 
-    const messagesToDelete = messages.filter((message: Message) => {
-        const startsWithConfigPrefix = config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix));
-        const isFromBot = message.author.bot;
-        const willBeDeletedByEphemeralChannel = isEphemeralChannel ? ephemeralChannelMessageCache.get(channel.id, message.id) !== undefined : false;
-        return (startsWithConfigPrefix || (isFromBot && !isEphemeralChannel) || (isFromBot && willBeDeletedByEphemeralChannel) || (isFromBot && isEphemeralChannel && !willBeDeletedByEphemeralChannel));
-    });
+    const messagesToDelete = messages.filter((message: Message) => (
+        config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix)) || message.author.bot 
+    ));
 
     return Promise.all(messagesToDelete.map((message: Message) => message.delete()))
         .then(async deleted => {
