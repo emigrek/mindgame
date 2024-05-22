@@ -7,6 +7,7 @@ export enum AchievementType {
     SUSS,
     STREAMER,
     GHOST,
+    DJ
 }
 
 export interface AchievementTypePayload {
@@ -15,6 +16,7 @@ export interface AchievementTypePayload {
     [AchievementType.SUSS]: {from?: Date, aloneMs: number, topAloneMs: number},
     [AchievementType.STREAMER]: {last?: Date, topMs: number, ms: number},
     [AchievementType.GHOST]: undefined,
+    [AchievementType.DJ]: {messageCount: number}
 }
 
 export interface AchievementTypeContext {
@@ -23,6 +25,7 @@ export interface AchievementTypeContext {
     [AchievementType.SUSS]: {member: GuildMember, channel: VoiceBasedChannel},
     [AchievementType.STREAMER]: {member: GuildMember, channel: VoiceBasedChannel, streaming: boolean},
     [AchievementType.GHOST]: {member: GuildMember, channel: VoiceBasedChannel},
+    [AchievementType.DJ]: {message: Message}
 }
 
 export type AchievementUpdatePayload<T extends AchievementType> = Omit<AchievementTypePayload[T], "achievementType">;

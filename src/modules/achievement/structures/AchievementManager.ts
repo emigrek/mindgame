@@ -34,11 +34,12 @@ class AchievementManager {
                 .check()
                 .then(result => 
                     result && result.leveledUp && this.client.emit("achievementLeveledUp", achievement, result.change)
-                );
+                )
+                .catch(e => console.log("There was an error while checking achievement progress: ", e))
 
         if (Array.isArray(arg)) {
             for (const achievement of arg)
-                check(achievement)
+                check(achievement);
         } else {
             check(arg);
         }

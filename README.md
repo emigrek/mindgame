@@ -31,6 +31,7 @@ Unlock guild achievements by completing various tasks and challenges.
 | Suss                   | Time spent alone in voice channel.                       |
 | Streamer               | Time spent streaming.                                    |
 | Ghost                 | Join voice channel with `Invisible` status.              |
+| DJ                 | Number of messages sent to play music. |
 
 </details>
 

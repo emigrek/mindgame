@@ -1,16 +1,21 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {Event} from "@/interfaces";
-import {getEphemeralChannel, isMessageCacheable} from "@/modules/ephemeral-channel";
-import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
-import {updateUserGuildStatistics} from "@/modules/user-guild-statistics";
-import {config} from "@/config";
-import {Message} from "discord.js";
-import {ExperienceCalculator} from "@/modules/experience";
+import { config } from "@/config";
+import { Event } from "@/interfaces";
+import { AchievementManager } from "@/modules/achievement";
+import { DJ } from "@/modules/achievement/achievements";
+import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
+import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
+import { ExperienceCalculator } from "@/modules/experience";
+import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
+import { Message } from "discord.js";
 
 export const messageCreate: Event = {
     name: "messageCreate",
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
+
+        new AchievementManager({ client, userId: message.author.id, guildId: message.guild.id })
+            .check(new DJ({ message }));
 
         if (config.experience.message.enabled && !message.author.bot) {
             await updateUserGuildStatistics({
