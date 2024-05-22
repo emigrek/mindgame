@@ -1,6 +1,7 @@
 import { config } from "@/config";
 import { AchievementType, AchievementTypeContext } from "@/interfaces";
 import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
+import { voiceActivityModel } from "@/modules/activity";
 
 export class DJ extends LinearAchievement<AchievementType.DJ> {
     achievementType = AchievementType.DJ;
@@ -26,9 +27,14 @@ export class DJ extends LinearAchievement<AchievementType.DJ> {
         const { messageCount } = this.payload || {};
 
         const content = message.content.trim();
-        const playRegExp = new RegExp(`.*[${config.emptyGuildSweepBotPrefixesList.map(prefix => prefix)}]play\\s`);
+        const prefixes = config.emptyGuildSweepBotPrefixesList.map(prefix => prefix);
+        const playRegExp = new RegExp(`.*[${prefixes}]play\\s`);
 
-        if (!playRegExp.test(content))
+        if (!playRegExp.test(content) || !message.guild)
+            return;
+
+        const voiceActive = await voiceActivityModel.findOne({ userId: message.author.id, guildId: message.guild.id, to: null });
+        if (!voiceActive)
             return;
 
         await this.updatePayload({ messageCount: (messageCount || 0) + 1 });

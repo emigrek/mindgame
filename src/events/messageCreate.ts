@@ -14,8 +14,10 @@ export const messageCreate: Event = {
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
 
-        new AchievementManager({ client, userId: message.author.id, guildId: message.guild.id })
-            .check(new DJ({ message }));
+        if (!message.author.bot) {
+            new AchievementManager({ client, userId: message.author.id, guildId: message.guild.id })
+                .check(new DJ({ message }));
+        }
 
         if (config.experience.message.enabled && !message.author.bot) {
             await updateUserGuildStatistics({
