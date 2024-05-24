@@ -834,7 +834,7 @@ const getErrorMessagePayload = () => {
 }
 
 const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
-    const messages = await channel.messages.fetch()
+    const messages = await channel.messages.fetch({ limit: 100 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
@@ -859,7 +859,7 @@ const attachQuickButtons = async (client: ExtendedClient, channelId: string) => 
     const channel = await client.channels.fetch(channelId) as TextChannel;
     i18n.setLocale(channel.guild.preferredLocale);
 
-    const lastMessages = await channel.messages.fetch({ limit: 50 })
+    const lastMessages = await channel.messages.fetch({ limit: 100 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
