@@ -169,7 +169,8 @@
 			"timeStatistics": "Time statistics",
 			"voiceActivity": "Voice activity",
 			"presenceActivity": "Overall activity",
-			"guildVoiceActivityStreak": "Voice activity streak"
+			"guildVoiceActivityStreak": "Voice activity streak",
+			"Achievements": "Achievements"
 		},
 		"messages": "Messages"
 	},
@@ -189,7 +190,7 @@
 		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!",
 		"dailyRewardField": "Reward",
 		"voiceStreakTitle": "Voice streak",
-		"voiceStreakDescription": "<@{userId}> is on a **daily voice activity in a row streak**!",
+		"voiceStreakDescription": "<@{userId}> is on a **daily voice activity streak**!",
 		"voiceStreakField": "Streak",
 		"nextVoiceStreakRewardField": "Next streak reward",
 		"maxVoiceStreakField": "Best streak",
@@ -303,20 +304,28 @@
 	},
 	"achievements": {
 		"0": {
-			"name": "achievements.0.name",
-			"description": "achievements.0.description"
+			"name": "Unique Reactions",
+			"description": "Receive message reactions from other users."
 		},
 		"1": {
-			"name": "achievements.1.name",
-			"description": "achievements.1.description"
+			"name": "Coordinated Action",
+			"description": "Join a voice channel right after someone else."
 		},
 		"2": {
-			"name": "achievements.2.name",
-			"description": "achievements.2.description"
+			"name": "Suss",
+			"description": "Spend a significant amount of time alone in a voice channel."
 		},
 		"3": {
-			"name": "achievements.3.name",
-			"description": "achievements.3.description"
+			"name": "Streamer",
+			"description": "Dedicate a considerable amount of time to streaming content."
+		},
+		"4": {
+			"name": "Ghost",
+			"description": "Join a voice channel while in an 'Invisible' status."
+		},
+		"5": {
+			"name": "DJ",
+			"description": "Frequently send messages to play music."
 		}
 	},
 	"utils": {

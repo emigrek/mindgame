@@ -1,8 +1,8 @@
-import {BaseProfilePage, ProfilePages} from "@/interfaces";
-import {ProfilePagePayloadParams, ProfilePagePayloadProps} from "@/interfaces/ProfilePage";
-import {ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder} from "discord.js";
-import {About, GuildVoiceActivityStreak, PresenceActivity, Statistics, TimeStatistics, VoiceActivity} from './profile';
-import {getProfileUserSelect, getUserPageSelect} from "../selects";
+import { BaseProfilePage, ProfilePages } from "@/interfaces";
+import { ProfilePagePayloadParams, ProfilePagePayloadProps } from "@/interfaces/ProfilePage";
+import { ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
+import { getProfileUserSelect, getUserPageSelect } from "../selects";
+import { About, Achievements, GuildVoiceActivityStreak, PresenceActivity, Statistics, TimeStatistics, VoiceActivity } from './profile';
 
 class ProfilePagesManager {
     params: ProfilePagePayloadParams;
@@ -14,6 +14,7 @@ class ProfilePagesManager {
             new About(params),
             new TimeStatistics(params),
             new Statistics(params),
+            new Achievements(params),
             new VoiceActivity(params),
             new GuildVoiceActivityStreak(params),
             new PresenceActivity(params),

@@ -161,7 +161,8 @@
 			"timeStatistics": "Statystyki głosowe",
 			"voiceActivity": "Aktywność głosowa",
 			"presenceActivity": "Aktywność ogólna",
-			"guildVoiceActivityStreak": "Seria aktywności głosowej"
+			"guildVoiceActivityStreak": "Seria aktywności głosowej",
+			"achievements": "Osiągnięcia"
 		},
 		"messages": "Wiadomości"
 	},
@@ -181,7 +182,7 @@
 		"dailyRewardDescription": "<@{userId}> odbiera **codzienną nagrodę**!",
 		"dailyRewardField": "Nagroda",
 		"voiceStreakTitle": "Seria głosowa",
-		"voiceStreakDescription": "<@{userId}> osiąga **serię codziennej aktywności głosowej z rzędu**!",
+		"voiceStreakDescription": "<@{userId}> osiąga **serię codziennej aktywności głosowej**!",
 		"voiceStreakField": "Seria",
 		"maxVoiceStreakField": "Największa seria",
 		"voiceStreakFormat": {
@@ -295,12 +296,28 @@
 	},
 	"achievements": {
 		"0": {
-			"name": "achievements.0.name",
-			"description": "achievements.0.description"
+			"name": "Unikalne Reakcje",
+			"description": "Otrzymaj reakcje na twoje wiadomości od innych użytkowników."
 		},
 		"1": {
-			"name": "achievements.1.name",
-			"description": "achievements.1.description"
+			"name": "Skoordynowana Akcja",
+			"description": "Dołącz do kanału głosowego zaraz po kimś innym."
+		},
+		"2": {
+			"name": "Podejrzany",
+			"description": "Spędź znaczną ilość czasu sam na kanale głosowym."
+		},
+		"3": {
+			"name": "Streamer",
+			"description": "Poświęć znaczną ilość czasu na transmisje na żywo."
+		},
+		"4": {
+			"name": "Duch",
+			"description": "Dołącz do kanału głosowego mając status „Niewidoczny”."
+		},
+		"5": {
+			"name": "DJ",
+			"description": "Wysyłaj wiadomości które odtwarzają muzykę na botach muzycznych."
 		}
 	},
 	"utils": {

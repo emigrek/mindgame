@@ -2,6 +2,7 @@ import i18n from "@/client/i18n";
 import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { GuildUser } from "@/interfaces/GuildUser";
 import { achievementModel } from "@/modules/achievement";
+import { codeBlock } from "@discordjs/formatters";
 
 export interface ProgressResult {
     leveledUp: boolean;
@@ -127,5 +128,12 @@ export abstract class BaseAchievement<T extends AchievementType> {
         if (!this.context)
             throw new Error("The achievement context is not defined.");
         return this.context;
+    }
+
+    get embedField() {
+        return {
+            name: `${this.emoji}   ${this.name}`,
+            value: `Level: \`${this.level}\`\n${codeBlock(this.description)}`
+        };
     }
 }

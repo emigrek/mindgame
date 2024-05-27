@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {ImageHexColors} from "@/modules/messages";
-import {UserDocument} from "@/modules/schemas/User";
-import {Guild, MessageCreateOptions} from "discord.js";
+import { ImageHexColors } from "@/modules/messages";
+import { UserDocument } from "@/modules/schemas/User";
+import { Guild, MessageCreateOptions } from "discord.js";
 
 export enum ProfilePages {
     About = "about",
@@ -10,6 +10,7 @@ export enum ProfilePages {
     PresenceActivity = "presenceActivity",
     VoiceActivity = "voiceActivity",
     GuildVoiceActivityStreak = "guildVoiceActivityStreak",
+    Achievements = "achievements",
 }
 
 export interface ProfilePagePayloadParams {

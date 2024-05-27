@@ -1,4 +1,5 @@
 export { About } from './about';
+export { Achievements } from './achievements';
 export { GuildVoiceActivityStreak } from './guildVoiceActivityStreak';
 export { PresenceActivity } from './presenceActivity';
 export { Statistics } from './statistics';
