@@ -1,5 +1,5 @@
-import {ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages} from "@/interfaces";
-import {bold} from "discord.js";
+import { ProfilePage, ProfilePagePayloadParams, ProfilePagePayloadProps, ProfilePages } from "@/interfaces";
+import { bold } from "discord.js";
 
 export interface BaseProfilePageProps {
     type: ProfilePages;
@@ -22,10 +22,6 @@ export abstract class BaseProfilePage implements ProfilePage {
         this.description = props.description;
         this.emoji = props.emoji;
         this.params = props.params;
-    }
-
-    init(): Promise<void> {
-        return Promise.resolve();
     }
 
     abstract getPayload(): Promise<ProfilePagePayloadProps>;

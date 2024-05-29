@@ -297,26 +297,31 @@
 	"achievements": {
 		"0": {
 			"name": "Unikalne Reakcje",
+			"status": "Reakcje: `{uniqueReactions}`",
 			"description": "Otrzymaj reakcje na twoje wiadomości od innych użytkowników."
 		},
 		"1": {
 			"name": "Skoordynowana Akcja",
+			"status": "Odstęp czasu: `{ms}ms` · Z: <@{withUserId}>",
 			"description": "Dołącz do kanału głosowego zaraz po kimś innym."
 		},
 		"2": {
 			"name": "Podejrzany",
+			"status": "Samotny czas: `{topAloneMs}ms`",
 			"description": "Spędź znaczną ilość czasu sam na kanale głosowym."
 		},
 		"3": {
 			"name": "Streamer",
+			"status": "Czas: `{topMs}ms`",
 			"description": "Poświęć znaczną ilość czasu na transmisje na żywo."
 		},
 		"4": {
 			"name": "Duch",
-			"description": "Dołącz do kanału głosowego mając status „Niewidoczny”."
+			"description": "Dołącz do kanału głosowego mając status Niewidoczny."
 		},
 		"5": {
 			"name": "DJ",
+			"status": "Wiadomości: `{messageCount}`",
 			"description": "Wysyłaj wiadomości które odtwarzają muzykę na botach muzycznych."
 		}
 	},

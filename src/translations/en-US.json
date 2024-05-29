@@ -170,7 +170,7 @@
 			"voiceActivity": "Voice activity",
 			"presenceActivity": "Overall activity",
 			"guildVoiceActivityStreak": "Voice activity streak",
-			"Achievements": "Achievements"
+			"achievements": "Achievements"
 		},
 		"messages": "Messages"
 	},
@@ -305,18 +305,22 @@
 	"achievements": {
 		"0": {
 			"name": "Unique Reactions",
+			"status": "Reactions: `{uniqueReactions}`",
 			"description": "Receive message reactions from other users."
 		},
 		"1": {
 			"name": "Coordinated Action",
+			"status": "Time between: `{ms}ms` · With: <@{withUserId}>",
 			"description": "Join a voice channel right after someone else."
 		},
 		"2": {
 			"name": "Suss",
+			"status": "Time alone: `{topAloneMs}ms`",
 			"description": "Spend a significant amount of time alone in a voice channel."
 		},
 		"3": {
 			"name": "Streamer",
+			"status": "Time: `{topMs}ms`",
 			"description": "Dedicate a considerable amount of time to streaming content."
 		},
 		"4": {
@@ -325,6 +329,7 @@
 		},
 		"5": {
 			"name": "DJ",
+			"status": "Messages: `{messageCount}`",
 			"description": "Frequently send messages to play music."
 		}
 	},

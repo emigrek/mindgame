@@ -20,8 +20,9 @@ export abstract class BaseAchievement<T extends AchievementType> {
     achievementType: AchievementType;
     userId?: string;
     guildId?: string;
-    name: string;
-    description: string;
+    name = "";
+    description = "";
+    status = "";
     level = 0;
     payload?: AchievementTypePayload[T];
     private context?: AchievementTypeContext[T];
@@ -30,8 +31,6 @@ export abstract class BaseAchievement<T extends AchievementType> {
     constructor(params: BaseAchievementParams<T>) {
         this.achievementType = params.achievementType;
         this.context = params.context;
-        this.name = i18n.__(`achievements.${this.achievementType}.name`);
-        this.description = i18n.__(`achievements.${this.achievementType}.description`);
     }
 
     abstract progress (context: AchievementTypeContext[T]): Promise<ProgressResult | undefined>;
@@ -70,9 +69,12 @@ export abstract class BaseAchievement<T extends AchievementType> {
             achievementType: this.achievementType
         })
             .then((achievement) => {
+                this.name = i18n.__(`achievements.${this.achievementType}.name`);
+                this.description = i18n.__(`achievements.${this.achievementType}.description`);
                 if (achievement) {
                     this.level = achievement.level;
                     this.payload = achievement.payload as AchievementTypePayload[T];
+                    this.status = i18n.__mf(`achievements.${this.achievementType}.status`, { ...this.payload });
                 }
                 return this;
             });
@@ -133,7 +135,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
     get embedField() {
         return {
             name: `${this.emoji}   ${this.name}`,
-            value: `Level: \`${this.level}\`\n${codeBlock(this.description)}`
+            value: `${this.status}\n${codeBlock(this.description)}`
         };
     }
 }

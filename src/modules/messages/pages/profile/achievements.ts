@@ -35,7 +35,12 @@ export class Achievements extends BaseProfilePage {
             guildId: guild.id,
         })
             .getAll()
-            .then((achievements) => achievements.map((achievement) => achievement.embedField));
+            .then(
+                (achievements) => achievements
+                    .filter(a => a.level > 0)
+                    .sort((a, b) => b.level - a.level)
+                    .map((achievement) => achievement.embedField)
+            );
 
         return BaseProfileEmbed({ user: renderedUser, colors })
             .setDescription(heading(userMention(renderedUser.userId), HeadingLevel.Two))
