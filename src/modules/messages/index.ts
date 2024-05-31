@@ -213,7 +213,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
     const renderedUser = sourceTargetUser ? sourceTargetUser : sourceUser;
 
     const colors = await useImageHex(renderedUser.avatarUrl);
-    const payload = await new ProfilePagesManager({
+    const manager = await new ProfilePagesManager({
         client,
         colors,
         renderedUser,
@@ -222,10 +222,10 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
         guild: interaction.guild || undefined,
         selfCall
     })
-        .getPagePayloadByType(page || ProfilePages.About);
+        .init();
 
     return {
-        ...payload,
+        ...await manager.getPagePayloadByType(page || ProfilePages.About),
         ephemeral: true,
     }
 }

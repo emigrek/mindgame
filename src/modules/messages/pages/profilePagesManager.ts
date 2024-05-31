@@ -21,6 +21,11 @@ class ProfilePagesManager {
         ];
     }
 
+    async init() {
+        await Promise.all(this.pages.map((page) => page.init()));
+        return this;
+    }
+
     async getVisiblePages(): Promise<BaseProfilePage[]> {
         return this.pages
             .filter((page) => page.visible);

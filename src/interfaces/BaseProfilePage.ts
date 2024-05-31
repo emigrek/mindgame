@@ -25,6 +25,10 @@ export abstract class BaseProfilePage implements ProfilePage {
     }
 
     abstract getPayload(): Promise<ProfilePagePayloadProps>;
+    
+    init(): Promise<void> {
+        return Promise.resolve();
+    }
 
     get visible() {
         return true;
