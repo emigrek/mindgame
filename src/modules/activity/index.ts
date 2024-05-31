@@ -456,18 +456,13 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
         last = date;
     }
 
+    if (moment(streak.date).dayOfYear() !== moment().dayOfYear() - 1) {
+        streak = { date: moment().toDate(), value: 0, startedAt: moment().toDate() };
+    }
+
     return config.voiceActivityStreakLogic({ streak, maxStreak });
 };
 
-const pruneActivities = async () => {
-    try {
-        const twoYearsAgo = moment().subtract(2, "year").toDate();
-        await voiceActivityModel.deleteMany({ createdAt: { $lte: twoYearsAgo } });
-        await presenceActivityModel.deleteMany({ createdAt: { $lte: twoYearsAgo } });
-    } catch (e) {
-        console.error(e);
-    }
-};
 
 const getUserLastGuildVoiceActivity = async (userId: string, guildId: string): Promise<VoiceActivityDocument | undefined> => {
     const query = await voiceActivityModel.aggregate([
@@ -636,5 +631,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, pruneActivities, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
 
