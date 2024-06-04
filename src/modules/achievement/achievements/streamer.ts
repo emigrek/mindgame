@@ -20,8 +20,6 @@ export class Streamer extends LinearAchievement<AchievementType.STREAMER> {
 
     async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
         const { member, channel, streaming } = context;
-        const { last, ms, topMs } = this.payload || {};
-
         if (channel.id === member.guild.afkChannelId) 
             return;
 
@@ -34,12 +32,12 @@ export class Streamer extends LinearAchievement<AchievementType.STREAMER> {
                 last: new Date(),
                 ms: 0,
             });
-        } else if (last) {
-            const diff = new Date().getTime() - last.getTime();
+        } else if (this.payload?.last) {
+            const diff = new Date().getTime() - this.payload?.last.getTime();
             await this.updatePayload({ 
                 last: undefined,
-                ms: ms || 0 + diff,
-                topMs: Math.max(ms || 0 + diff, topMs || 0)
+                ms: this.payload?.ms || 0 + diff,
+                topMs: Math.max(this.payload?.ms || 0 + diff, this.payload?.topMs || 0)
             });
         }
 

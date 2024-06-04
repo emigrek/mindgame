@@ -5,5 +5,6 @@ export interface Achievement<T extends AchievementType> {
     userId: string;
     guildId: string;
     level: number;
+    leveledUpAt: Date;
     payload?: AchievementTypePayload[T];
 }

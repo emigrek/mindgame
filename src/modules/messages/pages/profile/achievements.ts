@@ -42,6 +42,12 @@ export class Achievements extends BaseProfilePage {
                     .map((achievement) => achievement.embedField)
             );
 
+        const noAchievementsField = {
+            name: " ",
+            value: i18n.__("achievements.misc.noAchievements"),
+            inline: false,
+        };
+
         return BaseProfileEmbed({ user: renderedUser, colors })
             .setDescription(heading(userMention(renderedUser.userId), HeadingLevel.Two))
             .setAuthor({
@@ -50,7 +56,7 @@ export class Achievements extends BaseProfilePage {
             })
             .addFields([
                 this.embedTitleField,
-                ...fields
+                ...(fields.length ? fields : [noAchievementsField]),
             ]);
     }
 

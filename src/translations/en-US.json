@@ -303,6 +303,11 @@
 		"empty": "No ephemeral channels found."
 	},
 	"achievements": {
+		"misc": {
+			"level": "Level {level}",
+			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",
+			"noAchievements": "No unlocked achievements."
+		},
 		"0": {
 			"name": "Unique Reactions",
 			"status": "Reactions: `{uniqueReactions}`",

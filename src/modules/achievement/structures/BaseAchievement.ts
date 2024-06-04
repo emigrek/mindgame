@@ -3,6 +3,7 @@ import { AchievementType, AchievementTypeContext, AchievementTypePayload } from 
 import { GuildUser } from "@/interfaces/GuildUser";
 import { achievementModel } from "@/modules/achievement";
 import { codeBlock } from "@discordjs/formatters";
+import moment from "moment";
 
 export interface ProgressResult {
     leveledUp: boolean;
@@ -24,6 +25,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
     description = "";
     status = "";
     level = 0;
+    leveledUpAt = new Date();
     payload?: AchievementTypePayload[T];
     private context?: AchievementTypeContext[T];
     emoji = "";
@@ -72,7 +74,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
                 this.name = i18n.__(`achievements.${this.achievementType}.name`);
                 this.description = i18n.__(`achievements.${this.achievementType}.description`);
                 if (achievement) {
-                    this.level = achievement.level;
+                    this.level = achievement.level || 0;
+                    this.leveledUpAt = achievement.leveledUpAt;
                     this.payload = achievement.payload as AchievementTypePayload[T];
                     this.status = i18n.__mf(`achievements.${this.achievementType}.status`, { ...this.payload });
                 }
@@ -97,12 +100,14 @@ export abstract class BaseAchievement<T extends AchievementType> {
             guildId: this.guildId,
             achievementType: this.achievementType
         }, {
-            level: this.level + 1
+            level: this.level + 1,
+            leveledUpAt: new Date()
         }, {
             upsert: true
         })
             .then(() => {
                 this.level++;
+                this.leveledUpAt = new Date();
                 return this;
             });
     }
@@ -114,14 +119,16 @@ export abstract class BaseAchievement<T extends AchievementType> {
         return achievementModel.updateOne({
             userId: this.userId,
             guildId: this.guildId,
-            achievementType: this.achievementType
+            achievementType: this.achievementType,
         }, {
-            level
+            level,
+            leveledUpAt: new Date()
         }, {
             upsert: true
         })
             .then(() => {
                 this.level = level;
+                this.leveledUpAt = new Date();
                 return this;
             });
     }
@@ -134,8 +141,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
 
     get embedField() {
         return {
-            name: `${this.emoji}   ${this.name}`,
-            value: `${this.status}\n${codeBlock(this.description)}`
+            name: `${this.emoji}   ${this.name} (${i18n.__mf("achievements.misc.level", { level: this.level })})`,
+            value: `${this.status}\n${codeBlock(this.description)}${i18n.__mf("achievements.misc.leveledUpAt", { leveledUpAtUnix: moment(this.leveledUpAt).unix() })}`
         };
     }
 }
