@@ -1,10 +1,19 @@
 import i18n from "@/client/i18n";
-import { ProfilePages } from "@/interfaces";
+import { AchievementType, ProfilePages } from "@/interfaces";
 import { BaseProfilePage } from "@/interfaces/BaseProfilePage";
 import { ProfilePagePayloadParams } from "@/interfaces/ProfilePage";
-import { AchievementManager } from "@/modules/achievement";
+import { AchievementManager, BaseAchievement } from "@/modules/achievement";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
+import { achievementsStore } from "@/stores/achievementsStore";
+import { ActionRowBuilder, StringSelectMenuBuilder } from "@discordjs/builders";
 import { HeadingLevel, bold, heading, userMention } from "discord.js";
+
+const displayFilter = (display: string[], achievement: BaseAchievement<AchievementType>) => {
+    if (display.includes("all")) return true;
+    if (display.includes("unlocked") && achievement.level > 0) return true;
+    if (display.includes("inprogress") && achievement.level === 0) return true;
+    return false;
+}
 
 export class Achievements extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -18,13 +27,19 @@ export class Achievements extends BaseProfilePage {
     }
 
     async getPayload() {
+        const displayRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+            .addComponents(this.getDisplaySelect());
+
         return {
             embeds: [await this.getAchievementsEmbed()],
+            components: [displayRow],
         };
     }
 
     async getAchievementsEmbed() {
         const { renderedUser, colors, guild, client, targetUser } = this.params;
+        const { display } = achievementsStore.get(renderedUser.userId);
+
         if (!guild) {
             throw new Error("Guild is required for statistics page");
         }
@@ -37,7 +52,7 @@ export class Achievements extends BaseProfilePage {
             .getAll()
             .then(
                 (achievements) => achievements
-                    .filter(a => a.level > 0)
+                    .filter((achievement) => displayFilter(display, achievement))
                     .sort((a, b) => b.level - a.level)
                     .map((achievement) => achievement.embedField)
             );
@@ -58,6 +73,34 @@ export class Achievements extends BaseProfilePage {
                 this.embedTitleField,
                 ...(fields.length ? fields : [noAchievementsField]),
             ]);
+    }
+
+    getDisplaySelect() {
+        const { display } = achievementsStore.get(this.params.renderedUser.userId);
+
+        const options = [
+            {
+                label: i18n.__("achievements.display.all"),
+                value: "all",
+                default: display.includes("all")
+            },
+            {
+                label: i18n.__("achievements.display.unlocked"),
+                value: "unlocked",
+                default: display.includes("unlocked"),
+            },
+            {
+                label: i18n.__("achievements.display.inprogress"),
+                value: "inprogress",
+                default: display.includes("inprogress"),
+            },
+        ];
+
+        return new StringSelectMenuBuilder()
+            .setCustomId("achievementsDisplaySelect")
+            .setMinValues(1)
+            .setMaxValues(3)
+            .addOptions(options);
     }
 
     get embedTitleField() {

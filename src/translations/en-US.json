@@ -303,6 +303,11 @@
 		"empty": "No ephemeral channels found."
 	},
 	"achievements": {
+		"display": {
+			"all": "All",
+			"unlocked": "Unlocked",
+			"inprogress": "In progress"
+		},
 		"misc": {
 			"level": "Level {level}",
 			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",

@@ -140,9 +140,15 @@ export abstract class BaseAchievement<T extends AchievementType> {
     }
 
     get embedField() {
+        const name = `${this.emoji}   ${this.name}` + (this.level > 0 ? ` (${i18n.__mf("achievements.misc.level", { level: this.level })})` : "");
+
+        const value = `${this.status}` + "\n"
+            + codeBlock(this.description) 
+            + (this.level > 0 ? i18n.__mf("achievements.misc.leveledUpAt", { leveledUpAtUnix: moment(this.leveledUpAt).unix() }) : "");
+
         return {
-            name: `${this.emoji}   ${this.name} (${i18n.__mf("achievements.misc.level", { level: this.level })})`,
-            value: `${this.status}\n${codeBlock(this.description)}${i18n.__mf("achievements.misc.leveledUpAt", { leveledUpAtUnix: moment(this.leveledUpAt).unix() })}`
-        };
+            name,
+            value
+        }
     }
 }

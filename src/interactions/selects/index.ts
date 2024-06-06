@@ -1,5 +1,6 @@
 import { Select } from "@/interfaces";
 
+import { achievementsDisplaySelect } from "./achievementsDisplaySelect";
 import { defaultChannelSelect } from "./defaultChannelSelect";
 import { profileEmbedSelect } from "./profileEmbedSelect";
 import { profileUserSelect } from "./profileUserSelect";
@@ -14,6 +15,7 @@ const selects: Select[] = [
     profileEmbedSelect,
     rankingRangeSelect,
     profileUserSelect,
+    achievementsDisplaySelect,
 ];
 
 export default selects;

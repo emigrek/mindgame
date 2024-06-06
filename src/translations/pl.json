@@ -295,6 +295,11 @@
 		"empty": "Brak kanałów efemerycznych."
 	},
 	"achievements": {
+		"display": {
+			"all": "Wszystkie",
+			"unlocked": "Odblokowane",
+			"inprogress": "W trakcie"
+		},
 		"misc": {
 			"level": "Poziom {level}",
 			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
