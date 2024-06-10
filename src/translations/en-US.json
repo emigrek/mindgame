@@ -311,7 +311,8 @@
 		"misc": {
 			"level": "Level {level}",
 			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",
-			"noAchievements": "No unlocked achievements."
+			"noAchievements": "No unlocked achievements.",
+			"footer": "Page {page} of {pages}."
 		},
 		"0": {
 			"name": "Unique Reactions",

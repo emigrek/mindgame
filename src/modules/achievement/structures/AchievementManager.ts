@@ -10,6 +10,13 @@ interface AchievementManagerProps {
     guildId: string;
 }
 
+const displayFilter = (display: string[], achievement: BaseAchievement<AchievementType>) => {
+    if (display.includes("all")) return true;
+    if (display.includes("unlocked") && achievement.level > 0) return true;
+    if (display.includes("inprogress") && achievement.level === 0) return true;
+    return false;
+}
+
 class AchievementManager {
     client: ExtendedClient;
     userId: string;
@@ -47,11 +54,11 @@ class AchievementManager {
         return this;
     }
 
-    async getAll(): Promise<BaseAchievement<AchievementType>[]> {
+    async getAll(display: string[] = ["unlocked"]): Promise<BaseAchievement<AchievementType>[]> {
         const { userId, guildId } = this;
-        return Promise.all(allAchievements.map(achievement => achievement.direct({ userId, guildId }).get()));
+        return Promise.all(allAchievements.map(achievement => achievement.direct({ userId, guildId }).get()))
+            .then(achievements => achievements.filter(achievement => displayFilter(display, achievement)));
     }
 }
 
 export { AchievementManager };
-

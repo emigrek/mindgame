@@ -303,7 +303,8 @@
 		"misc": {
 			"level": "Poziom {level}",
 			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
-			"noAchievements": "Brak odblokowanych osiągnięć."
+			"noAchievements": "Brak odblokowanych osiągnięć.",
+			"footer": "Strona {page} z {pages}."
 		},
 		"0": {
 			"name": "Unikalne Reakcje",

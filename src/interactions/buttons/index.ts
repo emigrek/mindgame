@@ -1,5 +1,7 @@
 import { Button } from "@/interfaces";
 
+import achievementsPageDown from "./achievementsPageDown";
+import achievementsPageUp from "./achievementsPageUp";
 import autoSweeping from "./autoSweeping";
 import commits from "./commits";
 import help from "./help";
@@ -20,6 +22,8 @@ import selectMessageDelete from "./selectMessageDelete";
 import selectReroll from "./selectReroll";
 import sweep from "./sweep";
 const buttons: Button[] = [
+    achievementsPageDown,
+    achievementsPageUp,
     notifications,
     levelRoles,
     levelRolesHoist,
