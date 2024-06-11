@@ -34,6 +34,7 @@ export const achievementsDisplaySelect: Select = {
             .getAll(achievementsState.display)
             .then(achievements => achievements.length);
 
+        achievementsState.page = 1;
         achievementsState.pages = Math.ceil(count / achievementsState.perPage);
 
         const profileMessagePayload = await getProfileMessagePayload(client, interaction as StringSelectMenuInteraction);
