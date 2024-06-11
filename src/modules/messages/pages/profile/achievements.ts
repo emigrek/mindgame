@@ -34,7 +34,7 @@ export class Achievements extends BaseProfilePage {
             throw new Error("Guild is required for statistics page");
         }
 
-        const fields = await new AchievementManager({
+        const allFields = await new AchievementManager({
             client,
             userId: targetUser.userId,
             guildId: guild.id,
@@ -44,10 +44,9 @@ export class Achievements extends BaseProfilePage {
                 (achievements) => achievements
                     .sort((a, b) => b.level - a.level)
                     .map((achievement) => achievement.embedField)
-            )
-            .then(
-                (fields) => fields.slice((page - 1) * perPage, page * perPage)
             );
+        
+        const fields = allFields.slice((page - 1) * perPage, page * perPage);
 
         const noAchievementsField = {
             name: " ",
@@ -69,6 +68,8 @@ export class Achievements extends BaseProfilePage {
                 text: i18n.__mf("achievements.misc.footer", {
                     page,
                     pages,
+                    displayCount: allFields.length,
+                    display: display.map((d) => i18n.__(`achievements.display.${d}`)).join(", "),
                 }),
             });
     }

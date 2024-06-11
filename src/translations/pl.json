@@ -304,7 +304,7 @@
 			"level": "Poziom {level}",
 			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
 			"noAchievements": "Brak odblokowanych osiągnięć.",
-			"footer": "Strona {page} z {pages}."
+			"footer": "Strona {page} z {pages}. ({displayCount} {display})"
 		},
 		"0": {
 			"name": "Unikalne Reakcje",
