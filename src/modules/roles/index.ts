@@ -191,6 +191,7 @@ interface AssignLevelRolesInAllGuildsProps {
 
 const assignLevelRolesInAllGuilds = async ({ client }: AssignLevelRolesInAllGuildsProps) => {
     const guilds = await client.guilds.fetch();
+    console.log(guilds);
     return Promise.all(
         guilds
             .map((guild) => assignLevelRolesInGuild({ client, guildId: guild.id }))
