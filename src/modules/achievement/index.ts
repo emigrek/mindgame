@@ -6,12 +6,12 @@ import { CoordinatedAction, DJ, Ghost, Streamer, Suss, UniqueReactions } from ".
 export const achievementModel = model<AchievementDocument<AchievementType>>('Achievement', achievementSchema);
 
 export const allAchievements = [
-    new UniqueReactions(),
-    new CoordinatedAction(),
-    new Suss(),
-    new Streamer(),
-    new Ghost(),
-    new DJ(),
+    // new UniqueReactions(),
+    // new CoordinatedAction(),
+    // new Suss(),
+    // new Streamer(),
+    // new Ghost(),
+    // new DJ(),
 ];
 
 export * from "./structures";
