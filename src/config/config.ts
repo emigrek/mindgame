@@ -47,7 +47,7 @@ export const config: Config = {
     emptyGuildSweepBotPrefixesList: ['!', '$', '%', '^', '&', '(', ')', '/'],
 
     // Whether to automatically put slash commands on client login
-    autoPutSlashCommands: true,
+    autoPutSlashCommands: false,
 
     // Configuration for invite notifications
     inviteNotification: {
