@@ -185,6 +185,18 @@ const assignLevelRolesInGuild = async ({ client, guildId }: AssignLevelRolesInGu
     );
 }
 
+interface AssignLevelRolesInAllGuildsProps {
+    client: ExtendedClient;
+}
+
+const assignLevelRolesInAllGuilds = async ({ client }: AssignLevelRolesInAllGuildsProps) => {
+    const guilds = await client.guilds.fetch();
+    return Promise.all(
+        guilds
+            .map((guild) => assignLevelRolesInGuild({ client, guildId: guild.id }))
+    );
+}
+
 const getMemberColorRole = (member: GuildMember) => {
     const colorRole = member.roles.cache.find(role => role.name.includes("🎨"));
     if (!colorRole) return null;
@@ -256,5 +268,5 @@ const isLevelThreshold = (level: number) => {
     return levelThresholds.some(t => t.level === level);
 }
 
-export { isLevelThreshold, getGuildTresholdRole, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleThreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
+export { assignLevelRolesInAllGuilds, isLevelThreshold, getGuildTresholdRole, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, getLevelRoleThreshold, getMemberColorRole, levelRoleRegExp, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
 
