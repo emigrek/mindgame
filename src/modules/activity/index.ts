@@ -435,7 +435,7 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
     let maxStreak: Streak = { ...streak };
 
     for (const date of dates) {
-        if (date.isSame(last, "day"))
+        if (dates.indexOf(date) !== 0 && date.isSame(last, "day"))
             continue;
 
         if (date.dayOfYear() === last.dayOfYear() + 1) {
@@ -454,10 +454,6 @@ const getUserVoiceActivityStreak = async (userId: string, guildId: string): Prom
         }
 
         last = date;
-    }
-
-    if (moment(streak.date).dayOfYear() !== moment().dayOfYear() - 1) {
-        streak = { date: moment().toDate(), value: 0, startedAt: moment().toDate() };
     }
 
     return config.voiceActivityStreakLogic({ streak, maxStreak });
