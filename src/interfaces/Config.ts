@@ -2,32 +2,33 @@ import { ActivityStreak, Streak } from "./ActivityStreak";
 import { ExperienceConfig } from "./ExperienceConfig";
 
 export interface StreakLogicProps {
-    streak?: Streak;
-    maxStreak?: Streak;
+  streak?: Streak;
+  maxStreak?: Streak;
 }
 
 export type InviteNotificationConfig = {
-    enabled: boolean;
-    chance: number;
+  enabled: boolean;
+  chance: number;
 };
 
 export type AchievementsConfig = {
-    enabled: boolean;
-}
+  enabled: boolean;
+};
 
 export interface Config {
-    experience: ExperienceConfig;
+  experience: ExperienceConfig;
+  yearlyExperienceWipe: boolean;
 
-    achievements: AchievementsConfig;
+  achievements: AchievementsConfig;
 
-    userLongBreakHours: number;
+  userLongBreakHours: number;
 
-    emptyGuildSweepTimeoutMs: number;
-    emptyGuildSweepBotPrefixesList: string[];
+  emptyGuildSweepTimeoutMs: number;
+  emptyGuildSweepBotPrefixesList: string[];
 
-    autoPutSlashCommands: boolean;
+  autoPutSlashCommands: boolean;
 
-    inviteNotification: InviteNotificationConfig;
+  inviteNotification: InviteNotificationConfig;
 
-    voiceActivityStreakLogic: (props: StreakLogicProps) => ActivityStreak;
+  voiceActivityStreakLogic: (props: StreakLogicProps) => ActivityStreak;
 }
