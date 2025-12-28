@@ -3,7 +3,7 @@
         "status": "online",
         "activities": [
             {
-                "name": "{animalsAndNatureEmoji} Active {users}👨‍👩‍👧‍👦 in {guilds}🏨",
+                "name": "{zodiac}{moon} Active {users}👨‍👩‍👧‍👦 in {guilds}🏨",
                 "type": 4
             }
         ]

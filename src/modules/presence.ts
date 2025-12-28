@@ -1,6 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Module } from "@/interfaces";
 import presencesData from "@/modules/presence/presences.json";
+import { getMoonEmoji, getSeasonEmoji, getZodiacEmoji } from "@/utils/zodiac";
 import { ActivitiesOptions, PresenceData } from "discord.js";
 import { getRandomEmojiFromGroup, Groups } from "winemoji";
 
@@ -18,7 +19,10 @@ const replacePlaceholders = async (
     .replace(
       /{animalsAndNatureEmoji}/g,
       getRandomEmojiFromGroup(Groups.AnimalsAndNature).char
-    );
+    )
+    .replace(/{zodiac}/g, getZodiacEmoji(new Date()))
+    .replace(/{moon}/g, getMoonEmoji(new Date()))
+    .replace(/{season}/g, getSeasonEmoji(new Date()));
 
   return activity;
 };
