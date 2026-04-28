@@ -40,6 +40,7 @@
     "@discordjs/builders": "^1.8.2",
     "@discordjs/formatters": "^0.4.0",
     "@octokit/rest": "^19.0.5",
+    "@types/suncalc": "^1.9.2",
     "axios": "^1.2.1",
     "chroma-js": "^2.4.2",
     "discord-api-types": "^0.37.79",
@@ -54,6 +55,7 @@
     "mongoose": "^6.8.0",
     "node-cron": "^3.0.2",
     "node-vibrant": "^3.2.1-alpha.1",
+    "suncalc": "^1.9.0",
     "winemoji": "^1.0.7",
     "winmojilib": "^0.3.3"
   }

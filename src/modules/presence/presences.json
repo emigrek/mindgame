@@ -1,11 +1,11 @@
 [
-    {
-        "status": "online",
-        "activities": [
-            {
-                "name": "{zodiac}{moon} Active {users}👨‍👩‍👧‍👦 in {guilds}🏨",
-                "type": 4
-            }
-        ]
-    }
+  {
+    "status": "online",
+    "activities": [
+      {
+        "name": "{zodiac}{moon} • ☀️⬆️ {sunrise} • ☀️⬇️ {sunset}",
+        "type": 4
+      }
+    ]
+  }
 ]
