@@ -2,7 +2,7 @@ import { AchievementType } from "@/interfaces";
 import achievementSchema, { AchievementDocument } from "@/modules/schemas/Achievement";
 import { model } from "mongoose";
 import type { BaseAchievement } from "./structures/BaseAchievement";
-import { CoordinatedAction, DJ, Ghost, Streamer, Suss, UniqueReactions } from "./achievements";
+import { Comeback, CoordinatedAction, DJ, Ghost, Host, Marathon, NightOwl, Social, Streamer, Suss, UniqueReactions } from "./achievements";
 
 export const achievementModel = model<AchievementDocument<AchievementType>>('Achievement', achievementSchema);
 
@@ -14,6 +14,11 @@ export const getAllAchievements = (): BaseAchievement<AchievementType>[] => [
     new Streamer(),
     new Ghost(),
     new DJ(),
+    new NightOwl(),
+    new Marathon(),
+    new Social(),
+    new Host(),
+    new Comeback(),
 ];
 
 export * from "./structures";

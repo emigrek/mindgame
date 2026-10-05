@@ -1,5 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
+import {AchievementManager} from "@/modules/achievement";
+import {Comeback} from "@/modules/achievement/achievements";
 import {getLastVoiceActivity} from "@/modules/activity";
 import {getFollowers} from "@/modules/follow";
 import {getFollowMessagePayload} from "@/modules/messages";
@@ -8,7 +10,12 @@ import {GuildMember} from "discord.js";
 
 export const userBackFromLongVoiceBreak: Event = {
     name: "userBackFromLongVoiceBreak",
-    run: async (client: ExtendedClient, member: GuildMember) => {
+    run: async (client: ExtendedClient, member: GuildMember, breakMs?: number) => {
+        // breakMs is missing on the very first voice activity
+        if (breakMs)
+            new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
+                .check(new Comeback({ breakMs }));
+
         const sourceUser = await getUser(member.user);
         if(!sourceUser) return;
 

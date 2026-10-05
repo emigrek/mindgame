@@ -60,12 +60,12 @@ const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) 
 
     if (!activity.to) return false;
 
-    const hoursSinceLastActivity = moment().diff(moment(activity.to), "hours");
-    if (hoursSinceLastActivity < config.userLongBreakHours) {
+    const breakMs = moment().diff(moment(activity.to));
+    if (breakMs < config.userLongBreakHours * 60 * 60 * 1000) {
         return false;
     }
 
-    client.emit("userBackFromLongVoiceBreak", member);
+    client.emit("userBackFromLongVoiceBreak", member, breakMs);
     return true;
 };
 

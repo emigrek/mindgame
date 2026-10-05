@@ -7,7 +7,12 @@ export enum AchievementType {
     SUSS,
     STREAMER,
     GHOST,
-    DJ
+    DJ,
+    NIGHT_OWL,
+    MARATHON,
+    SOCIAL,
+    HOST,
+    COMEBACK
 }
 
 export interface AchievementTypePayload {
@@ -16,7 +21,12 @@ export interface AchievementTypePayload {
     [AchievementType.SUSS]: {from?: Date, aloneMs: number},
     [AchievementType.STREAMER]: {last?: Date, ms: number},
     [AchievementType.GHOST]: undefined,
-    [AchievementType.DJ]: {messageCount: number}
+    [AchievementType.DJ]: {messageCount: number},
+    [AchievementType.NIGHT_OWL]: {ms: number},
+    [AchievementType.MARATHON]: {topMs: number},
+    [AchievementType.SOCIAL]: {userIds: string[]},
+    [AchievementType.HOST]: {days: number, lastDay: string},
+    [AchievementType.COMEBACK]: {topMs: number}
 }
 
 export interface AchievementTypeContext {
@@ -25,7 +35,12 @@ export interface AchievementTypeContext {
     [AchievementType.SUSS]: {member: GuildMember},
     [AchievementType.STREAMER]: {member: GuildMember, streaming: boolean},
     [AchievementType.GHOST]: {member: GuildMember, channel: VoiceBasedChannel},
-    [AchievementType.DJ]: {message: Message}
+    [AchievementType.DJ]: {message: Message},
+    [AchievementType.NIGHT_OWL]: {activity: VoiceActivityDocument},
+    [AchievementType.MARATHON]: {activity: VoiceActivityDocument},
+    [AchievementType.SOCIAL]: {member: GuildMember},
+    [AchievementType.HOST]: {activity: VoiceActivityDocument},
+    [AchievementType.COMEBACK]: {breakMs: number}
 }
 
 export type AchievementUpdatePayload<T extends AchievementType> = Omit<AchievementTypePayload[T], "achievementType">;

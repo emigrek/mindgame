@@ -41,5 +41,15 @@ export const formatDuration = (ms: number) => {
     if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
 
     const minutes = Math.floor(ms / 60_000);
-    return minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+    const hours = Math.floor(minutes / 60);
+    if (!hours) return `${minutes}m`;
+    return hours < 24 ? `${hours}h ${minutes % 60}m` : `${Math.floor(hours / 24)}d ${hours % 24}h`;
 };
+
+const warsawHourFormat = new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Europe/Warsaw" });
+const warsawDayFormat = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Warsaw" });
+
+export const getWarsawHour = (date: Date | number) => Number(warsawHourFormat.format(date));
+
+// YYYY-MM-DD calendar day in Europe/Warsaw
+export const getWarsawDay = (date: Date | number) => warsawDayFormat.format(date);

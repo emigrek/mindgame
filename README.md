@@ -36,6 +36,11 @@ Unlock guild achievements by completing various tasks and challenges.
 | Streamer           | Total time spent streaming to others.                                |
 | Ghost              | Join voice channel with `Invisible` status.                          |
 | DJ                 | Number of messages sent to play music.                               |
+| Night Owl          | Total time spent in voice channel between midnight and 5 AM.         |
+| Marathon           | Longest single voice channel session.                                |
+| Social Butterfly   | Number of different people met in voice channels.                    |
+| Host               | Days on which you were the first to join a voice channel.            |
+| Comeback           | Length of the break before coming back to voice channels.            |
 
 </details>
 

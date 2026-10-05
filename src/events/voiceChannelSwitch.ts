@@ -1,6 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
-import { checkSuss } from "@/modules/achievement/achievements";
+import { checkVoiceChannelMembers, checkVoiceSessionEnd } from "@/modules/achievement/achievements";
 import { checkGuildVoiceEmpty, endVoiceActivity, getVoiceActivity, startVoiceActivity } from "@/modules/activity";
 import { GuildMember, VoiceChannel } from "discord.js";
 
@@ -14,14 +14,14 @@ export const voiceChannelSwitch: Event = {
         if (!activity) {
             await startVoiceActivity(client, member, newChannel);
         } else if (newChannel.id === guild.afkChannelId) {
-            await endVoiceActivity(member);
+            checkVoiceSessionEnd(client, member, await endVoiceActivity(member));
             await checkGuildVoiceEmpty(client, guild, oldChannel);
         } else {
             activity.channelId = newChannel.id;
             await activity.save();
         }
 
-        checkSuss(client, member, oldChannel, newChannel);
+        checkVoiceChannelMembers(client, member, oldChannel, newChannel);
 
         await checkGuildVoiceEmpty(client, guild, oldChannel);
     }

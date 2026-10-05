@@ -336,6 +336,31 @@
 			"name": "DJ",
 			"status": "Wiadomości: `{messageCount}`",
 			"description": "Wysyłaj wiadomości które odtwarzają muzykę na botach muzycznych."
+		},
+		"6": {
+			"name": "Nocny Marek",
+			"status": "Czas nocą: `{ms}`",
+			"description": "Spędzaj czas na kanałach głosowych między północą a 5:00."
+		},
+		"7": {
+			"name": "Maratończyk",
+			"status": "Najdłuższa sesja: `{topMs}`",
+			"description": "Zostań na kanale głosowym jak najdłużej bez przerwy."
+		},
+		"8": {
+			"name": "Dusza Towarzystwa",
+			"status": "Poznane osoby: `{count}`",
+			"description": "Spotkaj na kanałach głosowych jak najwięcej różnych osób."
+		},
+		"9": {
+			"name": "Gospodarz",
+			"status": "Dni jako pierwszy: `{days}`",
+			"description": "Bądź pierwszą osobą na kanale głosowym danego dnia."
+		},
+		"10": {
+			"name": "Powrót",
+			"status": "Najdłuższa przerwa: `{topMs}`",
+			"description": "Wróć na kanały głosowe po długiej przerwie."
 		}
 	},
 	"utils": {

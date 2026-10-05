@@ -344,6 +344,31 @@
 			"name": "DJ",
 			"status": "Messages: `{messageCount}`",
 			"description": "Frequently send messages to play music."
+		},
+		"6": {
+			"name": "Night Owl",
+			"status": "Night time: `{ms}`",
+			"description": "Spend time in voice channels between midnight and 5 AM."
+		},
+		"7": {
+			"name": "Marathon",
+			"status": "Longest session: `{topMs}`",
+			"description": "Stay in a voice channel for as long as possible in one go."
+		},
+		"8": {
+			"name": "Social Butterfly",
+			"status": "People met: `{count}`",
+			"description": "Meet as many different people in voice channels as possible."
+		},
+		"9": {
+			"name": "Host",
+			"status": "Days as first: `{days}`",
+			"description": "Be the first person to join a voice channel on a given day."
+		},
+		"10": {
+			"name": "Comeback",
+			"status": "Longest break: `{topMs}`",
+			"description": "Come back to voice channels after a long break."
 		}
 	},
 	"utils": {

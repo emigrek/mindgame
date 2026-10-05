@@ -1,9 +1,6 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { voiceActivityModel } from "@/modules/activity";
 import { formatDuration } from "@/utils/date";
-import { Collection, GuildMember, VoiceBasedChannel } from "discord.js";
-import { AchievementManager } from "../structures/AchievementManager";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
 import { GradualAchievement } from "../structures/GradualAchievement";
 
@@ -44,13 +41,3 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
     }
 }
 
-// Being alone depends on others, so everyone in the affected channels is re-checked
-export const checkSuss = (client: ExtendedClient, member: GuildMember, ...channels: (VoiceBasedChannel | null)[]) => {
-    const members = new Collection<string, GuildMember>().set(member.id, member);
-    for (const channel of channels)
-        channel?.members.forEach(m => members.set(m.id, m));
-
-    members
-        .filter(m => !m.user.bot)
-        .forEach(m => new AchievementManager({ client, userId: m.id, guildId: m.guild.id }).check(new Suss({ member: m })));
-};
