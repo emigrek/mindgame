@@ -154,20 +154,20 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
             .catch(() => null);
         if (!member) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
             continue;
         }
         
         const channel = client.channels.cache.get(channelId) as VoiceBasedChannel;
         if (!channel) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
             continue;
         }
 
         if (!member.voice?.channelId || !member.voice?.channel) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
             continue;
         }
 
@@ -180,7 +180,7 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
 
         if (member.voice.channelId == member.guild.afkChannelId) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
         }
     }
 
@@ -204,14 +204,14 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
             .catch(() => null);
         if (!member) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
             continue;
         }
 
         const presence = member.presence;
         if (!presence) {
             outOfSync.push(userId);
-            activity.delete();
+            await activity.deleteOne();
             continue;
         }
 

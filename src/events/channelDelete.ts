@@ -25,7 +25,7 @@ export const channelDelete: Event = {
         const ephemeralChannel = await getEphemeralChannel(channel.id);
         if(ephemeralChannel) {
             ephemeralChannelMessageCache.removeChannel(channel.id);
-            await ephemeralChannel.delete();
+            await ephemeralChannel.deleteOne();
         }
     }
 }

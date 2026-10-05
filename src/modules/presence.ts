@@ -26,8 +26,8 @@ const getSunPlaceholders = (date: Date) => {
   );
 
   return {
-    sunrise: warsawTimeFormatter.format(sunrise),
-    sunset: warsawTimeFormatter.format(sunset),
+    sunrise: sunrise ? warsawTimeFormatter.format(sunrise) : "-",
+    sunset: sunset ? warsawTimeFormatter.format(sunset) : "-",
   };
 };
 

@@ -1,8 +1,8 @@
-import {Message, MessageCreateOptions, TextBasedChannel} from "discord.js";
+import {Message, MessageCreateOptions, SendableChannels} from "discord.js";
 import {delay} from "@/utils/delay";
 
 interface ExtendedMessageCreateOptions {
-    channel: TextBasedChannel;
+    channel: SendableChannels;
     payload: MessageCreateOptions;
     callback?: (message: Message) => Promise<void>;
 }
@@ -58,7 +58,7 @@ class NotificationsManager {
         }
     }
 
-    private async work(channel: TextBasedChannel): Promise<void> {
+    private async work(channel: SendableChannels): Promise<void> {
         const channelId = channel.id;
 
         if (this.workStartCallback) {

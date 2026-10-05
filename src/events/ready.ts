@@ -8,7 +8,7 @@ import {TextChannel} from "discord.js";
 import {MessageTypeIds} from "@/interfaces/Message";
 
 export const ready: Event = {
-    name: 'ready',
+    name: 'clientReady',
     run: async (client: ExtendedClient) => {
         await client.loadModules();
 

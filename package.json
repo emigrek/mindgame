@@ -4,7 +4,7 @@
   "description": "Advanced discord application with leveling and activity tracking utilities.",
   "scripts": {
     "start": "npx tsx watch src",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint ."
   },
   "_moduleAliases": {
     "@": "src"
@@ -23,39 +23,38 @@
   "author": "emigrek",
   "license": "MIT",
   "devDependencies": {
-    "@types/chroma-js": "^2.1.4",
+    "@eslint/js": "^10.0.1",
+    "@types/chroma-js": "^3.1.2",
     "@types/i18n": "^0.13.6",
     "@types/lodash": "^4.14.197",
     "@types/module-alias": "^2.0.4",
-    "@types/node": "^18.11.10",
-    "@types/node-cron": "^3.0.7",
-    "@typescript-eslint/eslint-plugin": "^5.59.9",
-    "@typescript-eslint/parser": "^5.59.9",
-    "eslint": "^8.42.0",
+    "@types/node": "^22.20.5",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
     "ts-node": "^10.9.1",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.5"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0"
   },
   "dependencies": {
-    "@discordjs/builders": "^1.8.2",
-    "@discordjs/formatters": "^0.4.0",
-    "@octokit/rest": "^19.0.5",
-    "@types/suncalc": "^1.9.2",
+    "@discordjs/builders": "^1.14.1",
+    "@discordjs/formatters": "^0.6.2",
+    "@octokit/rest": "^22.0.1",
     "axios": "^1.2.1",
-    "chroma-js": "^2.4.2",
-    "discord-api-types": "^0.37.79",
+    "chroma-js": "^3.2.0",
+    "discord-api-types": "^0.38.56",
     "discord-logs": "^2.2.1",
-    "discord.js": "^14.15.3",
-    "dotenv": "^16.0.3",
-    "hex-color-to-color-name": "^1.0.2",
+    "discord.js": "^14.27.0",
+    "dotenv": "^18.0.5",
+    "hex-color-to-color-name": "^2.0.7",
     "i18n": "^0.15.1",
     "lodash": "^4.17.21",
     "module-alias": "^2.2.3",
     "moment": "^2.29.4",
-    "mongoose": "^6.8.0",
-    "node-cron": "^3.0.2",
-    "node-vibrant": "^3.2.1-alpha.1",
-    "suncalc": "^1.9.0",
+    "mongoose": "^9.10.4",
+    "node-cron": "^4.6.0",
+    "node-vibrant": "^4.0.4",
+    "suncalc": "^2.1.0",
     "winemoji": "^1.0.7",
     "winmojilib": "^0.3.3"
   }

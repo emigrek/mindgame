@@ -14,8 +14,7 @@ const createEphemeralChannel = async ({ guildId, channelId, timeout, keepMessage
         guildId,
         channelId,
         timeout,
-        keepMessagesWithReactions,
-        createdAt: moment().toISOString()
+        keepMessagesWithReactions
     });
 }
 

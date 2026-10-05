@@ -86,7 +86,7 @@ import Colors from "@/utils/colors";
 import { getLocalizedDateRange } from "@/utils/date";
 import { KnownLinks } from "./knownLinks";
 import ProfilePagesManager from "./pages/profilePagesManager";
-import Vibrant = require('node-vibrant');
+import { Vibrant } from "node-vibrant/node";
 
 interface ImageHexColors {
     Vibrant: string;
@@ -101,9 +101,10 @@ const useImageHex = async (image: string | null) => {
     if (!image)
         return defaultColors;
 
-    const colors = await Vibrant.from(image).getPalette();
+    // stale/missing avatar URLs 404 on the CDN; fall back instead of failing the whole interaction
+    const colors = await Vibrant.from(image).getPalette().catch(() => null);
 
-    if (!colors.Vibrant || !colors.DarkVibrant)
+    if (!colors || !colors.Vibrant || !colors.DarkVibrant)
         return defaultColors;
 
     return {
