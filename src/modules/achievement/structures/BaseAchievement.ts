@@ -29,6 +29,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
     payload?: AchievementTypePayload[T];
     private context?: AchievementTypeContext[T];
     emoji = "";
+    // Whether level ups by more than one level are announced
+    announceLevelJumps = true;
 
     constructor(params: BaseAchievementParams<T>) {
         this.achievementType = params.achievementType;

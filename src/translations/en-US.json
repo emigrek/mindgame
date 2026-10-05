@@ -369,6 +369,11 @@
 			"name": "Comeback",
 			"status": "Longest break: `{topMs}`",
 			"description": "Come back to voice channels after a long break."
+		},
+		"11": {
+			"name": "Regular",
+			"status": "Member since <t:{joinedAtUnix}:D>",
+			"description": "Stay a member of the server for a long time."
 		}
 	},
 	"utils": {

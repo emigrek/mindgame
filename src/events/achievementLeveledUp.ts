@@ -8,9 +8,10 @@ import { TextChannel } from "discord.js";
 
 export const achievementLeveledUp: Event = {
     name: "achievementLeveledUp",
-    run: async (client: ExtendedClient, achievement: BaseAchievement<AchievementType>) => {
+    run: async (client: ExtendedClient, achievement: BaseAchievement<AchievementType>, change: number) => {
         const { userId, guildId } = achievement;
         if (!userId || !guildId) return;
+        if (change > 1 && !achievement.announceLevelJumps) return;
 
         const sourceGuild = await getGuild(guildId);
         if (!sourceGuild || !sourceGuild.channelId || !sourceGuild.notifications) return;

@@ -6,6 +6,7 @@ export { Ghost } from "./ghost";
 export { Host } from "./host";
 export { Marathon } from "./marathon";
 export { NightOwl } from "./nightOwl";
+export { Regular } from "./regular";
 export { Social } from "./social";
 export { Streamer } from "./streamer";
 export { Suss } from "./suss";

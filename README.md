@@ -41,6 +41,7 @@ Unlock guild achievements by completing various tasks and challenges.
 | Social Butterfly   | Number of different people met in voice channels.                    |
 | Host               | Days on which you were the first to join a voice channel.            |
 | Comeback           | Length of the break before coming back to voice channels.            |
+| Regular            | Time since joining the server.                                       |
 
 </details>
 

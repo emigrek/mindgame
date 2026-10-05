@@ -12,7 +12,8 @@ export enum AchievementType {
     MARATHON,
     SOCIAL,
     HOST,
-    COMEBACK
+    COMEBACK,
+    REGULAR
 }
 
 export interface AchievementTypePayload {
@@ -26,7 +27,8 @@ export interface AchievementTypePayload {
     [AchievementType.MARATHON]: {topMs: number},
     [AchievementType.SOCIAL]: {userIds: string[]},
     [AchievementType.HOST]: {days: number, lastDay: string},
-    [AchievementType.COMEBACK]: {topMs: number}
+    [AchievementType.COMEBACK]: {topMs: number},
+    [AchievementType.REGULAR]: {joinedAt: Date}
 }
 
 export interface AchievementTypeContext {
@@ -40,7 +42,8 @@ export interface AchievementTypeContext {
     [AchievementType.MARATHON]: {activity: VoiceActivityDocument},
     [AchievementType.SOCIAL]: {member: GuildMember},
     [AchievementType.HOST]: {activity: VoiceActivityDocument},
-    [AchievementType.COMEBACK]: {breakMs: number}
+    [AchievementType.COMEBACK]: {breakMs: number},
+    [AchievementType.REGULAR]: {member: GuildMember}
 }
 
 export type AchievementUpdatePayload<T extends AchievementType> = Omit<AchievementTypePayload[T], "achievementType">;

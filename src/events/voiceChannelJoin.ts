@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { AchievementManager } from "@/modules/achievement";
-import { CoordinatedAction, Ghost, Host, checkVoiceChannelMembers } from "@/modules/achievement/achievements";
+import { CoordinatedAction, Ghost, Host, Regular, checkVoiceChannelMembers } from "@/modules/achievement/achievements";
 import { getLastChannelVoiceActivity, startVoiceActivity } from "@/modules/activity";
 import { GuildMember, VoiceChannel } from "discord.js";
 
@@ -15,6 +15,7 @@ export const voiceChannelJoin: Event = {
             .check([
                 new CoordinatedAction({ lastChannelActivity, userActivity }),
                 new Ghost({ member, channel }),
+                new Regular({ member }),
                 ...(userActivity ? [new Host({ activity: userActivity })] : []),
             ]);
 

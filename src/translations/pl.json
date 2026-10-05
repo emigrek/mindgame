@@ -361,6 +361,11 @@
 			"name": "Powrót",
 			"status": "Najdłuższa przerwa: `{topMs}`",
 			"description": "Wróć na kanały głosowe po długiej przerwie."
+		},
+		"11": {
+			"name": "Stały Bywalec",
+			"status": "Na serwerze od <t:{joinedAtUnix}:D>",
+			"description": "Bądź członkiem serwera przez długi czas."
 		}
 	},
 	"utils": {
