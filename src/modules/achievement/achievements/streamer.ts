@@ -1,50 +1,43 @@
-import { AchievementType, AchievementTypeContext } from "@/interfaces";
-import { BaseAchievementContext, LinearAchievement } from "@/modules/achievement/structures";
+import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { voiceActivityModel } from "@/modules/activity";
+import { formatDuration } from "@/utils/date";
+import { BaseAchievementContext } from "../structures/BaseAchievement";
+import { GradualAchievement } from "../structures/GradualAchievement";
 
-export class Streamer extends LinearAchievement<AchievementType.STREAMER> {
-    achievementType = AchievementType.STREAMER;
+const hour = 1000 * 60 * 60;
+
+export class Streamer extends GradualAchievement<AchievementType.STREAMER> {
     emoji = "🖥️";
-    formula = () => {
-        const { ms } = this.payload || {};
-        const leveledUp = (ms || 0)  >= this.level * 5 * 60 * 1000;
-        return {
-            leveledUp,
-            change: leveledUp ? 1 : 0
-        };
-    }
+    levels = [1, 5, 10, 25, 50, 100, 250, 500]
+        .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.STREAMER>) {
         super({ context, achievementType: AchievementType.STREAMER });
     }
 
-    async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
-        const { member, channel, streaming } = context;
-        if (channel.id === member.guild.afkChannelId) 
-            return;
+    statusParams(payload: AchievementTypePayload[AchievementType.STREAMER]) {
+        return { ...payload, ms: formatDuration(payload.ms || 0) };
+    }
 
-        const channelActivities = await voiceActivityModel.find({ guildId: member.guild.id, channelId: channel.id, to: null });
-        if (channelActivities.length < 2)
-            return;
+    // Total time streaming with an audience (someone else active in the channel at stream start)
+    async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
+        const { member, streaming } = context;
+        const { channelId, guild } = member.voice;
+        const last = this.payload?.last;
 
         if (streaming) {
+            const audience = channelId && channelId !== guild.afkChannelId
+                ? await voiceActivityModel.countDocuments({ guildId: guild.id, channelId, to: null, userId: { $ne: member.id } })
+                : 0;
+            // Always overwrite, so a stop missed earlier doesn't count the gap
+            await this.updatePayload({ last: audience ? new Date() : undefined });
+        } else if (last) {
             await this.updatePayload({
-                last: new Date(),
-                ms: 0,
-            });
-        } else if (this.payload?.last) {
-            const diff = new Date().getTime() - this.payload?.last.getTime();
-            await this.updatePayload({ 
                 last: undefined,
-                ms: this.payload?.ms || 0 + diff,
-                topMs: Math.max(this.payload?.ms || 0 + diff, this.payload?.topMs || 0)
+                ms: (this.payload?.ms || 0) + Date.now() - last.getTime()
             });
         }
 
-        const result = this.formula();
-        if (result.leveledUp) {
-            await this.levelUp();
-            return result;
-        }
+        return this.reach(this.payload?.ms || 0);
     }
 }

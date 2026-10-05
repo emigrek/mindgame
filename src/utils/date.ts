@@ -35,3 +35,11 @@ export const getLocalizedDateRange = (start: string | Date, end: string | Date) 
 
     return `(${startOf.format('DD/MM/YYYY')}-${endOf.format('DD/MM/YYYY')})`;
 };
+
+export const formatDuration = (ms: number) => {
+    if (ms < 1000) return `${Math.round(ms)}ms`;
+    if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+
+    const minutes = Math.floor(ms / 60_000);
+    return minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+};

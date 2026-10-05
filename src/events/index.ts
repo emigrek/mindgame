@@ -32,6 +32,7 @@ import { minute } from "./minute";
 import { channelDelete } from "./channelDelete";
 import { roleUpdate } from "./roleUpdate";
 import { guildMemberRemove } from "./guildMemberRemove";
+import { achievementLeveledUp } from "./achievementLeveledUp";
 
 const events: Event[] = [
     ready,
@@ -65,7 +66,8 @@ const events: Event[] = [
     guildVoiceEmpty,
     minute,
     channelDelete,
-    roleUpdate
+    roleUpdate,
+    achievementLeveledUp
 ];
 
 export default events;

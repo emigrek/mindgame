@@ -28,7 +28,7 @@ export class Achievements extends BaseProfilePage {
 
     async getAchievementsEmbed() {
         const { renderedUser, colors, guild, client, targetUser } = this.params;
-        const { display, page, pages, perPage } = achievementsStore.get(renderedUser.userId);
+        const state = achievementsStore.get(renderedUser.userId);
 
         if (!guild) {
             throw new Error("Guild is required for statistics page");
@@ -39,13 +39,17 @@ export class Achievements extends BaseProfilePage {
             userId: targetUser.userId,
             guildId: guild.id,
         })
-            .getAll(display)
+            .getAll(state.display)
             .then(
                 (achievements) => achievements
                     .sort((a, b) => b.level - a.level)
                     .map((achievement) => achievement.embedField)
             );
         
+        state.pages = Math.max(1, Math.ceil(allFields.length / state.perPage));
+        state.page = Math.min(state.page, state.pages);
+
+        const { display, page, pages, perPage } = state;
         const fields = allFields.slice((page - 1) * perPage, page * perPage);
 
         const noAchievementsField = {

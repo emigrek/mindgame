@@ -19,7 +19,7 @@ export const messageReactionAdd: Event = {
             cacheable ? ephemeralChannelMessageCache.add(channel.id, m) : ephemeralChannelMessageCache.remove(channel.id, message.id);
         }
 
-        if (!m.guild) return;
+        if (!m.guild || m.author.bot) return;
 
         new AchievementManager({ client, userId: m.author.id, guildId: m.guild.id })
             .check(

@@ -6,13 +6,14 @@ import { CoordinatedAction, DJ, Ghost, Streamer, Suss, UniqueReactions } from ".
 
 export const achievementModel = model<AchievementDocument<AchievementType>>('Achievement', achievementSchema);
 
-export const allAchievements: BaseAchievement<AchievementType>[] = [
-    // new UniqueReactions(),
-    // new CoordinatedAction(),
-    // new Suss(),
-    // new Streamer(),
-    // new Ghost(),
-    // new DJ(),
+// Fresh instances on every call, directed achievements hold per-user state
+export const getAllAchievements = (): BaseAchievement<AchievementType>[] => [
+    new UniqueReactions(),
+    new CoordinatedAction(),
+    new Suss(),
+    new Streamer(),
+    new Ghost(),
+    new DJ(),
 ];
 
 export * from "./structures";

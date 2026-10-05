@@ -37,6 +37,11 @@ export abstract class BaseAchievement<T extends AchievementType> {
 
     abstract progress (context: AchievementTypeContext[T]): Promise<ProgressResult | undefined>;
 
+    // Override to format payload values (e.g. durations) for the status line
+    statusParams(payload: NonNullable<AchievementTypePayload[T]>): object {
+        return { ...payload };
+    }
+
     async updatePayload(payload: Partial<AchievementTypePayload[T]>): Promise<this> {
         this.payload = {
             ...this.payload,
@@ -77,7 +82,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
                     this.level = achievement.level || 0;
                     this.leveledUpAt = achievement.leveledUpAt;
                     this.payload = achievement.payload as AchievementTypePayload[T];
-                    this.status = i18n.__mf(`achievements.${this.achievementType}.status`, { ...this.payload });
+                    if (this.payload)
+                        this.status = i18n.__mf(`achievements.${this.achievementType}.status`, this.statusParams(this.payload));
                 }
                 return this;
             });
@@ -91,27 +97,6 @@ export abstract class BaseAchievement<T extends AchievementType> {
             .then(() => this.progress(this.getContext()));
     }
 
-    async levelUp(): Promise<this> {
-        if (!this.userId || !this.guildId) 
-            throw new Error("The achievement must be directed to a user in a guild.");
-
-        return achievementModel.updateOne({
-            userId: this.userId,
-            guildId: this.guildId,
-            achievementType: this.achievementType
-        }, {
-            level: this.level + 1,
-            leveledUpAt: new Date()
-        }, {
-            upsert: true
-        })
-            .then(() => {
-                this.level++;
-                this.leveledUpAt = new Date();
-                return this;
-            });
-    }
-    
     async setLevel(level: number): Promise<this> {
         if (!this.userId || !this.guildId) 
             throw new Error("The achievement must be directed to a user in a guild.");

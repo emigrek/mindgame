@@ -1,10 +1,12 @@
-import { AchievementType, AchievementTypeContext } from "@/interfaces";
-import { GradualAchievement } from "@/modules/achievement/structures";
+import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { voiceActivityModel } from "@/modules/activity";
+import { formatDuration } from "@/utils/date";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
+import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
     emoji = "🤝";
+    lowerIsBetter = true;
     levels = [
         {
             value: 1000 * 60 * 10,
@@ -45,32 +47,32 @@ export class CoordinatedAction extends GradualAchievement<AchievementType.COORDI
     ];
 
     constructor(context?: BaseAchievementContext<AchievementType.COORDINATED_ACTION>) {
-        super({ 
+        super({
             context,
             achievementType: AchievementType.COORDINATED_ACTION
         });
     }
 
+    statusParams(payload: AchievementTypePayload[AchievementType.COORDINATED_ACTION]) {
+        return { ...payload, ms: formatDuration(payload.ms) };
+    }
+
     async progress(context: AchievementTypeContext[AchievementType.COORDINATED_ACTION]) {
         const { lastChannelActivity, userActivity } = context;
 
-        if (!lastChannelActivity || !userActivity) 
+        if (!lastChannelActivity || !userActivity)
             return;
 
         const { guildId, channelId } = userActivity;
         const channelActivities = await voiceActivityModel.find({ guildId, channelId, to: null });
-        
-        if (channelActivities.length > 2) 
+
+        if (channelActivities.length > 2)
             return;
 
         const diff = Math.abs(userActivity.from.getTime() - lastChannelActivity.from.getTime());
-        const result = this.findClosestLevelThreshold(diff);
-        if (!result || result.level <= this.level) 
-            return;
+        if (!this.payload || diff < this.payload.ms)
+            await this.updatePayload({ ms: diff, withUserId: lastChannelActivity.userId });
 
-        return this.updatePayload({ ms: diff, withUserId: lastChannelActivity.userId })
-            .then(() => this.setLevel(result.level))
-            .then(() => ({ leveledUp: true, change: result.level - this.level }));
+        return this.reach(diff);
     }
 }
-

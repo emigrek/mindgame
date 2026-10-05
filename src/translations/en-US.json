@@ -183,6 +183,8 @@
 	},
 	"notifications": {
 		"levelUpTitle": "Level up!",
+		"achievementTitle": "Achievement unlocked!",
+		"achievementDescription": "<@{userId}> has unlocked **{achievement}**!",
 		"levelUpDescription": "<@{userId}> has reached <@&{roleId}>!",
 		"levelField": "Level",
 		"winsField": "Wins",
@@ -316,22 +318,22 @@
 		},
 		"0": {
 			"name": "Unique Reactions",
-			"status": "Reactions: `{uniqueReactions}`",
-			"description": "Receive message reactions from other users."
+			"status": "Best message: `{uniqueReactions}` reactions",
+			"description": "Get reactions from as many different users as possible on a single message."
 		},
 		"1": {
 			"name": "Coordinated Action",
-			"status": "Time between: `{ms}ms` · With: <@{withUserId}>",
+			"status": "Best time between: `{ms}` · With: <@{withUserId}>",
 			"description": "Join a voice channel right after someone else."
 		},
 		"2": {
 			"name": "Suss",
-			"status": "Time alone: `{topAloneMs}ms`",
+			"status": "Total time alone: `{aloneMs}`",
 			"description": "Spend a significant amount of time alone in a voice channel."
 		},
 		"3": {
 			"name": "Streamer",
-			"status": "Time: `{topMs}ms`",
+			"status": "Total streaming time: `{ms}`",
 			"description": "Dedicate a considerable amount of time to streaming content."
 		},
 		"4": {

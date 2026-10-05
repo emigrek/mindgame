@@ -13,8 +13,8 @@ export enum AchievementType {
 export interface AchievementTypePayload {
     [AchievementType.UNIQUE_REACTIONS]: {uniqueReactions: number},
     [AchievementType.COORDINATED_ACTION]: {ms: number, withUserId: string},
-    [AchievementType.SUSS]: {from?: Date, aloneMs: number, topAloneMs: number},
-    [AchievementType.STREAMER]: {last?: Date, topMs: number, ms: number},
+    [AchievementType.SUSS]: {from?: Date, aloneMs: number},
+    [AchievementType.STREAMER]: {last?: Date, ms: number},
     [AchievementType.GHOST]: undefined,
     [AchievementType.DJ]: {messageCount: number}
 }
@@ -22,8 +22,8 @@ export interface AchievementTypePayload {
 export interface AchievementTypeContext {
     [AchievementType.UNIQUE_REACTIONS]: {message: Message},
     [AchievementType.COORDINATED_ACTION]: {lastChannelActivity?: VoiceActivityDocument, userActivity?: VoiceActivityDocument},
-    [AchievementType.SUSS]: {member: GuildMember, channel: VoiceBasedChannel},
-    [AchievementType.STREAMER]: {member: GuildMember, channel: VoiceBasedChannel, streaming: boolean},
+    [AchievementType.SUSS]: {member: GuildMember},
+    [AchievementType.STREAMER]: {member: GuildMember, streaming: boolean},
     [AchievementType.GHOST]: {member: GuildMember, channel: VoiceBasedChannel},
     [AchievementType.DJ]: {message: Message}
 }

@@ -1,8 +1,9 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak } from "@/interfaces";
+import { AchievementType, ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak } from "@/interfaces";
 import { Message as MessageType, MessageTypeIds } from '@/interfaces/Message';
+import type { BaseAchievement } from "@/modules/achievement";
 import {
     createEphemeralChannel,
     deleteEphemeralChannel,
@@ -477,6 +478,34 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
+const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, achievement: BaseAchievement<AchievementType>) => {
+    i18n.setLocale(guild.preferredLocale);
+
+    const sourceUser = await getUser(user);
+    if (!sourceUser) return getErrorMessagePayload();
+
+    const colors = await useImageHex(sourceUser.avatarUrl);
+    const name = i18n.__(`achievements.${achievement.achievementType}.name`);
+
+    const embed = InformationEmbed()
+        .setColor(getColorInt(colors.Vibrant))
+        .setTitle(i18n.__("notifications.achievementTitle"))
+        .setDescription(i18n.__mf("notifications.achievementDescription", { userId: sourceUser.userId, achievement: `${achievement.emoji} ${name}` }))
+        .setThumbnail(KnownLinks.SPARKLES)
+        .setFields([
+            {
+                name: i18n.__("notifications.levelField"),
+                value: codeBlock(achievement.level.toString()),
+                inline: true
+            }
+        ]);
+
+    return {
+        embeds: [embed],
+        flags: [4096]
+    };
+};
+
 const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, guild: Guild, streak: ActivityStreak) => {
     i18n.setLocale(guild.preferredLocale);
 
@@ -940,5 +969,5 @@ const formatNextStreakField = (daysTillNext: number) => {
     return daysTillNext ? codeBlock(i18n.__n("notifications.voiceStreakInFormat", daysTillNext)) : codeBlock(i18n.__("utils.never"));
 }
 
-export { ImageHexColors, attachQuickButtons, createMessage, deleteMessage, deleteMessages, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getInviteNotificationMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, getAchievementLeveledUpMessagePayload, createMessage, deleteMessage, deleteMessages, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getInviteNotificationMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
 

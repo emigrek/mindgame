@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { config } from '@/config';
 import { AchievementType } from "@/interfaces";
-import { allAchievements } from "@/modules/achievement";
+import { getAllAchievements } from "@/modules/achievement";
 import { BaseAchievement } from "./BaseAchievement";
 
 interface AchievementManagerProps {
@@ -56,7 +56,7 @@ class AchievementManager {
 
     async getAll(display: string[] = ["unlocked"]): Promise<BaseAchievement<AchievementType>[]> {
         const { userId, guildId } = this;
-        return Promise.all(allAchievements.map(achievement => achievement.direct({ userId, guildId }).get()))
+        return Promise.all(getAllAchievements().map(achievement => achievement.direct({ userId, guildId }).get()))
             .then(achievements => achievements.filter(achievement => displayFilter(display, achievement)));
     }
 }

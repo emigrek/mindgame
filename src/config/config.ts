@@ -36,7 +36,7 @@ export const config: Config = {
 
   // Achievements configuration
   achievements: {
-    enabled: false,
+    enabled: true,
   },
 
   // Hours of inactivity before a user is considered to be on a long break. When user join a voice channel after a long break, his followers are notified about it.

@@ -14,15 +14,7 @@ export const voiceStreamingStop: Event = {
             await voiceActivity.save();
         }
 
-        if (member.voice.channel) {
-            new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
-                .check(
-                    new Streamer({
-                        channel: member.voice.channel,
-                        member,
-                        streaming: false
-                    })
-                );
-        }
+        new AchievementManager({ client, userId: member.id, guildId: member.guild.id })
+            .check(new Streamer({ member, streaming: false }));
     }
 }

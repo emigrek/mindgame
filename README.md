@@ -30,10 +30,10 @@ Unlock guild achievements by completing various tasks and challenges.
 
 | Name               | Deciding factor                                                      |
 | ------------------ | -------------------------------------------------------------------- |
-| Unique Reactions   | Number of reactions from other users.                                |
+| Unique Reactions   | Most users reacting to a single message of yours.                    |
 | Coordinated Action | Time between you joining voice channel and someone else joining you. |
-| Suss               | Time spent alone in voice channel.                                   |
-| Streamer           | Time spent streaming.                                                |
+| Suss               | Total time spent alone in voice channel.                             |
+| Streamer           | Total time spent streaming to others.                                |
 | Ghost              | Join voice channel with `Invisible` status.                          |
 | DJ                 | Number of messages sent to play music.                               |
 

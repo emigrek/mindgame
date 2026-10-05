@@ -1,72 +1,56 @@
-import { AchievementType, AchievementTypeContext } from "@/interfaces";
-import { BaseAchievementContext, GradualAchievement } from "@/modules/achievement/structures";
+import ExtendedClient from "@/client/ExtendedClient";
+import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { voiceActivityModel } from "@/modules/activity";
+import { formatDuration } from "@/utils/date";
+import { Collection, GuildMember, VoiceBasedChannel } from "discord.js";
+import { AchievementManager } from "../structures/AchievementManager";
+import { BaseAchievementContext } from "../structures/BaseAchievement";
+import { GradualAchievement } from "../structures/GradualAchievement";
+
+const hour = 1000 * 60 * 60;
 
 export class Suss extends GradualAchievement<AchievementType.SUSS> {
-    achievementType = AchievementType.SUSS;
     emoji = "🤫";
-    levels = [
-        {
-            value: 1000 * 60 * 5,
-            level: 1
-        },
-        {
-            value: 1000 * 60 * 10,
-            level: 2
-        },
-        {
-            value: 1000 * 60 * 30,
-            level: 3
-        },
-        {
-            value: 1000 * 60 * 60,
-            level: 4
-        },
-        {
-            value: 1000 * 60 * 60 * 2,
-            level: 5
-        },
-    ];
+    levels = [1, 5, 10, 25, 50, 100, 250, 500]
+        .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.SUSS>) {
         super({ context, achievementType: AchievementType.SUSS });
     }
 
+    statusParams(payload: AchievementTypePayload[AchievementType.SUSS]) {
+        return { ...payload, aloneMs: formatDuration(payload.aloneMs || 0) };
+    }
+
+    // Total time spent alone (no other active voice activity in the channel)
     async progress(context: AchievementTypeContext[AchievementType.SUSS]) {
-        const { member, channel } = context;
+        const { member } = context;
+        const guildId = member.guild.id;
 
-        if (channel.id === member.guild.afkChannelId) 
-            return;
+        const activity = await voiceActivityModel.findOne({ userId: member.id, guildId, to: null });
+        const alone = !!activity && await voiceActivityModel.countDocuments({ guildId, channelId: activity.channelId, to: null }) === 1;
+        const from = this.payload?.from;
 
-        const channelVoiceActivities = await voiceActivityModel.find({ guildId: member.guild.id, channelId: channel.id, to: null });
-        const userVoiceActivity = channelVoiceActivities.find(activity => activity.userId === this.userId);
-        const noUserActivity = userVoiceActivity === undefined;
-        const usersJoined = userVoiceActivity && channelVoiceActivities.length > 1
-
-        if (noUserActivity || usersJoined) {
-            if (!this.payload?.from)
-                return;
-
-            const diff = new Date().getTime() - this.payload?.from.getTime();
+        if (alone && !from) {
+            await this.updatePayload({ from: new Date() });
+        } else if (!alone && from) {
             await this.updatePayload({
                 from: undefined,
-                aloneMs: this.payload?.aloneMs || 0 + diff,
-                topAloneMs: Math.max(this.payload?.aloneMs || 0 + diff, this.payload?.topAloneMs || 0)
-            });
-        } else if (channelVoiceActivities.length === 1 && userVoiceActivity) {
-            await this.updatePayload({
-                from: new Date(),
-                aloneMs: 0,
-                topAloneMs: Math.max(this.payload?.aloneMs || 0, this.payload?.topAloneMs || 0)
+                aloneMs: (this.payload?.aloneMs || 0) + Date.now() - from.getTime()
             });
         }
 
-        const result = this.findClosestLevelThreshold(this.payload?.aloneMs || 0);
-        if (!result || result.level <= this.level) 
-            return;
-
-        return this.setLevel(result.level)
-            .then(() => ({ leveledUp: true, change: result.level - this.level }));
+        return this.reach(this.payload?.aloneMs || 0);
     }
 }
 
+// Being alone depends on others, so everyone in the affected channels is re-checked
+export const checkSuss = (client: ExtendedClient, member: GuildMember, ...channels: (VoiceBasedChannel | null)[]) => {
+    const members = new Collection<string, GuildMember>().set(member.id, member);
+    for (const channel of channels)
+        channel?.members.forEach(m => members.set(m.id, m));
+
+    members
+        .filter(m => !m.user.bot)
+        .forEach(m => new AchievementManager({ client, userId: m.id, guildId: m.guild.id }).check(new Suss({ member: m })));
+};
