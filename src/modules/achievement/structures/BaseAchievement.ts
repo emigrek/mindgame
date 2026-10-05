@@ -44,6 +44,17 @@ export abstract class BaseAchievement<T extends AchievementType> {
         return { ...payload };
     }
 
+    // Status line for the current payload, in the current i18n locale
+    formatStatus(): string {
+        return this.payload
+            ? i18n.__mf(`achievements.${this.achievementType}.status`, this.statusParams(this.payload))
+            : "";
+    }
+
+    get maxLevel() {
+        return 1;
+    }
+
     async updatePayload(payload: Partial<AchievementTypePayload[T]>): Promise<this> {
         this.payload = {
             ...this.payload,
@@ -84,8 +95,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
                     this.level = achievement.level || 0;
                     this.leveledUpAt = achievement.leveledUpAt;
                     this.payload = achievement.payload as AchievementTypePayload[T];
-                    if (this.payload)
-                        this.status = i18n.__mf(`achievements.${this.achievementType}.status`, this.statusParams(this.payload));
+                    this.status = this.formatStatus();
                 }
                 return this;
             });
@@ -127,7 +137,7 @@ export abstract class BaseAchievement<T extends AchievementType> {
     }
 
     get embedField() {
-        const name = `${this.emoji}   ${this.name}` + (this.level > 0 ? ` (${i18n.__mf("achievements.misc.level", { level: this.level })})` : "");
+        const name = `${this.emoji}   ${this.name}` + (this.level > 0 && this.maxLevel > 1 ? ` (${i18n.__mf("achievements.misc.level", { level: this.level })})` : "");
 
         const value = `${this.status}` + "\n"
             + codeBlock(this.description) 

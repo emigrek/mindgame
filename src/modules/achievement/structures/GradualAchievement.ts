@@ -6,6 +6,10 @@ export abstract class GradualAchievement<T extends AchievementType> extends Base
     // When true, lower values reach higher levels (e.g. reaction time)
     lowerIsBetter = false;
 
+    get maxLevel() {
+        return this.levels.length;
+    }
+
     findClosestLevelThreshold(value: number): LevelThreshold | undefined {
         return this.levels
             .filter(threshold => this.lowerIsBetter ? value <= threshold.value : value >= threshold.value)

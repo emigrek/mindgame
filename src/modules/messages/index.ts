@@ -72,6 +72,7 @@ import {
     bold,
     codeBlock,
     heading,
+    quote,
     userMention
 } from "discord.js";
 import { GetColorName } from 'hex-color-to-color-name';
@@ -478,26 +479,36 @@ const getRankingMessagePayload = async (client: ExtendedClient, interaction: Cha
     }
 };
 
-const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, achievement: BaseAchievement<AchievementType>) => {
+const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, achievement: BaseAchievement<AchievementType>, change: number) => {
     i18n.setLocale(guild.preferredLocale);
 
-    const sourceUser = await getUser(user);
-    if (!sourceUser) return getErrorMessagePayload();
-
-    const colors = await useImageHex(sourceUser.avatarUrl);
-    const name = i18n.__(`achievements.${achievement.achievementType}.name`);
+    const { achievementType, emoji, level, maxLevel } = achievement;
+    const unlocked = level === change;
+    const name = `${emoji} ${i18n.__(`achievements.${achievementType}.name`)}`;
+    const status = achievement.formatStatus();
+    const avatarUrl = user.displayAvatarURL({ extension: "png" });
+    const colors = await useImageHex(avatarUrl);
 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
-        .setTitle(i18n.__("notifications.achievementTitle"))
-        .setDescription(i18n.__mf("notifications.achievementDescription", { userId: sourceUser.userId, achievement: `${achievement.emoji} ${name}` }))
-        .setThumbnail(KnownLinks.SPARKLES)
+        .setTitle(i18n.__(unlocked ? "notifications.achievementTitle" : "notifications.achievementUpgradedTitle"))
+        .setDescription(
+            i18n.__mf(unlocked ? "notifications.achievementDescription" : "notifications.achievementUpgradedDescription", { userId: user.id, achievement: name })
+            + "\n\n" + quote(i18n.__(`achievements.${achievementType}.description`))
+        )
+        .setThumbnail(avatarUrl)
         .setFields([
-            {
+            // Single level achievements are only unlocked, level adds nothing there
+            ...(maxLevel > 1 ? [{
                 name: i18n.__("notifications.levelField"),
-                value: codeBlock(achievement.level.toString()),
+                value: codeBlock(`${level}/${maxLevel}`),
                 inline: true
-            }
+            }] : []),
+            ...(status ? [{
+                name: i18n.__("notifications.achievementResultField"),
+                value: status,
+                inline: true
+            }] : [])
         ]);
 
     return {

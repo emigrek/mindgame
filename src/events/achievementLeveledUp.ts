@@ -23,7 +23,7 @@ export const achievementLeveledUp: Event = {
         const user = await client.users.fetch(userId);
         await NotificationsManager.getInstance().schedule({
             channel: channel as TextChannel,
-            payload: await getAchievementLeveledUpMessagePayload(user, guild, achievement),
+            payload: await getAchievementLeveledUpMessagePayload(user, guild, achievement, change),
         });
     }
 }
