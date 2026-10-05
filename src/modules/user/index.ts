@@ -57,6 +57,14 @@ const getUser = async (user: User) => {
         exists = await createUser(user);
     }
 
+    // userUpdate events get missed (e.g. while offline) -> stale avatar hash 404s on the CDN
+    const avatarUrl = user.displayAvatarURL({ extension: "png" });
+    if (exists.avatarUrl !== avatarUrl || exists.username !== user.username) {
+        exists.avatarUrl = avatarUrl;
+        exists.username = user.username;
+        await exists.save();
+    }
+
     return exists;
 }
 
