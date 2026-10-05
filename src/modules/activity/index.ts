@@ -187,6 +187,29 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
     return outOfSync;
 };
 
+// ponytail: leave events can be missed (channel deleted, gateway reconnect, join/leave race), so trust the voice state cache
+const isMemberInVoice = (client: ExtendedClient, userId: string, guildId: string) => {
+    const guild = client.guilds.cache.get(guildId);
+    const state = guild?.voiceStates.cache.get(userId);
+    return !!state?.channelId && state.channelId !== guild?.afkChannelId && !state.deaf;
+};
+
+const closeStaleVoiceActivities = async (client: ExtendedClient, groups: VoiceActivitiesByChannelId[]): Promise<VoiceActivitiesByChannelId[]> => {
+    const staleIds = groups
+        .flatMap(({ activities }) => activities)
+        .filter(({ userId, guildId }) => !isMemberInVoice(client, userId, guildId))
+        .map(({ _id }) => _id);
+
+    if (!staleIds.length) return groups;
+
+    await voiceActivityModel.updateMany({ _id: { $in: staleIds } }, { to: moment().toDate() });
+
+    const stale = new Set(staleIds.map(String));
+    return groups
+        .map(group => ({ ...group, activities: group.activities.filter(({ _id }) => !stale.has(String(_id))) }))
+        .filter(group => group.activities.length);
+};
+
 const validatePresenceActivities = async (client: ExtendedClient) => {
     const activities = await presenceActivityModel.find({
         to: null
@@ -627,5 +650,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, closeStaleVoiceActivities, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
 
