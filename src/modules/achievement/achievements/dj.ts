@@ -1,13 +1,26 @@
-import { config } from "@/config";
+import ExtendedClient from "@/client/ExtendedClient";
 import { AchievementType, AchievementTypeContext } from "@/interfaces";
-import { voiceActivityModel } from "@/modules/activity";
+import { delay } from "@/utils/delay";
+import { Message } from "discord.js";
+import { AchievementManager } from "../structures/AchievementManager";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
 import { GradualAchievement } from "../structures/GradualAchievement";
 
-const escapedPrefixes = config.emptyGuildSweepBotPrefixesList
-    .map(prefix => prefix.replace(/[\\\]^-]/g, "\\$&"))
-    .join("");
-const playRegExp = new RegExp(`^[${escapedPrefixes}]play\\s`, "i");
+// Any short prefix with a symbol (!, ;;, m!, >>) or a bot mention, followed by "play"
+export const playRegExp = /^(?:\w{0,2}[^\w\s]{1,2}|<@!?\d+>\s*)play\s/i;
+
+// Time for the music bot to respond and join the voice channel
+const verificationDelayMs = 10_000;
+
+// User who requested a song: a bot's response to /play, or a user's text play command
+export const getPlayRequester = (message: Message) => {
+    if (!message.author.bot)
+        return playRegExp.test(message.content.trim()) ? message.author : undefined;
+
+    // message.interaction is deprecated, but interactionMetadata has no command name
+    const interaction = message.interaction;
+    return interaction?.commandName.toLowerCase() === "play" ? interaction.user : undefined;
+};
 
 export class DJ extends GradualAchievement<AchievementType.DJ> {
     emoji = "💽"
@@ -57,18 +70,37 @@ export class DJ extends GradualAchievement<AchievementType.DJ> {
         });
     }
 
+    // Counts only when a bot that responded to the request is in the requester's voice channel
     async progress(context: AchievementTypeContext[AchievementType.DJ]) {
         const { message } = context;
-
-        if (!playRegExp.test(message.content.trim()) || !message.guild)
+        if (!message.guild || !this.userId)
             return;
 
-        const voiceActive = await voiceActivityModel.findOne({ userId: message.author.id, guildId: message.guild.id, to: null });
-        if (!voiceActive)
+        const requester = await message.guild.members.fetch(this.userId);
+        const voiceChannel = requester.voice.channel;
+        if (!voiceChannel)
+            return;
+
+        const responders = message.author.bot
+            ? [message.author.id]
+            : await message.channel.messages.fetch({ after: message.id, limit: 20 })
+                .then(messages => messages.filter(m => m.author.bot).map(m => m.author.id));
+
+        if (!responders.some(id => voiceChannel.members.has(id)))
             return;
 
         await this.updatePayload({ messageCount: (this.payload?.messageCount || 0) + 1 });
-
         return this.reach(this.payload?.messageCount || 0);
     }
 }
+
+export const checkDJ = async (client: ExtendedClient, message: Message) => {
+    const requester = getPlayRequester(message);
+    if (!requester || requester.bot || !message.guild)
+        return;
+
+    // Waiting before the check, so the payload is read after the delay
+    await delay(verificationDelayMs);
+    new AchievementManager({ client, userId: requester.id, guildId: message.guild.id })
+        .check(new DJ({ message }));
+};

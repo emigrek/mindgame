@@ -1,8 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { config } from "@/config";
 import { Event } from "@/interfaces";
-import { AchievementManager } from "@/modules/achievement";
-import { DJ } from "@/modules/achievement/achievements";
+import { checkDJ } from "@/modules/achievement/achievements";
 import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-channel";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { ExperienceCalculator } from "@/modules/experience";
@@ -14,10 +13,9 @@ export const messageCreate: Event = {
     run: async (client: ExtendedClient, message: Message) => {
         if (!message.guild) return;
 
-        if (!message.author.bot) {
-            new AchievementManager({ client, userId: message.author.id, guildId: message.guild.id })
-                .check(new DJ({ message }));
-        }
+        // Not awaited, verification waits for the music bot to respond
+        checkDJ(client, message)
+            .catch(e => console.log("There was an error while checking DJ achievement: ", e));
 
         if (config.experience.message.enabled && !message.author.bot) {
             await updateUserGuildStatistics({

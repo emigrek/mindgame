@@ -1,7 +1,7 @@
 export { checkVoiceChannelMembers, checkVoiceSessionEnd } from "./checks";
 export { Comeback } from "./comeback";
 export { CoordinatedAction } from "./coordinatedAction";
-export { DJ } from "./dj";
+export { DJ, checkDJ } from "./dj";
 export { Ghost } from "./ghost";
 export { Host } from "./host";
 export { Marathon } from "./marathon";
