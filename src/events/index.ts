@@ -23,6 +23,7 @@ import { userReceivedDailyReward } from "./userReceivedDailyReward";
 import { yearly } from "./yearly";
 import { messageDelete } from "./messageDelete";
 import { messageDeleteBulk } from "./messageDeleteBulk";
+import { messagePinned } from "./messagePinned";
 import { messageReactionAdd } from "./messageReactionAdd";
 import { messageReactionRemove } from "./messageReactionRemove";
 import { userBackFromLongVoiceBreak } from "./userBackFromLongVoiceBreak";
@@ -57,6 +58,7 @@ const events: Event[] = [
     yearly,
     messageDelete,
     messageDeleteBulk,
+    messagePinned,
     userBackFromLongVoiceBreak,
     userSignificantVoiceActivityStreak,
     messageReactionAdd,

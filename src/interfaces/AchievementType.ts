@@ -1,19 +1,20 @@
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
 import { GuildMember, Message, VoiceBasedChannel } from "discord.js";
 
+// Values are stored in MongoDB and used as translation keys: append only, never reorder or reuse
 export enum AchievementType {
-    UNIQUE_REACTIONS,
-    COORDINATED_ACTION,
-    SUSS,
-    STREAMER,
-    GHOST,
-    DJ,
-    NIGHT_OWL,
-    MARATHON,
-    SOCIAL,
-    HOST,
-    COMEBACK,
-    REGULAR
+    UNIQUE_REACTIONS = 0,
+    COORDINATED_ACTION = 1,
+    SUSS = 2,
+    STREAMER = 3,
+    GHOST = 4,
+    DJ = 5,
+    NIGHT_OWL = 6,
+    MARATHON = 7,
+    SOCIAL = 8,
+    HOST = 9,
+    COMEBACK = 10,
+    REGULAR = 11
 }
 
 export interface AchievementTypePayload {

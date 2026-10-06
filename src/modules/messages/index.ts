@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { AchievementType, ActivityStreak, ProfilePages, SelectMenuOption, SortingRanges, SortingTypes, Streak } from "@/interfaces";
+import { AchievementType, ActivityStreak, ProfilePages, SortingRanges, SortingTypes, Streak } from "@/interfaces";
 import { Message as MessageType, MessageTypeIds } from '@/interfaces/Message';
 import type { BaseAchievement } from "@/modules/achievement";
 import {
@@ -48,10 +48,12 @@ import {
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
+    ChannelSelectMenuBuilder,
     ChannelType,
     ChatInputCommandInteraction,
     Collection,
     CommandInteraction,
+    DiscordAPIError,
     EmbedBuilder,
     EmbedField,
     Guild,
@@ -60,10 +62,10 @@ import {
     Message,
     MessageContextMenuCommandInteraction,
     ModalSubmitInteraction,
+    RESTJSONErrorCodes,
     StringSelectMenuBuilder,
     StringSelectMenuInteraction,
     TextChannel,
-    ThreadChannel,
     User,
     UserContextMenuCommandInteraction,
     UserSelectMenuBuilder,
@@ -142,23 +144,13 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
         return getErrorMessagePayload();
     }
 
-    const defaultChannelOptions = textChannels.map((channel) => {
-        return {
-            label: `#${channel.name}`,
-            description: i18n.__mf("config.channelWatchers", {
-                count: (channel instanceof ThreadChannel ? 0 : channel.members.filter(member => !member.user.bot).size)
-            }),
-            value: channel.id
-        }
-    });
-
     const notificationsButton = getNotificationsButton({ guild: sourceGuild })
     const levelRolesButton = getLevelRolesButton({ guild: sourceGuild })
     const levelRolesHoistButton = getLevelRolesHoistButton({ guild: sourceGuild })
     const autoSweepingButton = getAutoSweepingButton({ guild: sourceGuild })
-    const channelSelect = await getChannelSelect(currentDefault as TextChannel, defaultChannelOptions as SelectMenuOption[]);
+    const channelSelect = getChannelSelect(currentDefault as TextChannel | undefined);
 
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+    const row = new ActionRowBuilder<ChannelSelectMenuBuilder>()
         .setComponents(channelSelect);
     const row2 = new ActionRowBuilder<ButtonBuilder>()
         .setComponents(levelRolesButton, levelRolesHoistButton);
@@ -251,7 +243,9 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     const embed = new EmbedBuilder()
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.levelUpTitle"))
-        .setDescription(i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, roleId: guildTresholdRole?.id }))
+        .setDescription(guildTresholdRole
+            ? i18n.__mf("notifications.levelUpDescription", { userId: sourceUser.userId, roleId: guildTresholdRole.id })
+            : i18n.__mf("notifications.levelUpDescriptionNoRole", { userId: sourceUser.userId, level }))
         .setFields(
             {
                 name: i18n.__("notifications.levelField"),
@@ -289,9 +283,10 @@ const getCommitsMessagePayload = async (client: ExtendedClient) => {
     if (!commits)
         return getErrorMessagePayload();
 
+    // author is null for commits whose email isn't linked to a GitHub account
     const fields: EmbedField[] = commits.map((commit: any) => ({
-        name: commit.author.login,
-        value: `${codeBlock(commit.commit.message)}[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
+        name: commit.author?.login ?? commit.commit.author?.name ?? "?",
+        value: `${codeBlock(commit.commit.message.split("\n")[0].slice(0, 200))}[commit](${commit.html_url}) - ${moment(commit.commit.author.date).format("DD/MM/YYYY HH:mm")}`,
         inline: true
     }));
 
@@ -885,15 +880,21 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
         config.emptyGuildSweepBotPrefixesList.some(prefix => message.content.startsWith(prefix)) || message.author.bot 
     ));
 
-    return Promise.all(messagesToDelete.map((message: Message) => message.delete()))
-        .then(async deleted => {
-            await attachQuickButtons(client, channel.id);
-            return deleted.length;
-        })
+    // bulkDelete skips messages older than 14 days, those go one by one. One failed delete must not hide the rest.
+    const bulkDeleted = await channel.bulkDelete(messagesToDelete, true)
         .catch(e => {
-            console.log(`There was an error when sweeping the channel: ${e}`);
-            return 0;
+            console.log(`There was an error when bulk deleting messages: ${e}`);
+            return new Collection<string, unknown>();
         });
+    const results = await Promise.allSettled(
+        messagesToDelete
+            .filter((message: Message) => !bulkDeleted.has(message.id))
+            .map((message: Message) => message.delete())
+    );
+
+    await attachQuickButtons(client, channel.id)
+        .catch(e => console.log(`There was an error when attaching quick buttons: ${e}`));
+    return bulkDeleted.size + results.filter(result => result.status === "fulfilled").length;
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channelId: string) => {
@@ -963,6 +964,17 @@ const deleteMessage = async (messageId: string) => {
     })
 };
 
+// A tracked message can be deleted while the bot is offline. Drop its record so callers send a new one.
+const fetchTrackedMessage = async (channel: TextChannel, messageId: string) => {
+    const message = await channel.messages.fetch(messageId)
+        .catch(e => {
+            if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownMessage) return null;
+            throw e;
+        });
+    if (!message) await deleteMessage(messageId);
+    return message;
+};
+
 const deleteMessages = async (channelId: string) => {
     return messageModel.deleteMany({
         channelId: channelId
@@ -980,5 +992,5 @@ const formatNextStreakField = (daysTillNext: number) => {
     return daysTillNext ? codeBlock(i18n.__n("notifications.voiceStreakInFormat", daysTillNext)) : codeBlock(i18n.__("utils.never"));
 }
 
-export { ImageHexColors, attachQuickButtons, getAchievementLeveledUpMessagePayload, createMessage, deleteMessage, deleteMessages, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getInviteNotificationMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
+export { ImageHexColors, attachQuickButtons, getAchievementLeveledUpMessagePayload, createMessage, deleteMessage, deleteMessages, fetchTrackedMessage, formatNextStreakField, formatStreakField, getColorInt, getColorMessagePayload, getCommitsMessagePayload, getConfigMessagePayload, getDailyRewardMessagePayload, getEphemeralChannelMessagePayload, getErrorMessagePayload, getEvalMessagePayload, getFollowMessagePayload, getHelpMessagePayload, getInviteNotificationMessagePayload, getLevelUpMessagePayload, getMessage, getProfileMessagePayload, getRankingMessagePayload, getSelectMessagePayload, getSignificantVoiceActivityStreakMessagePayload, sweepTextChannel, useImageHex };
 

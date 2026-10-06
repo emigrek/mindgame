@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {getGuild} from "@/modules/guild";
-import {createMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
+import {createMessage, fetchTrackedMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
 import {assignUserLevelRole, crossesLevelThreshold} from "@/modules/roles";
 import {sendNewFeaturesMessage} from "@/modules/user";
 import {TextChannel} from "discord.js";
@@ -41,8 +41,8 @@ export const userLeveledUp: Event = {
             typeId: MessageTypeIds.LEVEL_UP,
         });
 
-        if (existing) {
-            const message = await channel.messages.fetch(existing.messageId);
+        const message = existing ? await fetchTrackedMessage(channel, existing.messageId) : null;
+        if (message) {
             await message.edit(levelUpMessagePayload)
                 .catch(error => {
                     console.log("Error while editing level up message: ", error);

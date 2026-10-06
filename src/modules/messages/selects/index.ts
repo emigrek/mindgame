@@ -2,7 +2,7 @@ import i18n from "@/client/i18n";
 import {SelectMenuOption, Sorting} from "@/interfaces";
 import {UserDocument} from "@/modules/schemas/User";
 import {UserSelectMenuBuilder} from "@discordjs/builders";
-import {StringSelectMenuBuilder, TextChannel} from "discord.js";
+import {ChannelSelectMenuBuilder, ChannelType, StringSelectMenuBuilder, TextChannel} from "discord.js";
 
 
 const getUserPageSelect = async (placeholder: string, options: SelectMenuOption[]) => {
@@ -13,13 +13,14 @@ const getUserPageSelect = async (placeholder: string, options: SelectMenuOption[
         .setPlaceholder(placeholder);
 };
 
-const getChannelSelect = async (currentDefault: TextChannel, options: SelectMenuOption[]) => {
-    return new StringSelectMenuBuilder()
+// Native channel select: a string select caps at 25 options, so /config broke in guilds with more text channels
+const getChannelSelect = (currentDefault?: TextChannel) => {
+    return new ChannelSelectMenuBuilder()
         .setCustomId("defaultChannelSelect")
+        .setChannelTypes(ChannelType.GuildText)
         .setPlaceholder(currentDefault ? i18n.__mf("config.selectChannelPlaceholder", {channel: currentDefault?.name || '?'}) : i18n.__("config.selectChannelPlaceholderNoDefault"))
         .setMinValues(1)
-        .setMaxValues(1)
-        .addOptions(options);
+        .setMaxValues(1);
 }
 
 const getRankingSortSelect = async (sorting: Sorting, options: SelectMenuOption[]) => {

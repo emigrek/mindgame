@@ -219,16 +219,16 @@ Build Docker image
 docker build -t mindgame .
 ```
 
-Run Docker container
+Run Docker container (the bot exits on fatal errors, the restart policy brings it back)
 
 ```bash
-docker run --env-file .env --rm mindgame
+docker run -d --restart unless-stopped --env-file .env mindgame
 ```
 
 Hosting MongoDB in other container?
 
 ```bash
-docker run --env-file .env --link [container_name]:[alias] --rm mindgame
+docker run -d --restart unless-stopped --env-file .env --link [container_name]:[alias] mindgame
 ```
 
 - Replace `[container_name]` with your MongoDB container name

@@ -189,6 +189,7 @@
 		"achievementUpgradedDescription": "<@{userId}> has reached a new level of **{achievement}**!",
 		"achievementResultField": "Result",
 		"levelUpDescription": "<@{userId}> has reached <@&{roleId}>!",
+		"levelUpDescriptionNoRole": "<@{userId}> has reached level **{level}**!",
 		"levelField": "Level",
 		"winsField": "Wins",
 		"dailyRewardTitle": "Daily reward",

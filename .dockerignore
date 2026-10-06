@@ -1,0 +1,9 @@
+# Secrets must come from --env-file at runtime, never from image layers
+.env*
+!.env.example
+.agent-office
+.git
+.idea
+.vscode
+.claude
+node_modules

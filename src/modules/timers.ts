@@ -44,7 +44,7 @@ export const timers: Module = {
     name: "timers",
     run: async (client) => {
         for (const schedule of schedules) {
-            cron.schedule(schedule.cron, () => client.emit(schedule.name));
+            cron.schedule(schedule.cron, () => client.emit(schedule.name), { timezone: "Europe/Warsaw" });
         }
     }
 }   

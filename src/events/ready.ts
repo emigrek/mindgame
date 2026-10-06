@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import NotificationsManager from "@/modules/messages/notificationsManager";
-import {attachQuickButtons, createMessage, getInviteNotificationMessagePayload, getMessage} from "@/modules/messages";
+import {attachQuickButtons, createMessage, fetchTrackedMessage, getInviteNotificationMessagePayload, getMessage} from "@/modules/messages";
 import {config} from "@/config";
 import {getRandomNumber} from "@/utils/random";
 import {TextChannel} from "discord.js";
@@ -24,8 +24,8 @@ export const ready: Event = {
                     });
 
                     if (exist) {
-                        const message = await channel.messages.fetch(exist.messageId);
-                        await message.delete();
+                        const message = await fetchTrackedMessage(channel, exist.messageId);
+                        await message?.delete();
                     }
 
                     await NotificationsManager.getInstance().schedule({

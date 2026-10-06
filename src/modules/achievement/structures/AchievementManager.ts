@@ -36,6 +36,10 @@ class AchievementManager {
         if (!config.achievements.enabled)
             return this;
 
+        // Music bots sit in voice too, they must not collect achievements or trigger announcements
+        if (this.client.users.cache.get(userId)?.bot)
+            return this;
+
         const check = (achievement: BaseAchievement<AchievementType>) => 
             achievement.direct({ userId, guildId })
                 .check()

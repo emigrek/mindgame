@@ -52,7 +52,8 @@ class ExtendedClient extends Client {
     public async loadEvents() {
         for (const event of events) {
             this.events.set(event.name, event);
-            this.on(event.name, event.run.bind(null, this));
+            this.on(event.name, (...args) => Promise.resolve(event.run(this, ...args))
+                .catch(e => console.error(`[Event:${event.name}] Error`, e)));
         }
     }
 

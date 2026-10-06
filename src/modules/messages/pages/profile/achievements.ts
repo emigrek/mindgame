@@ -27,8 +27,9 @@ export class Achievements extends BaseProfilePage {
     }
 
     async getAchievementsEmbed() {
-        const { renderedUser, colors, guild, client, targetUser } = this.params;
-        const state = achievementsStore.get(renderedUser.userId);
+        const { renderedUser, sourceUser, colors, guild, client, targetUser } = this.params;
+        // Keyed by the viewer, like the pagination and display handlers that write it
+        const state = achievementsStore.get(sourceUser.userId);
 
         if (!guild) {
             throw new Error("Guild is required for statistics page");
@@ -47,7 +48,7 @@ export class Achievements extends BaseProfilePage {
             );
         
         state.pages = Math.max(1, Math.ceil(allFields.length / state.perPage));
-        state.page = Math.min(state.page, state.pages);
+        state.page = Math.min(Math.max(1, state.page), state.pages);
 
         const { display, page, pages, perPage } = state;
         const fields = allFields.slice((page - 1) * perPage, page * perPage);
@@ -79,7 +80,7 @@ export class Achievements extends BaseProfilePage {
     }
 
     getPaginationButtonsRow() {
-        const { page, pages } = achievementsStore.get(this.params.renderedUser.userId);
+        const { page, pages } = achievementsStore.get(this.params.sourceUser.userId);
 
         const up = new ButtonBuilder()
             .setCustomId("achievementsPageUp")
@@ -98,7 +99,7 @@ export class Achievements extends BaseProfilePage {
     }
 
     getDisplaySelectRow() {
-        const { display } = achievementsStore.get(this.params.renderedUser.userId);
+        const { display } = achievementsStore.get(this.params.sourceUser.userId);
 
         const options = [
             {

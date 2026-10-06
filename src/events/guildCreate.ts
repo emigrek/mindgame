@@ -7,8 +7,9 @@ import {InformationEmbed} from "@/modules/messages/embeds";
 import {assignLevelRolesInGuild} from "@/modules/roles/";
 import {ChannelType, Guild, NonThreadGuildBasedChannel, PermissionsBitField, TextChannel} from "discord.js";
 
-const checkClientMissingPermissions = (guild: Guild): string[] | false => {
-    const me = guild.members.cache.get(guild.client.user.id);
+const checkClientMissingPermissions = async (guild: Guild): Promise<string[] | false> => {
+    // A cache miss must not look like missing permissions, that makes the bot leave the guild
+    const me = guild.members.me ?? await guild.members.fetchMe().catch(() => null);
     if (!me) return false;
     
     const permissions = me.permissions;
@@ -23,14 +24,15 @@ export const guildCreate: Event = {
     run: async (client: ExtendedClient, guild: Guild) => {
         const owner = await client.users.fetch(guild.ownerId);
 
-        const missingPermissions = checkClientMissingPermissions(guild);
+        const missingPermissions = await checkClientMissingPermissions(guild);
         if(!missingPermissions || missingPermissions.length) {
+            // Owners with closed DMs would otherwise keep the bot in a guild it can't work in
             await owner?.send({
                 embeds: [
                     InformationEmbed()
                         .setDescription(i18n.__("utils.missingPermissions"))
                 ]
-            });
+            }).catch(() => null);
             await guild.leave();
             return;
         }
@@ -48,10 +50,10 @@ export const guildCreate: Event = {
             return;
         }
 
+        // The guild document must exist first, setDefaultChannelId only updates existing ones
+        const sourceGuild = await createGuild(guild.id);
         const proposedTextChannel = textChannels.first() as TextChannel;
         await setDefaultChannelId({guildId: guild.id, channelId: proposedTextChannel.id});
-
-        const sourceGuild = await createGuild(guild.id);
 
         if(sourceGuild.levelRoles)
             await assignLevelRolesInGuild({client, guildId: guild.id});

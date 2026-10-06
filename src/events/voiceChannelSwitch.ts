@@ -15,7 +15,6 @@ export const voiceChannelSwitch: Event = {
             await startVoiceActivity(client, member, newChannel);
         } else if (newChannel.id === guild.afkChannelId) {
             checkVoiceSessionEnd(client, member, await endVoiceActivity(member));
-            await checkGuildVoiceEmpty(client, guild, oldChannel);
         } else {
             activity.channelId = newChannel.id;
             await activity.save();

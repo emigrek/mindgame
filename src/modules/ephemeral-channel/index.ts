@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { EphemeralChannel } from '@/interfaces';
 import ephemeralChannelSchema, { EphemeralChannelDocument } from "@/modules/schemas/EphemeralChannel";
-import { Message, MessageReaction, TextChannel } from "discord.js";
+import { DiscordAPIError, Message, MessageReaction, RESTJSONErrorCodes, TextChannel } from "discord.js";
 import moment from "moment";
 import mongoose from "mongoose";
 import { ephemeralChannelMessageCache } from "./cache";
@@ -49,6 +49,14 @@ const getEphemeralChannels = async (): Promise<EphemeralChannelDocument[]> => {
     return EphemeralChannelModel.find();
 }
 
+// Retrying these every minute would only burn Discord's invalid request limit (10k per 10 min, then a Cloudflare ban)
+const permanentDeleteErrors = new Set<number>([
+    RESTJSONErrorCodes.UnknownMessage,
+    RESTJSONErrorCodes.UnknownChannel,
+    RESTJSONErrorCodes.MissingAccess,
+    RESTJSONErrorCodes.MissingPermissions,
+]);
+
 const deleteCachedMessages = async () => {
     const cache = ephemeralChannelMessageCache.getCache();
 
@@ -59,12 +67,20 @@ const deleteCachedMessages = async () => {
             return null;
         
         const messageDeletionPromises = messages.map(async (message: Message) => {
+            // Pinned after it was cached
+            if (message.pinned)
+                return ephemeralChannelMessageCache.remove(channelId, message.id);
+
             const now = moment();
             const created = moment(message.createdAt);
 
             if(now.diff(created, "minutes", true) >= ephemeralChannel.timeout) {
                 await message.delete()
-                    .then(() => ephemeralChannelMessageCache.remove(channelId, message.id))
+                    .catch(error => {
+                        if (!(error instanceof DiscordAPIError && permanentDeleteErrors.has(Number(error.code))))
+                            throw error;
+                    });
+                ephemeralChannelMessageCache.remove(channelId, message.id);
             }
         });
 
@@ -131,13 +147,10 @@ const isMessageCacheable = async (ephemeralChannel: EphemeralChannelDocument, me
 
 const fetchReferenceMessage = async (message: Message): Promise<Message | null> => {
     const reference = message.reference;
-    if (!reference || !reference.messageId) return null;
-    try {
-        return message.channel.messages.fetch(reference.messageId);
-    } catch (error) {
-        console.log("Error fetching reference message: ", error);
-        return null;
-    }
+    // Forwards and crossposts point to other channels
+    if (!reference?.messageId || reference.channelId !== message.channelId) return null;
+    // The parent is often gone already, it expires before its replies
+    return message.channel.messages.fetch(reference.messageId).catch(() => null);
 };
 
 const getMessageReactionsUniqueUsers = async (message: Message): Promise<string[]> => {

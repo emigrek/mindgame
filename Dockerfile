@@ -1,11 +1,15 @@
 FROM node:22
 
+ENV TZ=Europe/Warsaw
+
 WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
 
 COPY . .
 
-RUN npm install
+USER node
 
-CMD ["npm", "start"]
-
-EXPOSE 3000
+# Not `npm start`: tsx watch keeps running after the bot crashes, so a restart policy would never kick in
+CMD ["npm", "run", "prod"]

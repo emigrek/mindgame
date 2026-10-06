@@ -181,6 +181,7 @@
 		"achievementUpgradedDescription": "<@{userId}> zdobył(a) kolejny poziom **{achievement}**!",
 		"achievementResultField": "Wynik",
 		"levelUpDescription": "<@{userId}> osiąga <@&{roleId}>!",
+		"levelUpDescriptionNoRole": "<@{userId}> osiąga poziom **{level}**!",
 		"levelField": "Poziom",
 		"winsField": "Wygrane",
 		"dailyRewardTitle": "Codzienna nagroda",

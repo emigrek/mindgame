@@ -31,8 +31,9 @@ class ProfilePagesManager {
             .filter((page) => page.visible);
     }
 
+    // A page select on an older message can ask for a page that is private for the user rendered now
     getPageByType(type: ProfilePages): BaseProfilePage {
-        return this.pages.find((page) => page.type === type) || new About(this.params);
+        return this.pages.find((page) => page.type === type && page.visible) || new About(this.params);
     }
 
     async getPagePayloadByType(type: ProfilePages) {
