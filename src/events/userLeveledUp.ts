@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {getGuild} from "@/modules/guild";
 import {createMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
-import {assignUserLevelRole, isLevelThreshold} from "@/modules/roles";
+import {assignUserLevelRole, crossesLevelThreshold} from "@/modules/roles";
 import {sendNewFeaturesMessage} from "@/modules/user";
 import {TextChannel} from "discord.js";
 import NotificationsManager from "@/modules/messages/notificationsManager";
@@ -18,7 +18,8 @@ export const userLeveledUp: Event = {
         if (!sourceGuild) return;
 
         const { notifications, channelId, levelRoles } = sourceGuild;
-        if (levelRoles && isLevelThreshold(newLevel)) {
+        const crossedThreshold = crossesLevelThreshold(oldLevel, newLevel);
+        if (levelRoles && crossedThreshold) {
             await assignUserLevelRole({ client, userId, guildId });
         }
         
@@ -30,7 +31,7 @@ export const userLeveledUp: Event = {
         const channel = guild.channels.cache.get(channelId) as TextChannel;
         if (!channel) return;
 
-        if (!isLevelThreshold(newLevel)) return;
+        if (!crossedThreshold) return;
         
         const user = await client.users.fetch(userId);
         const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild, newLevel);

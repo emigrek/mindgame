@@ -356,12 +356,12 @@ const getColorMessagePayload = async (client: ExtendedClient, interaction: Comma
     if (!interaction.guild)
         return getErrorMessagePayload();
 
-    const roleColor = getMemberColorRole(interaction.member as GuildMember);
-    const defaultColor = await useImageHex(interaction.user.avatarURL({ extension: "png" }))
-        .then(color => color.Vibrant);
-
+    const roleColor = await getMemberColorRole(interaction.member as GuildMember);
     if (!colorState.color) {
-        colorState.color = roleColor ? roleColor.hexColor : defaultColor;
+        const defaultColor = roleColor
+            ? roleColor.hexColor
+            : await useImageHex(interaction.user.avatarURL({ extension: "png" })).then(color => color.Vibrant);
+        colorState.color = defaultColor;
     }
 
     const roleColorUpdateButton = getRoleColorUpdateButton();

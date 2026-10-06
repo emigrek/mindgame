@@ -89,5 +89,19 @@ const getGuildsCount = async () => {
     return GuildModel.countDocuments();
 }
 
-export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setDefaultChannelId, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
+const setLevelRoleIds = async (guildId: string, levelRoleIds: Map<string, string>) => {
+    await GuildModel.updateOne({ guildId }, { $set: { levelRoleIds: Object.fromEntries(levelRoleIds) } });
+}
+
+const setLevelRoleId = async (guildId: string, level: number, roleId: string) => {
+    await GuildModel.updateOne({ guildId }, { $set: { [`levelRoleIds.${level}`]: roleId } });
+}
+
+const setColorRoleId = async (guildId: string, userId: string, roleId: string | null) => {
+    await GuildModel.updateOne({ guildId }, roleId
+        ? { $set: { [`colorRoleIds.${userId}`]: roleId } }
+        : { $unset: { [`colorRoleIds.${userId}`]: 1 } });
+}
+
+export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setColorRoleId, setDefaultChannelId, setLevelRoleId, setLevelRoleIds, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
 

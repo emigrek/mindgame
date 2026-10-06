@@ -11,7 +11,7 @@ const roleColorPick: Button = {
     customId: `roleColorPick`,
     run: async (client, interaction) => {
         if (!interaction.guild) {
-            await interaction.followUp({
+            await interaction.reply({
                 embeds: [
                     WarningEmbed()
                         .setDescription(i18n.__("utils.guildOnly"))
@@ -20,13 +20,14 @@ const roleColorPick: Button = {
             return;
         }
 
+        // showModal must be the first response within 3s, so skip the avatar download when /color already picked a color
         const colorState = colorStore.get(interaction.user.id);
-        const roleColor = getMemberColorRole(interaction.member as GuildMember);
-        const defaultColor = await useImageHex(interaction.user.avatarURL({ extension: "png" }))
-            .then(color => color.Vibrant);
-
         if (!colorState.color) {
-            colorState.color = roleColor ? roleColor.hexColor : defaultColor;
+            const roleColor = await getMemberColorRole(interaction.member as GuildMember);
+            const defaultColor = roleColor
+                ? roleColor.hexColor
+                : await useImageHex(interaction.user.avatarURL({ extension: "png" })).then(colors => colors.Vibrant);
+            colorState.color = defaultColor;
         }
 
         await interaction.showModal(getColorPickerModal(colorState.color));
