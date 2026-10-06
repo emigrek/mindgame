@@ -1,11 +1,10 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { keys } from "@/config";
 import { Event } from "@/interfaces";
 import { getErrorMessagePayload } from "@/modules/messages";
 import { WarningEmbed } from "@/modules/messages/embeds";
 import { getUserGuildStatistics, updateUserGuildStatistics } from "@/modules/user-guild-statistics/userGuildStatistics";
-import { BaseInteraction, CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
+import { CommandInteraction, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction } from "discord.js";
 
 type RepliableInteraction = CommandInteraction | MessageComponentInteraction | ModalSubmitInteraction;
 
@@ -16,7 +15,7 @@ const runSafely = async (interaction: RepliableInteraction, label: string, run: 
         return true;
     } catch (e) {
         console.error(`[Interaction:${label}] user=${interaction.user.id} guild=${interaction.guildId}`, e);
-        const payload = { ...getErrorMessagePayload(), ephemeral: true };
+        const payload = { ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral as const };
         await (interaction.deferred || interaction.replied ? interaction.followUp(payload) : interaction.reply(payload))
             .catch(() => null);
         return false;
@@ -29,13 +28,13 @@ const replyExpired = async (interaction: RepliableInteraction) => {
         embeds: [
             WarningEmbed()
                 .setDescription(i18n.__("utils.expired"))
-        ], ephemeral: true
+        ], flags: MessageFlags.Ephemeral
     }).catch(() => null);
 }
 
-export const interactionCreate: Event = {
+export const interactionCreate: Event<"interactionCreate"> = {
     name: "interactionCreate",
-    run: async (client: ExtendedClient, interaction: BaseInteraction) => {
+    run: async (client, interaction) => {
         i18n.setLocale(interaction.locale);
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
@@ -48,7 +47,7 @@ export const interactionCreate: Event = {
                         embeds: [
                             WarningEmbed()
                                 .setDescription(i18n.__("utils.ownerOnly"))
-                        ], ephemeral: true
+                        ], flags: MessageFlags.Ephemeral
                     });
                     return;
                 }
@@ -68,7 +67,7 @@ export const interactionCreate: Event = {
                                 .setDescription(i18n.__mf("utils.levelRequirement", {
                                     level: command.options.level
                                 }))
-                        ], ephemeral: true
+                        ], flags: MessageFlags.Ephemeral
                     });
                     return;
                 }

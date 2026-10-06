@@ -53,10 +53,11 @@ class AchievementManager {
                 .catch(e => console.log("There was an error while checking achievement progress: ", e))
 
         if (Array.isArray(arg)) {
+            // Fire and forget: check() catches and logs its own errors
             for (const achievement of arg)
-                check(achievement);
+                void check(achievement);
         } else {
-            check(arg);
+            void check(arg);
         }
 
         return this;

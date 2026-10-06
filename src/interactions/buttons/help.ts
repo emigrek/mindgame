@@ -1,10 +1,11 @@
+import { MessageFlags } from "discord.js";
 import {Button} from "@/interfaces";
 import {getHelpMessagePayload} from "@/modules/messages";
 
 const help: Button = {
     customId: `help`,
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const helpMessagePayload = await getHelpMessagePayload(client);
         await interaction.followUp(helpMessagePayload);
     }

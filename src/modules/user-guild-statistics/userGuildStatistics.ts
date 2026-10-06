@@ -16,29 +16,15 @@ export interface GuildStatisticsProps {
     guildId: string;
 }
 
-export const createUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
-    const newUserGuildStatistics = new UserGuildStatisticsModel({ userId, guildId });
-    await newUserGuildStatistics.save();
-    return newUserGuildStatistics;
-};
-
 // Reads never insert: viewing the profile of someone who left used to put them back into the ranking.
 // A missing document reads as an unsaved one with default (zero) values.
 export const getUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
     return await UserGuildStatisticsModel.findOne({ userId, guildId }) ?? new UserGuildStatisticsModel({ userId, guildId });
 }
 
-export const getUserStatistics = async (userId: string) => {
-    return UserGuildStatisticsModel.find({ userId });
-}
-
 export const deleteUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
     return UserGuildStatisticsModel.deleteOne({ userId, guildId });
 }
-
-export const getGuildStatistics = async (guildId: string) => {
-    return UserGuildStatisticsModel.find({ guildId });
-};
 
 export interface UpdateUserGuildStatisticsProps {
     client: ExtendedClient;
@@ -104,10 +90,6 @@ export const getUserGuildRank = async ({ userId, guildId }: GetUserGuildRank) =>
         rank: statistics ? higher + 1 : 0,
         total
     };
-};
-
-export const clearGuildExperience = async (guildId: string) => {
-    return UserGuildStatisticsModel.deleteMany({ guildId });
 };
 
 // The yearly wipe resets experience and levels only; it used to delete every document, message and time counters included

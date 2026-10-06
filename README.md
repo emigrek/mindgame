@@ -56,7 +56,7 @@ Enhance your Discord experience with tools designed from user to user.
 
 ## 🌍 Locales
 
-This application is fully translated (including slash commands, context menus, etc.) in:
+This application is translated (including slash commands and context menus) in:
 
 - English (en-US)
 - Polish (pl)
@@ -70,7 +70,7 @@ This application is fully translated (including slash commands, context menus, e
 | Mongoose      | storing data                   |
 | i18n          | internationalization-framework |
 | Dotenv        | environment variables          |
-| Nodemon       | development                    |
+| tsx           | running TypeScript             |
 | discord-logs  | extended discord events        |
 | moment        | time formatting                |
 | node-vibrant  | cool looking embed colors      |
@@ -79,7 +79,7 @@ This application is fully translated (including slash commands, context menus, e
 
 ## 📋 Requirements
 
-1. Node.js 18.16.0 or newer
+1. Node.js 22 or newer
 2. MongoDB 5.0.0 or newer
 <details>
 <summary>3. Discord installation settings</summary>
@@ -90,9 +90,7 @@ This application is fully translated (including slash commands, context menus, e
 
 ## 🚀 Running
 
-Get running MongoDB instance for storing data. Make sure you create collection, name it whatever you want and put it at the end of your MongoDB connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for free MongoDB instance.
-
-Create root collection for application data (e.g. `mindgame`).
+Get running MongoDB instance for storing data. Pick a database name and put it at the end of your MongoDB connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for free MongoDB instance.
 
 Clone repository and install dependencies
 
@@ -109,106 +107,40 @@ Example .env file
 ```.env
 DISCORD_TOKEN=Discord bot token
 DISCORD_CLIENT_ID=Discord application client ID
-MONGO_URI=MongoDB connection string (IMPORTANT: put root collection name at the end of the connection string)
+MONGO_URI=MongoDB connection string (IMPORTANT: put the database name at the end of the connection string)
 OWNER_ID=Your Discord ID
 ```
 
-Change application config file to your needs (can be found in `src/config/config.ts`)
+Change the application config to your needs: every option is documented in `src/config/config.ts`.
 
-Default config
+Register slash commands and context menus (again after adding or changing a command):
 
-```typescript
-import { ActivityStreak, Config } from "@/interfaces";
+```bash
+npm run deploy-commands              # registers them globally
+npm run deploy-commands -- --dry-run # only lists them
+```
 
-export const config: Config = {
-  // Experience configuration
-  experience: {
-    constant: 0.3829,
-    message: {
-      enabled: true,
-      value: 150,
-      multiplier: (files: boolean) => (files ? 2 : 1),
-    },
-    voice: {
-      enabled: true,
-      value: 0.007,
-      multiplier: (seconds: number, inVoice: number) => {
-        const hours = seconds / 3600;
-        const boost = 1 + Math.sqrt(Math.max(hours, 1));
-        return boost * (inVoice + 1);
-      },
+Before upgrading an existing database to a version that adds unique indexes, remove duplicates once (a dry run first, then `--apply`):
 
-      dailyActivityReward: 5000,
-      significantActivityStreakReward: 10000,
-    },
-    presence: {
-      enabled: true,
-      value: 0.0007,
-      multiplier: (seconds: number) => {
-        const hours = seconds / 3600;
-        return hours < 12 ? 1 : 0.5;
-      },
-    },
-  },
-
-  // Hours of inactivity before a user is considered to be on a long break. When user join a voice channel after a long break, his followers are notified about it.
-  userLongBreakHours: 8,
-
-  // Timeout after which text channel's bots messages are swept before the guild is considered as empty
-  emptyGuildSweepTimeoutMs: 10_000,
-
-  // List of bot prefixes based on which messages are considered as bot messages and are swept when guild voice channels are empty
-  // Besides that list, all messages from bot users are considered as bot messages
-  emptyGuildSweepBotPrefixesList: ["!", "$", "%", "^", "&", "(", ")", "/"],
-
-  // Whether to automatically put slash commands on client login
-  autoPutSlashCommands: true,
-
-  // Configuration for invite notifications
-  inviteNotification: {
-    enabled: true,
-    // Chance for guild invite notifications to be sent after a notifications work start
-    chance: 10,
-  },
-
-  // A function that determines whether a streak is significant enough to be notified about
-  // The default formula is that a streak is significant if it's 3 or 5 or a multiple of 10
-  voiceActivityStreakLogic: ({ streak, maxStreak }): ActivityStreak => {
-    if (!streak || !maxStreak) {
-      return {
-        streak: undefined,
-        maxStreak: undefined,
-        isSignificant: false,
-        nextSignificant: 0,
-      };
-    }
-
-    const { value: c } = streak;
-
-    const isSignificant = c === 3 || c === 5 || (c > 0 && c % 10 === 0);
-    const nextSignificant = (() => {
-      if (c < 3) return 3;
-      if (c < 5) return 5;
-      if (c < 10) return 10;
-      else return Math.ceil((c + 1) / 10) * 10;
-    })();
-
-    return {
-      streak,
-      maxStreak: maxStreak,
-      isSignificant,
-      nextSignificant,
-    };
-  },
-};
+```bash
+npx tsx scripts/dedupe-for-unique-indexes.ts
+npx tsx scripts/dedupe-for-unique-indexes.ts --apply
 ```
 
 ### 🏠 Local
 
-Start application
+Start application (watch mode for development; Docker runs `npm run prod`)
 
 ```bash
 npm run start
+```
+
+Checks
+
+```bash
+npx tsc --noEmit
+npm run lint
+npm test
 ```
 
 ### 🐳 Docker
@@ -237,5 +169,5 @@ docker run -d --restart unless-stopped --env-file .env --link [container_name]:[
 Your `MONGO_URI` in `.env` file should look like this:
 
 ```.env
-MONGO_URI=mongodb://[alias]:[your_port]/[collection_name]
+MONGO_URI=mongodb://[alias]:[your_port]/[database_name]
 ```

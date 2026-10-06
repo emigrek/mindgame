@@ -1,4 +1,3 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import NotificationsManager from "@/modules/messages/notificationsManager";
 import {attachQuickButtons, createMessage, fetchTrackedMessage, getInviteNotificationMessagePayload, getMessage} from "@/modules/messages";
@@ -7,9 +6,9 @@ import {getRandomNumber} from "@/utils/random";
 import {TextChannel} from "discord.js";
 import {MessageTypeIds} from "@/interfaces/Message";
 
-export const ready: Event = {
+export const ready: Event<"clientReady"> = {
     name: 'clientReady',
-    run: async (client: ExtendedClient) => {
+    run: async (client) => {
         await client.loadModules();
 
         NotificationsManager.getInstance().setWorkLastItemInQueueCallback(

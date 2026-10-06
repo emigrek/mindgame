@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import {Command} from "@/interfaces";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import {getErrorMessagePayload, getRankingMessagePayload} from "@/modules/messages";
@@ -9,10 +10,10 @@ export const ranking: Command = {
         .setName("ranking")
         .setDescription(i18n.__("commandLocalizations.ranking.description")),
     execute: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

@@ -1,4 +1,4 @@
-import {Button, Command, ContextMenu, Event, Modal, Module, Select} from "@/interfaces";
+import {AnyEvent, Button, Command, ContextMenu, Modal, Module, Select} from "@/interfaces";
 import {Client, Collection, OAuth2Scopes, PermissionFlagsBits, REST, Routes} from "discord.js";
 
 import events from "@/events";
@@ -19,7 +19,7 @@ import localeList from "./localeList";
 import {ExperienceUpdater} from "@/modules/experience";
 
 class ExtendedClient extends Client {
-    public events: Collection<string, Event> = new Collection();
+    public events: Collection<string, AnyEvent> = new Collection();
     public modules: Collection<string, Module> = new Collection();
     public commands: Collection<string, Command> = new Collection();
     public buttons: Collection<string, Button> = new Collection();
@@ -52,7 +52,9 @@ class ExtendedClient extends Client {
     public async loadEvents() {
         for (const event of events) {
             this.events.set(event.name, event);
-            this.on(event.name, (...args) => runInLocaleScope(() => Promise.resolve(event.run(this, ...args)))
+            // Handlers are typed per event (Event<K>); the registry only forwards what the emitter passed
+            const run = event.run as (client: ExtendedClient, ...args: unknown[]) => Promise<unknown>;
+            this.on(event.name as string, (...args: unknown[]) => runInLocaleScope(() => Promise.resolve(run(this, ...args)))
                 .catch(e => console.error(`[Event:${event.name}] Error`, e)));
         }
     }

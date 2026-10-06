@@ -7,6 +7,5 @@ interface Run {
 
 export interface Button {
     customId: string;
-    permissions?: bigint[];
     run: Run;
 }

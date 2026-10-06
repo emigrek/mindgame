@@ -8,7 +8,7 @@ const selectReroll: Button = {
     run: async (client, interaction) => {
         await interaction.deferUpdate();
 
-        const isInteractionAuthor = interaction.message.interaction?.user.id === interaction.user.id;
+        const isInteractionAuthor = interaction.message.interactionMetadata?.user.id === interaction.user.id;
         if (!isInteractionAuthor) {
             return;
         }

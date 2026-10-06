@@ -1,13 +1,11 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { getGuild } from "@/modules/guild";
 import { assignUserLevelRole } from "@/modules/roles";
 import { createUser } from "@/modules/user";
-import { GuildMember } from "discord.js";
 
-export const guildMemberAdd: Event = {
+export const guildMemberAdd: Event<"guildMemberAdd"> = {
     name: "guildMemberAdd",
-    run: async (client: ExtendedClient, member: GuildMember) => {
+    run: async (client, member) => {
         await createUser(member.user);
         const sourceGuild = await getGuild(member.guild.id);
         if(sourceGuild?.levelRoles) {

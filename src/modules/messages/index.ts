@@ -71,7 +71,7 @@ import {
     UserContextMenuCommandInteraction,
     UserSelectMenuBuilder,
     UserSelectMenuInteraction,
-    VoiceChannel,
+    VoiceBasedChannel,
     bold,
     codeBlock,
     heading,
@@ -88,7 +88,7 @@ import { profileStore } from "@/stores/profileStore";
 import { rankingStore } from "@/stores/rankingStore";
 import { selectOptionsStore } from "@/stores/selectOptionsStore";
 import Colors from "@/utils/colors";
-import { getLocalizedDateRange } from "@/utils/date";
+import { formatTimeTotal, getLocalizedDateRange } from "@/utils/date";
 import { KnownLinks } from "./knownLinks";
 import ProfilePagesManager from "./pages/profilePagesManager";
 import { Vibrant } from "node-vibrant/node";
@@ -179,6 +179,7 @@ const getConfigMessagePayload = async (client: ExtendedClient, interaction: Chat
     };
 }
 
+// No ephemeral flag: callers defer ephemerally or edit, and edits reject it
 const getProfileMessagePayload = async (client: ExtendedClient, interaction: ButtonInteraction | UserContextMenuCommandInteraction | StringSelectMenuInteraction | UserSelectMenuInteraction) => {
     const { targetUserId, page } = profileStore.get(interaction.user.id);
     if (!targetUserId) {
@@ -188,8 +189,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
                     .setDescription(i18n.__("profile.notFound"))
                     .setImage(KnownLinks.EMBED_SPACER)
             ],
-            components: [],
-            ephemeral: true
+            components: []
         };
     }
 
@@ -201,8 +201,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
                     .setDescription(i18n.__("profile.notFound"))
                     .setImage(KnownLinks.EMBED_SPACER)
             ],
-            components: [],
-            ephemeral: true
+            components: []
         };
     }
 
@@ -216,8 +215,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
                     .setDescription(i18n.__("profile.notFound"))
                     .setImage(KnownLinks.EMBED_SPACER)
             ],
-            components: [],
-            ephemeral: true
+            components: []
         };
     }
 
@@ -238,7 +236,6 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
 
     return {
         ...await manager.getPagePayloadByType(page || ProfilePages.About),
-        ephemeral: true,
     }
 }
 
@@ -272,12 +269,12 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
             },
             {
                 name: i18n.__("notifications.todayVoiceTimeField"),
-                value: codeBlock(`${Math.round(userGuildStatistics.day.time.voice / 3600)}H`),
+                value: codeBlock(formatTimeTotal(userGuildStatistics.day.time.voice)),
                 inline: true
             },
             {
                 name: i18n.__("notifications.weekVoiceTimeField"),
-                value: codeBlock(`${Math.round(userGuildStatistics.week.time.voice / 3600)}H`),
+                value: codeBlock(formatTimeTotal(userGuildStatistics.week.time.voice)),
                 inline: true
             }
         )
@@ -890,7 +887,7 @@ const getErrorMessagePayload = () => {
     };
 }
 
-const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceChannel) => {
+const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | VoiceBasedChannel) => {
     const messages = await channel.messages.fetch({ limit: 100 })
         .catch(e => {
             console.log(`There was an error when fetching messages: ${e}`)
@@ -928,7 +925,7 @@ const attachQuickButtons = async (client: ExtendedClient, channelId: string) => 
             console.log(`There was an error when fetching messages: ${e}`)
             return new Collection<string, Message>();
         });
-    const clientMessages = lastMessages.filter(m => m.author.id === client.user?.id && !m.interaction);
+    const clientMessages = lastMessages.filter(m => m.author.id === client.user?.id && !m.interactionMetadata);
     const lastMessage = clientMessages.first();
     if (!lastMessage) return;
 

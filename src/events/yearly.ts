@@ -2,7 +2,7 @@ import { config } from "@/config";
 import { Event } from "@/interfaces";
 import { clearExperience } from "@/modules/user-guild-statistics";
 
-export const yearly: Event = {
+export const yearly: Event<"yearly"> = {
   name: "yearly",
   run: async () => {
     config.yearlyExperienceWipe && (await clearExperience());

@@ -2,7 +2,7 @@ import { Select } from "@/interfaces";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { achievementsStore } from "@/stores/achievementsStore";
 import { restoreProfileState } from "@/stores/profileStore";
-import { StringSelectMenuInteraction } from "discord.js";
+import { MessageFlags, StringSelectMenuInteraction } from "discord.js";
 
 const fixInteractionValues = (values: string[]) => {
     if (values.includes("all") && values.length > 1) {
@@ -20,7 +20,7 @@ export const achievementsDisplaySelect: Select = {
         restoreProfileState(interaction.user.id, args);
         
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

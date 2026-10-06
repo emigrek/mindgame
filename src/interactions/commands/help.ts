@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import i18n from "@/client/i18n";
 import { Command } from "@/interfaces";
 import { getHelpMessagePayload } from "@/modules/messages";
@@ -8,7 +9,7 @@ export const help: Command = {
         .setName("help")
         .setDescription(i18n.__("commandLocalizations.help.description")),
     execute: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const helpMessage = await getHelpMessagePayload(client);
         await interaction.followUp(helpMessage);
     }

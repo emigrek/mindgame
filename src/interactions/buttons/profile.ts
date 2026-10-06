@@ -1,12 +1,12 @@
 import { Button, ProfilePages } from "@/interfaces";
 import { getMessage, getProfileMessagePayload } from "@/modules/messages";
 import { profileStore } from "@/stores/profileStore";
-import { ButtonInteraction } from "discord.js";
+import { ButtonInteraction, MessageFlags } from "discord.js";
 
 const profile: Button = {
     customId: `profile`,
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         const sourceMessage = await getMessage({
             messageId: interaction.message.id,

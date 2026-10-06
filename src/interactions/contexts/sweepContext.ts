@@ -1,4 +1,4 @@
-import {ApplicationCommandType, ContextMenuCommandBuilder, TextChannel} from "discord.js";
+import {ApplicationCommandType, ContextMenuCommandBuilder, InteractionContextType, MessageFlags, TextChannel} from "discord.js";
 import {ContextMenu} from "@/interfaces";
 import {sweepTextChannel} from "@/modules/messages";
 import {InformationEmbed} from "@/modules/messages/embeds";
@@ -8,9 +8,9 @@ const sweepContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
         .setName('sweep')
         .setType(ApplicationCommandType.Message)
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         const swept = await sweepTextChannel(client, interaction.channel as TextChannel);
         await interaction.followUp({

@@ -1,12 +1,10 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { checkVoiceChannelMembers, checkVoiceSessionEnd, checkVoiceSessionStart } from "@/modules/achievement/achievements";
 import { checkGuildVoiceEmpty, endVoiceActivity, getVoiceActivity, startVoiceActivity } from "@/modules/activity";
-import { GuildMember, VoiceChannel } from "discord.js";
 
-export const voiceChannelSwitch: Event = {
+export const voiceChannelSwitch: Event<"voiceChannelSwitch"> = {
     name: "voiceChannelSwitch",
-    run: async (client: ExtendedClient, member: GuildMember, oldChannel: VoiceChannel, newChannel: VoiceChannel) => {
+    run: async (client, member, oldChannel, newChannel) => {
         const { guild } = member;
 
         const activity = await getVoiceActivity({ userId: member.id, guildId: guild.id });

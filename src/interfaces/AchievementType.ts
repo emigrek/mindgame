@@ -46,5 +46,3 @@ export interface AchievementTypeContext {
     [AchievementType.COMEBACK]: {breakMs: number},
     [AchievementType.REGULAR]: {member: GuildMember}
 }
-
-export type AchievementUpdatePayload<T extends AchievementType> = Omit<AchievementTypePayload[T], "achievementType">;

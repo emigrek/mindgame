@@ -1,13 +1,11 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { AchievementManager } from "@/modules/achievement";
 import { Comeback, Ghost, Regular, checkVoiceChannelMembers, checkVoiceSessionStart } from "@/modules/achievement/achievements";
 import { getGuildVoiceBreakMs, startVoiceActivity } from "@/modules/activity";
-import { GuildMember, VoiceChannel } from "discord.js";
 
-export const voiceChannelJoin: Event = {
+export const voiceChannelJoin: Event<"voiceChannelJoin"> = {
     name: "voiceChannelJoin",
-    run: async (client: ExtendedClient, member: GuildMember, channel: VoiceChannel) => {
+    run: async (client, member, channel) => {
         // Taken before any await: Coordinated Action compares join times in fractions of a second
         const joinedAt = new Date();
         const userActivity = await startVoiceActivity(client, member, channel, joinedAt);

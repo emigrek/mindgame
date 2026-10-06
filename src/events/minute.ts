@@ -1,4 +1,3 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { deleteCachedMessages } from "@/modules/ephemeral-channel";
 
@@ -21,10 +20,10 @@ const once = async (job: string, run: () => Promise<unknown>) => {
     }
 };
 
-export const minute: Event = {
+export const minute: Event<"minute"> = {
     name: "minute",
     // Independent jobs: a failing or slow cleanup no longer delays or skips EXP
-    run: async (client: ExtendedClient) => {
+    run: async (client) => {
         await Promise.all([
             once("ephemeral cleanup", () => deleteCachedMessages()),
             once("experience update", () => client.experienceUpdater.update()),

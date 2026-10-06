@@ -1,14 +1,14 @@
 import { ContextMenu, ProfilePages } from "@/interfaces";
 import { getProfileMessagePayload } from "@/modules/messages";
 import { profileStore } from "@/stores/profileStore";
-import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder, MessageFlags, UserContextMenuCommandInteraction } from "discord.js";
 
 const profileContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
         .setName('profile')
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         
         const profileState = profileStore.get(interaction.user.id);
 

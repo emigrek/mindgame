@@ -4,7 +4,7 @@ import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {getColorInt} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
-import {getLocalizedDateTypeRange} from "@/utils/date";
+import {getLocalizedDateTypeRange, formatTimeTotal} from "@/utils/date";
 import { codeBlock, heading, HeadingLevel, userMention } from "discord.js";
 
 export class PresenceActivity extends BaseProfilePage {
@@ -42,17 +42,17 @@ export class PresenceActivity extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('day')}\n${codeBlock(`${Math.round(userGuildStatistics.day.time.presence/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('day')}\n${codeBlock(formatTimeTotal(userGuildStatistics.day.time.presence))}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('week')}\n${codeBlock(`${Math.round(userGuildStatistics.week.time.presence/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('week')}\n${codeBlock(formatTimeTotal(userGuildStatistics.week.time.presence))}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('month')}\n${codeBlock(`${Math.round(userGuildStatistics.month.time.presence/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('month')}\n${codeBlock(formatTimeTotal(userGuildStatistics.month.time.presence))}`,
                     inline: true,
                 },
             ]);

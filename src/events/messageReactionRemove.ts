@@ -1,12 +1,10 @@
-import {Event} from "@/interfaces"
+import {Event} from "@/interfaces";
 import {getEphemeralChannel, isMessageCacheable} from "@/modules/ephemeral-channel";
-import {MessageReaction} from "discord.js";
 import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
-import ExtendedClient from "@/client/ExtendedClient";
 
-export const messageReactionRemove: Event = {
+export const messageReactionRemove: Event<"messageReactionRemove"> = {
     name: "messageReactionRemove",
-    run: async (client: ExtendedClient, messageReaction: MessageReaction) => {
+    run: async (client, messageReaction) => {
         const { message } = messageReaction;
         const { channel } = message;
 

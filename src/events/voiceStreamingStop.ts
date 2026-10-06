@@ -1,13 +1,11 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { AchievementManager } from "@/modules/achievement";
 import { Streamer } from "@/modules/achievement/achievements";
 import { getVoiceActivity } from "@/modules/activity";
-import { GuildMember } from "discord.js";
 
-export const voiceStreamingStop: Event = {
+export const voiceStreamingStop: Event<"voiceStreamingStop"> = {
     name: "voiceStreamingStop",
-    run: async (client: ExtendedClient, member: GuildMember) => {
+    run: async (client, member) => {
         const voiceActivity = await getVoiceActivity({ userId: member.id, guildId: member.guild.id });
         if (voiceActivity) {
             voiceActivity.streaming = false;

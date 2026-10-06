@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Command } from "@/interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getEvalMessagePayload } from "@/modules/messages";
@@ -26,7 +27,7 @@ export const evalCommand: Command = {
         ownerOnly: true
     },
     execute: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const evalMessagePayload = await getEvalMessagePayload(client, interaction);
         await interaction.followUp(evalMessagePayload);
     }

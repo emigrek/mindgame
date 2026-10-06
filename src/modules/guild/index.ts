@@ -13,23 +13,10 @@ const createGuild = async (guildId: string): Promise<GuildDocument> => {
     return newGuild;
 }
 
-const deleteGuild = async (guildId: string): Promise<boolean | null> => {
-    const guildToDelete = await GuildModel.findOne({ guildId: guildId });
-
-    if(!guildToDelete) return null;
-
-    await GuildModel.deleteOne({ guildId });
-    return true;
-}
-
 const getGuild = async (guildId: string): Promise<GuildDocument | null> => {
     const exist = await GuildModel.findOne({ guildId });
     if(!exist) return createGuild(guildId);
     return exist;
-}
-
-const getGuilds = async (): Promise<GuildDocument[]> => {
-    return GuildModel.find();
 }
 
 interface GuildSetDefaultChannelIdProps {
@@ -114,5 +101,5 @@ const setColorRoleId = async (guildId: string, userId: string, roleId: string | 
         : { $unset: { [`colorRoleIds.${userId}`]: 1 } });
 }
 
-export { createGuild, deleteGuild, getGuild, getGuilds, getNotificationChannel, setAutoSweeping, setColorRoleId, setDefaultChannelId, setLevelRoleId, setLevelRoleIds, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
+export { createGuild, getGuild, getNotificationChannel, setAutoSweeping, setColorRoleId, setDefaultChannelId, setLevelRoleId, setLevelRoleIds, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
 

@@ -1,4 +1,3 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import {Event} from "@/interfaces";
 import {setDefaultChannelId} from "@/modules/guild";
@@ -19,9 +18,9 @@ const checkClientMissingPermissions = async (guild: Guild): Promise<string[] | f
     return permissions.missing(requiredPermissions);
 };
 
-export const guildCreate: Event = {
+export const guildCreate: Event<"guildCreate"> = {
     name: "guildCreate",
-    run: async (client: ExtendedClient, guild: Guild) => {
+    run: async (client, guild) => {
         const owner = await client.users.fetch(guild.ownerId);
 
         const missingPermissions = await checkClientMissingPermissions(guild);

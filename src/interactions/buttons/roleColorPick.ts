@@ -4,7 +4,7 @@ import { WarningEmbed } from "@/modules/messages/embeds";
 import { getColorPickerModal } from "@/modules/messages/modals";
 import { getMemberColorRole } from "@/modules/roles";
 import { colorStore } from "@/stores/colorStore";
-import { GuildMember } from "discord.js";
+import { GuildMember, MessageFlags } from "discord.js";
 import i18n from "@/client/i18n";
 
 const roleColorPick: Button = {
@@ -15,7 +15,7 @@ const roleColorPick: Button = {
                 embeds: [
                     WarningEmbed()
                         .setDescription(i18n.__("utils.guildOnly"))
-                ], ephemeral: true
+                ], flags: MessageFlags.Ephemeral
             });
             return;
         }

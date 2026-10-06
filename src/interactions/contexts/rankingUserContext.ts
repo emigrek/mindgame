@@ -1,6 +1,6 @@
 import {ContextMenu} from "@/interfaces";
 import {getErrorMessagePayload, getRankingMessagePayload} from "@/modules/messages";
-import {ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction} from "discord.js";
+import {ApplicationCommandType, ContextMenuCommandBuilder, MessageFlags, UserContextMenuCommandInteraction} from "discord.js";
 import {openRanking} from "@/modules/user-guild-statistics/userGuildStatistics";
 
 const rankingUserContext: ContextMenu = {
@@ -8,10 +8,10 @@ const rankingUserContext: ContextMenu = {
         .setName('rankingUser')
         .setType(ApplicationCommandType.User),
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

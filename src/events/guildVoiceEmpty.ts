@@ -1,14 +1,12 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import {config} from "@/config";
 import {Event} from "@/interfaces";
 import {getGuild, getNotificationChannel} from "@/modules/guild";
 import {sweepTextChannel} from "@/modules/messages";
 import {delay} from '@/utils/delay';
-import {VoiceChannel} from "discord.js";
 
-export const guildVoiceEmpty: Event = {
+export const guildVoiceEmpty: Event<"guildVoiceEmpty"> = {
     name: "guildVoiceEmpty",
-    run: async (client: ExtendedClient, guildId: string, lastChannel: VoiceChannel) => {
+    run: async (client, guildId, lastChannel) => {
         const sourceGuild = await getGuild(guildId);
         if (!sourceGuild || !sourceGuild.autoSweeping) return;
 

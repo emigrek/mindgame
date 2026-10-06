@@ -1,13 +1,11 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { getEphemeralChannel } from "@/modules/ephemeral-channel";
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
-import { deleteMessage } from "@/modules/messages"
-import { Message } from "discord.js";
+import { deleteMessage } from "@/modules/messages";
 
-export const messageDelete: Event = {
+export const messageDelete: Event<"messageDelete"> = {
     name: "messageDelete",
-    run: async (client: ExtendedClient, message: Message) => {
+    run: async (client, message) => {
         await deleteMessage(message.id);
 
         const ephemeralChannel = await getEphemeralChannel(message.channel.id);

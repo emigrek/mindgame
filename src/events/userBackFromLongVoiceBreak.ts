@@ -1,15 +1,13 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {getLastVoiceActivity} from "@/modules/activity";
 import {getFollowers} from "@/modules/follow";
 import {getFollowMessagePayload} from "@/modules/messages";
 import {getUser} from "@/modules/user";
-import {GuildMember} from "discord.js";
 
-export const userBackFromLongVoiceBreak: Event = {
+export const userBackFromLongVoiceBreak: Event<"userBackFromLongVoiceBreak"> = {
     name: "userBackFromLongVoiceBreak",
     // Notifies followers; the Comeback achievement is checked per guild in voiceChannelJoin
-    run: async (client: ExtendedClient, member: GuildMember) => {
+    run: async (client, member) => {
         const sourceUser = await getUser(member.user);
         if(!sourceUser) return;
 

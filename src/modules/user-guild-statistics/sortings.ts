@@ -1,6 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
 import {UserGuildStatistics} from "@/interfaces/UserGuildStatistics";
+import {formatTimeTotal} from "@/utils/date";
 
 export const getSortingByType = (type: SortingTypes, range: SortingRanges): Sorting => {
     return sortings.find(s => s.type === type && s.range === range) as Sorting;
@@ -19,10 +20,10 @@ export const runMask = (client: ExtendedClient, mask: string, userGuildStatistic
         .replace("{day.messages}", day.messages.toString())
         .replace("{week.messages}", week.messages.toString())
         .replace("{month.messages}", month.messages.toString())
-        .replace("{total.time.voice}", Math.round(total.time.voice/3600).toString())
-        .replace("{day.time.voice}", Math.round(day.time.voice/3600).toString())
-        .replace("{week.time.voice}", Math.round(week.time.voice/3600).toString())
-        .replace("{month.time.voice}", Math.round(month.time.voice/3600).toString());
+        .replace("{total.time.voice}", formatTimeTotal(total.time.voice))
+        .replace("{day.time.voice}", formatTimeTotal(day.time.voice))
+        .replace("{week.time.voice}", formatTimeTotal(week.time.voice))
+        .replace("{month.time.voice}", formatTimeTotal(month.time.voice));
 };
 
 export const sortings: Sorting[] = [
@@ -58,28 +59,28 @@ export const sortings: Sorting[] = [
         type: SortingTypes.VOICE,
         range: SortingRanges.TOTAL,
         sort: { "total.time.voice": -1 },
-        mask: "{total.time.voice}H",
+        mask: "{total.time.voice}",
         emoji: "⌛"
     },
     {
         type: SortingTypes.VOICE,
         range: SortingRanges.DAY,
         sort: { "day.time.voice": -1 },
-        mask: "{day.time.voice}H",
+        mask: "{day.time.voice}",
         emoji: "⌛"
     },
     {
         type: SortingTypes.VOICE,
         range: SortingRanges.WEEK,
         sort: { "week.time.voice": -1 },
-        mask: "{week.time.voice}H",
+        mask: "{week.time.voice}",
         emoji: "⌛"
     },
     {
         type: SortingTypes.VOICE,
         range: SortingRanges.MONTH,
         sort: { "month.time.voice": -1 },
-        mask: "{month.time.voice}H",
+        mask: "{month.time.voice}",
         emoji: "⌛"
     },
     {

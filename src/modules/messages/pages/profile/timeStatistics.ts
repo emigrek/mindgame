@@ -1,4 +1,5 @@
 import i18n from "@/client/i18n";
+import {formatTimeTotal} from "@/utils/date";
 import {ProfilePages} from "@/interfaces";
 import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
@@ -57,12 +58,12 @@ export class TimeStatistics extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("profile.voice"),
-                    value: codeBlock(`${Math.round(this.totalStatistics.time.voice/3600)}H`),
+                    value: codeBlock(formatTimeTotal(this.totalStatistics.time.voice)),
                     inline: true,
                 },
                 {
                     name: i18n.__("profile.overall"),
-                    value: codeBlock(`${Math.round(this.totalStatistics.time.presence/3600)}H`),
+                    value: codeBlock(formatTimeTotal(this.totalStatistics.time.presence)),
                     inline: true,
                 },
             ]);

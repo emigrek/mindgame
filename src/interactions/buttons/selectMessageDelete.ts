@@ -6,7 +6,7 @@ const selectMessageDelete: Button = {
         const selectMessage = await interaction.channel?.messages.fetch(interaction.message.id);
         if(!selectMessage) return;
 
-        const isInteractionAuthor = selectMessage.interaction?.user.id === interaction.user.id;
+        const isInteractionAuthor = selectMessage.interactionMetadata?.user.id === interaction.user.id;
         if (isInteractionAuthor) {
             await selectMessage.delete();
         }

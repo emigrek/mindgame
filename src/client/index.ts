@@ -19,7 +19,11 @@ const client = new ExtendedClient({
     ]
 });
 
-logs(client);
+// Without it no voice event (join, leave, deaf, streaming) ever fires
+logs(client).catch(e => {
+    console.error("[discord-logs] Error", e);
+    process.exit(1);
+});
 // e.g. putSlashCommands failing before login: exit instead of idling without a gateway connection
 client.init().catch(e => {
     console.error("[Init] Error", e);

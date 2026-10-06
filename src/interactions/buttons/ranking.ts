@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import {Button} from "@/interfaces";
 import {getErrorMessagePayload, getMessage, getRankingMessagePayload} from "@/modules/messages";
 import {openRanking} from "@/modules/user-guild-statistics/userGuildStatistics";
@@ -5,10 +6,10 @@ import {openRanking} from "@/modules/user-guild-statistics/userGuildStatistics";
 const ranking: Button = {
     customId: `ranking`,
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

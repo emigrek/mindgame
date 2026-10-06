@@ -1,4 +1,4 @@
-import {TextChannel} from "discord.js";
+import {MessageFlags, TextChannel} from "discord.js";
 import {Button} from "@/interfaces";
 import {getErrorMessagePayload, sweepTextChannel} from "@/modules/messages";
 import {InformationEmbed} from "@/modules/messages/embeds";
@@ -7,7 +7,7 @@ import i18n from "@/client/i18n";
 const sweep: Button = {
     customId: `sweep`,
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if(!interaction.guild) {
             await interaction.followUp(getErrorMessagePayload());

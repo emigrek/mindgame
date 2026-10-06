@@ -1,13 +1,12 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { AchievementType, Event } from "@/interfaces";
 import { AchievementManager, achievementModel } from "@/modules/achievement";
 import { Regular } from "@/modules/achievement/achievements";
 import { clearTemporaryStatistics } from "@/modules/user-guild-statistics";
 import moment from "moment";
 
-export const daily: Event = {
+export const daily: Event<"daily"> = {
     name: "daily",
-    run: async (client: ExtendedClient) => {
+    run: async (client) => {
         await clearTemporaryStatistics('day');
 
         // Covers members who neither write nor join voice. One query per guild finds whose membership crossed a

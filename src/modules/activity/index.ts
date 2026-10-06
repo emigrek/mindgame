@@ -1,5 +1,5 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { ClientPresenceStatusData, Guild, GuildMember, Presence, VoiceBasedChannel } from "discord.js";
+import { ClientPresenceStatusData, Guild, GuildMember, PartialGuildMember, Presence, VoiceBasedChannel } from "discord.js";
 
 import presenceActivitySchema, { PresenceActivityDocument } from "@/modules/schemas/PresenceActivity";
 import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
@@ -136,7 +136,7 @@ const endPresenceActivity = async (userId: string, guildId: string): Promise<Pre
     return exists;
 }
 
-const endVoiceActivity = async (member: GuildMember): Promise<VoiceActivityDocument | null> => {
+const endVoiceActivity = async (member: GuildMember | PartialGuildMember): Promise<VoiceActivityDocument | null> => {
     const exists = await getVoiceActivity({ userId: member.id, guildId: member.guild.id });
     if (!exists) return null;
 
@@ -355,7 +355,7 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
     return outOfSync;
 };
 
-const getPresenceClientStatus = (clientStatus: ClientPresenceStatusData | null): string => {
+const getPresenceClientStatus = (clientStatus?: ClientPresenceStatusData | null): string => {
     if (!clientStatus)
         return 'unknown';
     else if (clientStatus.desktop)

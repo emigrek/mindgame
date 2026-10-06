@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import i18n from "@/client/i18n";
 import { Modal } from "@/interfaces";
 import { getSelectMessagePayload } from "@/modules/messages";
@@ -23,7 +24,7 @@ const selectOptionsModal: Modal = {
                             ? "select.selectOptionsModal.optionsInput.tooMany"
                             : "select.selectOptionsModal.optionsInput.invalid"))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
             return;
         }

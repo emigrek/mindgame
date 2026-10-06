@@ -6,7 +6,8 @@ export const serialized = <T>(key: string, task: () => Promise<T>): Promise<T> =
     const run = (queues.get(key) ?? Promise.resolve()).then(task, task);
     const tail = run.catch(() => null);
     queues.set(key, tail);
-    tail.then(() => {
+    // tail never rejects
+    void tail.then(() => {
         if (queues.get(key) === tail) queues.delete(key);
     });
     return run;

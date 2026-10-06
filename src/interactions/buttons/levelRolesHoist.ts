@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Button } from "@/interfaces";
 import { setLevelRolesHoist } from "@/modules/guild";
 import { getConfigMessagePayload, getErrorMessagePayload } from "@/modules/messages";
@@ -9,7 +10,7 @@ const levelRolesHoist: Button = {
         await interaction.deferUpdate();
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

@@ -6,6 +6,7 @@
     "start": "npx tsx watch src",
     "prod": "tsx src",
     "lint": "eslint .",
+    "deploy-commands": "tsx scripts/deploy-commands.ts",
     "test": "tsx --test \"src/**/*.test.ts\""
   },
   "_moduleAliases": {

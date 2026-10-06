@@ -2,7 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import {getGuild, setColorRoleId, setLevelRoleId, setLevelRoleIds} from "@/modules/guild";
 import {GuildDocument} from "@/modules/schemas/Guild";
-import {ButtonInteraction, ColorResolvable, Guild, GuildMember, Role} from "discord.js";
+import {ButtonInteraction, ColorResolvable, Guild, GuildMember, MessageFlags, PartialGuildMember, Role} from "discord.js";
 
 import {getErrorMessagePayload} from "@/modules/messages";
 import {WarningEmbed} from "@/modules/messages/embeds";
@@ -195,20 +195,8 @@ const assignLevelRolesInGuild = async ({ client, guildId }: AssignLevelRolesInGu
     );
 }
 
-interface AssignLevelRolesInAllGuildsProps {
-    client: ExtendedClient;
-}
-
-const assignLevelRolesInAllGuilds = async ({ client }: AssignLevelRolesInAllGuildsProps) => {
-    const guilds = await client.guilds.fetch();
-    return Promise.all(
-        guilds
-            .map((guild) => assignLevelRolesInGuild({ client, guildId: guild.id }))
-    );
-}
-
 // Color roles are tracked by ID per member, so admins can rename them freely
-const getMemberColorRole = async (member: GuildMember): Promise<Role | null> => {
+const getMemberColorRole = async (member: GuildMember | PartialGuildMember): Promise<Role | null> => {
     const sourceGuild = await getGuild(member.guild.id);
     const roleId = sourceGuild?.colorRoleIds?.get(member.id);
     if (roleId) return member.guild.roles.cache.get(roleId) ?? null;
@@ -220,7 +208,7 @@ const getMemberColorRole = async (member: GuildMember): Promise<Role | null> => 
     return legacyRole;
 }
 
-const deleteMemberColorRole = async (member: GuildMember) => {
+const deleteMemberColorRole = async (member: GuildMember | PartialGuildMember) => {
     const colorRole = await getMemberColorRole(member);
     if (!colorRole) return;
     await colorRole.delete();
@@ -231,7 +219,7 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
     const colorState = colorStore.get(interaction.user.id);
 
     if (!colorState.color) {
-        await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+        await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
         return;
     }
 
@@ -240,13 +228,13 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
 
     if (!colorRole) {
         if (!client.user) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 
         const clientMember = member.guild.members.cache.get(client.user.id);
         if (!clientMember) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -266,7 +254,7 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
                     embeds: [
                         WarningEmbed()
                             .setDescription(i18n.__("roles.missingPermissions"))
-                    ], ephemeral: true
+                    ], flags: MessageFlags.Ephemeral
                 });
             });
     }
@@ -279,7 +267,7 @@ const updateColorRole = async (client: ExtendedClient, interaction: ButtonIntera
                     embeds: [
                         WarningEmbed()
                             .setDescription(i18n.__("roles.missingPermissions"))
-                    ], ephemeral: true
+                    ], flags: MessageFlags.Ephemeral
                 });
             });
 };
@@ -290,4 +278,4 @@ const checkColorLuminance = (hex: string, luminanceTreshold?: number) => {
     return luminance > (luminanceTreshold || 0.2);
 };
 
-export { assignLevelRolesInAllGuilds, crossesLevelThreshold, getGuildTresholdRole, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, deleteMemberColorRole, getLevelRoleThreshold, getMemberColorRole, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };
+export { crossesLevelThreshold, getGuildTresholdRole, assignLevelRolesInGuild, assignUserLevelRole, checkColorLuminance, deleteLevelRoles, deleteMemberColorRole, getLevelRoleThreshold, getMemberColorRole, syncGuildLevelRoles, syncGuildLevelRolesHoisting, updateColorRole };

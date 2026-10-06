@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Command } from "@/interfaces";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getCommitsMessagePayload } from "@/modules/messages";
@@ -8,7 +9,7 @@ export const commits: Command = {
         .setName("commits")
         .setDescription(i18n.__("commandLocalizations.commits.description")),
     execute: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const commitsMessagePayload = await getCommitsMessagePayload(client);
         await interaction.followUp(commitsMessagePayload);
     }

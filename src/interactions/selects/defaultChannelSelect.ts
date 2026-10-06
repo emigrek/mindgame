@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Select } from "@/interfaces";
 import { setDefaultChannelId } from "@/modules/guild";
 import { getConfigMessagePayload, getErrorMessagePayload } from "@/modules/messages";
@@ -8,7 +9,7 @@ export const defaultChannelSelect: Select = {
         await interaction.deferUpdate();
 
         if (!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

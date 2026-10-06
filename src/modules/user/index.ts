@@ -25,14 +25,6 @@ const createUser = async (user: User) => {
     return newUser;
 }
 
-const deleteUser = async (userId: string) => {
-    const exists = await UserModel.findOne({ userId });
-    if (!exists) return null;
-
-    await UserModel.deleteOne({ userId });
-    return true;
-}
-
 const getUser = async (user: User) => {
     if (user.bot) return null;
 
@@ -51,10 +43,6 @@ const getUser = async (user: User) => {
     }
 
     return exists;
-}
-
-const getUsers = async () => {
-    return UserModel.find();
 }
 
 const updateUser = async (user: User) => {
@@ -140,5 +128,5 @@ const getUsersCount = async () => {
     return UserModel.countDocuments();
 }
 
-export { UserModel, createUser, deleteUser, expToLevel, getUser, getUsers, levelToExp, sendNewFeaturesMessage, updateUser, getUsersCount };
+export { UserModel, createUser, expToLevel, getUser, levelToExp, sendNewFeaturesMessage, updateUser, getUsersCount };
 

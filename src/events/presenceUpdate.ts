@@ -1,11 +1,9 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { endPresenceActivity, getPresenceActivity, getPresenceClientStatus, startPresenceActivity } from "@/modules/activity";
-import { Presence } from "discord.js";
 
-export const presenceUpdate: Event = {
+export const presenceUpdate: Event<"presenceUpdate"> = {
     name: "presenceUpdate",
-    run: async (client: ExtendedClient, oldPresence: Presence, newPresence: Presence) => {
+    run: async (client, oldPresence, newPresence) => {
         const user = await client.users.fetch(newPresence.userId);
         if (!user || user.bot) return;
         const { member } = newPresence;

@@ -25,8 +25,5 @@ const getFollowers = async (userId: string): Promise<FollowDocument[]> => {
     return FollowModel.find({ targetUserId: userId });
 }
 
-const getFollowing = async (userId: string): Promise<FollowDocument[]> => {
-    return FollowModel.find({ sourceUserId: userId });
-};
 
-export { createFollow, deleteFollow, getFollowers, getFollowing, getFollow };
+export { createFollow, deleteFollow, getFollowers, getFollow };

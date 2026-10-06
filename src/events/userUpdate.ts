@@ -1,11 +1,9 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
 import { updateUser } from "@/modules/user";
-import { User } from "discord.js";
 
-export const userUpdate: Event = {
+export const userUpdate: Event<"userUpdate"> = {
     name: "userUpdate",
-    run: async (client: ExtendedClient, oldUser: User, newUser: User) => {
+    run: async (client, oldUser, newUser) => {
         await updateUser(newUser);
     }
 }

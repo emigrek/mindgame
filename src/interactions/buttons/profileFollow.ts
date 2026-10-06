@@ -4,7 +4,7 @@ import { createFollow, deleteFollow, getFollow } from "@/modules/follow";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { InformationEmbed } from "@/modules/messages/embeds";
 import { profileStore, restoreProfileState } from "@/stores/profileStore";
-import { ButtonInteraction } from "discord.js";
+import { ButtonInteraction, MessageFlags } from "discord.js";
 
 const profileFollow: Button = {
     customId: `profileFollow`,
@@ -14,7 +14,7 @@ const profileFollow: Button = {
 
         const { targetUserId } = profileStore.get(interaction.user.id);
         if (!targetUserId) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -31,7 +31,7 @@ const profileFollow: Button = {
                                 tag: `<@${targetUserId}>`
                             }))
                     ],
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
                 return;
             }
@@ -43,7 +43,7 @@ const profileFollow: Button = {
                             tag: `<@${targetUserId}>`
                         }))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
         } else {
             await deleteFollow(interaction.user.id, targetUserId);
@@ -55,7 +55,7 @@ const profileFollow: Button = {
                             tag: `<@${targetUserId}>`
                         }))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
         }
 

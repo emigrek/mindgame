@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Button } from "@/interfaces";
 import { getColorMessagePayload } from "@/modules/messages";
 import { updateColorRole } from "@/modules/roles";
@@ -12,7 +13,7 @@ const roleColorUpdate: Button = {
             await interaction.followUp({ embeds: [
                 WarningEmbed()
                     .setDescription("utils.guildOnly")
-            ], ephemeral: true });
+            ], flags: MessageFlags.Ephemeral });
             return;
         }
 

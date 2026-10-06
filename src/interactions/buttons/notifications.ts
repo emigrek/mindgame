@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Button } from "@/interfaces";
 import { setNotifications } from "@/modules/guild";
 import { getConfigMessagePayload, getErrorMessagePayload } from "@/modules/messages";
@@ -8,7 +9,7 @@ const notifications: Button = {
         await interaction.deferUpdate();
 
         if(!interaction.guild) {
-            await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });
+            await interaction.followUp({ ...getErrorMessagePayload(), flags: MessageFlags.Ephemeral });
             return;
         }
 

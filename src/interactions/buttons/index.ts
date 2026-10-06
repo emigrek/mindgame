@@ -3,7 +3,6 @@ import { Button } from "@/interfaces";
 import achievementsPageDown from "./achievementsPageDown";
 import achievementsPageUp from "./achievementsPageUp";
 import autoSweeping from "./autoSweeping";
-import commits from "./commits";
 import help from "./help";
 import levelRoles from "./levelRoles";
 import levelRolesHoist from "./levelRolesHoist";
@@ -32,7 +31,6 @@ const buttons: Button[] = [
     profile,
     profileFollow,
     autoSweeping,
-    commits,
     roleColorPick,
     roleColorUpdate,
     roleColorDisable,

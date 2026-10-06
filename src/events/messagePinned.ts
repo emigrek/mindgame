@@ -1,12 +1,10 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
-import {Message} from "discord.js";
 
 // Emitted by discord-logs. Pinned messages in ephemeral channels are kept.
-export const messagePinned: Event = {
+export const messagePinned: Event<"messagePinned"> = {
     name: "messagePinned",
-    run: async (client: ExtendedClient, message: Message) => {
+    run: async (client, message) => {
         ephemeralChannelMessageCache.remove(message.channelId, message.id);
     }
 }

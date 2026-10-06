@@ -2,7 +2,7 @@ import { Button } from "@/interfaces";
 import { getColorMessagePayload, useImageHex } from "@/modules/messages";
 import { WarningEmbed } from "@/modules/messages/embeds";
 import { deleteMemberColorRole } from "@/modules/roles";
-import { GuildMember } from "discord.js";
+import { GuildMember, MessageFlags } from "discord.js";
 import i18n from "@/client/i18n";
 import { colorStore } from "@/stores/colorStore";
 
@@ -15,7 +15,7 @@ const roleColorDisable: Button = {
             await interaction.followUp({ embeds: [
                 WarningEmbed()
                     .setDescription(i18n.__("utils.guildOnly"))
-            ], ephemeral: true });
+            ], flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -28,7 +28,7 @@ const roleColorDisable: Button = {
                 await interaction.followUp({ embeds: [
                     WarningEmbed()
                         .setDescription(i18n.__("roles.missingPermissions"))
-                ], ephemeral: true });
+                ], flags: MessageFlags.Ephemeral });
             });
 
         colorState.color = defaultColor;

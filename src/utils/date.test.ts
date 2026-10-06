@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { formatDuration, getNightMs, getWarsawDay, getWarsawHour } from "./date";
+import { formatDuration, formatTimeTotal, getNightMs, getWarsawDay, getWarsawHour } from "./date";
 
 const utc = (iso: string) => new Date(`${iso}Z`);
 const hours = (n: number) => n * 60 * 60 * 1000;
@@ -27,4 +27,10 @@ test("duration formatting", () => {
     assert.equal(formatDuration(90_000), "1m");
     assert.equal(formatDuration(hours(1) + 5 * 60_000), "1h 5m");
     assert.equal(formatDuration(hours(25)), "1d 1h");
+});
+
+test("time totals in statistics", () => {
+    assert.equal(formatTimeTotal(0), "0m");
+    assert.equal(formatTimeTotal(25 * 60), "25m"); // used to round to "0H"
+    assert.equal(formatTimeTotal(90 * 60), "1h 30m");
 });

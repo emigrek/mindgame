@@ -1,13 +1,12 @@
-import {ChannelType, DMChannel, GuildChannel, NonThreadGuildBasedChannel} from "discord.js";
-import ExtendedClient from "@/client/ExtendedClient";
+import {ChannelType, NonThreadGuildBasedChannel} from "discord.js";
 import {Event} from "@/interfaces";
 import {deleteEphemeralChannel} from "@/modules/ephemeral-channel";
 import {deleteMessages} from "@/modules/messages";
 import {getGuild} from "@/modules/guild";
 
-export const channelDelete: Event = {
+export const channelDelete: Event<"channelDelete"> = {
     name: "channelDelete",
-    run: async (client: ExtendedClient, channel: DMChannel | GuildChannel) => {
+    run: async (client, channel) => {
         if (channel.isTextBased() && !channel.isDMBased()) {
             const sourceGuild = await getGuild(channel.guild.id);
 

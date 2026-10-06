@@ -1,13 +1,11 @@
-import ExtendedClient from "@/client/ExtendedClient";
-import { AchievementType, Event } from "@/interfaces";
-import { BaseAchievement } from "@/modules/achievement";
+import { Event } from "@/interfaces";
 import { getNotificationChannel } from "@/modules/guild";
 import { getAchievementLeveledUpMessagePayload } from "@/modules/messages";
 import NotificationsManager from "@/modules/messages/notificationsManager";
 
-export const achievementLeveledUp: Event = {
+export const achievementLeveledUp: Event<"achievementLeveledUp"> = {
     name: "achievementLeveledUp",
-    run: async (client: ExtendedClient, achievement: BaseAchievement<AchievementType>, change: number) => {
+    run: async (client, achievement, change) => {
         const { userId, guildId } = achievement;
         if (!userId || !guildId) return;
         if (change > 1 && !achievement.announceLevelJumps) return;

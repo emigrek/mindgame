@@ -4,7 +4,7 @@ import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
-import {getLocalizedDateTypeRange} from "@/utils/date";
+import {getLocalizedDateTypeRange, formatTimeTotal} from "@/utils/date";
 import { codeBlock, heading, HeadingLevel, userMention } from "discord.js";
 
 export class VoiceActivity extends BaseProfilePage {
@@ -42,17 +42,17 @@ export class VoiceActivity extends BaseProfilePage {
                 this.embedTitleField,
                 {
                     name: i18n.__("notifications.todayVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('day')}\n${codeBlock(`${Math.round(userGuildStatistics.day.time.voice/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('day')}\n${codeBlock(formatTimeTotal(userGuildStatistics.day.time.voice))}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.weekVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('week')}\n${codeBlock(`${Math.round(userGuildStatistics.week.time.voice/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('week')}\n${codeBlock(formatTimeTotal(userGuildStatistics.week.time.voice))}`,
                     inline: true,
                 },
                 {
                     name: i18n.__("notifications.monthVoiceTimeField"),
-                    value: `${getLocalizedDateTypeRange('month')}\n${codeBlock(`${Math.round(userGuildStatistics.month.time.voice/3600)}H`)}`,
+                    value: `${getLocalizedDateTypeRange('month')}\n${codeBlock(formatTimeTotal(userGuildStatistics.month.time.voice))}`,
                     inline: true,
                 },
             ]);

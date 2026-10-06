@@ -1,4 +1,3 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
 import {getGuild, getNotificationChannel} from "@/modules/guild";
 import {createMessage, fetchTrackedMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
@@ -7,9 +6,9 @@ import {sendNewFeaturesMessage} from "@/modules/user";
 import NotificationsManager from "@/modules/messages/notificationsManager";
 import {MessageTypeIds} from "@/interfaces/Message";
 
-export const userLeveledUp: Event = {
+export const userLeveledUp: Event<"userLeveledUp"> = {
     name: "userLeveledUp",
-    run: async (client: ExtendedClient, userId: string, guildId: string, oldLevel: number, newLevel: number) => {
+    run: async (client, userId, guildId, oldLevel, newLevel) => {
         await sendNewFeaturesMessage({ client, userId, guildId, oldLevel, newLevel })
             .catch(err => console.log("Error while sending new features message: ", err));
 

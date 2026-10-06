@@ -7,6 +7,5 @@ interface Run {
 
 export interface Select {
     customId: string;
-    permissions?: bigint[];
     run: Run;
 }

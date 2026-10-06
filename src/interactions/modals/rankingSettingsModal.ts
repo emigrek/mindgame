@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import i18n from "@/client/i18n";
 import {Modal} from "@/interfaces";
 import {getErrorMessagePayload, getRankingMessagePayload} from "@/modules/messages";
@@ -25,7 +26,7 @@ const rankingSettingsModal: Modal = {
                     WarningEmbed()
                         .setDescription(i18n.__("ranking.settingsModal.perPageInput.invalid"))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
             return;
         }
@@ -41,7 +42,7 @@ const rankingSettingsModal: Modal = {
                             pagesCount: rankingState.pagesCount
                         }))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
             return;
         }

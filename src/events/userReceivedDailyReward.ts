@@ -1,14 +1,13 @@
-import ExtendedClient from "@/client/ExtendedClient";
-import {ActivityStreak, Event} from "@/interfaces";
+import {Event} from "@/interfaces";
 import {getNotificationChannel} from "@/modules/guild";
 import {createMessage, getDailyRewardMessagePayload} from "@/modules/messages";
 import NotificationsManager from "@/modules/messages/notificationsManager";
 import {MessageTypeIds} from "@/interfaces/Message";
 
 
-export const userReceivedDailyReward: Event = {
+export const userReceivedDailyReward: Event<"userReceivedDailyReward"> = {
     name: "userReceivedDailyReward",
-    run: async (client: ExtendedClient, userId: string, guildId: string, streak: ActivityStreak) => {
+    run: async (client, userId, guildId, streak) => {
         const channel = await getNotificationChannel(client, guildId);
         if(!channel) return;
 

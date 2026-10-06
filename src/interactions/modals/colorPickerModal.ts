@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { Modal } from "@/interfaces";
 import { getColorMessagePayload } from "@/modules/messages";
 import { WarningEmbed } from "@/modules/messages/embeds";
@@ -20,7 +21,7 @@ const colorPickerModal: Modal = {
                     WarningEmbed()
                         .setDescription(i18n.__("color.pickerModal.colorInput.invalid"))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
             return;
         }
@@ -31,7 +32,7 @@ const colorPickerModal: Modal = {
                     WarningEmbed()
                         .setDescription(i18n.__("color.tooDark"))
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
             return;
         }

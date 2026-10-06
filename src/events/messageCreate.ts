@@ -1,4 +1,3 @@
-import ExtendedClient from "@/client/ExtendedClient";
 import { config } from "@/config";
 import { Event } from "@/interfaces";
 import { checkDJ } from "@/modules/achievement/achievements";
@@ -6,11 +5,10 @@ import { getEphemeralChannel, isMessageCacheable } from "@/modules/ephemeral-cha
 import { ephemeralChannelMessageCache } from "@/modules/ephemeral-channel/cache";
 import { ExperienceCalculator } from "@/modules/experience";
 import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
-import { Message } from "discord.js";
 
-export const messageCreate: Event = {
+export const messageCreate: Event<"messageCreate"> = {
     name: "messageCreate",
-    run: async (client: ExtendedClient, message: Message) => {
+    run: async (client, message) => {
         if (!message.guild) return;
 
         // Not awaited, verification waits for the music bot to respond

@@ -1,4 +1,4 @@
-import { Event } from "@/interfaces";
+import { AnyEvent } from "@/interfaces";
 
 import { ready } from "./ready";
 import { guildCreate } from "./guildCreate";
@@ -35,7 +35,7 @@ import { channelDelete } from "./channelDelete";
 import { guildMemberRemove } from "./guildMemberRemove";
 import { achievementLeveledUp } from "./achievementLeveledUp";
 
-const events: Event[] = [
+const events: AnyEvent[] = [
     ready,
     guildCreate,
     guildDelete,

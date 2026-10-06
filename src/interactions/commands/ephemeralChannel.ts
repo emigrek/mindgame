@@ -1,5 +1,5 @@
 import {Command} from "@/interfaces";
-import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
+import {InteractionContextType, MessageFlags, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import timeoutVariants from "@/modules/ephemeral-channel/timeoutVariants";
 import {getEphemeralChannelMessagePayload} from "@/modules/messages";
 import i18n from "@/client/i18n";
@@ -75,9 +75,9 @@ export const ephemeralChannel: Command = {
                 .setDescription(i18n.__("commandLocalizations.ephemeral-channel.subcommand.list.description"))
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     execute: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const ephemeralChannelMessagePayload = await getEphemeralChannelMessagePayload(client, interaction);
         await interaction.followUp(ephemeralChannelMessagePayload);
     }

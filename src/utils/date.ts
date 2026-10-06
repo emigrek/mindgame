@@ -46,6 +46,9 @@ export const formatDuration = (ms: number) => {
     return hours < 24 ? `${hours}h ${minutes % 60}m` : `${Math.floor(hours / 24)}d ${hours % 24}h`;
 };
 
+// Time totals (seconds) in statistics: rounding to whole hours showed anything under 30 minutes as "0H"
+export const formatTimeTotal = (seconds: number) => seconds < 60 ? "0m" : formatDuration(seconds * 1000);
+
 const warsawHourFormat = new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Europe/Warsaw" });
 const warsawDayFormat = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Warsaw" });
 
