@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import {Command} from "@/interfaces";
-import {getColorInt, useImageHex} from "@/modules/messages";
+import {getColorInt, useImageHex} from "@/modules/messages/colors";
 import {InformationEmbed} from "@/modules/messages/embeds";
 import userSchema from "@/modules/schemas/User";
 import {User} from "discord.js";

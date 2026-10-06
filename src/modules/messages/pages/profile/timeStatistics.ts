@@ -4,7 +4,7 @@ import {ProfilePages} from "@/interfaces";
 import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {ExtendedUserStatistics} from "@/interfaces/UserGuildStatistics";
-import {getColorInt} from "@/modules/messages";
+import {getColorInt} from "@/modules/messages/colors";
 import {getProfileTimePublicButton} from "@/modules/messages/buttons";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserTotalStatistics} from "@/modules/user-guild-statistics";

@@ -3,7 +3,7 @@ import {ActivityStreak, ProfilePages} from "@/interfaces";
 import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {getUserVoiceActivityStreak} from "@/modules/activity";
-import {formatNextStreakField, formatStreakField} from "@/modules/messages";
+import {formatNextStreakField, formatStreakField} from "@/modules/messages/formatters";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import { heading, HeadingLevel, userMention } from "discord.js";
 

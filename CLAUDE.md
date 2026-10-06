@@ -17,6 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Nothing is auto-discovered. New events, commands, buttons, selects, contexts, modals and modules must be added to the array in their folder's `index.ts`.
 - Buttons, selects and modals are dispatched in `src/events/interactionCreate.ts` by the `customId` part before the first `:`. The rest is passed to `run(client, interaction, ...args)`. Profile components carry `:<targetUserId>:<page>` (added by `ProfilePagesManager`, read by `restoreProfileState`), so clicks on older messages act on the profile they show.
 - Handlers may throw: `interactionCreate` logs the error with context and replies to the user with an error message.
+- `src/modules/messages/index.ts` and `src/modules/activity/index.ts` are barrels; add code to the module by responsibility (`messages/payloads/*`, `messages/colors.ts`, `activity/sessions.ts`, `activity/queries.ts`, ...). Inside `src/modules/messages`, import siblings directly instead of through the barrel, which would create import cycles.
 - Modules start in the `clientReady` event, not in `ExtendedClient.init()`.
 - Many events are custom and fired with `client.emit`. `src/modules/timers.ts` emits `minute`, `daily` and the other timer events from cron.
 - `AchievementType` is a numeric enum persisted in MongoDB, and translation keys use the numeric index. Only append to it; never reorder or insert members.

@@ -1,5 +1,5 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import { ImageHexColors } from "@/modules/messages";
+import type { ImageHexColors } from "@/modules/messages/colors";
 import { UserDocument } from "@/modules/schemas/User";
 import { Guild, MessageCreateOptions } from "discord.js";
 

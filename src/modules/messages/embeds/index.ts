@@ -2,7 +2,7 @@ import {KnownLinks} from "@/modules/messages/knownLinks";
 import {UserDocument} from "@/modules/schemas/User";
 import Colors from "@/utils/colors";
 import {EmbedBuilder} from "discord.js";
-import {getColorInt, ImageHexColors} from "..";
+import {getColorInt, ImageHexColors} from "../colors";
 
 interface BaseProfileProps {
     user: UserDocument;

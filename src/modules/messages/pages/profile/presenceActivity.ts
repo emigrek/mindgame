@@ -1,7 +1,7 @@
 import i18n from "@/client/i18n";
 import {BaseProfilePage, ProfilePages} from "@/interfaces";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
-import {getColorInt} from "@/modules/messages";
+import {getColorInt} from "@/modules/messages/colors";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 import {getLocalizedDateTypeRange, formatTimeTotal} from "@/utils/date";

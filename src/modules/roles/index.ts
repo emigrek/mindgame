@@ -4,7 +4,7 @@ import {getGuild, setColorRoleId, setLevelRoleId, setLevelRoleIds} from "@/modul
 import {GuildDocument} from "@/modules/schemas/Guild";
 import {ButtonInteraction, ColorResolvable, Guild, GuildMember, MessageFlags, PartialGuildMember, Role} from "discord.js";
 
-import {getErrorMessagePayload} from "@/modules/messages";
+import {getErrorMessagePayload} from "@/modules/messages/error";
 import {WarningEmbed} from "@/modules/messages/embeds";
 import {getUserGuildStatistics} from "@/modules/user-guild-statistics";
 import {colorStore} from "@/stores/colorStore";
