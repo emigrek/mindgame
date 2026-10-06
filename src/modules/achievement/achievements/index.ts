@@ -1,4 +1,4 @@
-export { checkVoiceChannelMembers, checkVoiceSessionEnd } from "./checks";
+export { checkVoiceChannelMembers, checkVoiceSessionEnd, checkVoiceSessionStart } from "./checks";
 export { Comeback } from "./comeback";
 export { CoordinatedAction } from "./coordinatedAction";
 export { DJ, checkDJ } from "./dj";

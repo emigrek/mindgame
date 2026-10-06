@@ -8,6 +8,7 @@ const presenceActivitySchema = new Schema<PresenceActivity>({
     guildId: { type: String, required: true },
     from: { type: Date, required: true },
     to: { type: Date, required: false, default: null },
+    lastSeenAt: { type: Date, required: false },
     status: { type: String },
     client: { type: String }
 }, {

@@ -1,7 +1,9 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { config } from '@/config';
 import { AchievementType } from "@/interfaces";
+// getAllAchievements is only called inside methods: ../index imports this file through ./structures
 import { getAllAchievements } from "@/modules/achievement";
+import { achievementModel } from "../model";
 import { serialized } from "@/utils/serialized";
 import { BaseAchievement } from "./BaseAchievement";
 
@@ -62,8 +64,12 @@ class AchievementManager {
 
     async getAll(display: string[] = ["unlocked"]): Promise<BaseAchievement<AchievementType>[]> {
         const { userId, guildId } = this;
-        return Promise.all(getAllAchievements().map(achievement => achievement.direct({ userId, guildId }).get()))
-            .then(achievements => achievements.filter(achievement => displayFilter(display, achievement)));
+        // One query for the member's achievements instead of one per achievement on every page click
+        const stored = await achievementModel.find({ userId, guildId });
+        const byType = new Map(stored.map(achievement => [achievement.achievementType, achievement]));
+        return getAllAchievements()
+            .map(achievement => achievement.direct({ userId, guildId }).hydrate(byType.get(achievement.achievementType) ?? null))
+            .filter(achievement => displayFilter(display, achievement));
     }
 }
 

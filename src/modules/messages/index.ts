@@ -61,6 +61,7 @@ import {
     HeadingLevel,
     Message,
     MessageContextMenuCommandInteraction,
+    MessageFlags,
     ModalSubmitInteraction,
     RESTJSONErrorCodes,
     StringSelectMenuBuilder,
@@ -99,23 +100,39 @@ interface ImageHexColors {
 
 const messageModel = mongoose.model("Message", messageSchema);
 
-const useImageHex = async (image: string | null) => {
+// Avatar URLs contain a content hash, so their colors never change. Every profile, ranking and /color render
+// used to download and quantize the image again.
+// ponytail: cleared when full instead of LRU, it only saves recomputation
+const imageHexCache = new Map<string, ImageHexColors>();
+
+const useImageHex = async (image: string | null): Promise<ImageHexColors> => {
     const defaultColors = { Vibrant: "#373b48", DarkVibrant: "#373b48" };
 
     if (!image)
         return defaultColors;
 
+    const cached = imageHexCache.get(image);
+    if (cached)
+        return cached;
+
     // stale/missing avatar URLs 404 on the CDN; fall back instead of failing the whole interaction
     const colors = await Vibrant.from(image).getPalette().catch(() => null);
 
+    // Not cached: a CDN hiccup shouldn't stick
     if (!colors || !colors.Vibrant || !colors.DarkVibrant)
         return defaultColors;
 
-    return {
+    if (imageHexCache.size >= 1000)
+        imageHexCache.clear();
+    const imageColors = {
         Vibrant: colors.Vibrant.hex,
         DarkVibrant: colors.DarkVibrant.hex
     };
+    imageHexCache.set(image, imageColors);
+    return imageColors;
 }
+
+const truncate = (text: string, length: number) => text.length > length ? `${text.slice(0, length)}…` : text;
 
 const getColorInt = (color: string) => {
     return parseInt(color.slice(1), 16);
@@ -176,7 +193,7 @@ const getProfileMessagePayload = async (client: ExtendedClient, interaction: But
         };
     }
 
-    const targetUser = await client.users.fetch(targetUserId);
+    const targetUser = await client.users.fetch(targetUserId).catch(() => null);
     if (!targetUser) {
         return {
             embeds: [
@@ -229,8 +246,9 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
+    // Notifications are public: never post an error embed, the event wrapper logs this instead
     if (!sourceUser)
-        return getErrorMessagePayload();
+        throw new Error(`No user document for ${user.id}, notifications are not built for bots`);
 
     const userGuildStatistics = await getUserGuildStatistics({ userId: sourceUser.userId, guildId: guild.id });
     const colors = await useImageHex(sourceUser.avatarUrl);
@@ -267,7 +285,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 
     return {
         embeds: [embed],
-        flags: [4096]
+        flags: MessageFlags.SuppressNotifications as const
     };
 };
 
@@ -508,7 +526,7 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
 
     return {
         embeds: [embed],
-        flags: [4096]
+        flags: MessageFlags.SuppressNotifications as const
     };
 };
 
@@ -516,7 +534,9 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
     i18n.setLocale(guild.preferredLocale);
 
     const sourceUser = await getUser(user);
-    if (!sourceUser) return getErrorMessagePayload();
+    // Notifications are public: never post an error embed, the event wrapper logs this instead
+    if (!sourceUser)
+        throw new Error(`No user document for ${user.id}, notifications are not built for bots`);
 
     const colors = await useImageHex(sourceUser.avatarUrl);
 
@@ -553,7 +573,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
 
     return {
         embeds: [embed],
-        flags: [4096]
+        flags: MessageFlags.SuppressNotifications as const
     };
 };
 
@@ -733,16 +753,17 @@ const getEvalMessagePayload = async (client: ExtendedClient, interaction: ChatIn
     const embed = new EmbedBuilder();
     try {
         const result = await eval(code ?? '');
-        const output = await clean(result, depth ?? 0);
+        // The embed description is limited to 4096 characters, a longer one failed to send anything back
+        const output = truncate(await clean(result, depth ?? 0), 3000);
 
         embed
             .setTitle(i18n.__("evaluation.title"))
-            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${code}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${output}\n\`\`\``)
+            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${truncate(code ?? "", 800)}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${output}\n\`\`\``)
             .setColor(Colors.Blurple);
     } catch (e) {
         embed
             .setTitle(i18n.__("evaluation.title"))
-            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${code}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${e}\n\`\`\``)
+            .setDescription(`${bold(i18n.__("evaluation.input"))}\n\`\`\`js\n${truncate(code ?? "", 800)}\n\`\`\`\n${bold(i18n.__("evaluation.output"))}\n\`\`\`js\n${truncate(String(e), 3000)}\n\`\`\``)
             .setColor(Colors.Red);
     }
 
@@ -824,7 +845,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
 
     return {
         embeds: [embed],
-        flags: [4096]
+        flags: MessageFlags.SuppressNotifications as const
     }
 }
 
@@ -854,7 +875,7 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
 
     return {
         embeds: [embed],
-        flags: [4096]
+        flags: MessageFlags.SuppressNotifications as const
     };
 }
 
@@ -863,9 +884,9 @@ const getErrorMessagePayload = () => {
         .setTitle(i18n.__("error.title"))
         .setDescription(i18n.__("error.description"));
 
+    // No flags: the payload is also used with editReply, where Discord rejects SuppressNotifications
     return {
         embeds: [embed],
-        flags: [4096]
     };
 }
 
@@ -898,7 +919,8 @@ const sweepTextChannel = async (client: ExtendedClient, channel: TextChannel | V
 };
 
 const attachQuickButtons = async (client: ExtendedClient, channelId: string) => {
-    const channel = await client.channels.fetch(channelId) as TextChannel;
+    const channel = await client.channels.fetch(channelId).catch(() => null);
+    if (!channel?.isTextBased() || channel.isDMBased()) return;
     i18n.setLocale(channel.guild.preferredLocale);
 
     const lastMessages = await channel.messages.fetch({ limit: 100 })

@@ -21,10 +21,11 @@ export class Comeback extends GradualAchievement<AchievementType.COMEBACK> {
     // Longest break from voice channels before coming back
     async progress(context: AchievementTypeContext[AchievementType.COMEBACK]) {
         const { breakMs } = context;
-        if (breakMs <= (this.payload?.topMs || 0))
-            return;
+        const topMs = this.payload?.topMs || 0;
+        if (breakMs > topMs)
+            await this.updatePayload({ topMs: breakMs });
 
-        await this.updatePayload({ topMs: breakMs });
-        return this.reach(breakMs);
+        // Also without a new record: reach() is a no-op at the current level and catches up after changed thresholds
+        return this.reach(Math.max(breakMs, topMs));
     }
 }

@@ -22,10 +22,11 @@ export class Marathon extends GradualAchievement<AchievementType.MARATHON> {
     async progress(context: AchievementTypeContext[AchievementType.MARATHON]) {
         const { from, to } = context.activity;
         const sessionMs = to ? to.getTime() - from.getTime() : 0;
-        if (sessionMs <= (this.payload?.topMs || 0))
-            return;
+        const topMs = this.payload?.topMs || 0;
+        if (sessionMs > topMs)
+            await this.updatePayload({ topMs: sessionMs });
 
-        await this.updatePayload({ topMs: sessionMs });
-        return this.reach(sessionMs);
+        // Also without a new record: reach() is a no-op at the current level and catches up after changed thresholds
+        return this.reach(Math.max(sessionMs, topMs));
     }
 }

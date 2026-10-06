@@ -12,7 +12,8 @@ const voiceActivitySchema = new Schema<VoiceActivity>({
     guildId: reqString,
     streaming: { type: Boolean, required: true },
     from: { type: Date, required: true },
-    to: { type: Date, required: false, default: null }
+    to: { type: Date, required: false, default: null },
+    lastSeenAt: { type: Date, required: false }
 }, {
     timestamps: true
 });

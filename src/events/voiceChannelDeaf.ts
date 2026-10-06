@@ -8,7 +8,7 @@ export const voiceChannelDeaf: Event = {
     name: "voiceChannelDeaf",
     run: async (client: ExtendedClient, member: GuildMember) => {
         const activity = await endVoiceActivity(member);
-        checkVoiceSessionEnd(client, member, activity);
+        checkVoiceSessionEnd(client, { userId: member.id, guildId: member.guild.id }, activity);
 
         if (member.voice.channel) {
             await checkGuildVoiceEmpty(client, member.guild, member.voice.channel);

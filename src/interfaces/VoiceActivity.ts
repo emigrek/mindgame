@@ -6,4 +6,6 @@ export interface VoiceActivity {
     streaming: boolean;
     from: Date;
     to: Date | null;
+    // Last experience tick that saw the session open
+    lastSeenAt?: Date;
 }

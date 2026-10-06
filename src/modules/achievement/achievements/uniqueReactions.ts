@@ -42,13 +42,19 @@ export class UniqueReactions extends GradualAchievement<AchievementType.UNIQUE_R
 
     // Record of unique users (excluding author and bots) reacting to a single message
     async progress(context: AchievementTypeContext[AchievementType.UNIQUE_REACTIONS]) {
-        const uniqueReactions = await getMessageReactionsUniqueUsers(context.message)
-            .then((users) => users.length);
+        const record = this.payload?.uniqueReactions || 0;
 
-        if (uniqueReactions <= (this.payload?.uniqueReactions || 0))
-            return;
+        // Reaction counts include the author and bots, so they cap the unique users: no new record is possible
+        // without fetching who reacted (one API call per emoji)
+        const reactionCount = context.message.reactions.cache.reduce((sum, reaction) => sum + reaction.count, 0);
+        const uniqueReactions = reactionCount > record
+            ? await getMessageReactionsUniqueUsers(context.message).then((users) => users.length)
+            : 0;
 
-        await this.updatePayload({ uniqueReactions });
-        return this.reach(uniqueReactions);
+        if (uniqueReactions > record)
+            await this.updatePayload({ uniqueReactions });
+
+        // Also without a new record: reach() is a no-op at the current level and catches up after changed thresholds
+        return this.reach(Math.max(uniqueReactions, record));
     }
 }

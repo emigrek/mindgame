@@ -1,7 +1,7 @@
 import i18n from "@/client/i18n";
-import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
+import { Achievement, AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { GuildUser } from "@/interfaces/GuildUser";
-import { achievementModel } from "@/modules/achievement";
+import { achievementModel } from "../model";
 import { codeBlock } from "@discordjs/formatters";
 import moment from "moment";
 
@@ -11,14 +11,14 @@ export interface ProgressResult {
 }
 
 export interface BaseAchievementParams<T extends AchievementType> {
-    achievementType: AchievementType;
+    achievementType: T;
     context?: AchievementTypeContext[T];
 }
 
 export type BaseAchievementContext<T extends AchievementType> = AchievementTypeContext[T] | undefined;
 
 export abstract class BaseAchievement<T extends AchievementType> {
-    achievementType: AchievementType;
+    achievementType: T;
     userId?: string;
     guildId?: string;
     name = "";
@@ -88,17 +88,20 @@ export abstract class BaseAchievement<T extends AchievementType> {
             guildId: this.guildId,
             achievementType: this.achievementType
         })
-            .then((achievement) => {
-                this.name = i18n.__(`achievements.${this.achievementType}.name`);
-                this.description = i18n.__(`achievements.${this.achievementType}.description`);
-                if (achievement) {
-                    this.level = achievement.level || 0;
-                    this.leveledUpAt = achievement.leveledUpAt;
-                    this.payload = achievement.payload as AchievementTypePayload[T];
-                    this.status = this.formatStatus();
-                }
-                return this;
-            });
+            .then((achievement) => this.hydrate(achievement));
+    }
+
+    // Fills the instance from its stored document, or keeps the defaults when there is none yet
+    hydrate(achievement: Achievement<AchievementType> | null): this {
+        this.name = i18n.__(`achievements.${this.achievementType}.name`);
+        this.description = i18n.__(`achievements.${this.achievementType}.description`);
+        if (achievement) {
+            this.level = achievement.level || 0;
+            this.leveledUpAt = achievement.leveledUpAt;
+            this.payload = achievement.payload as AchievementTypePayload[T];
+            this.status = this.formatStatus();
+        }
+        return this;
     }
 
     async check (): Promise<ProgressResult | undefined> {

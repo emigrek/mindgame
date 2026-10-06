@@ -57,10 +57,12 @@ class ExtendedClient extends Client {
         }
     }
 
+    // A failing module must not keep the ones after it (timers, ephemeral channels) from starting
     public async loadModules() {
         for (const module of modules) {
             this.modules.set(module.name, module);
-            await module.run(this);
+            await module.run(this)
+                .catch(e => console.error(`[Module:${module.name}] Failed to start`, e));
         }
     }
 

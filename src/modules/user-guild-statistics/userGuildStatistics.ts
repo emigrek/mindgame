@@ -110,8 +110,9 @@ export const clearGuildExperience = async (guildId: string) => {
     return UserGuildStatisticsModel.deleteMany({ guildId });
 };
 
+// The yearly wipe resets experience and levels only; it used to delete every document, message and time counters included
 export const clearExperience = async () => {
-    return UserGuildStatisticsModel.deleteMany({});
+    return UserGuildStatisticsModel.updateMany({}, { $set: { "total.exp": 0, "day.exp": 0, "week.exp": 0, "month.exp": 0, level: 0 } });
 };
 
 interface GetRankingProps {
@@ -138,8 +139,9 @@ const getRankingPipeline = (guildId: string, userIds: string[], type: Sorting): 
         { $unwind: "$user" },
         // Support private time statistics
         ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? [{ $match: { "user.publicTimeStatistics": true } }] : []),
+        // Positions come from the page offset (getRanking): $documentNumber accepts a single sort key only,
+        // so it can't follow the _id tie-break
         { $sort: sort },
-        { $setWindowFields: { partitionBy: null, sortBy: sort, output: { position: { $documentNumber: {} } } } },
     ];
 };
 
@@ -147,6 +149,8 @@ export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Prom
     const { page, userIds, perPage, sorting, range } = rankingStore.get(sourceUserId);
     const type = getSortingByType(sorting, range);
 
+    // Page buttons on an older message can push the stored page below 1
+    const skip = Math.max(0, (page - 1) * perPage);
     const results = await UserGuildStatisticsModel.aggregate([
         ...getRankingPipeline(guild.id, userIds, type),
         {
@@ -159,8 +163,7 @@ export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Prom
                         }
                     }
                 ],
-                // Page buttons on an older message can push the stored page below 1
-                data: [{ $skip: Math.max(0, (page - 1) * perPage) }, { $limit: perPage }]
+                data: [{ $skip: skip }, { $limit: perPage }]
             }
         },
     ]);
@@ -174,7 +177,7 @@ export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Prom
             page,
             perPage
         },
-        data: results[0].data
+        data: results[0].data.map((row: UserIncludedGuildStatisticsDocument, index: number) => ({ ...row, position: skip + index + 1 }))
     };
 };
 

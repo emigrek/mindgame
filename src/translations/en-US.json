@@ -42,10 +42,6 @@
 					"name": "timeout",
 					"description": "Amount of time after message gets deleted."
 				},
-				"keepMessagesWithReactions": {
-					"name": "keep-messages-with-reactions",
-					"description": "Keep messages with reactions."
-				},
 				"keep-messages-with-reactions": {
 					"name": "keep-messages-with-reactions",
 					"description": "Keep messages with reactions."
@@ -82,30 +78,16 @@
 	"contextLocalizations": {
 		"profile": "Show profile",
 		"sweep": "Sweep messages",
-		"ranking": "Show ranking",
 		"rankingMessage": "Show ranking",
 		"rankingUser": "Show user ranking"
 	},
 	"config": {
-		"channelWatchers": "{count} 👀 see this channel.",
-		"selectDefaultChannel": "Select default text channel.",
 		"noValidChannels": "This server has no valid text channels. Please create one and run `/config`!",
-		"defaultChannelSuccess": "Successfully changed guild default channel to <#{selected}>!",
-		"defaultChannelError": "Something went wrong when changing guild default channel.",
-		"headerSubtitle": "Adjust your server settings",
 		"selectChannelPlaceholder": "Default text channel: #{channel}",
 		"selectChannelPlaceholderNoDefault": "Default text channel: none",
-		"selectLocalePlaceholder": "Language: {locale}",
-		"languageChanged": "Language has been changed.",
 		"notificationsButtonLabel": "Notifications 🔔",
-		"statisticsNotificationButtonLabel": "Daily statistics 📅",
 		"levelRolesButtonLabel": "Level roles ✨",
 		"levelRolesHoistButtonLabel": "Level roles hoist 📌",
-		"close": "Close ❌",
-		"footer": "Change guild config any time by running /config",
-		"textChannelField": "Text channels",
-		"voiceChannelField": "Voice channels",
-		"membersField": "Members",
 		"autoSweepingButtonLabel": "Auto sweeping 🧹"
 	},
 	"commits": {
@@ -118,7 +100,6 @@
 		"roleColorPickButtonLabel": "Pick 🎨",
 		"roleColorUpdateButtonLabel": "Update 🔄",
 		"roleColorDisableButtonLabel": "Disable ❌",
-		"noColor": "Please set your banner color first.",
 		"tooDark": "This color is too dark for a custom role color.\nPlease select something brighter.",
 		"pickerModal": {
 			"title": "Pick a color",
@@ -148,17 +129,12 @@
 		"followers": "Followers",
 		"voice": "Voice time",
 		"overall": "Overall",
-		"statistics": "Statistics",
 		"mostUsedClient": "Main device",
 		"clients": "Devices",
 		"lastVoiceActivity": "🎤  Last {time} in **{guild}**.",
 		"currentVoiceActivity": "🎤  Now since {time} in **{guild}**.",
 		"lastPresenceActivity": "👀  Last {time} in **{guild}**. {client}",
 		"currentPresenceActivity": "👀  Now since {time} in **{guild}**. {client}",
-		"timeStatistics": "Time spent",
-		"temporaryVoiceTimeStatistics": "Voice activity",
-		"temporaryPresenceTimeStatistics": "Server activity",
-		"favoriteGuild": "Favorite guild",
 		"followButtonLabel": "Follow 💗",
 		"unfollowButtonLabel": "Unfollow 💔",
 		"timePublicButtonLabel": "Public time spent 👀",
@@ -191,7 +167,6 @@
 		"levelUpDescription": "<@{userId}> has reached <@&{roleId}>!",
 		"levelUpDescriptionNoRole": "<@{userId}> has reached level **{level}**!",
 		"levelField": "Level",
-		"winsField": "Wins",
 		"dailyRewardTitle": "Daily reward",
 		"dailyRewardDescription": "<@{userId}> has claimed **daily reward**!",
 		"dailyRewardField": "Reward",
@@ -219,8 +194,6 @@
 	},
 	"quickButton": {
 		"profileLabel": "Profile 👤",
-		"commitsLabel": "Commits 📝",
-		"guildStatisticsLabel": "Statistics 📅",
 		"sweepLabel": "Spam? 🧹",
 		"rankingLabel": "Ranking 👥👑",
 		"helpLabel": "Help"
@@ -234,13 +207,10 @@
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",
 		"footer": "Page {page} of {pages}.",
-		"first": "👑",
 		"you": "👈",
 		"empty": "No users found.",
 		"pageUpButtonLabel": "⬅️ Back",
 		"pageDownButtonLabel": "Next ➡️",
-		"guildOnlyButtonLabel": "Guild only 👨‍👩‍👦‍👦",
-		"allGuildsButtonLabel": "Global 🌎",
 		"settingsButtonLabel": "Settings ⚙️",
 		"selectUsersPlaceholder": "Compare users",
 		"settingsModal": {
@@ -292,7 +262,8 @@
 			"optionsInput": {
 				"label": "Options",
 				"placeholder": "Split your options using enter, eg:\nYes\nNo",
-				"invalid": "Invalid options format, split your options using enter key."
+				"invalid": "Invalid options format, split your options using enter key.",
+				"tooMany": "You can enter at most 25 options."
 			}
 		}
 	},
@@ -309,17 +280,6 @@
 		"empty": "No ephemeral channels found."
 	},
 	"achievements": {
-		"display": {
-			"all": "All",
-			"unlocked": "Unlocked",
-			"inprogress": "In progress"
-		},
-		"misc": {
-			"level": "Level {level}",
-			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",
-			"noAchievements": "No unlocked achievements.",
-			"footer": "Page {page} of {pages}. ({displayCount} {display})"
-		},
 		"0": {
 			"name": "Unique Reactions",
 			"status": "Best message: `{uniqueReactions}` reactions",
@@ -378,17 +338,26 @@
 			"name": "Regular",
 			"status": "Member since <t:{joinedAtUnix}:D>",
 			"description": "Stay a member of the server for a long time."
+		},
+		"display": {
+			"all": "All",
+			"unlocked": "Unlocked",
+			"inprogress": "In progress"
+		},
+		"misc": {
+			"level": "Level {level}",
+			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",
+			"noAchievements": "No unlocked achievements.",
+			"footer": "Page {page} of {pages}. ({displayCount} {display})"
 		}
 	},
 	"utils": {
 		"never": "-",
 		"lack": "-",
-		"userOnly": "This feature can only be used by users with profile.",
 		"textChannelOnly": "This feature can only be used in text channels.",
 		"guildOnly": "This feature can only be used in guilds.",
 		"ownerOnly": "This feature can only be used by application owner.",
 		"missingPermissions": "Seems like I don't have enough permissions to function properly. Invite me again and assure that I have all desired permissions.",
-		"noPermissions": "You don't have permission to use this.",
 		"levelRequirement": "Your level is too low.\nReach **Level {level}** and try again.",
 		"expired": "This panel has expired. Open it again."
 	},

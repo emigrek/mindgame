@@ -1,10 +1,9 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
-import {getGuild} from "@/modules/guild";
+import {getGuild, getNotificationChannel} from "@/modules/guild";
 import {createMessage, fetchTrackedMessage, getLevelUpMessagePayload, getMessage} from "@/modules/messages";
 import {assignUserLevelRole, crossesLevelThreshold} from "@/modules/roles";
 import {sendNewFeaturesMessage} from "@/modules/user";
-import {TextChannel} from "discord.js";
 import NotificationsManager from "@/modules/messages/notificationsManager";
 import {MessageTypeIds} from "@/interfaces/Message";
 
@@ -17,21 +16,17 @@ export const userLeveledUp: Event = {
         const sourceGuild = await getGuild(guildId);
         if (!sourceGuild) return;
 
-        const { notifications, channelId, levelRoles } = sourceGuild;
+        const { levelRoles } = sourceGuild;
         const crossedThreshold = crossesLevelThreshold(oldLevel, newLevel);
         if (levelRoles && crossedThreshold) {
             await assignUserLevelRole({ client, userId, guildId });
         }
         
-        if (!notifications || !channelId) return;
-
-        const guild = await client.guilds.fetch(guildId);
-        if (!guild) return;
-
-        const channel = guild.channels.cache.get(channelId) as TextChannel;
-        if (!channel) return;
-
         if (!crossedThreshold) return;
+
+        const channel = await getNotificationChannel(client, guildId);
+        if (!channel) return;
+        const { guild } = channel;
         
         const user = await client.users.fetch(userId);
         const levelUpMessagePayload = await getLevelUpMessagePayload(client, user, guild, newLevel);
@@ -43,7 +38,9 @@ export const userLeveledUp: Event = {
 
         const message = existing ? await fetchTrackedMessage(channel, existing.messageId) : null;
         if (message) {
-            await message.edit(levelUpMessagePayload)
+            // Edits only accept SuppressEmbeds, so the SuppressNotifications flag made every edit fail
+            const { flags: _flags, ...editPayload } = levelUpMessagePayload; // eslint-disable-line @typescript-eslint/no-unused-vars
+            await message.edit(editPayload)
                 .catch(error => {
                     console.log("Error while editing level up message: ", error);
                 });

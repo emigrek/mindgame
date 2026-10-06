@@ -1,21 +1,9 @@
 import { AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
-import { formatDuration, getWarsawHour } from "@/utils/date";
+import { formatDuration, getNightMs } from "@/utils/date";
 import { BaseAchievementContext } from "../structures/BaseAchievement";
 import { GradualAchievement } from "../structures/GradualAchievement";
 
 const hour = 1000 * 60 * 60;
-
-// Part of [from, to) between 0:00 and 5:00 Europe/Warsaw. Its offsets are whole hours, so stepping by UTC hours is exact.
-export const getNightMs = (from: Date, to: Date) => {
-    let ms = 0;
-    for (let t = from.getTime(); t < to.getTime();) {
-        const next = Math.min((Math.floor(t / hour) + 1) * hour, to.getTime());
-        if (getWarsawHour(t) < 5)
-            ms += next - t;
-        t = next;
-    }
-    return ms;
-};
 
 export class NightOwl extends GradualAchievement<AchievementType.NIGHT_OWL> {
     emoji = "🦉";

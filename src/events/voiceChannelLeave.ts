@@ -11,6 +11,6 @@ export const voiceChannelLeave: Event = {
         await checkGuildVoiceEmpty(client, member.guild, channel);
 
         checkVoiceChannelMembers(client, member, channel);
-        checkVoiceSessionEnd(client, member, activity);
+        checkVoiceSessionEnd(client, { userId: member.id, guildId: member.guild.id }, activity);
     }
 }

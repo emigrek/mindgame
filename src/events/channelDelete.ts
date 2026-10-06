@@ -1,8 +1,7 @@
 import {ChannelType, DMChannel, GuildChannel, NonThreadGuildBasedChannel} from "discord.js";
 import ExtendedClient from "@/client/ExtendedClient";
 import {Event} from "@/interfaces";
-import {getEphemeralChannel} from "@/modules/ephemeral-channel";
-import {ephemeralChannelMessageCache} from "@/modules/ephemeral-channel/cache";
+import {deleteEphemeralChannel} from "@/modules/ephemeral-channel";
 import {deleteMessages} from "@/modules/messages";
 import {getGuild} from "@/modules/guild";
 
@@ -22,10 +21,6 @@ export const channelDelete: Event = {
             await deleteMessages(channel.id);
         }
 
-        const ephemeralChannel = await getEphemeralChannel(channel.id);
-        if(ephemeralChannel) {
-            ephemeralChannelMessageCache.removeChannel(channel.id);
-            await ephemeralChannel.deleteOne();
-        }
+        await deleteEphemeralChannel(channel.id);
     }
 }

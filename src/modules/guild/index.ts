@@ -1,4 +1,5 @@
 import GuildSchema, {GuildDocument} from "@/modules/schemas/Guild";
+import {Client, TextChannel} from "discord.js";
 import mongoose from "mongoose";
 
 const GuildModel = mongoose.model("Guild", GuildSchema);
@@ -85,6 +86,16 @@ const setAutoSweeping = async (guildId: string): Promise<GuildDocument | null>  
     return guildToUpdate;
 }
 
+// The configured channel, or null when notifications are off or the channel was deleted or is inaccessible.
+// channels.fetch throws for those, so `if (!channel)` checks after it never ran.
+const getNotificationChannel = async (client: Client, guildId: string, { requireNotifications = true } = {}): Promise<TextChannel | null> => {
+    const sourceGuild = await getGuild(guildId);
+    if (!sourceGuild?.channelId || (requireNotifications && !sourceGuild.notifications)) return null;
+
+    const channel = await client.channels.fetch(sourceGuild.channelId).catch(() => null);
+    return channel instanceof TextChannel ? channel : null;
+}
+
 const getGuildsCount = async () => {
     return GuildModel.countDocuments();
 }
@@ -103,5 +114,5 @@ const setColorRoleId = async (guildId: string, userId: string, roleId: string | 
         : { $unset: { [`colorRoleIds.${userId}`]: 1 } });
 }
 
-export { createGuild, deleteGuild, getGuild, getGuilds, setAutoSweeping, setColorRoleId, setDefaultChannelId, setLevelRoleId, setLevelRoleIds, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
+export { createGuild, deleteGuild, getGuild, getGuilds, getNotificationChannel, setAutoSweeping, setColorRoleId, setDefaultChannelId, setLevelRoleId, setLevelRoleIds, setLevelRoles, setLevelRolesHoist, setNotifications, getGuildsCount };
 

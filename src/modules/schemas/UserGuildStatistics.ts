@@ -1,5 +1,5 @@
 import {UserGuildStatistics} from "@/interfaces/UserGuildStatistics";
-import {Schema, SchemaTimestampsConfig} from "mongoose";
+import {Document, Schema, SchemaTimestampsConfig} from "mongoose";
 import {UserDocument} from "./User";
 
 export type UserGuildStatisticsDocument = UserGuildStatistics & Document & SchemaTimestampsConfig;

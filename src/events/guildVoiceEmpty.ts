@@ -1,7 +1,7 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {config} from "@/config";
 import {Event} from "@/interfaces";
-import {getGuild} from "@/modules/guild";
+import {getGuild, getNotificationChannel} from "@/modules/guild";
 import {sweepTextChannel} from "@/modules/messages";
 import {delay} from '@/utils/delay';
 import {VoiceChannel} from "discord.js";
@@ -15,12 +15,10 @@ export const guildVoiceEmpty: Event = {
         await delay(config.emptyGuildSweepTimeoutMs);
         await sweepTextChannel(client, lastChannel);
 
-        if(!sourceGuild.channelId) return;
-
-        const guild = await client.guilds.fetch(guildId);
-        const guildDefaultChannel = await guild.channels.fetch(sourceGuild.channelId);
+        // Swept even with notifications turned off
+        const guildDefaultChannel = await getNotificationChannel(client, guildId, { requireNotifications: false });
         if (!guildDefaultChannel) return;
 
-        await sweepTextChannel(client, guildDefaultChannel as VoiceChannel);
+        await sweepTextChannel(client, guildDefaultChannel);
     }
 }

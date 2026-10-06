@@ -4,7 +4,7 @@ import {BaseProfilePage} from "@/interfaces/BaseProfilePage";
 import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
 import {getExperiencePercentage, getUserGuildRank, getUserGuildStatistics} from "@/modules/user-guild-statistics";
-import {bold, codeBlock, heading, HeadingLevel, userMention} from "discord.js";
+import { codeBlock, heading, HeadingLevel, userMention } from "discord.js";
 
 export class Statistics extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -57,14 +57,6 @@ export class Statistics extends BaseProfilePage {
                     inline: true,
                 }
             ]);
-    }
-
-    get embedTitleField() {
-        return {
-            name: bold(`${this.emoji}   ${this.name}`),
-            value: bold(" "),
-            inline: false,
-        }
     }
 
     get visible() {

@@ -78,30 +78,16 @@
 	"contextLocalizations": {
 		"profile": "Zobacz profil",
 		"sweep": "Posprzątaj wiadomości",
-		"ranking": "Zobacz ranking",
 		"rankingMessage": "Zobacz ranking",
 		"rankingUser": "Zobacz ranking"
 	},
 	"config": {
-		"channelWatchers": "{count} 👀 widzi ten kanał.",
-		"selectDefaultChannel": "Wybierz domyślny kanał tekstowy.",
 		"noValidChannels": "Ten serwer nie ma kanałów głosowych. Stwórz kanał głosowy i uruchom `/config`!",
-		"defaultChannelSuccess": "Pomyślnie zmieniono domyślny kanał na <#{selected}>!",
-		"defaultChannelError": "Coś poszło nie tak z wybieraniem domyślnego kanału.",
-		"headerSubtitle": "Zmień ustawienia serwera.",
 		"selectChannelPlaceholder": "Domyślny kanał tekstowy: #{channel}",
 		"selectChannelPlaceholderNoDefault": "Domyślny kanał tekstowy: brak",
-		"selectLocalePlaceholder": "Język: {locale}",
-		"languageChanged": "Język został zmieniony.",
 		"notificationsButtonLabel": "Powiadomienia 🔔",
-		"statisticsNotificationButtonLabel": "Codzienne statystyki 📅",
 		"levelRolesButtonLabel": "Role wg. poziomu ✨",
 		"levelRolesHoistButtonLabel": "Przypięte role wg. poziomu 📌",
-		"close": "Zamknij ❌",
-		"footer": "Zmień konfiguracje serwera kiedy chcesz używając /config",
-		"textChannelField": "Kanały tekstowe",
-		"voiceChannelField": "Kanały głosowe",
-		"membersField": "Członkowie",
 		"autoSweepingButtonLabel": "Automatycznie czyszczenie 🧹"
 	},
 	"commits": {
@@ -114,7 +100,6 @@
 		"roleColorPickButtonLabel": "Wybierz 🎨",
 		"roleColorUpdateButtonLabel": "Zaaktualizuj 🔄",
 		"roleColorDisableButtonLabel": "Wyłącz ❌",
-		"noColor": "Nie wybrano koloru.",
 		"tooDark": "Ten kolor jest zbyt ciemny na niestandardowy kolor.\nWybierz coś jaśniejszego.",
 		"pickerModal": {
 			"title": "Wybierz kolor",
@@ -150,7 +135,6 @@
 		"currentVoiceActivity": "🎤  Obecnie od {time} w **{guild}**.",
 		"lastPresenceActivity": "👀  Ostatnio {time} w **{guild}**. {client}",
 		"currentPresenceActivity": "👀  Obecnie od {time} w **{guild}**. {client}",
-		"favoriteGuild": "Ulubiony serwer",
 		"timePublicButtonLabel": "Widoczność spędzonego czasu 👀",
 		"followButtonLabel": "Obserwuj 💗",
 		"unfollowButtonLabel": "Przestań obserwować 💔",
@@ -183,7 +167,6 @@
 		"levelUpDescription": "<@{userId}> osiąga <@&{roleId}>!",
 		"levelUpDescriptionNoRole": "<@{userId}> osiąga poziom **{level}**!",
 		"levelField": "Poziom",
-		"winsField": "Wygrane",
 		"dailyRewardTitle": "Codzienna nagroda",
 		"dailyRewardDescription": "<@{userId}> odbiera **codzienną nagrodę**!",
 		"dailyRewardField": "Nagroda",
@@ -211,8 +194,6 @@
 	},
 	"quickButton": {
 		"profileLabel": "Profil 👤",
-		"guildStatisticsLabel": "Statystyki 📅",
-		"commitsLabel": "Zmiany 📝",
 		"sweepLabel": "Spam? 🧹",
 		"rankingLabel": "Ranking 👥👑",
 		"helpLabel": "Pomoc"
@@ -226,13 +207,10 @@
 	"ranking": {
 		"title": "{emoji}  Ranking {sorting} ({range})",
 		"footer": "Strona {page} z {pages}.",
-		"first": "👑",
 		"you": "👈",
 		"empty": "Brak danych.",
 		"pageUpButtonLabel": "⬅️ Poprzednia",
 		"pageDownButtonLabel": "Następna ➡️",
-		"guildOnlyButtonLabel": "Tylko serwer 👨‍👩‍👦‍👦",
-		"allGuildsButtonLabel": "Globalny 🌎",
 		"settingsButtonLabel": "Ustawienia ⚙️",
 		"selectUsersPlaceholder": "Porównaj użytkowników",
 		"settingsModal": {
@@ -284,7 +262,8 @@
 			"optionsInput": {
 				"label": "Opcje",
 				"placeholder": "Opcje oddziel enterem, np:\nTak\nNie",
-				"invalid": "Nieprawidłowy format opcji, oddziel opcje klawiszem enter."
+				"invalid": "Nieprawidłowy format opcji, oddziel opcje klawiszem enter.",
+				"tooMany": "Możesz podać maksymalnie 25 opcji."
 			}
 		}
 	},
@@ -301,17 +280,6 @@
 		"empty": "Brak kanałów efemerycznych."
 	},
 	"achievements": {
-		"display": {
-			"all": "Wszystkie",
-			"unlocked": "Odblokowane",
-			"inprogress": "W trakcie"
-		},
-		"misc": {
-			"level": "Poziom {level}",
-			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
-			"noAchievements": "Brak odblokowanych osiągnięć.",
-			"footer": "Strona {page} z {pages}. ({displayCount} {display})"
-		},
 		"0": {
 			"name": "Unikalne Reakcje",
 			"status": "Najlepsza wiadomość: `{uniqueReactions}` reakcji",
@@ -370,17 +338,26 @@
 			"name": "Stały Bywalec",
 			"status": "Na serwerze od <t:{joinedAtUnix}:D>",
 			"description": "Bądź członkiem serwera przez długi czas."
+		},
+		"display": {
+			"all": "Wszystkie",
+			"unlocked": "Odblokowane",
+			"inprogress": "W trakcie"
+		},
+		"misc": {
+			"level": "Poziom {level}",
+			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
+			"noAchievements": "Brak odblokowanych osiągnięć.",
+			"footer": "Strona {page} z {pages}. ({displayCount} {display})"
 		}
 	},
 	"utils": {
 		"never": "-",
 		"lack": "-",
-		"userOnly": "Ta funkcja może zostać użyta tylko przez użytkowników z profilem.",
 		"textChannelOnly": "Ta funkcja może zostać użyta tylko na kanałach tekstowych.",
 		"guildOnly": "Ta funkcja może zostać użyta tylko w gildiach.",
 		"ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
 		"missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień.\nZaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
-		"noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
 		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij **Poziom {level}** i spróbuj ponownie.",
 		"expired": "Ten panel wygasł. Otwórz go ponownie."
 	},

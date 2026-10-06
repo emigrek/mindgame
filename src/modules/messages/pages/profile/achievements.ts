@@ -6,7 +6,7 @@ import { AchievementManager } from "@/modules/achievement";
 import { BaseProfileEmbed } from "@/modules/messages/embeds";
 import { achievementsStore } from "@/stores/achievementsStore";
 import { ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder } from "@discordjs/builders";
-import { ButtonStyle, HeadingLevel, bold, heading, userMention } from "discord.js";
+import { ButtonStyle, HeadingLevel, heading, userMention } from "discord.js";
 
 export class Achievements extends BaseProfilePage {
     constructor(params: ProfilePagePayloadParams) {
@@ -127,14 +127,6 @@ export class Achievements extends BaseProfilePage {
                     .setMaxValues(3)
                     .addOptions(options)
             );
-    }
-
-    get embedTitleField() {
-        return {
-            name: bold(`${this.emoji}   ${this.name}`),
-            value: bold(" "),
-            inline: false,
-        }
     }
 
     get visible() {

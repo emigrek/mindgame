@@ -1,6 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import { Event } from "@/interfaces";
-import { checkVoiceChannelMembers } from "@/modules/achievement/achievements";
+import { checkVoiceChannelMembers, checkVoiceSessionStart } from "@/modules/achievement/achievements";
 import { startVoiceActivity } from "@/modules/activity";
 import { GuildMember } from "discord.js";
 
@@ -11,7 +11,9 @@ export const voiceChannelUndeaf: Event = {
 
         const activity = await startVoiceActivity(client, member, member.voice.channel);
         
-        if (activity)
+        if (activity) {
+            await checkVoiceSessionStart(client, member, member.voice.channel, activity);
             checkVoiceChannelMembers(client, member, member.voice.channel);
+        }
     }
 }

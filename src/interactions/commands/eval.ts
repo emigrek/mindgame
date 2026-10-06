@@ -9,17 +9,19 @@ export const evalCommand: Command = {
         .setDescription(i18n.__("commandLocalizations.eval.description"))
         .addStringOption(option =>
             option
-                .setName(i18n.__("commandLocalizations.eval.subcommand.code.name"))
+                .setName("code")
                 .setDescription(i18n.__("commandLocalizations.eval.subcommand.code.description"))
                 .setRequired(true)
         )
         .addIntegerOption(option =>
             option
-                .setName(i18n.__("commandLocalizations.eval.subcommand.depth.name"))
+                .setName("depth")
                 .setDescription(i18n.__("commandLocalizations.eval.subcommand.depth.description"))
                 .setRequired(false)
                 .setMinValue(0)
-        ),
+        )
+        // Hidden from members by default; the owner check in interactionCreate still guards it
+        .setDefaultMemberPermissions(0),
     options: {
         ownerOnly: true
     },

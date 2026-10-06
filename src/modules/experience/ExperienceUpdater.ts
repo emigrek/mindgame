@@ -4,11 +4,14 @@ import {
   closeStaleVoiceActivities,
   getPresenceActivitiesByGuildId,
   getVoiceActivitiesByChannelId,
+  openMissingActivities,
+  touchActivities,
   PresenceActivitiesByGuildId,
   PresenceActivityDocumentWithSeconds,
   VoiceActivitiesByChannelId,
   VoiceActivityDocumentWithSeconds,
 } from "@/modules/activity";
+import { checkVoiceSessionEnd } from "@/modules/achievement/achievements";
 import moment from "moment";
 
 import { config } from "@/config";
@@ -46,8 +49,15 @@ class ExperienceUpdater {
   public async update() {
     this.cache.clear();
 
-    this.voiceActivities = await closeStaleVoiceActivities(this.client, await getVoiceActivitiesByChannelId());
+    const voice = await closeStaleVoiceActivities(this.client, await getVoiceActivitiesByChannelId());
+    this.voiceActivities = voice.active;
     this.presenceActivities = await closeStalePresenceActivities(this.client, await getPresenceActivitiesByGuildId());
+
+    // Sessions closed by the sweep (often long overnight ones cut by a reconnect) still count
+    voice.closed.forEach(activity => checkVoiceSessionEnd(this.client, activity, activity));
+    await touchActivities(this.voiceActivities, this.presenceActivities);
+    // Opened now, earning from the next tick
+    await openMissingActivities(this.client, this.voiceActivities, this.presenceActivities);
 
     const start = moment();
 

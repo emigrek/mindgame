@@ -24,7 +24,9 @@ const selectReroll: Button = {
 
         setTimeout(async () => {
             const selectMessagePayload = await getSelectMessagePayload(client, interaction, true);
-            await reply.edit(selectMessagePayload);
+            // The message can be deleted before the reveal
+            await reply.edit(selectMessagePayload)
+                .catch(e => console.log(`Error while revealing select result: ${e}`));
         }, getRandomNumber(2000, 5000));
     }
 }

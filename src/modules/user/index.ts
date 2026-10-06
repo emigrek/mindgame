@@ -1,30 +1,15 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
-import {config} from "@/config";
 import {Command} from "@/interfaces";
 import {getColorInt, useImageHex} from "@/modules/messages";
 import {InformationEmbed} from "@/modules/messages/embeds";
 import userSchema from "@/modules/schemas/User";
 import {User} from "discord.js";
 import mongoose from "mongoose";
+import {expToLevel, levelToExp} from "./level";
 
 const UserModel = mongoose.model("User", userSchema);
 
-const root = (x: number, n: number) => {
-    return Math.pow(Math.E, Math.log(x) / n);
-}
-
-const expToLevel = (exp: number) => {
-    return Math.floor(
-        root(exp, 3) * config.experience.constant
-    );
-};
-
-const levelToExp = (level: number) => {
-    return Math.floor(
-        Math.pow(level / config.experience.constant, 3)
-    );
-};
 
 const createUser = async (user: User) => {
     const exists = await UserModel.findOne({ userId: user.id });

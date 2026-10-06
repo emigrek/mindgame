@@ -5,7 +5,7 @@ import {ProfilePagePayloadParams} from "@/interfaces/ProfilePage";
 import {getUserVoiceActivityStreak} from "@/modules/activity";
 import {formatNextStreakField, formatStreakField} from "@/modules/messages";
 import {BaseProfileEmbed} from "@/modules/messages/embeds";
-import {bold, heading, HeadingLevel, userMention} from "discord.js";
+import { heading, HeadingLevel, userMention } from "discord.js";
 
 export class GuildVoiceActivityStreak extends BaseProfilePage {
     voiceActivityStreak: ActivityStreak | undefined = undefined;
@@ -70,14 +70,6 @@ export class GuildVoiceActivityStreak extends BaseProfilePage {
                     inline: true,
                 }
             ]);
-    }
-
-    get embedTitleField() {
-        return {
-            name: bold(`${this.emoji}   ${this.name}`),
-            value: bold(" "),
-            inline: false,
-        }
     }
 
     get visible() {

@@ -20,7 +20,11 @@ const client = new ExtendedClient({
 });
 
 logs(client);
-client.init();
+// e.g. putSlashCommands failing before login: exit instead of idling without a gateway connection
+client.init().catch(e => {
+    console.error("[Init] Error", e);
+    process.exit(1);
+});
 
 // docker stop sends SIGTERM: close the gateway and Mongo cleanly instead of being killed after the timeout
 const shutdown = async (signal: string) => {
