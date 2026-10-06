@@ -11,6 +11,12 @@ const messageSchema = new Schema<Message>({
     channelId: reqString,
     targetUserId: { type: String, default: null },
     typeId: reqNumber,
+}, {
+    // getMessage sorts by createdAt to find the latest tracked message
+    timestamps: true
 });
+
+messageSchema.index({ channelId: 1, typeId: 1, targetUserId: 1 });
+messageSchema.index({ messageId: 1 });
 
 export default messageSchema;

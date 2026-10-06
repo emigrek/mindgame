@@ -92,4 +92,7 @@ const userGuildStatisticsSchema = new Schema<UserGuildStatistics>({
     timestamps: true
 });
 
+userGuildStatisticsSchema.index({ userId: 1, guildId: 1 }, { unique: true });
+userGuildStatisticsSchema.index({ guildId: 1, "total.exp": -1 });
+
 export default userGuildStatisticsSchema;

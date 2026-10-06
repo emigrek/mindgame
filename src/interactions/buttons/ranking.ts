@@ -1,7 +1,6 @@
-import {Button, SortingRanges, SortingTypes} from "@/interfaces";
+import {Button} from "@/interfaces";
 import {getErrorMessagePayload, getMessage, getRankingMessagePayload} from "@/modules/messages";
-import {rankingStore} from "@/stores/rankingStore";
-import {findUserRankingPage} from "@/modules/user-guild-statistics/userGuildStatistics";
+import {openRanking} from "@/modules/user-guild-statistics/userGuildStatistics";
 
 const ranking: Button = {
     customId: `ranking`,
@@ -16,18 +15,8 @@ const ranking: Button = {
         const message = await getMessage({
             messageId: interaction.message.id,
         });
-        const rankingState = rankingStore.get(interaction.user.id);
-        const targetUserId = (message && message.targetUserId) ? message.targetUserId : undefined;
-
-        rankingState.sorting = SortingTypes.EXP;
-        rankingState.range = SortingRanges.TOTAL;
-        rankingState.userIds = [];
-        rankingState.targetUserId = targetUserId;
-        rankingState.page = await findUserRankingPage({
-            sourceUserId: interaction.user.id,
-            targetUserId: targetUserId || interaction.user.id,
-            guild: interaction.guild
-        });
+        // Quick buttons under a tracked notification open the ranking on its member
+        await openRanking({ sourceUserId: interaction.user.id, targetUserId: message?.targetUserId || undefined, guild: interaction.guild });
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction);
         await interaction.followUp(rankingMessagePayload);

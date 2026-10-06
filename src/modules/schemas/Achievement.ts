@@ -38,4 +38,6 @@ export function createAchievementSchema<T extends AchievementType>(): Schema<Ach
 
 const achievementSchema = createAchievementSchema<AchievementType>();
 
+achievementSchema.index({ userId: 1, guildId: 1, achievementType: 1 }, { unique: true });
+
 export default achievementSchema;

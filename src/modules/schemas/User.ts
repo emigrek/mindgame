@@ -14,4 +14,6 @@ const userSchema = new Schema<User>({
   timestamps: true
 });
 
+userSchema.index({ userId: 1 }, { unique: true });
+
 export default userSchema;

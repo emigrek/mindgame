@@ -18,6 +18,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `AchievementType` is a numeric enum persisted in MongoDB, and translation keys use the numeric index. Only append to it; never reorder or insert members.
 - Per-user UI state (pagination, filters) lives in in-memory `src/stores/` and is lost on restart.
 - MongoDB/Mongoose has no migrations, and payloads are `Mixed`. Schema changes must stay backward compatible with existing documents.
+- Indexes are declared in `src/modules/schemas/*` and built by Mongoose autoIndex at startup. A new unique index fails to build while duplicates exist, so first add a rule to `scripts/dedupe-for-unique-indexes.ts` and run it (dry run by default, `--apply` to change data).
+- Statistics writes must stay atomic: use `updateUserGuildStatistics` (`$inc`), never `findOne` + `save()`. `getUserGuildStatistics` never inserts; a missing document reads as zeros.
 - Level roles and color roles are identified by IDs stored in the Guild document (`levelRoleIds`, `colorRoleIds`), never by role name, because admins rename them. Only roles with a stored ID may be modified or deleted.
 
 ## i18n

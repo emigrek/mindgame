@@ -8,4 +8,7 @@ const followSchema = new Schema<Follow>({
     targetUserId: { type: String, required: true }
 });
 
+followSchema.index({ sourceUserId: 1, targetUserId: 1 }, { unique: true });
+followSchema.index({ targetUserId: 1 });
+
 export default followSchema;

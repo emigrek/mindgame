@@ -17,4 +17,6 @@ const guildSchema = new Schema<Guild>({
     colorRoleIds: { type: Map, of: String, default: {} }
 });
 
+guildSchema.index({ guildId: 1 }, { unique: true });
+
 export default guildSchema;

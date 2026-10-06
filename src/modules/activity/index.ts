@@ -13,6 +13,8 @@ import moment from "moment";
 import mongoose from "mongoose";
 import { computeStreaks } from "./streak";
 
+const isDuplicateKeyError = (e: unknown) => (e as { code?: number })?.code === 11000;
+
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
@@ -42,14 +44,14 @@ const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMe
     if (significant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 
+// Followers are notified about a break across all guilds (follows are global)
 const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) => {
-    const activity = await getLastVoiceActivity(member.user.id);
-    if (!activity) {
+    // Finished sessions only: the session just opened would otherwise end the search
+    const activity = await voiceActivityModel.findOne({ userId: member.user.id, to: { $ne: null } }).sort({ to: -1 });
+    if (!activity?.to) {
         client.emit("userBackFromLongVoiceBreak", member);
         return true;
     }
-
-    if (!activity.to) return false;
 
     const breakMs = moment().diff(moment(activity.to));
     if (breakMs < config.userLongBreakHours * 60 * 60 * 1000) {
@@ -76,8 +78,6 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
     const exists = await getVoiceActivity({ userId: member.id, guildId: member.guild.id });
     if (exists) return null;
 
-    await checkLongVoiceBreak(client, member);
-
     const newVoiceActivity = new voiceActivityModel({
         userId: member.id,
         channelId: channel.id,
@@ -86,8 +86,16 @@ const startVoiceActivity = async (client: ExtendedClient, member: GuildMember, c
         streaming: member.voice?.streaming,
         from: moment().toDate()
     });
-    await newVoiceActivity.save();
+    // A concurrent event opened the session first (unique index on open sessions)
+    const saved = await newVoiceActivity.save().then(() => true, (e) => {
+        if (isDuplicateKeyError(e)) return false;
+        throw e;
+    });
+    if (!saved) return null;
 
+    // After the save, so only the event that opened the session runs these. The open session is skipped
+    // by both: the last session is looked up by `to` (open sorts last) and rewards look at finished ones.
+    await checkLongVoiceBreak(client, member);
     await checkVoiceActivityRewards(client, member);
 
     return newVoiceActivity;
@@ -105,8 +113,15 @@ const startPresenceActivity = async (userId: string, guildId: string, presence: 
         client: getPresenceClientStatus(presence.clientStatus)
     });
 
-    await newPresenceActivity.save();
-    return newPresenceActivity;
+    try {
+        await newPresenceActivity.save();
+        return newPresenceActivity;
+    } catch (e) {
+        // Presence updates come in bursts (desktop <-> mobile); a concurrent one opened the session first
+        const existing = isDuplicateKeyError(e) ? await getPresenceActivity(userId, guildId) : null;
+        if (!existing) throw e;
+        return existing;
+    }
 };
 
 const endPresenceActivity = async (userId: string, guildId: string): Promise<PresenceActivityDocument | null> => {
@@ -311,6 +326,12 @@ interface GetVoiceActivityProps {
 
 const getVoiceActivity = async ({ userId, guildId }: GetVoiceActivityProps): Promise<VoiceActivityDocument | null> => {
     return voiceActivityModel.findOne({ userId, guildId, to: null });
+};
+
+// Time since the member's last finished session in this guild, for Comeback (counted per guild)
+const getGuildVoiceBreakMs = async (userId: string, guildId: string): Promise<number | null> => {
+    const last = await voiceActivityModel.findOne({ userId, guildId, to: { $ne: null } }).sort({ to: -1 });
+    return last?.to ? Date.now() - last.to.getTime() : null;
 };
 
 const getLastVoiceActivity = async (userId: string): Promise<VoiceActivityDocument | null> => {
@@ -652,5 +673,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, closeStalePresenceActivities, closeStaleVoiceActivities, endGuildActivities, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, closeStalePresenceActivities, closeStaleVoiceActivities, endGuildActivities, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getGuildVoiceBreakMs, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
 

@@ -1,8 +1,7 @@
-import {ContextMenu, SortingRanges, SortingTypes} from "@/interfaces";
+import {ContextMenu} from "@/interfaces";
 import {getErrorMessagePayload, getMessage, getRankingMessagePayload} from "@/modules/messages";
 import {ApplicationCommandType, ContextMenuCommandBuilder, MessageContextMenuCommandInteraction} from "discord.js";
-import {rankingStore} from "@/stores/rankingStore";
-import {findUserRankingPage} from "@/modules/user-guild-statistics/userGuildStatistics";
+import {openRanking} from "@/modules/user-guild-statistics/userGuildStatistics";
 
 const rankingMessageContext: ContextMenu = {
     data: new ContextMenuCommandBuilder()
@@ -19,18 +18,7 @@ const rankingMessageContext: ContextMenu = {
         const message = await getMessage({
             messageId: (interaction as MessageContextMenuCommandInteraction).targetMessage.id,
         });
-        const rankingState = rankingStore.get(interaction.user.id);
-        const targetUserId = (message && message.targetUserId) ? message.targetUserId : undefined;
-
-        rankingState.sorting = SortingTypes.EXP;
-        rankingState.range = SortingRanges.TOTAL;
-        rankingState.userIds = [];
-        rankingState.targetUserId = targetUserId;
-        rankingState.page = await findUserRankingPage({
-            sourceUserId: interaction.user.id,
-            targetUserId: targetUserId || interaction.user.id,
-            guild: interaction.guild
-        });
+        await openRanking({ sourceUserId: interaction.user.id, targetUserId: message?.targetUserId || undefined, guild: interaction.guild });
 
         const rankingMessagePayload = await getRankingMessagePayload(client, interaction as MessageContextMenuCommandInteraction);
         await interaction.followUp(rankingMessagePayload);

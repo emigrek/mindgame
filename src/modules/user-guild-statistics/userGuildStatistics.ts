@@ -22,10 +22,10 @@ export const createUserGuildStatistics = async ({ userId, guildId }: GuildStatis
     return newUserGuildStatistics;
 };
 
+// Reads never insert: viewing the profile of someone who left used to put them back into the ranking.
+// A missing document reads as an unsaved one with default (zero) values.
 export const getUserGuildStatistics = async ({ userId, guildId }: GuildStatisticsProps) => {
-    const userGuildStatistics = await UserGuildStatisticsModel.findOne({ userId, guildId });
-    if (!userGuildStatistics) return createUserGuildStatistics({ userId, guildId });
-    return userGuildStatistics;
+    return await UserGuildStatisticsModel.findOne({ userId, guildId }) ?? new UserGuildStatisticsModel({ userId, guildId });
 }
 
 export const getUserStatistics = async (userId: string) => {
@@ -47,28 +47,44 @@ export interface UpdateUserGuildStatisticsProps {
     update: Partial<UserStatistics>;
 }
 
-export const updateUserGuildStatistics = async ({ client, userId, guildId, update }: UpdateUserGuildStatisticsProps) => {
-    const userGuildStatistics = await getUserGuildStatistics({ userId, guildId });
-    let userLeveledUpDuringUpdate = false;
+// The same increments go to every bucket
+const toIncrements = ({ exp, commands, messages, time }: Partial<UserStatistics>) => {
+    const values = { exp, commands, messages, "time.voice": time?.voice, "time.presence": time?.presence };
+    const increments: Record<string, number> = {};
+    for (const bucket of ["total", "day", "week", "month"])
+        for (const [path, value] of Object.entries(values))
+            if (value) increments[`${bucket}.${path}`] = value;
+    return increments;
+};
 
-    userGuildStatistics.total = merge(userGuildStatistics.total, update);
-    userGuildStatistics.day = merge(userGuildStatistics.day, update);
-    userGuildStatistics.week = merge(userGuildStatistics.week, update);
-    userGuildStatistics.month = merge(userGuildStatistics.month, update);
+// $inc is atomic: concurrent writers (messages, commands, rewards, the minute tick, the daily reset) used to read,
+// add and save whole documents, overwriting each other's increments
+export const updateUserGuildStatistics = async ({ client, userId, guildId, update }: UpdateUserGuildStatisticsProps) => {
+    const increments = toIncrements(update);
+    if (!Object.keys(increments).length)
+        return getUserGuildStatistics({ userId, guildId });
+
+    const userGuildStatistics = await UserGuildStatisticsModel.findOneAndUpdate(
+        { userId, guildId },
+        { $inc: increments },
+        { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
+    );
 
     const oldLevel = userGuildStatistics.level;
-    const expToNext = levelToExp(oldLevel + 1);
-
-    if (userGuildStatistics.total.exp > expToNext)
-        userLeveledUpDuringUpdate = true;
-
     const newLevel = expToLevel(userGuildStatistics.total.exp);
-    userGuildStatistics.level = newLevel;
-    await userGuildStatistics.save();
+    if (newLevel <= oldLevel)
+        return userGuildStatistics;
 
-    if (userLeveledUpDuringUpdate)
+    // Only the writer that actually moves the level announces it
+    const { modifiedCount } = await UserGuildStatisticsModel.updateOne(
+        { _id: userGuildStatistics._id, level: oldLevel },
+        { $set: { level: newLevel } }
+    );
+    if (modifiedCount) {
+        userGuildStatistics.level = newLevel;
         client.emit("userLeveledUp", userId, guildId, oldLevel, newLevel);
-    
+    }
+
     return userGuildStatistics;
 }
 
@@ -181,6 +197,23 @@ export const findUserRankingPage = async ({ sourceUserId, targetUserId, guild }:
     if (userPosition === -1) return 1;
     return Math.ceil((userPosition + 1) / perPage);
 }
+
+interface OpenRankingProps {
+    sourceUserId: string;
+    targetUserId?: string;
+    guild: Guild;
+}
+
+// Fresh ranking view on the page of the target (or the viewer). Shared by /ranking, the ranking button and both
+// context menus; the four copies had drifted (/ranking kept the previous sorting, the others reset it).
+export const openRanking = async ({ sourceUserId, targetUserId, guild }: OpenRankingProps) => {
+    const rankingState = rankingStore.get(sourceUserId);
+    rankingState.sorting = SortingTypes.EXP;
+    rankingState.range = SortingRanges.TOTAL;
+    rankingState.userIds = [];
+    rankingState.targetUserId = targetUserId;
+    rankingState.page = await findUserRankingPage({ sourceUserId, targetUserId: targetUserId ?? sourceUserId, guild });
+};
 
 export const clearTemporaryStatistics = async (type: 'day' | 'week' | 'month') => {
     return UserGuildStatisticsModel.updateMany({}, {
