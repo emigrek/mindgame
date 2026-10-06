@@ -3,13 +3,14 @@ import { Button } from "@/interfaces";
 import { createFollow, deleteFollow, getFollow } from "@/modules/follow";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { InformationEmbed } from "@/modules/messages/embeds";
-import { profileStore } from "@/stores/profileStore";
+import { profileStore, restoreProfileState } from "@/stores/profileStore";
 import { ButtonInteraction } from "discord.js";
 
 const profileFollow: Button = {
     customId: `profileFollow`,
-    run: async (client, interaction) => {
+    run: async (client, interaction, ...args) => {
         await interaction.deferUpdate();
+        restoreProfileState(interaction.user.id, args);
 
         const { targetUserId } = profileStore.get(interaction.user.id);
         if (!targetUserId) {

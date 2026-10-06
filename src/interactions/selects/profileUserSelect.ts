@@ -1,12 +1,13 @@
 import {ProfilePages, Select} from "@/interfaces";
 import {getProfileMessagePayload} from "@/modules/messages";
-import {profileStore} from "@/stores/profileStore";
+import { profileStore, restoreProfileState } from "@/stores/profileStore";
 import {UserSelectMenuInteraction} from "discord.js";
 
 export const profileUserSelect: Select = {
     customId: "profileUserSelect",
-    run: async (client, interaction) => {
+    run: async (client, interaction, ...args) => {
         await interaction.deferUpdate();
+        restoreProfileState(interaction.user.id, args);
 
         const profileState = profileStore.get(interaction.user.id);
 

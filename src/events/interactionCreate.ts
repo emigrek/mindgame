@@ -2,9 +2,36 @@ import ExtendedClient from "@/client/ExtendedClient";
 import i18n from "@/client/i18n";
 import { keys } from "@/config";
 import { Event } from "@/interfaces";
+import { getErrorMessagePayload } from "@/modules/messages";
 import { WarningEmbed } from "@/modules/messages/embeds";
 import { getUserGuildStatistics, updateUserGuildStatistics } from "@/modules/user-guild-statistics/userGuildStatistics";
-import { BaseInteraction } from "discord.js";
+import { BaseInteraction, CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
+
+type RepliableInteraction = CommandInteraction | MessageComponentInteraction | ModalSubmitInteraction;
+
+// Logs with context and tells the user, instead of leaving the interaction "thinking..." forever
+const runSafely = async (interaction: RepliableInteraction, label: string, run: () => Promise<unknown>) => {
+    try {
+        await run();
+        return true;
+    } catch (e) {
+        console.error(`[Interaction:${label}] user=${interaction.user.id} guild=${interaction.guildId}`, e);
+        const payload = { ...getErrorMessagePayload(), ephemeral: true };
+        await (interaction.deferred || interaction.replied ? interaction.followUp(payload) : interaction.reply(payload))
+            .catch(() => null);
+        return false;
+    }
+}
+
+// Components from removed features, or an old panel after a handler rename
+const replyExpired = async (interaction: RepliableInteraction) => {
+    await interaction.reply({
+        embeds: [
+            WarningEmbed()
+                .setDescription(i18n.__("utils.expired"))
+        ], ephemeral: true
+    }).catch(() => null);
+}
 
 export const interactionCreate: Event = {
     name: "interactionCreate",
@@ -33,15 +60,6 @@ export const interactionCreate: Event = {
                     userId: interaction.user.id,
                     guildId: interaction.guild.id,
                 })
-                if (!userGuildStatistics) {
-                    await interaction.reply({
-                        embeds: [
-                            WarningEmbed()
-                                .setDescription(i18n.__("utils.userNotFound"))
-                        ], ephemeral: true
-                    });
-                    return;
-                }
 
                 if (userGuildStatistics.level < command.options.level) {
                     await interaction.reply({
@@ -56,40 +74,38 @@ export const interactionCreate: Event = {
                 }
             }
 
-            command.execute(client, interaction)
-                .catch((e) => console.log(`Error executing ChatInputCommand: ${e}`))
-                .then(() => {
-                    if (!interaction.guild) return;
+            const succeeded = await runSafely(interaction, `command:${interaction.commandName}`, () => command.execute(client, interaction));
+            if (!succeeded || !interaction.guild) return;
 
-                    updateUserGuildStatistics({
-                        client,
-                        userId: interaction.user.id,
-                        guildId: interaction.guild.id,
-                        update: {
-                            commands: 1
-                        }
-                    })
-                });
-        } else if (interaction.isModalSubmit()) {
-            client.modals
-                .get(interaction.customId)
-                ?.run(client, interaction)
-                .catch((e) => console.log(`Error executing ModalSubmit: ${e}`));
-        } else if (interaction.isAnySelectMenu()) {
-            client.selects
-                .get(interaction.customId)
-                ?.run(client, interaction)
-                .catch((e) => console.log(`Error executing SelectMenu: ${e}`));
-        } else if (interaction.isButton()) {
-            client.buttons
-                .get(interaction.customId)
-                ?.run(client, interaction)
-                .catch((e) => console.log(`Error executing Button: ${e}`));
+            await updateUserGuildStatistics({
+                client,
+                userId: interaction.user.id,
+                guildId: interaction.guild.id,
+                update: {
+                    commands: 1
+                }
+            }).catch(e => console.error("[Interaction] Error counting command", e));
         } else if (interaction.isContextMenuCommand()) {
-            client.contexts
-                .get(interaction.commandName)
-                ?.run(client, interaction)
-                .catch((e) => console.log(`Error executing ContextMenuCommand: ${e}`));
+            const context = client.contexts.get(interaction.commandName);
+            if (!context) return replyExpired(interaction);
+            await runSafely(interaction, `context:${interaction.commandName}`, () => context.run(client, interaction));
+        } else if (interaction.isModalSubmit() || interaction.isMessageComponent()) {
+            // Components can carry state after the handler name, e.g. "profileFollow:<userId>:<page>"
+            const [customId, ...args] = interaction.customId.split(":");
+
+            if (interaction.isModalSubmit()) {
+                const modal = client.modals.get(customId);
+                if (!modal) return replyExpired(interaction);
+                await runSafely(interaction, `modal:${customId}`, () => modal.run(client, interaction, ...args));
+            } else if (interaction.isAnySelectMenu()) {
+                const select = client.selects.get(customId);
+                if (!select) return replyExpired(interaction);
+                await runSafely(interaction, `select:${customId}`, () => select.run(client, interaction, ...args));
+            } else if (interaction.isButton()) {
+                const button = client.buttons.get(customId);
+                if (!button) return replyExpired(interaction);
+                await runSafely(interaction, `button:${customId}`, () => button.run(client, interaction, ...args));
+            }
         }
     }
-}   
+}

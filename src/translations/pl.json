@@ -381,7 +381,8 @@
 		"ownerOnly": "Ta funkcja może zostać użyta przez właściciela aplikacji.",
 		"missingPermissions": "Wygląda na to że nie mam wystarczających uprawnień.\nZaproś mnie jeszcze raz i upewnij się że posiadam wymagane uprawnienia.",
 		"noPermissions": "Nie możesz tego użyć gdyż nie masz uprawnień.",
-		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij **Poziom {level}** i spróbuj ponownie."
+		"levelRequirement": "Twój poziom jest zbyt niski.\nOsiągnij **Poziom {level}** i spróbuj ponownie.",
+		"expired": "Ten panel wygasł. Otwórz go ponownie."
 	},
 	"error": {
 		"title": "Błąd",

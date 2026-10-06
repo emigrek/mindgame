@@ -2,6 +2,7 @@ import { Event } from "@/interfaces";
 
 import { ready } from "./ready";
 import { guildCreate } from "./guildCreate";
+import { guildDelete } from "./guildDelete";
 import { interactionCreate } from "./interactionCreate";
 import { userUpdate } from "./userUpdate";
 import { guildMemberAdd } from "./guildMemberAdd";
@@ -37,6 +38,7 @@ import { achievementLeveledUp } from "./achievementLeveledUp";
 const events: Event[] = [
     ready,
     guildCreate,
+    guildDelete,
     interactionCreate,
     userUpdate,
     userLeveledUp,

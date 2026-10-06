@@ -1,11 +1,11 @@
 import ExtendedClient from "@/client/ExtendedClient";
-import {SortingRanges, SortingTypes} from "@/interfaces";
+import {Sorting, SortingRanges, SortingTypes} from "@/interfaces";
 import {ExtendedUserStatistics, UserGuildStatistics, UserStatistics} from "@/interfaces/UserGuildStatistics";
 import userGuildStatisticsSchema, {UserIncludedGuildStatisticsDocument} from "@/modules/schemas/UserGuildStatistics";
 import {expToLevel, levelToExp} from "@/modules/user";
 import {merge} from "@/utils/merge";
 import {Guild} from "discord.js";
-import mongoose from "mongoose";
+import mongoose, {PipelineStage} from "mongoose";
 import {rankingStore} from "@/stores/rankingStore";
 import {getSortingByType} from "@/modules/user-guild-statistics/sortings";
 
@@ -77,18 +77,16 @@ export interface GetUserGuildRank {
     guildId: string;
 }
 
+// Counts instead of loading the whole guild to find one position
 export const getUserGuildRank = async ({ userId, guildId }: GetUserGuildRank) => {
-    const guildStatistics = await UserGuildStatisticsModel.aggregate([
-        {
-            $match: { guildId }
-        },
-        {
-            $sort: { "total.exp": -1 }
-        }
+    const statistics = await UserGuildStatisticsModel.findOne({ userId, guildId }, { "total.exp": 1 }).lean();
+    const [higher, total] = await Promise.all([
+        UserGuildStatisticsModel.countDocuments({ guildId, "total.exp": { $gt: statistics?.total.exp ?? 0 } }),
+        UserGuildStatisticsModel.countDocuments({ guildId }),
     ]);
-    return { 
-        rank: guildStatistics.findIndex((statistics) => statistics.userId === userId) + 1, 
-        total: guildStatistics.length 
+    return {
+        rank: statistics ? higher + 1 : 0,
+        total
     };
 };
 
@@ -114,45 +112,27 @@ interface GetRankingResponse {
     data: UserIncludedGuildStatisticsDocument[];
 }
 
+// Filters by guild before joining users; the $lookup used to run for every document of every guild
+const getRankingPipeline = (guildId: string, userIds: string[], type: Sorting): PipelineStage[] => {
+    // _id breaks ties, so pages of equal values (e.g. zeros right after a daily reset) don't shuffle between clicks
+    const sort = { ...type.sort, _id: 1 } as Record<string, 1 | -1>;
+    return [
+        { $match: { guildId, ...(userIds?.length ? { userId: { $in: userIds } } : {}) } }, // Compare users
+        { $lookup: { from: "users", localField: "userId", foreignField: "userId", as: "user" } },
+        { $unwind: "$user" },
+        // Support private time statistics
+        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? [{ $match: { "user.publicTimeStatistics": true } }] : []),
+        { $sort: sort },
+        { $setWindowFields: { partitionBy: null, sortBy: sort, output: { position: { $documentNumber: {} } } } },
+    ];
+};
+
 export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Promise<GetRankingResponse> => {
     const { page, userIds, perPage, sorting, range } = rankingStore.get(sourceUserId);
     const type = getSortingByType(sorting, range);
 
-    const match = {
-        guildId: guild?.id,
-        ...(userIds?.length ? { userId: { $in: userIds } } : {}), // Compare users
-        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? { "user.publicTimeStatistics": true } : {}) // Support private time statistics
-    }
-
     const results = await UserGuildStatisticsModel.aggregate([
-        {
-            $lookup: {
-                from: "users",
-                localField: "userId",
-                foreignField: "userId",
-                as: "user"
-            }
-        },
-        {
-            $unwind: "$user"
-        },
-        {
-            $match: match,
-        },
-        {
-            $sort: type.sort
-        },
-        {
-            $setWindowFields: {
-                partitionBy: null,
-                sortBy: type.sort as Record<string, 1 | -1> | undefined,
-                output: {
-                    position: {
-                        $documentNumber: {},
-                    }
-                }
-            }
-        },
+        ...getRankingPipeline(guild.id, userIds, type),
         {
             $facet: {
                 metadata: [
@@ -163,7 +143,8 @@ export const getRanking = async ({ sourceUserId, guild }: GetRankingProps): Prom
                         }
                     }
                 ],
-                data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }]
+                // Page buttons on an older message can push the stored page below 1
+                data: [{ $skip: Math.max(0, (page - 1) * perPage) }, { $limit: perPage }]
             }
         },
     ]);
@@ -191,41 +172,9 @@ export const findUserRankingPage = async ({ sourceUserId, targetUserId, guild }:
     const { perPage, sorting, range, userIds } = rankingStore.get(sourceUserId);
     const type = getSortingByType(sorting, range);
 
-    const match = {
-        guildId: guild?.id,
-        ...(userIds?.length ? { userId: { $in: userIds } } : {}),
-        ...((type.type === SortingTypes.VOICE && type.range === SortingRanges.TOTAL) ? { "user.publicTimeStatistics": true } : {})
-    }
-
     const userStatistics = await UserGuildStatisticsModel.aggregate([
-        {
-            $lookup: {
-                from: "users",
-                localField: "userId",
-                foreignField: "userId",
-                as: "user"
-            }
-        },
-        {
-            $unwind: "$user"
-        },
-        {
-            $match: match
-        },
-        {
-            $sort: type.sort
-        },
-        {
-            $setWindowFields: {
-                partitionBy: null,
-                sortBy: type.sort as Record<string, 1 | -1> | undefined,
-                output: {
-                    position: {
-                        $documentNumber: {},
-                    }
-                }
-            }
-        },
+        ...getRankingPipeline(guild.id, userIds, type),
+        { $project: { userId: 1 } },
     ]);
 
     const userPosition = userStatistics.findIndex((statistics) => statistics.userId === targetUserId);

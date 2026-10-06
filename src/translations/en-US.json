@@ -389,7 +389,8 @@
 		"ownerOnly": "This feature can only be used by application owner.",
 		"missingPermissions": "Seems like I don't have enough permissions to function properly. Invite me again and assure that I have all desired permissions.",
 		"noPermissions": "You don't have permission to use this.",
-		"levelRequirement": "Your level is too low.\nReach **Level {level}** and try again."
+		"levelRequirement": "Your level is too low.\nReach **Level {level}** and try again.",
+		"expired": "This panel has expired. Open it again."
 	},
 	"error": {
 		"title": "Error",

@@ -20,8 +20,8 @@ export enum AchievementType {
 export interface AchievementTypePayload {
     [AchievementType.UNIQUE_REACTIONS]: {uniqueReactions: number},
     [AchievementType.COORDINATED_ACTION]: {ms: number, withUserId: string},
-    [AchievementType.SUSS]: {from?: Date, aloneMs: number},
-    [AchievementType.STREAMER]: {last?: Date, ms: number},
+    [AchievementType.SUSS]: {from?: Date, activityId?: string, aloneMs: number},
+    [AchievementType.STREAMER]: {last?: Date, activityId?: string, ms: number},
     [AchievementType.GHOST]: undefined,
     [AchievementType.DJ]: {messageCount: number},
     [AchievementType.NIGHT_OWL]: {ms: number},

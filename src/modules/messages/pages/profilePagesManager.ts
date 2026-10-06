@@ -41,6 +41,18 @@ class ProfilePagesManager {
         let payload = await page.getPayload();
         payload = this.attachUserSelectRow(type, payload);
         payload = await this.attachPageSelectRow(type, payload);
+        return this.attachProfileState(page.type, payload);
+    }
+
+    // Suffixes every component with the profile it belongs to, read back by restoreProfileState
+    attachProfileState(type: ProfilePages, payload: ProfilePagePayloadProps) {
+        for (const row of payload.components ?? []) {
+            if (!("components" in row)) continue;
+            for (const component of row.components as { data?: { custom_id?: string } }[]) {
+                if (component.data?.custom_id)
+                    component.data.custom_id = `${component.data.custom_id}:${this.params.targetUser.userId}:${type}`;
+            }
+        }
         return payload;
     }
 

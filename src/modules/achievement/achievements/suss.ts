@@ -25,19 +25,29 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
         const guildId = member.guild.id;
 
         const activity = await voiceActivityModel.findOne({ userId: member.id, guildId, to: null });
-        const alone = !!activity && await voiceActivityModel.countDocuments({ guildId, channelId: activity.channelId, to: null }) === 1;
-        const from = this.payload?.from;
+        let { from, activityId, aloneMs = 0 } = this.payload ?? {};
 
-        if (alone && !from) {
-            await this.updatePayload({ from: new Date() });
-        } else if (!alone && from) {
-            await this.updatePayload({
-                from: undefined,
-                aloneMs: (this.payload?.aloneMs || 0) + Date.now() - from.getTime()
-            });
+        // An interval left open by a session that ended unseen (restart, missed leave, stale sweep)
+        // counts only until that session ended, not until now
+        if (from && String(activity?._id) !== activityId) {
+            const ended = activityId ? await voiceActivityModel.findById(activityId) : null;
+            aloneMs += ended?.to ? Math.max(0, ended.to.getTime() - from.getTime()) : 0;
+            from = undefined;
         }
 
-        return this.reach(this.payload?.aloneMs || 0);
+        const alone = !!activity && await voiceActivityModel.countDocuments({ guildId, channelId: activity.channelId, to: null }) === 1;
+        if (alone && !from) {
+            from = new Date();
+            activityId = String(activity._id);
+        } else if (!alone && from) {
+            aloneMs += Date.now() - from.getTime();
+            from = undefined;
+        }
+
+        if (from !== this.payload?.from || aloneMs !== (this.payload?.aloneMs || 0))
+            await this.updatePayload({ from, activityId: from ? activityId : undefined, aloneMs });
+
+        return this.reach(aloneMs);
     }
 }
 

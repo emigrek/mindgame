@@ -13,7 +13,7 @@ import selects from "@/interactions/selects";
 import {config, keys} from "@/config";
 import moment from "moment";
 
-import i18n from "./i18n";
+import i18n, { runInLocaleScope } from "./i18n";
 import localeList from "./localeList";
 
 import {ExperienceUpdater} from "@/modules/experience";
@@ -52,7 +52,7 @@ class ExtendedClient extends Client {
     public async loadEvents() {
         for (const event of events) {
             this.events.set(event.name, event);
-            this.on(event.name, (...args) => Promise.resolve(event.run(this, ...args))
+            this.on(event.name, (...args) => runInLocaleScope(() => Promise.resolve(event.run(this, ...args)))
                 .catch(e => console.error(`[Event:${event.name}] Error`, e)));
         }
     }

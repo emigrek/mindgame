@@ -6,49 +6,40 @@ import voiceActivitySchema, { VoiceActivityDocument } from "@/modules/schemas/Vo
 
 import i18n from "@/client/i18n";
 import { config } from "@/config";
-import { ActivityStreak, Streak } from "@/interfaces";
+import { ActivityStreak } from "@/interfaces";
 import { updateUserGuildStatistics } from "@/modules/user-guild-statistics";
+import { getWarsawDay } from "@/utils/date";
 import moment from "moment";
 import mongoose from "mongoose";
+import { computeStreaks } from "./streak";
 
 const voiceActivityModel = mongoose.model("VoiceActivity", voiceActivitySchema);
 const presenceActivityModel = mongoose.model("PresenceActivity", presenceActivitySchema);
 
 const checkVoiceActivityRewards = async (client: ExtendedClient, member: GuildMember) => {
+    // The last finished session; the one just started is still open
     const activity = await getUserLastGuildVoiceActivity(member.user.id, member.guild.id);
+
+    // One reward per Warsaw calendar day ("YYYY-MM-DD" keys compare as strings)
+    if (activity && getWarsawDay(activity.from) >= getWarsawDay(new Date()))
+        return;
+
+    // Computed only when a reward is due: it reads every voice day of the member
     const streak = await getUserVoiceActivityStreak(member.user.id, member.guild.id);
-
-    if (!activity) {
-        await updateUserGuildStatistics({
-            client,
-            userId: member.user.id,
-            guildId: member.guild.id,
-            update: {
-                exp: config.experience.voice.dailyActivityReward,
-            }
-        });
-        client.emit("userReceivedDailyReward", member.user.id, member.guild.id, streak);
-        return;
-    }
-
-    const activityDay = moment(activity.from).startOf("day");
-    const today = moment().startOf("day");
-
-    if (!activityDay.isBefore(today) || activityDay.isSame(today)) {
-        return;
-    }
+    // The very first session gets the daily reward only
+    const significant = !!activity && streak.isSignificant;
 
     await updateUserGuildStatistics({
         client,
         userId: member.user.id,
         guildId: member.guild.id,
         update: {
-            exp: config.experience.voice.dailyActivityReward + (streak.isSignificant ? config.experience.voice.significantActivityStreakReward  : 0)
+            exp: config.experience.voice.dailyActivityReward + (significant ? config.experience.voice.significantActivityStreakReward : 0)
         }
     });
 
     client.emit("userReceivedDailyReward", member.user.id, member.guild.id, streak);
-    if (streak.isSignificant) client.emit("userSignificantVoiceActivityStreak", member, streak);
+    if (significant) client.emit("userSignificantVoiceActivityStreak", member, streak);
 };
 
 const checkLongVoiceBreak = async (client: ExtendedClient, member: GuildMember) => {
@@ -148,7 +139,12 @@ const validateVoiceActivities = async (client: ExtendedClient) => {
         const { userId, guildId, channelId } = activity;
         const guild = await client.guilds.fetch(guildId)
             .catch(() => null);
-        if (!guild) continue;
+        // The bot is no longer in this guild
+        if (!guild) {
+            outOfSync.push(userId);
+            await activity.deleteOne();
+            continue;
+        }
 
         const member = await guild.members.fetch(userId)
             .catch(() => null);
@@ -210,6 +206,38 @@ const closeStaleVoiceActivities = async (client: ExtendedClient, groups: VoiceAc
         .filter(group => group.activities.length);
 };
 
+// Offline events can be missed just like voice leaves (gateway reconnect, bot removed from the guild).
+// With the GuildPresences intent the cache holds every non-offline member.
+const isMemberPresent = (client: ExtendedClient, userId: string, guildId: string) => {
+    const status = client.guilds.cache.get(guildId)?.presences.cache.get(userId)?.status;
+    return !!status && status !== "offline";
+};
+
+const closeStalePresenceActivities = async (client: ExtendedClient, groups: PresenceActivitiesByGuildId[]): Promise<PresenceActivitiesByGuildId[]> => {
+    const staleIds = groups
+        .flatMap(({ activities }) => activities)
+        .filter(({ userId, guildId }) => !isMemberPresent(client, userId, guildId))
+        .map(({ _id }) => _id);
+
+    if (!staleIds.length) return groups;
+
+    await presenceActivityModel.updateMany({ _id: { $in: staleIds } }, { to: moment().toDate() });
+
+    const stale = new Set(staleIds.map(String));
+    return groups
+        .map(group => ({ ...group, activities: group.activities.filter(({ _id }) => !stale.has(String(_id))) }))
+        .filter(group => group.activities.length);
+};
+
+// The bot left or was removed from the guild
+const endGuildActivities = async (guildId: string) => {
+    const to = moment().toDate();
+    await Promise.all([
+        voiceActivityModel.updateMany({ guildId, to: null }, { to }),
+        presenceActivityModel.updateMany({ guildId, to: null }, { to }),
+    ]);
+};
+
 const validatePresenceActivities = async (client: ExtendedClient) => {
     const activities = await presenceActivityModel.find({
         to: null
@@ -221,7 +249,12 @@ const validatePresenceActivities = async (client: ExtendedClient) => {
 
         const guild = await client.guilds.fetch(guildId)
             .catch(() => null);
-        if (!guild) continue;
+        // The bot is no longer in this guild
+        if (!guild) {
+            outOfSync.push(userId);
+            await activity.deleteOne();
+            continue;
+        }
 
         const member = await guild.members.fetch(userId)
             .catch(() => null);
@@ -440,45 +473,14 @@ const getUserClientsTime = async (userId: string): Promise<PresenceActivityDocum
 }
 
 const getUserVoiceActivityStreak = async (userId: string, guildId: string): Promise<ActivityStreak> => {
-    const activities = 
-        await voiceActivityModel.find({
-            userId,
-            guildId,
-        })
-        .sort({ from: 1 });
-    
-    const dates = activities.map(activity => moment(activity.from));
+    // Distinct Warsaw days with a voice session, grouped in Mongo instead of loading every session
+    const days = await voiceActivityModel.aggregate<{ _id: string }>([
+        { $match: { userId, guildId } },
+        { $group: { _id: { $dateToString: { date: "$from", format: "%Y-%m-%d", timezone: "Europe/Warsaw" } } } },
+        { $sort: { _id: 1 } },
+    ]);
 
-    if (!dates.length) {
-        return config.voiceActivityStreakLogic({ streak: undefined, maxStreak: undefined });
-    }
-
-    let last = dates.at(0) as moment.Moment;
-    let streak: Streak = { date: last.toDate(), value: 1, startedAt: last.toDate() };
-    let maxStreak: Streak = { ...streak };
-
-    for (const date of dates) {
-        if (dates.indexOf(date) !== 0 && date.isSame(last, "day"))
-            continue;
-
-        if (date.dayOfYear() === last.dayOfYear() + 1) {
-            streak.value++;
-            streak.date = date.toDate();
-        } else {
-            streak = { 
-                date: date.toDate(), 
-                value: 1, 
-                startedAt: date.toDate() 
-            };
-        }
-
-        if (streak.value > maxStreak.value) {
-            maxStreak = { ...streak };
-        }
-
-        last = date;
-    }
-
+    const { streak, maxStreak } = computeStreaks(days.map(day => day._id), getWarsawDay(new Date()));
     return config.voiceActivityStreakLogic({ streak, maxStreak });
 };
 
@@ -650,5 +652,5 @@ const clientStatusToEmoji = (client: string) => {
     }
 }
 
-export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, closeStaleVoiceActivities, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
+export { PresenceActivitiesByGuildId, PresenceActivityDocumentWithSeconds, VoiceActivitiesByChannelId, VoiceActivityDocumentWithSeconds, checkGuildVoiceEmpty, clientStatusToEmoji, closeStalePresenceActivities, closeStaleVoiceActivities, endGuildActivities, endPresenceActivity, endVoiceActivity, formatLastActivityDetails, getLastChannelVoiceActivity, getLastUserPresenceActivity, getLastUserVoiceActivity, getLastVoiceActivity, getPresenceActivitiesByGuildId, getPresenceActivity, getPresenceClientStatus, getUserClients, getUserLastActivityDetails, getUserVoiceActivityStreak, getVoiceActivitiesByChannelId, getVoiceActivity, startPresenceActivity, startVoiceActivity, validatePresenceActivities, validateVoiceActivities, voiceActivityModel };
 

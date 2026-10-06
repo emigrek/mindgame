@@ -23,21 +23,30 @@ export class Streamer extends GradualAchievement<AchievementType.STREAMER> {
     async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
         const { member, streaming } = context;
         const { channelId, guild } = member.voice;
-        const last = this.payload?.last;
+
+        const activity = await voiceActivityModel.findOne({ userId: member.id, guildId: guild.id, to: null });
+        let { last, activityId, ms = 0 } = this.payload ?? {};
+
+        // A stream left open by a session that ended unseen counts only until that session ended
+        if (last && String(activity?._id) !== activityId) {
+            const ended = activityId ? await voiceActivityModel.findById(activityId) : null;
+            ms += ended?.to ? Math.max(0, ended.to.getTime() - last.getTime()) : 0;
+            last = undefined;
+        }
 
         if (streaming) {
-            const audience = channelId && channelId !== guild.afkChannelId
+            const audience = activity && channelId && channelId !== guild.afkChannelId
                 ? await voiceActivityModel.countDocuments({ guildId: guild.id, channelId, to: null, userId: { $ne: member.id } })
                 : 0;
             // Always overwrite, so a stop missed earlier doesn't count the gap
-            await this.updatePayload({ last: audience ? new Date() : undefined });
+            last = audience ? new Date() : undefined;
+            activityId = activity ? String(activity._id) : undefined;
         } else if (last) {
-            await this.updatePayload({
-                last: undefined,
-                ms: (this.payload?.ms || 0) + Date.now() - last.getTime()
-            });
+            ms += Date.now() - last.getTime();
+            last = undefined;
         }
 
-        return this.reach(this.payload?.ms || 0);
+        await this.updatePayload({ last, activityId: last ? activityId : undefined, ms });
+        return this.reach(ms);
     }
 }

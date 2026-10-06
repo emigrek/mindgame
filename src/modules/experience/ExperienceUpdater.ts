@@ -1,5 +1,6 @@
 import ExtendedClient from "@/client/ExtendedClient";
 import {
+  closeStalePresenceActivities,
   closeStaleVoiceActivities,
   getPresenceActivitiesByGuildId,
   getVoiceActivitiesByChannelId,
@@ -46,7 +47,7 @@ class ExperienceUpdater {
     this.cache.clear();
 
     this.voiceActivities = await closeStaleVoiceActivities(this.client, await getVoiceActivitiesByChannelId());
-    this.presenceActivities = await getPresenceActivitiesByGuildId();
+    this.presenceActivities = await closeStalePresenceActivities(this.client, await getPresenceActivitiesByGuildId());
 
     const start = moment();
 

@@ -2,6 +2,7 @@ import ExtendedClient from "@/client/ExtendedClient";
 import { config } from '@/config';
 import { AchievementType } from "@/interfaces";
 import { getAllAchievements } from "@/modules/achievement";
+import { serialized } from "@/utils/serialized";
 import { BaseAchievement } from "./BaseAchievement";
 
 interface AchievementManagerProps {
@@ -40,10 +41,11 @@ class AchievementManager {
         if (this.client.users.cache.get(userId)?.bot)
             return this;
 
-        const check = (achievement: BaseAchievement<AchievementType>) => 
-            achievement.direct({ userId, guildId })
-                .check()
-                .then(result => 
+        // One achievement of one member is checked at a time. discord-logs fires several events per voiceStateUpdate
+        // and each re-checks the whole channel, so parallel read-modify-write of the payload lost updates and announced twice.
+        const check = (achievement: BaseAchievement<AchievementType>) =>
+            serialized(`${userId}:${guildId}:${achievement.achievementType}`, () => achievement.direct({ userId, guildId }).check())
+                .then(result =>
                     result && result.leveledUp && this.client.emit("achievementLeveledUp", achievement, result.change)
                 )
                 .catch(e => console.log("There was an error while checking achievement progress: ", e))

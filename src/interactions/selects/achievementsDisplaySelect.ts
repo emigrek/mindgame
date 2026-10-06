@@ -1,6 +1,7 @@
 import { Select } from "@/interfaces";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { achievementsStore } from "@/stores/achievementsStore";
+import { restoreProfileState } from "@/stores/profileStore";
 import { StringSelectMenuInteraction } from "discord.js";
 
 const fixInteractionValues = (values: string[]) => {
@@ -14,8 +15,9 @@ const fixInteractionValues = (values: string[]) => {
 
 export const achievementsDisplaySelect: Select = {
     customId: "achievementsDisplaySelect",
-    run: async (client, interaction) => {
+    run: async (client, interaction, ...args) => {
         await interaction.deferUpdate();
+        restoreProfileState(interaction.user.id, args);
         
         if (!interaction.guild) {
             await interaction.followUp({ ...getErrorMessagePayload(), ephemeral: true });

@@ -1,13 +1,14 @@
 import { Button } from "@/interfaces";
 import { getErrorMessagePayload, getProfileMessagePayload } from "@/modules/messages";
 import { updateUserPublicTimeStatistics } from "@/modules/user";
-import { profileStore } from "@/stores/profileStore";
+import { profileStore, restoreProfileState } from "@/stores/profileStore";
 import { ButtonInteraction } from "discord.js";
 
 const profileTimePublic: Button = {
     customId: `profileTimePublic`,
-    run: async (client, interaction) => {
+    run: async (client, interaction, ...args) => {
         await interaction.deferUpdate();
+        restoreProfileState(interaction.user.id, args);
 
         if (!interaction.guildId) {
             await interaction.editReply(getErrorMessagePayload());

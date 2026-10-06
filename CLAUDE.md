@@ -11,7 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture gotchas
 
 - Nothing is auto-discovered. New events, commands, buttons, selects, contexts, modals and modules must be added to the array in their folder's `index.ts`.
-- Buttons, selects and modals are dispatched in `src/events/interactionCreate.ts` by an exact `customId` match.
+- Buttons, selects and modals are dispatched in `src/events/interactionCreate.ts` by the `customId` part before the first `:`. The rest is passed to `run(client, interaction, ...args)`. Profile components carry `:<targetUserId>:<page>` (added by `ProfilePagesManager`, read by `restoreProfileState`), so clicks on older messages act on the profile they show.
+- Handlers may throw: `interactionCreate` logs the error with context and replies to the user with an error message.
 - Modules start in the `clientReady` event, not in `ExtendedClient.init()`.
 - Many events are custom and fired with `client.emit`. `src/modules/timers.ts` emits `minute`, `daily` and the other timer events from cron.
 - `AchievementType` is a numeric enum persisted in MongoDB, and translation keys use the numeric index. Only append to it; never reorder or insert members.
@@ -22,11 +23,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## i18n
 
 - All user-facing text goes through `i18n.__()`, or `i18n.__mf()` when it has `{params}`. Add every key to both `src/translations/en-US.json` and `pl.json`; those files are indented with tabs.
-- The i18n locale is global mutable state. Call `i18n.setLocale()` (from `interaction.locale` or `guild.preferredLocale`) before building any text, or it inherits whatever locale was set last. Even then, a concurrent flow can switch it across any `await` (TECH_DEBT_AUDIT.md F05); don't add new awaits between `setLocale` and `__()`.
+- Every event handler runs in its own locale scope (`runInLocaleScope` in `src/client/i18n.ts`, wired in `ExtendedClient.loadEvents`). `i18n.setLocale()` (from `interaction.locale` or `guild.preferredLocale`) affects only the rest of the current event and defaults to en-US. Code running outside an event, such as startup or import time, always gets en-US.
 
 ## Dates
 
-- New date and time logic uses Europe/Warsaw (`getWarsawHour` and `getWarsawDay` in `src/utils/date.ts`). Cron runs in Europe/Warsaw, and the Docker image sets `TZ=Europe/Warsaw`. Daily and streak logic in `src/modules/activity/` still uses the process timezone; outside Docker that can differ.
+- New date and time logic uses Europe/Warsaw (`getWarsawHour` and `getWarsawDay` in `src/utils/date.ts`). Cron runs in Europe/Warsaw, and the Docker image sets `TZ=Europe/Warsaw`. The daily reward and voice streaks count Warsaw calendar days (`src/modules/activity/streak.ts`).
 
 ## Style
 
