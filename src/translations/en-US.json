@@ -282,7 +282,7 @@
 	"achievements": {
 		"0": {
 			"name": "Unique Reactions",
-			"status": "Best message: `{uniqueReactions}` reactions",
+			"status": "Best message: `{uniqueReactions} reactions`",
 			"description": "Get reactions from as many different users as possible on a single message."
 		},
 		"1": {

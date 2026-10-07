@@ -282,7 +282,7 @@
 	"achievements": {
 		"0": {
 			"name": "Unikalne Reakcje",
-			"status": "Najlepsza wiadomość: `{uniqueReactions}` reakcji",
+			"status": "Najlepsza wiadomość: `{uniqueReactions} reakcji`",
 			"description": "Zbierz reakcje od jak największej liczby różnych osób pod jedną wiadomością."
 		},
 		"1": {

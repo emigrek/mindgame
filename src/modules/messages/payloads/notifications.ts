@@ -70,8 +70,10 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
 
     const { achievementType, emoji, level, maxLevel } = achievement;
     const unlocked = level === change;
-    const name = `${emoji} ${i18n.__(`achievements.${achievementType}.name`)}`;
+    const name = `${i18n.__(`achievements.${achievementType}.name`)} ${emoji}`;
     const status = achievement.formatStatus();
+    // A "Label: `value`" status becomes a "Label" field with the value in a code block, like the level
+    const statusParts = status.match(/^([^:`]+): `([^`]+)`$/);
     const avatarUrl = user.displayAvatarURL({ extension: "png" });
     const colors = await useImageHex(avatarUrl);
 
@@ -91,8 +93,8 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
                 inline: true
             }] : []),
             ...(status ? [{
-                name: i18n.__("notifications.achievementResultField"),
-                value: status,
+                name: statusParts ? statusParts[1] : i18n.__("notifications.achievementResultField"),
+                value: statusParts ? codeBlock(statusParts[2]) : status,
                 inline: true
             }] : [])
         ]);
