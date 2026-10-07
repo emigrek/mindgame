@@ -18,3 +18,19 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm test
+
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: deploy
+    steps:
+      # The key may only run /root/mindgame-deploy.sh on the server: pull, docker build, restart the container
+      - run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "[maluch.mikr.us]:10153 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH9RhYtF6Gbl+aPA2gwBClav391YvIuvq61py3R8+iyk" > ~/.ssh/known_hosts
+          ssh -p 10153 root@maluch.mikr.us /root/mindgame-deploy.sh
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
