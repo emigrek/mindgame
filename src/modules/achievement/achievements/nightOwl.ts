@@ -18,14 +18,20 @@ export class NightOwl extends GradualAchievement<AchievementType.NIGHT_OWL> {
         return { ms: formatDuration(payload.ms || 0) };
     }
 
-    // Total voice time at night, counted when a voice session ends
+    // Total voice time at night. Checked by the minute tick while the session is open and once more when it ends;
+    // `until` marks how far the session is counted, so no part of it is counted twice.
     async progress(context: AchievementTypeContext[AchievementType.NIGHT_OWL]) {
-        const { from, to } = context.activity;
-        const nightMs = to ? getNightMs(from, to) : 0;
+        const { _id, from, to } = context.activity;
+        const activityId = String(_id);
+        const { ms = 0, until } = this.payload ?? {};
+
+        const start = this.payload?.activityId === activityId && until ? until : from;
+        const end = to ?? new Date();
+        const nightMs = getNightMs(start, end);
         if (!nightMs)
             return;
 
-        await this.updatePayload({ ms: (this.payload?.ms || 0) + nightMs });
-        return this.reach(this.payload?.ms || 0);
+        await this.updatePayload({ ms: ms + nightMs, activityId, until: end });
+        return this.reach(ms + nightMs);
     }
 }

@@ -11,7 +11,7 @@ import {
   VoiceActivitiesByChannelId,
   VoiceActivityDocumentWithSeconds,
 } from "@/modules/activity";
-import { checkVoiceSessionEnd } from "@/modules/achievement/achievements";
+import { checkVoiceSessionEnd, checkVoiceSessionProgress } from "@/modules/achievement/achievements";
 import moment from "moment";
 
 import { config } from "@/config";
@@ -55,6 +55,7 @@ class ExperienceUpdater {
 
     // Sessions closed by the sweep (often long overnight ones cut by a reconnect) still count
     voice.closed.forEach(activity => checkVoiceSessionEnd(this.client, activity, activity));
+    this.voiceActivities.forEach(({ activities }) => activities.forEach(activity => checkVoiceSessionProgress(this.client, activity)));
     await touchActivities(this.voiceActivities, this.presenceActivities);
     // Opened now, earning from the next tick
     await openMissingActivities(this.client, this.voiceActivities, this.presenceActivities);

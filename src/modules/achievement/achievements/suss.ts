@@ -35,13 +35,17 @@ export class Suss extends GradualAchievement<AchievementType.SUSS> {
             from = undefined;
         }
 
-        const alone = !!activity && await voiceActivityModel.countDocuments({ guildId, channelId: activity.channelId, to: null }) === 1;
-        if (alone && !from) {
-            from = new Date();
-            activityId = String(activity._id);
-        } else if (!alone && from) {
-            aloneMs += Date.now() - from.getTime();
+        // The open interval is banked on every check, also by the minute tick, so time alone counts while still in the channel
+        const now = new Date();
+        if (from) {
+            aloneMs += now.getTime() - from.getTime();
             from = undefined;
+        }
+
+        const alone = !!activity && await voiceActivityModel.countDocuments({ guildId, channelId: activity.channelId, to: null }) === 1;
+        if (alone) {
+            from = now;
+            activityId = String(activity._id);
         }
 
         if (from !== this.payload?.from || aloneMs !== (this.payload?.aloneMs || 0))

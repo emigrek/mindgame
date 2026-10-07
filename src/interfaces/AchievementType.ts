@@ -24,7 +24,7 @@ export interface AchievementTypePayload {
     [AchievementType.STREAMER]: {last?: Date, activityId?: string, ms: number},
     [AchievementType.GHOST]: undefined,
     [AchievementType.DJ]: {messageCount: number},
-    [AchievementType.NIGHT_OWL]: {ms: number},
+    [AchievementType.NIGHT_OWL]: {ms: number, activityId?: string, until?: Date},
     [AchievementType.MARATHON]: {topMs: number},
     [AchievementType.SOCIAL]: {userIds: string[]},
     [AchievementType.HOST]: {days: number, lastDay: string},

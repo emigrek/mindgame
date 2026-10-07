@@ -18,10 +18,10 @@ export class Marathon extends GradualAchievement<AchievementType.MARATHON> {
         return { topMs: formatDuration(payload.topMs || 0) };
     }
 
-    // Longest single voice session, counted when it ends
+    // Longest single voice session, an open one counted up to now by the minute tick
     async progress(context: AchievementTypeContext[AchievementType.MARATHON]) {
         const { from, to } = context.activity;
-        const sessionMs = to ? to.getTime() - from.getTime() : 0;
+        const sessionMs = (to ?? new Date()).getTime() - from.getTime();
         const topMs = this.payload?.topMs || 0;
         if (sessionMs > topMs)
             await this.updatePayload({ topMs: sessionMs });

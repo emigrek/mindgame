@@ -19,7 +19,7 @@ export class Streamer extends GradualAchievement<AchievementType.STREAMER> {
         return { ...payload, ms: formatDuration(payload.ms || 0) };
     }
 
-    // Total time streaming with an audience (someone else active in the channel at stream start)
+    // Total time streaming with an audience (someone else active in the channel)
     async progress(context: AchievementTypeContext[AchievementType.STREAMER]) {
         const { member, streaming } = context;
         const { channelId, guild } = member.voice;
@@ -34,19 +34,24 @@ export class Streamer extends GradualAchievement<AchievementType.STREAMER> {
             last = undefined;
         }
 
-        if (streaming) {
-            const audience = activity && channelId && channelId !== guild.afkChannelId
-                ? await voiceActivityModel.countDocuments({ guildId: guild.id, channelId, to: null, userId: { $ne: member.id } })
-                : 0;
-            // Always overwrite, so a stop missed earlier doesn't count the gap
-            last = audience ? new Date() : undefined;
-            activityId = activity ? String(activity._id) : undefined;
-        } else if (last) {
-            ms += Date.now() - last.getTime();
+        // The open interval is banked on every check, also by the minute tick, so stream time counts while still streaming
+        const now = new Date();
+        if (last) {
+            ms += now.getTime() - last.getTime();
             last = undefined;
         }
 
-        await this.updatePayload({ last, activityId: last ? activityId : undefined, ms });
+        if (streaming) {
+            // Re-checked every tick: the stream counts only while someone else is in the channel
+            const audience = activity && channelId && channelId !== guild.afkChannelId
+                ? await voiceActivityModel.countDocuments({ guildId: guild.id, channelId, to: null, userId: { $ne: member.id } })
+                : 0;
+            last = audience ? now : undefined;
+            activityId = activity ? String(activity._id) : undefined;
+        }
+
+        if (last !== this.payload?.last || ms !== (this.payload?.ms || 0))
+            await this.updatePayload({ last, activityId: last ? activityId : undefined, ms });
         return this.reach(ms);
     }
 }
