@@ -7,44 +7,9 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
     emoji = "🤝";
     lowerIsBetter = true;
-    levels = [
-        {
-            value: 1000 * 60 * 10,
-            level: 1
-        },
-        {
-            value: 1000 * 60 * 5,
-            level: 2
-        },
-        {
-            value: 1000 * 60 * 2,
-            level: 3
-        },
-        {
-            value: 1000 * 60,
-            level: 4
-        },
-        {
-            value: 1000 * 15,
-            level: 5
-        },
-        {
-            value: 1000 * 5,
-            level: 6
-        },
-        {
-            value: 1000 * 1,
-            level: 7
-        },
-        {
-            value: 1000 * 0.5,
-            level: 8
-        },
-        {
-            value: 1000 * 0.25,
-            level: 9
-        }
-    ];
+    // Minutes apart is just joining a friend, the first level takes an agreed moment
+    levels = [30, 15, 5, 2, 1, 0.5, 0.25]
+        .map((seconds, index) => ({ value: seconds * 1000, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.COORDINATED_ACTION>) {
         super({

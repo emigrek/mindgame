@@ -8,7 +8,7 @@ const hour = 1000 * 60 * 60;
 
 export class Suss extends GradualAchievement<AchievementType.SUSS> {
     emoji = "🤫";
-    levels = [1, 5, 10, 25, 50, 100, 250, 500]
+    levels = [5, 10, 25, 50, 100, 250, 500]
         .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.SUSS>) {

@@ -7,7 +7,7 @@ export class Regular extends GradualAchievement<AchievementType.REGULAR> {
     emoji = "🪑";
     // Long-time members jump several levels on first check, only anniversaries are announced
     announceLevelJumps = false;
-    levels = [1, 6, 12, 24, 36, 48, 60, 72, 84, 96, 120]
+    levels = [6, 12, 24, 36, 48, 60, 72, 84, 96, 120]
         .map((months, index) => ({ value: months, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.REGULAR>) {

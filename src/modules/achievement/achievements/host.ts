@@ -6,7 +6,8 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class Host extends GradualAchievement<AchievementType.HOST> {
     emoji = "🏠";
-    levels = [1, 5, 10, 25, 50, 100, 200, 365]
+    // Joining an empty server first once is luck, the first level takes a week of it
+    levels = [7, 14, 30, 60, 100, 200, 365]
         .map((days, index) => ({ value: days, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.HOST>) {

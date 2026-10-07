@@ -7,7 +7,7 @@ const hour = 1000 * 60 * 60;
 
 export class NightOwl extends GradualAchievement<AchievementType.NIGHT_OWL> {
     emoji = "🦉";
-    levels = [1, 5, 10, 25, 50, 100, 250]
+    levels = [5, 10, 25, 50, 100, 250]
         .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.NIGHT_OWL>) {

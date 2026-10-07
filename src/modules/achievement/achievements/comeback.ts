@@ -7,7 +7,7 @@ const day = 1000 * 60 * 60 * 24;
 
 export class Comeback extends GradualAchievement<AchievementType.COMEBACK> {
     emoji = "🪃";
-    levels = [3, 7, 14, 30, 90, 180, 365]
+    levels = [7, 14, 30, 90, 180, 365]
         .map((days, index) => ({ value: days * day, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.COMEBACK>) {

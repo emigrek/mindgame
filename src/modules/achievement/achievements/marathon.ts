@@ -7,7 +7,7 @@ const hour = 1000 * 60 * 60;
 
 export class Marathon extends GradualAchievement<AchievementType.MARATHON> {
     emoji = "🏃";
-    levels = [2, 4, 6, 8, 12, 16, 24]
+    levels = [4, 6, 8, 12, 16, 24]
         .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 
     constructor(context?: BaseAchievementContext<AchievementType.MARATHON>) {
