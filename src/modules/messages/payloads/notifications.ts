@@ -14,7 +14,6 @@ import { InformationEmbed } from "@/modules/messages/embeds";
 
 import Colors from "@/utils/colors";
 import { formatTimeTotal } from "@/utils/date";
-import { KnownLinks } from "@/modules/messages/knownLinks";
 import { useImageHex, getColorInt } from "@/modules/messages/colors";
 import { formatStreakField, formatNextStreakField } from "@/modules/messages/formatters";
 
@@ -57,7 +56,7 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
                 inline: true
             }
         )
-        .setThumbnail(KnownLinks.SPARKLES);
+        .setThumbnail("https://em-content.zobj.net/source/microsoft/209/sparkles_2728.png");
 
     return {
         embeds: [embed],
@@ -119,7 +118,7 @@ const getDailyRewardMessagePayload = async (client: ExtendedClient, user: User, 
         .setColor(getColorInt(colors.Vibrant))
         .setTitle(i18n.__("notifications.dailyRewardTitle"))
         .setDescription(i18n.__mf("notifications.dailyRewardDescription", { userId: sourceUser.userId }))
-        .setThumbnail(KnownLinks.BIRTHDAY_CAKE)
+        .setThumbnail("https://em-content.zobj.net/source/microsoft/209/birthday-cake_1f382.png")
         .setFields([
             {
                 name: i18n.__("notifications.dailyRewardField"),
@@ -201,7 +200,7 @@ const getSignificantVoiceActivityStreakMessagePayload = async (client: ExtendedC
         .setDescription(i18n.__mf("notifications.voiceStreakDescription", {
             userId: member.id
         }))
-        .setThumbnail(KnownLinks.FIRE)
+        .setThumbnail("https://em-content.zobj.net/source/microsoft/209/fire_1f525.png")
         
     if (config.experience.voice.significantActivityStreakReward > 0) {
         embed.addFields([
@@ -251,7 +250,7 @@ const getInviteNotificationMessagePayload = async (client: ExtendedClient, guild
                 inline: true
             },
         ])
-        .setThumbnail(KnownLinks.ROCKET);
+        .setThumbnail("https://em-content.zobj.net/source/microsoft/209/rocket_1f680.png");
 
     return {
         embeds: [embed],

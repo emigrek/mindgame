@@ -5,7 +5,7 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class Social extends GradualAchievement<AchievementType.SOCIAL> {
     emoji = "🦋";
-    emojiImage = "https://em-content.zobj.net/source/microsoft/74/butterfly_1f98b.png";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/209/butterfly_1f98b.png";
     levels = [5, 10, 25, 50, 100, 200]
         .map((users, index) => ({ value: users, level: index + 1 }));
 

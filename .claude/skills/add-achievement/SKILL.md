@@ -14,7 +14,7 @@ Use `src/modules/achievement/achievements/regular.ts` (gradual) or `ghost.ts` (s
 2. **`src/modules/achievement/achievements/<name>.ts`**
    - Extend `GradualAchievement<T>`: set `levels` to an array of `{ value, level }` (plus `lowerIsBetter` if a lower value is better) and return `this.reach(value)` from `progress`. For a single-level achievement, extend `BaseAchievement<T>` and call `this.setLevel(1)` instead.
    - Set `emoji` and implement `async progress(context)`.
-   - Set `emojiImage` to the emoji's Windows 10 Anniversary Update image from Emojipedia (`https://em-content.zobj.net/source/microsoft/74/<name>_<codepoint>.png`). If the emoji is newer than that update, use the oldest Microsoft version in the same style. It is the notification thumbnail.
+   - Set `emojiImage` to the emoji's Windows 10 May 2019 Update image from Emojipedia (`https://em-content.zobj.net/source/microsoft/209/<name>_<codepoint>.png`). If the emoji is newer than that update, use the oldest Microsoft version in the same style. It is the notification thumbnail.
    - Override `statusParams(payload)` to shape the values used in the translated status. Use `formatDuration` from `@/utils/date` for durations.
    - Set `announceLevelJumps = false` if the first check can jump several levels.
    - For hour or day logic, use `getWarsawHour` / `getWarsawDay`.

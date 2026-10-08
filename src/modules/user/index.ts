@@ -119,7 +119,7 @@ const sendNewFeaturesMessage = async ({ client, userId, guildId, oldLevel, newLe
                 inline: true
             }
         ])
-        .setThumbnail("https://i.imgur.com/cSTkdFG.png");
+        .setThumbnail("https://em-content.zobj.net/source/microsoft/209/sparkles_2728.png");
 
     await user.send({ embeds: [embed] });
 };

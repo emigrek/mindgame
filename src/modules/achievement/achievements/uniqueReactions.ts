@@ -5,7 +5,7 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class UniqueReactions extends GradualAchievement<AchievementType.UNIQUE_REACTIONS> {
     emoji = "⭐";
-    emojiImage = "https://em-content.zobj.net/source/microsoft/74/white-medium-star_2b50.png";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/209/white-medium-star_2b50.png";
     levels = [
         {
             value: 3,

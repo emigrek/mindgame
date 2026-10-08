@@ -8,7 +8,7 @@ const verificationDelayMs = 5000;
 
 export class Ghost extends BaseAchievement<AchievementType.GHOST> {
     emoji = "👻";
-    emojiImage = "https://em-content.zobj.net/source/microsoft/74/ghost_1f47b.png";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/209/ghost_1f47b.png";
 
     constructor(context?: BaseAchievementContext<AchievementType.GHOST>) {
         super({
