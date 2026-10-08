@@ -82,7 +82,7 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
         .setTitle(i18n.__(unlocked ? "notifications.achievementTitle" : "notifications.achievementUpgradedTitle"))
         .setDescription(
             i18n.__mf(unlocked ? "notifications.achievementDescription" : "notifications.achievementUpgradedDescription", { userId: user.id, achievement: name })
-            + "\n\n" + quote(i18n.__(`achievements.${achievementType}.description`))
+            + "\n" + quote(i18n.__(`achievements.${achievementType}.description`))
         )
         .setThumbnail(avatarUrl)
         .setFields([
