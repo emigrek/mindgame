@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- `npm start` runs `tsx watch src` for development. Production (Docker) runs `npm run prod` (`tsx src`). Watch mode doesn't exit when the bot crashes, so it must never be the production command. There is no build step.
+- `npm start` runs `tsx watch src` for development. Production (Docker) runs `node --import tsx src/index.ts`, the same as `npm run prod` (`tsx src`) without the npm and tsx CLI parent processes. Watch mode doesn't exit when the bot crashes, so it must never be the production command. There is no build step.
 - Verify changes with `npx tsc --noEmit` (tsx doesn't typecheck), `npm run lint` and `npm test`. `npm test` runs `src/**/*.test.ts` with `node:test` via tsx, and test files must import only pure modules (no Mongo, no `@/config/keys`). CI (`.github/workflows/check.yml`) runs all three.
 - Lint is type-aware (about a minute). `no-floating-promises` is an error: await a promise, end it with `.catch()`, or mark a deliberate fire-and-forget with `void`.
 - Every push to `main` deploys to production: after `check` passes, the `deploy` job SSHes into `root@maluch.mikr.us:10153` and runs `/root/mindgame-deploy.sh` (git pull, `docker build`, recreate the `mindgame` container with `--env-file .env --link mongodb:mongo`). That script lives only on the server, and the `DEPLOY_SSH_KEY` secret may run nothing else.

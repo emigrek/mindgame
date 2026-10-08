@@ -129,7 +129,7 @@ npx tsx scripts/dedupe-for-unique-indexes.ts --apply
 
 ### 🏠 Local
 
-Start application (watch mode for development; Docker runs `npm run prod`)
+Start application (watch mode for development; Docker runs `node --import tsx src/index.ts`)
 
 ```bash
 npm run start
