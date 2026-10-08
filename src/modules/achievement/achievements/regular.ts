@@ -5,6 +5,7 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class Regular extends GradualAchievement<AchievementType.REGULAR> {
     emoji = "🪑";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/209/chair_1fa91.png";
     // Long-time members jump several levels on first check, only anniversaries are announced
     announceLevelJumps = false;
     levels = [6, 12, 24, 36, 48, 60, 72, 84, 96, 120]

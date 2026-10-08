@@ -6,6 +6,7 @@ import { GradualAchievement } from "../structures/GradualAchievement";
 
 export class CoordinatedAction extends GradualAchievement<AchievementType.COORDINATED_ACTION> {
     emoji = "🤝";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/74/handshake_1f91d.png";
     lowerIsBetter = true;
     // Minutes apart is just joining a friend, the first level takes an agreed moment
     levels = [30, 15, 5, 2, 1, 0.5, 0.25]

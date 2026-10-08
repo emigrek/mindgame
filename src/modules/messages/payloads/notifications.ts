@@ -68,9 +68,9 @@ const getLevelUpMessagePayload = async (client: ExtendedClient, user: User, guil
 const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, achievement: BaseAchievement<AchievementType>, change: number) => {
     i18n.setLocale(guild.preferredLocale);
 
-    const { achievementType, emoji, level, maxLevel } = achievement;
+    const { achievementType, level, maxLevel } = achievement;
     const unlocked = level === change;
-    const name = `${i18n.__(`achievements.${achievementType}.name`)} ${emoji}`;
+    const name = i18n.__(`achievements.${achievementType}.name`);
     const status = achievement.formatStatus();
     // A "Label: `value`" status becomes a "Label" field with the value in a code block, like the level
     const statusParts = status.match(/^([^:`]+): `([^`]+)`$/);
@@ -84,7 +84,7 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
             i18n.__mf(unlocked ? "notifications.achievementDescription" : "notifications.achievementUpgradedDescription", { userId: user.id, achievement: name })
             + "\n" + quote(i18n.__(`achievements.${achievementType}.description`))
         )
-        .setThumbnail(avatarUrl)
+        .setThumbnail(achievement.emojiImage || avatarUrl)
         .setFields([
             // Single level achievements are only unlocked, level adds nothing there
             ...(maxLevel > 1 ? [{

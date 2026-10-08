@@ -7,6 +7,7 @@ const day = 1000 * 60 * 60 * 24;
 
 export class Comeback extends GradualAchievement<AchievementType.COMEBACK> {
     emoji = "🪃";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/309/boomerang_1fa83.png";
     levels = [7, 14, 30, 90, 180, 365]
         .map((days, index) => ({ value: days * day, level: index + 1 }));
 

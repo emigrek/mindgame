@@ -8,6 +8,7 @@ const hour = 1000 * 60 * 60;
 
 export class Streamer extends GradualAchievement<AchievementType.STREAMER> {
     emoji = "🖥️";
+    emojiImage = "https://em-content.zobj.net/source/microsoft/74/desktop-computer_1f5a5.png";
     levels = [5, 10, 25, 50, 100, 250, 500]
         .map((hours, index) => ({ value: hours * hour, level: index + 1 }));
 

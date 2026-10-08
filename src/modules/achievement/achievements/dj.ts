@@ -24,6 +24,7 @@ export const getPlayRequester = (message: Message) => {
 
 export class DJ extends GradualAchievement<AchievementType.DJ> {
     emoji = "💽"
+    emojiImage = "https://em-content.zobj.net/source/microsoft/74/minidisc_1f4bd.png";
     levels = [
         {
             value: 5,

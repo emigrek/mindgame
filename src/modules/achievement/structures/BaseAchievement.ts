@@ -29,6 +29,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
     payload?: AchievementTypePayload[T];
     private context?: AchievementTypeContext[T];
     emoji = "";
+    // Notification thumbnail: the Windows 10 Anniversary Update emoji, or the oldest Microsoft one in its style
+    emojiImage = "";
     // Whether level ups by more than one level are announced
     announceLevelJumps = true;
 
