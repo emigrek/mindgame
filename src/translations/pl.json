@@ -159,9 +159,9 @@
 	},
 	"notifications": {
 		"levelUpTitle": "Awans!",
-		"achievementTitle": "Osiągnięcie odblokowane!",
+		"achievementTitle": "Osiągnięcie odblokowane",
 		"achievementDescription": "<@{userId}> odblokował(a) **{achievement}**!",
-		"achievementUpgradedTitle": "Osiągnięcie ulepszone!",
+		"achievementUpgradedTitle": "Osiągnięcie ulepszone",
 		"achievementUpgradedDescription": "<@{userId}> zdobył(a) kolejny poziom **{achievement}**!",
 		"achievementResultField": "Wynik",
 		"levelUpDescription": "<@{userId}> osiąga <@&{roleId}>!",

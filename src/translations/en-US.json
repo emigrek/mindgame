@@ -159,9 +159,9 @@
 	},
 	"notifications": {
 		"levelUpTitle": "Level up!",
-		"achievementTitle": "Achievement unlocked!",
+		"achievementTitle": "Achievement unlocked",
 		"achievementDescription": "<@{userId}> has unlocked **{achievement}**!",
-		"achievementUpgradedTitle": "Achievement upgraded!",
+		"achievementUpgradedTitle": "Achievement upgraded",
 		"achievementUpgradedDescription": "<@{userId}> has reached a new level of **{achievement}**!",
 		"achievementResultField": "Result",
 		"levelUpDescription": "<@{userId}> has reached <@&{roleId}>!",
