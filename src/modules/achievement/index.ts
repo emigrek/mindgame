@@ -1,6 +1,6 @@
 import { AchievementType } from "@/interfaces";
 import type { BaseAchievement } from "./structures/BaseAchievement";
-import { Comeback, CoordinatedAction, DJ, Ghost, Host, Marathon, NightOwl, Regular, Social, Streamer, Suss, UniqueReactions } from "./achievements";
+import { Collector, Comeback, CoordinatedAction, DJ, Ghost, Host, Inseparable, Marathon, NightOwl, Regular, Sleeper, Social, Squad, Streamer, Suss, UniqueReactions, WeeklyKing } from "./achievements";
 
 export { achievementModel } from "./model";
 
@@ -18,6 +18,11 @@ export const getAllAchievements = (): BaseAchievement<AchievementType>[] => [
     new Host(),
     new Comeback(),
     new Regular(),
+    new Sleeper(),
+    new Inseparable(),
+    new Squad(),
+    new WeeklyKing(),
+    new Collector(),
 ];
 
 export * from "./structures";

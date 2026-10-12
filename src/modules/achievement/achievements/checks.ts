@@ -6,9 +6,11 @@ import { Collection, GuildMember, VoiceBasedChannel } from "discord.js";
 import { AchievementManager } from "../structures/AchievementManager";
 import { CoordinatedAction } from "./coordinatedAction";
 import { Host } from "./host";
+import { Inseparable } from "./inseparable";
 import { Marathon } from "./marathon";
 import { NightOwl } from "./nightOwl";
 import { Social } from "./social";
+import { Squad } from "./squad";
 import { Streamer } from "./streamer";
 import { Suss } from "./suss";
 
@@ -44,15 +46,20 @@ export const checkVoiceSessionStart = async (client: ExtendedClient, member: Gui
 // Timed achievements used to progress only when the session or stream ended, so they leveled up as the member left
 // and the empty-voice sweep deleted the notification seconds later. The experience tick checks open sessions every minute.
 // ponytail: a few queries per member in voice per minute, batch the reads if voice ever gets crowded
-export const checkVoiceSessionProgress = (client: ExtendedClient, activity: VoiceActivityDocument) => {
+// channelActivities: the open sessions in the activity's channel, the activity included
+export const checkVoiceSessionProgress = (client: ExtendedClient, activity: VoiceActivityDocument, channelActivities: VoiceActivityDocument[]) => {
     const { userId, guildId } = activity;
-    const member = client.guilds.cache.get(guildId)?.members.cache.get(userId);
+    const members = client.guilds.cache.get(guildId)?.members.cache;
+    const member = members?.get(userId);
+    const otherIds = channelActivities.map(other => other.userId).filter(id => id !== userId);
+    const others = otherIds.flatMap(id => members?.get(id) ?? []);
 
     new AchievementManager({ client, userId, guildId })
         .check([
             new NightOwl({ activity }),
             new Marathon({ activity }),
-            ...(member ? [new Suss({ member })] : []),
+            new Inseparable({ userIds: otherIds }),
+            ...(member ? [new Suss({ member }), new Squad({ member, others })] : []),
             ...(member?.voice.streaming ? [new Streamer({ member, streaming: true })] : []),
         ]);
 };

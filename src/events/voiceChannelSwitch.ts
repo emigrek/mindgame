@@ -1,5 +1,6 @@
 import { Event } from "@/interfaces";
-import { checkVoiceChannelMembers, checkVoiceSessionEnd, checkVoiceSessionStart } from "@/modules/achievement/achievements";
+import { AchievementManager } from "@/modules/achievement";
+import { Sleeper, checkVoiceChannelMembers, checkVoiceSessionEnd, checkVoiceSessionStart } from "@/modules/achievement/achievements";
 import { checkGuildVoiceEmpty, endVoiceActivity, getVoiceActivity, startVoiceActivity } from "@/modules/activity";
 
 export const voiceChannelSwitch: Event<"voiceChannelSwitch"> = {
@@ -16,6 +17,8 @@ export const voiceChannelSwitch: Event<"voiceChannelSwitch"> = {
                 await checkVoiceSessionStart(client, member, newChannel, started);
         } else if (newChannel.id === guild.afkChannelId) {
             checkVoiceSessionEnd(client, { userId: member.id, guildId: guild.id }, await endVoiceActivity(member));
+            new AchievementManager({ client, userId: member.id, guildId: guild.id })
+                .check(new Sleeper({ member, channel: newChannel }));
         } else {
             activity.channelId = newChannel.id;
             await activity.save();

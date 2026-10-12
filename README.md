@@ -42,6 +42,11 @@ Unlock guild achievements by completing various tasks and challenges.
 | Host               | Days on which you were the first to join a voice channel.            |
 | Comeback           | Length of the break before coming back to voice channels.            |
 | Regular            | Time since joining the server.                                       |
+| Sleepyhead         | Number of moves to the AFK channel.                                  |
+| Inseparable        | Total time spent in voice channels with one person.                  |
+| Squad              | Voice time with 2+ others playing the same game as you.              |
+| King of the Week   | Weeks with the most voice time on the server.                        |
+| Collector          | Total levels of your other achievements.                             |
 
 </details>
 

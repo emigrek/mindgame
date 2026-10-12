@@ -3,6 +3,7 @@ import i18n from "@/client/i18n";
 import { config } from "@/config";
 import { AchievementType, ActivityStreak } from "@/interfaces";
 import type { BaseAchievement } from "@/modules/achievement";
+import { formatRarity, getRarity } from "@/modules/achievement/rarity";
 import { getGuildsCount } from "@/modules/guild";
 import { getGuildTresholdRole, getLevelRoleThreshold } from "@/modules/roles";
 import { VoiceActivityDocument } from "@/modules/schemas/VoiceActivity";
@@ -74,7 +75,10 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
     // A "Label: `value`" status becomes a "Label" field with the value in a code block, like the level
     const statusParts = status.match(/^([^:`]+): `([^`]+)`$/);
     const avatarUrl = user.displayAvatarURL({ extension: "png" });
-    const colors = await useImageHex(avatarUrl);
+    const [colors, rarity] = await Promise.all([
+        useImageHex(avatarUrl),
+        getRarity(guild.id).then(rarity => rarity(achievementType, level)),
+    ]);
 
     const embed = InformationEmbed()
         .setColor(getColorInt(colors.Vibrant))
@@ -97,6 +101,9 @@ const getAchievementLeveledUpMessagePayload = async (user: User, guild: Guild, a
                 inline: true
             }] : [])
         ]);
+
+    if (rarity !== undefined)
+        embed.setFooter({ text: formatRarity(rarity) });
 
     return {
         embeds: [embed],

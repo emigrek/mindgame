@@ -4,6 +4,7 @@ import { AchievementType } from "@/interfaces";
 // getAllAchievements is only called inside methods: ../index imports this file through ./structures
 import { getAllAchievements } from "@/modules/achievement";
 import { achievementModel } from "../model";
+import { getRarity } from "../rarity";
 import { serialized } from "@/utils/serialized";
 import { BaseAchievement } from "./BaseAchievement";
 
@@ -66,10 +67,14 @@ class AchievementManager {
     async getAll(display: string[] = ["unlocked"]): Promise<BaseAchievement<AchievementType>[]> {
         const { userId, guildId } = this;
         // One query for the member's achievements instead of one per achievement on every page click
-        const stored = await achievementModel.find({ userId, guildId });
+        const [stored, rarity] = await Promise.all([achievementModel.find({ userId, guildId }), getRarity(guildId)]);
         const byType = new Map(stored.map(achievement => [achievement.achievementType, achievement]));
         return getAllAchievements()
-            .map(achievement => achievement.direct({ userId, guildId }).hydrate(byType.get(achievement.achievementType) ?? null))
+            .map(achievement => {
+                achievement.direct({ userId, guildId }).hydrate(byType.get(achievement.achievementType) ?? null);
+                achievement.rarity = rarity(achievement.achievementType, achievement.level);
+                return achievement;
+            })
             .filter(achievement => displayFilter(display, achievement));
     }
 }

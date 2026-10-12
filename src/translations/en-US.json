@@ -339,6 +339,31 @@
 			"status": "Member since <t:{joinedAtUnix}:D>",
 			"description": "Stay a member of the server for a long time."
 		},
+		"12": {
+			"name": "Sleepyhead",
+			"status": "Moves to AFK: `{count}`",
+			"description": "Get moved to the AFK channel."
+		},
+		"13": {
+			"name": "Inseparable",
+			"status": "Most often with: <@{withUserId}> · `{ms}`",
+			"description": "Spend as much time as possible in voice channels with one person."
+		},
+		"14": {
+			"name": "Squad",
+			"status": "Time with the squad: `{ms}`",
+			"description": "Spend time in a voice channel with at least two people playing the same game as you."
+		},
+		"15": {
+			"name": "King of the Week",
+			"status": "Weeks won: `{weeks}` · Best week: `{topMs}`",
+			"description": "Spend the most time in voice channels on the server during a week."
+		},
+		"16": {
+			"name": "Collector",
+			"status": "Total levels: `{levels}`",
+			"description": "Level up your other achievements."
+		},
 		"display": {
 			"all": "All",
 			"unlocked": "Unlocked",
@@ -348,7 +373,8 @@
 			"level": "Level {level}",
 			"leveledUpAt": "Unlocked <t:{leveledUpAtUnix}:d>.",
 			"noAchievements": "No unlocked achievements.",
-			"footer": "Page {page} of {pages}. ({displayCount} {display})"
+			"footer": "Page {page} of {pages}. ({displayCount} {display})",
+			"rarity": "{percent}% of members have it."
 		}
 	},
 	"utils": {

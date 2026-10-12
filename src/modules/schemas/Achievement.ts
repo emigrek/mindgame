@@ -39,5 +39,7 @@ export function createAchievementSchema<T extends AchievementType>(): Schema<Ach
 const achievementSchema = createAchievementSchema<AchievementType>();
 
 achievementSchema.index({ userId: 1, guildId: 1, achievementType: 1 }, { unique: true });
+// Rarity on the profile page counts the guild's achievements by level
+achievementSchema.index({ guildId: 1, level: 1 });
 
 export default achievementSchema;

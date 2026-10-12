@@ -14,7 +14,12 @@ export enum AchievementType {
     SOCIAL = 8,
     HOST = 9,
     COMEBACK = 10,
-    REGULAR = 11
+    REGULAR = 11,
+    SLEEPER = 12,
+    INSEPARABLE = 13,
+    SQUAD = 14,
+    WEEKLY_KING = 15,
+    COLLECTOR = 16
 }
 
 export interface AchievementTypePayload {
@@ -29,7 +34,13 @@ export interface AchievementTypePayload {
     [AchievementType.SOCIAL]: {userIds: string[]},
     [AchievementType.HOST]: {days: number, lastDay: string},
     [AchievementType.COMEBACK]: {topMs: number},
-    [AchievementType.REGULAR]: {joinedAt: Date}
+    [AchievementType.REGULAR]: {joinedAt: Date},
+    [AchievementType.SLEEPER]: {count: number},
+    // Time spent with each user, by user id
+    [AchievementType.INSEPARABLE]: {ms: Record<string, number>},
+    [AchievementType.SQUAD]: {ms: number},
+    [AchievementType.WEEKLY_KING]: {weeks: number, topMs: number},
+    [AchievementType.COLLECTOR]: {levels: number}
 }
 
 export interface AchievementTypeContext {
@@ -44,5 +55,11 @@ export interface AchievementTypeContext {
     [AchievementType.SOCIAL]: {member: GuildMember},
     [AchievementType.HOST]: {activity: VoiceActivityDocument},
     [AchievementType.COMEBACK]: {breakMs: number},
-    [AchievementType.REGULAR]: {member: GuildMember}
+    [AchievementType.REGULAR]: {member: GuildMember},
+    [AchievementType.SLEEPER]: {member: GuildMember, channel: VoiceBasedChannel},
+    // Others active in the member's channel at this minute tick
+    [AchievementType.INSEPARABLE]: {userIds: string[]},
+    [AchievementType.SQUAD]: {member: GuildMember, others: GuildMember[]},
+    [AchievementType.WEEKLY_KING]: {voiceMs: number},
+    [AchievementType.COLLECTOR]: {leveledUpType: AchievementType}
 }

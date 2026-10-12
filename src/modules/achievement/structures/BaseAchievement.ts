@@ -2,6 +2,7 @@ import i18n from "@/client/i18n";
 import { Achievement, AchievementType, AchievementTypeContext, AchievementTypePayload } from "@/interfaces";
 import { GuildUser } from "@/interfaces/GuildUser";
 import { achievementModel } from "../model";
+import { formatRarity } from "../rarity";
 import { codeBlock } from "@discordjs/formatters";
 import moment from "moment";
 
@@ -33,6 +34,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
     emojiImage = "";
     // Whether level ups by more than one level are announced
     announceLevelJumps = true;
+    // Percent of the guild's members with achievements who reached this level or higher, set by AchievementManager.getAll
+    rarity?: number;
 
     constructor(params: BaseAchievementParams<T>) {
         this.achievementType = params.achievementType;
@@ -146,7 +149,8 @@ export abstract class BaseAchievement<T extends AchievementType> {
 
         const value = `${this.status}` + "\n"
             + codeBlock(this.description) 
-            + (this.level > 0 ? i18n.__mf("achievements.misc.leveledUpAt", { leveledUpAtUnix: moment(this.leveledUpAt).unix() }) : "");
+            + (this.level > 0 ? i18n.__mf("achievements.misc.leveledUpAt", { leveledUpAtUnix: moment(this.leveledUpAt).unix() }) : "")
+            + (this.level > 0 && this.rarity !== undefined ? " " + formatRarity(this.rarity) : "");
 
         return {
             name,

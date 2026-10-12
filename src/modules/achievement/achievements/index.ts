@@ -1,13 +1,18 @@
 export { checkVoiceChannelMembers, checkVoiceSessionEnd, checkVoiceSessionProgress, checkVoiceSessionStart } from "./checks";
+export { Collector } from "./collector";
 export { Comeback } from "./comeback";
 export { CoordinatedAction } from "./coordinatedAction";
 export { DJ, checkDJ } from "./dj";
 export { Ghost } from "./ghost";
 export { Host } from "./host";
+export { Inseparable } from "./inseparable";
 export { Marathon } from "./marathon";
 export { NightOwl } from "./nightOwl";
 export { Regular } from "./regular";
+export { Sleeper } from "./sleeper";
 export { Social } from "./social";
+export { Squad } from "./squad";
 export { Streamer } from "./streamer";
 export { Suss } from "./suss";
 export { UniqueReactions } from "./uniqueReactions";
+export { WeeklyKing, checkWeeklyKings } from "./weeklyKing";

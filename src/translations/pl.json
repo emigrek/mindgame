@@ -339,6 +339,31 @@
 			"status": "Na serwerze od <t:{joinedAtUnix}:D>",
 			"description": "Bądź członkiem serwera przez długi czas."
 		},
+		"12": {
+			"name": "Śpioch",
+			"status": "Przeniesienia na AFK: `{count}`",
+			"description": "Daj się przenieść na kanał AFK."
+		},
+		"13": {
+			"name": "Nierozłączni",
+			"status": "Najczęściej z: <@{withUserId}> · `{ms}`",
+			"description": "Spędź jak najwięcej czasu na kanałach głosowych z jedną osobą."
+		},
+		"14": {
+			"name": "Drużyna",
+			"status": "Czas w drużynie: `{ms}`",
+			"description": "Spędzaj czas na kanale głosowym z co najmniej dwiema osobami grającymi w tę samą grę co ty."
+		},
+		"15": {
+			"name": "Król Tygodnia",
+			"status": "Wygrane tygodnie: `{weeks}` · Najlepszy tydzień: `{topMs}`",
+			"description": "Spędź w ciągu tygodnia najwięcej czasu na kanałach głosowych na serwerze."
+		},
+		"16": {
+			"name": "Kolekcjoner",
+			"status": "Suma poziomów: `{levels}`",
+			"description": "Zdobywaj kolejne poziomy pozostałych osiągnięć."
+		},
 		"display": {
 			"all": "Wszystkie",
 			"unlocked": "Odblokowane",
@@ -348,7 +373,8 @@
 			"level": "Poziom {level}",
 			"leveledUpAt": "Odblokowano <t:{leveledUpAtUnix}:d>.",
 			"noAchievements": "Brak odblokowanych osiągnięć.",
-			"footer": "Strona {page} z {pages}. ({displayCount} {display})"
+			"footer": "Strona {page} z {pages}. ({displayCount} {display})",
+			"rarity": "Posiada je {percent}% osób."
 		}
 	},
 	"utils": {
